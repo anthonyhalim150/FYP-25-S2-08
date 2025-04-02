@@ -1,0 +1,20 @@
+.dashboardContainer {
+  padding: 2rem;
+}
+
+.dashboardContainer h2 {
+  margin-bottom: 0.5rem;
+}
+
+.dashboardContainer p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.roleNote {
+  padding: 1rem;
+  background-color: #f4f8ff;
+  border: 1px solid #cce5ff;
+  border-radius: 8px;
+  color: #004085;
+}
