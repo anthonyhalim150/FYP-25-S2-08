@@ -1,0 +1,18 @@
+unzipped_project/
+    backend/
+        controllers/
+        db/
+        entities/
+        middleware/
+        routes/
+        utils/
+    public/
+    src/
+        api/
+        assets/
+        components/
+        pages/
+        styles/
+            components/
+            global/
+        utils/
