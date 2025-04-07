@@ -18,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _formKey.currentState!.save();
       setState(() => isLoading = true);
 
-      // Simulate login delay
       Future.delayed(Duration(seconds: 2), () {
         setState(() => isLoading = false);
         Navigator.pushReplacementNamed(context, '/home');
