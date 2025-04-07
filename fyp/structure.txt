@@ -3,10 +3,14 @@ wise-workout-backend/
 │   └── userController.js
 │   └── workoutController.js
 │   └── competitionController.js
-├── entities/
+├── routes/
 │   └── userRoutes.js
 │   └── workoutRoutes.js
 │   └── competitionRoutes.js
+├── entities/
+│   └── userEntity.js
+│   └── workoutEntity.js
+│   └── competitionEntity.js
 ├── middlewares/
 │   └── authMiddleware.js
 │   └── sanitizeInput.js

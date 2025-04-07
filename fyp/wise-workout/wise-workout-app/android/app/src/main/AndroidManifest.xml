@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.wise_workout_app">
     <application
         android:label="wise_workout_app"
         android:name="${applicationName}"
