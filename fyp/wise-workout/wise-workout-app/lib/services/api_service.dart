@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'https://yourapi.com/api';
+  final String baseUrl = 'https://10.0.2.2/api';
 
   Future<http.Response> getUserProfile(String token) {
     return http.get(

@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final backendUrl = "http://localhost:3000"; // replace with your real backend
+  final backendUrl = "http://601874:3000"; // replace with your real backend
 
   Future<void> loginWithEmail() async {
     final response = await http.post(

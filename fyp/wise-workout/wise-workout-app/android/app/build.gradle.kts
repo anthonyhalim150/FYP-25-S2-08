@@ -20,13 +20,14 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
-
     defaultConfig {
         applicationId = "com.example.wise_workout_app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        resValue("string", "default_web_client_id", "723848267249-ncbkgtn94bo4jlrusb2o4g8sfnqoiqfn.apps.googleusercontent.com")
     }
 
     buildTypes {
