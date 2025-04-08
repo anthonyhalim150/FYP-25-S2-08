@@ -1,12 +1,20 @@
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = "myhardcodedjwtsecret"; // hardcoded value, later change to AWS secret manager if need.
+
 const authenticateUser = (req, res, next) => {
+  const skipPaths = ['/auth/login', '/auth/google']; // Add more if needed
+
+  if (skipPaths.includes(req.path)) {
+    return next();
+  }
+
   const token = req.cookies.session;
 
   if (!token) return res.status(401).json({ message: 'No session token' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {

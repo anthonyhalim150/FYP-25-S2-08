@@ -2,7 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
 class UserEntity {
-  static async create(email, password = null, method = 'database') {
+  async create(email, password = null, method = 'database') {
     let hashedPassword = null;
     if (method === 'database' && password) {
       hashedPassword = await bcrypt.hash(password, 10);
@@ -16,7 +16,7 @@ class UserEntity {
     return result;
   }
 
-  static async findByEmail(email) {
+  async findByEmail(email) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ?',
       [email]
@@ -24,7 +24,7 @@ class UserEntity {
     return rows[0] || null;
   }
 
-  static async verifyLogin(email, password) {
+  async verifyLogin(email, password) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ? AND method = "database"',
       [email]
