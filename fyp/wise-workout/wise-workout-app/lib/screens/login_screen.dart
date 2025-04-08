@@ -1,8 +1,9 @@
+
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,19 +15,25 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final backendUrl = "http://601874:3000"; // replace with your real backend
+  final secureStorage = FlutterSecureStorage();
+  final authService = AuthService();
+  final backendUrl = "http://10.0.2.2:3000/auth/google";
 
   Future<void> loginWithEmail() async {
     final response = await http.post(
       Uri.parse('$backendUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'email': emailController.text,
-        'password': passwordController.text,
+        'email': emailController.text.trim(),
+        'password': passwordController.text.trim(),
       }),
     );
 
-    if (response.statusCode == 200) {
+    final cookie = response.headers['set-cookie'];
+    if (response.statusCode == 200 && cookie != null) {
+      final jwt = cookie.split(';').first.split('=').last;
+      await secureStorage.write(key: 'jwt_cookie', value: jwt);
+      showSuccess('Login successful');
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       showError('Invalid email or password');
@@ -34,44 +41,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginWithGoogle() async {
-    final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return;
+    final email = await authService.signInWithGoogle();
+    if (email == null) {
+      showError('Google sign-in was cancelled or failed');
+      return;
+    }
 
     final response = await http.post(
       Uri.parse('$backendUrl/auth/google'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': googleUser.email}),
+      body: jsonEncode({'email': email}),
     );
 
-    if (response.statusCode == 200) {
+    final cookie = response.headers['set-cookie'];
+    if (response.statusCode == 200 && cookie != null) {
+      final jwt = cookie.split(';').first.split('=').last;
+      await secureStorage.write(key: 'jwt_cookie', value: jwt);
+      showSuccess('Google login successful');
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       showError('Google login failed');
     }
   }
 
-  Future<void> loginWithApple() async {
-    final credential = await SignInWithApple.getAppleIDCredential(
-      scopes: [AppleIDAuthorizationScopes.email],
-    );
-
-    final response = await http.post(
-      Uri.parse('$backendUrl/auth/apple'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': credential.email}),
-    );
-
-    if (response.statusCode == 200) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      showError('Apple login failed');
-    }
+  void showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
   }
 
-  void showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+  void showSuccess(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.green));
   }
 
   @override
@@ -102,8 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: loginWithGoogle,
               child: const Text('Continue with Google'),
             ),
-            const SizedBox(height: 12),
-            SignInWithAppleButton(onPressed: loginWithApple),
           ],
         ),
       ),

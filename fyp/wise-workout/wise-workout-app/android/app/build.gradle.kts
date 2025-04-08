@@ -27,7 +27,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        resValue("string", "default_web_client_id", "723848267249-ncbkgtn94bo4jlrusb2o4g8sfnqoiqfn.apps.googleusercontent.com")
+        resValue("string", "default_web_client_id", "723848267249-o0045ev3rv760lifvak38eaionfv1qlm.apps.googleusercontent.com")
     }
 
     buildTypes {

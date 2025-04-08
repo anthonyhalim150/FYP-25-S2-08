@@ -1,19 +1,17 @@
-import 'dart:io' show Platform;
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email'],
-    clientId: Platform.isIOS
-        ? 'YOUR_IOS_WEB_CLIENT_ID.apps.googleusercontent.com'
-        : null,
+    scopes: ['email', 'profile']
   );
 
-  Future<GoogleSignInAccount?> signInWithGoogle() async {
+  Future<String?> signInWithGoogle() async {
     try {
-      return await _googleSignIn.signIn();
+      final account = await _googleSignIn.signIn();
+      print('GoogleSignIn result: $account');
+      return account?.email;
     } catch (e) {
-      print('Google Sign-In Error: $e');
+      print('GoogleSignIn error: $e');
       return null;
     }
   }
