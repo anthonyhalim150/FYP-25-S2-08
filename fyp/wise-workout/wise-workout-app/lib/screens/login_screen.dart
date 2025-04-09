@@ -119,46 +119,59 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    elevation: 1,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  onPressed: loginWithGoogle,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: Image.asset(
-                          'assets/icons/google-icon.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text("Sign in with Google", style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
+
+
+               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  elevation: 1,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
+                onPressed: loginWithGoogle,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Image.asset(
+                        'assets/icons/google-icon.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Transform.translate(
+                      offset: const Offset(9, 0), //Shift the text to the right, reason I do this is because there is an apple icon border and it messes with alignment.
+                      child: const Text(
+                        "Sign in with Google",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
                 const SizedBox(height: 12),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  onPressed: () {
-                    // TODO: Implement Apple login
-                  },
-                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
+
+
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  // TODO: Implement Apple login
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Transform.translate(
+                      offset: const Offset(-4, 0), 
+                      child: SizedBox(
                         width: 30,
                         height: 30,
                         child: Image.asset(
@@ -166,11 +179,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           fit: BoxFit.contain,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Text("Sign in with Apple", style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text("Sign in with Apple", style: TextStyle(fontSize: 16)),
+                  ],
                 ),
+              ),
+
+
+
                 const SizedBox(height: 24),
                 Center(
                   child: TextButton(
