@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import 'dart:io';
 import '../services/auth_service.dart';
+import '../widgets/google_login_button.dart';
+import '../widgets/apple_login_button.dart';
+import '../widgets/facebook_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -77,6 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAndroid = Platform.isAndroid;
+    final bool isIOS = Platform.isIOS;
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -119,75 +126,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
-
-               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  elevation: 1,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                if (isAndroid) ...[
+                  GoogleLoginButton(onPressed: loginWithGoogle),
+                  const SizedBox(height: 12),
+                ],
+                if (isIOS) ...[
+                  const AppleLoginButton(),
+                  const SizedBox(height: 12),
+                ],
+                FacebookLoginButton(
+                  onPressed: () {
+                    // TODO: Implement Facebook login
+                  },
                 ),
-                onPressed: loginWithGoogle,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Image.asset(
-                        'assets/icons/google-icon.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Transform.translate(
-                      offset: const Offset(9, 0), //Shift the text to the right, reason I do this is because there is an apple icon border and it messes with alignment.
-                      child: const Text(
-                        "Sign in with Google",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-                const SizedBox(height: 12),
-
-
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: () {
-                  // TODO: Implement Apple login
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Transform.translate(
-                      offset: const Offset(-4, 0), 
-                      child: SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: Image.asset(
-                          'assets/icons/apple-icon.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text("Sign in with Apple", style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
-
-
-
                 const SizedBox(height: 24),
                 Center(
                   child: TextButton(
