@@ -1,7 +1,6 @@
-const UserEntity = require('../entities/userEntity');
+const UserEntity = new (require('../entities/userEntity'))();
 const { setCookie } = require('../utils/cookieAuth');
 
-// 1. Email + Password login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await UserEntity.verifyLogin(email, password);
@@ -12,26 +11,24 @@ exports.login = async (req, res) => {
   res.json({ message: 'Login successful' });
 };
 
-// 2. Google Sign-In
 exports.loginGoogle = async (req, res) => {
   const { email } = req.body;
   let user = await UserEntity.findByEmail(email);
 
   if (!user) {
-    await UserEntity.create(email, 'google');
+    await UserEntity.create(email, null, 'google');
   }
 
   setCookie(res, email);
   res.json({ message: 'Google login successful' });
 };
 
-// 3. Apple Sign-In
 exports.loginApple = async (req, res) => {
   const { email } = req.body;
   let user = await UserEntity.findByEmail(email);
 
   if (!user) {
-    await UserEntity.create(email, 'apple');
+    await UserEntity.create(email, null, 'apple');
   }
 
   setCookie(res, email);

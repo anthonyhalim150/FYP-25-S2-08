@@ -8,7 +8,7 @@ const db = require('./config/db');
 dotenv.config();
 const app = express();
 
-// Middlewares
+
 app.use(cors({
   origin: ['http://localhost:3000', 'http://10.0.2.2:3000'],
   credentials: true
@@ -16,17 +16,17 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+
 app.use('/auth', userRoutes);
 
 
 
 
-// Optional: test query
+
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))
   .catch(err => console.error('DB connection error:', err));
-// Start server
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}...`);
