@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin") 
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
 }
 
 android {
@@ -21,6 +20,15 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("wiseworkout.jks")
+            storePassword = "wiseworkoutpass"
+            keyAlias = "wiseworkout"
+            keyPassword = "wiseworkoutpass"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.example.wise_workout_app"
         minSdk = flutter.minSdkVersion
@@ -37,8 +45,11 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("release")
+        }
         getByName("release") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
