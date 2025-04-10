@@ -67,6 +67,30 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> loginWithFacebook() async {
+    final email = await authService.signInWithFacebook();
+    if (email == null) {
+      showError('Facebook sign-in was cancelled or failed');
+      return;
+    }
+
+    final response = await http.post(
+      Uri.parse('$backendUrl/auth/facebook'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    final cookie = response.headers['set-cookie'];
+    if (response.statusCode == 200 && cookie != null) {
+      final jwt = cookie.split(';').first.split('=').last;
+      await secureStorage.write(key: 'jwt_cookie', value: jwt);
+      showSuccess('Facebook login successful');
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      showError('Facebook login failed');
+    }
+  }
+
   void showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(msg), backgroundColor: Colors.red),
@@ -135,9 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 12),
                 ],
                 FacebookLoginButton(
-                  onPressed: () {
-                    // TODO: Implement Facebook login
-                  },
+                  onPressed: loginWithFacebook,
                 ),
                 const SizedBox(height: 24),
                 Center(

@@ -1,8 +1,8 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin") 
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
@@ -20,6 +20,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
+
     defaultConfig {
         applicationId = "com.example.wise_workout_app"
         minSdk = flutter.minSdkVersion
@@ -28,10 +29,15 @@ android {
         versionName = flutter.versionName
 
         resValue("string", "default_web_client_id", "723848267249-o0045ev3rv760lifvak38eaionfv1qlm.apps.googleusercontent.com")
+        resValue("string", "facebook_app_id", "1707909883492321")
+        resValue("string", "facebook_client_token", "bd9cab71b7816705bf6313f3f073925d")
+
+        manifestPlaceholders["facebookAppId"] = "1707909883492321"
+        manifestPlaceholders["facebookClientToken"] = "bd9cab71b7816705bf6313f3f073925d"
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -40,7 +46,6 @@ android {
 flutter {
     source = "../.."
 }
-
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
