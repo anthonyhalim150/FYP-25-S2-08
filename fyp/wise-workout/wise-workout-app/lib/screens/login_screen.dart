@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../widgets/google_login_button.dart';
 import '../widgets/apple_login_button.dart';
 import '../widgets/facebook_login_button.dart';
+import '../utils/sanitize.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,16 +21,22 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   final secureStorage = FlutterSecureStorage();
   final authService = AuthService();
+  final sanitize = Sanitize();
   final backendUrl = "http://10.0.2.2:3000";
 
   Future<void> loginWithEmail() async {
+    final email = sanitize.clean(emailController.text);
+    final password = sanitize.clean(passwordController.text);
+
+    if (!sanitize.isValidEmail(email) || !sanitize.isValidPassword(password)) {
+      showError('Invalid email or password format');
+      return;
+    }
+
     final response = await http.post(
       Uri.parse('$backendUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': emailController.text.trim(),
-        'password': passwordController.text.trim(),
-      }),
+      body: jsonEncode({'email': email, 'password': password}),
     );
 
     final cookie = response.headers['set-cookie'];
