@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = "myhardcodedjwtsecret"; // hardcoded value, later change to AWS secret manager if need.
 
 const authenticateUser = (req, res, next) => {
-  const skipPaths = ['/auth/login', '/auth/google']; // Add more if needed
+  const skipPaths = ['/auth/login', '/auth/google', '/auth/facebook', '/auth/register']; // Add more if needed
 
   if (skipPaths.includes(req.path)) {
     return next();

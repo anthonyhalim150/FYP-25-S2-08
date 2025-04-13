@@ -25,13 +25,22 @@ class _LoginScreenState extends State<LoginScreen> {
   final backendUrl = "http://10.0.2.2:3000";
 
   Future<void> loginWithEmail() async {
-    final email = sanitize.clean(emailController.text);
-    final password = sanitize.clean(passwordController.text);
+    final emailResult = sanitize.isValidEmail(emailController.text);
+    final passwordResult = sanitize.isValidPassword(passwordController.text);
 
-    if (!sanitize.isValidEmail(email) || !sanitize.isValidPassword(password)) {
-      showError('Invalid email or password format');
+    if (!emailResult.valid) {
+      showError(emailResult.message ?? 'Invalid email');
       return;
     }
+
+    if (!passwordResult.valid) {
+      showError(passwordResult.message ?? 'Invalid password');
+      return;
+    }
+
+    final email = emailResult.value;
+    final password = passwordResult.value;
+
 
     final response = await http.post(
       Uri.parse('$backendUrl/auth/login'),

@@ -55,3 +55,22 @@ exports.loginFacebook = async (req, res) => {
   setCookie(res, email);
   res.json({ message: 'Facebook login successful' });
 };
+
+exports.register = async (req, res) => {
+  const { email, password } = req.body;
+  const cleanEmail = isValidEmail(email);
+  const cleanPassword = isValidPassword(password);
+
+  if (!cleanEmail || !cleanPassword) {
+    return res.status(400).json({ message: 'Invalid email or password format' });
+  }
+
+  const existingUser = await UserEntity.findByEmail(cleanEmail);
+  if (existingUser) {
+    return res.status(409).json({ message: 'User already exists' });
+  }
+
+  await UserEntity.create(cleanEmail, cleanPassword, 'email');
+  setCookie(res, cleanEmail);
+  res.status(201).json({ message: 'Registration successful' });
+};
