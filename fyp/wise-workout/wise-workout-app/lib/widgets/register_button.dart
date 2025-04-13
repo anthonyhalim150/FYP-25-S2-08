@@ -58,14 +58,14 @@ class _RegisterButtonState extends State<RegisterButton> {
     setState(() => isSubmitting = true);
 
     try {
-      final response = await http.post(
-        Uri.parse('$backendUrl/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': emailResult.value,
-          'password': passwordResult.value,
-        }),
-      );
+        final response = await http.post(
+          Uri.parse('$backendUrl/auth/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'email': emailResult.value,
+            'password': passwordResult.value,
+          }),
+        );
 
       final cookie = response.headers['set-cookie'];
       if (response.statusCode == 201 && cookie != null) {
@@ -74,14 +74,16 @@ class _RegisterButtonState extends State<RegisterButton> {
         widget.onSuccess('Registration successful');
         Navigator.pushReplacementNamed(context, '/home');
       } else {
-        widget.onError('Registration failed');
+        final Map<String, dynamic> errorData = jsonDecode(response.body);
+        widget.onError(errorData['message'] ?? 'Registration failed');
       }
-    } catch (e) {
-      widget.onError('Server error');
-    } finally {
-      setState(() => isSubmitting = false);
+      } catch (e) {
+        widget.onError('Server error: $e');
+      } finally {
+        setState(() => isSubmitting = false);
+      }
     }
-  }
+
 
   @override
   void initState() {

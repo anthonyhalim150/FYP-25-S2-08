@@ -67,10 +67,10 @@ exports.register = async (req, res) => {
 
   const existingUser = await UserEntity.findByEmail(cleanEmail);
   if (existingUser) {
-    return res.status(409).json({ message: 'User already exists' });
+    return res.status(409).json({ message: 'User with this email already exists' });
   }
 
-  await UserEntity.create(cleanEmail, cleanPassword, 'email');
+  await UserEntity.create(cleanEmail, cleanPassword, 'database');
   setCookie(res, cleanEmail);
   res.status(201).json({ message: 'Registration successful' });
 };
