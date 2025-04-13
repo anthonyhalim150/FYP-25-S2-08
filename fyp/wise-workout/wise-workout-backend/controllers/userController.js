@@ -42,3 +42,16 @@ exports.loginApple = async (req, res) => {
   setCookie(res, email);
   res.json({ message: 'Apple login successful' });
 };
+
+exports.loginFacebook = async (req, res) => {
+  const email = isValidEmail(req.body.email);
+  if (!email) return res.status(400).json({ message: 'Invalid email' });
+
+  let user = await UserEntity.findByEmail(email);
+  if (!user) {
+    await UserEntity.create(email, null, 'facebook');
+  }
+
+  setCookie(res, email);
+  res.json({ message: 'Facebook login successful' });
+};
