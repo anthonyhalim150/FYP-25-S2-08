@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-
-const JWT_SECRET = "myhardcodedjwtsecret"; // hardcoded value, later change to AWS secret manager if need.
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const authenticateUser = (req, res, next) => {
   const skipPaths = ['/auth/login', '/auth/google', '/auth/facebook', '/auth/register']; // Add more if needed

@@ -1,6 +1,10 @@
 const UserEntity = new (require('../entities/userEntity'))();
 const { setCookie } = require('../utils/cookieAuth');
 const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanitize');
+const {generateOTP, getExpiry} = require('../utils/otp');
+const { sendOTPToEmail } = require('../services/otpService');
+const PendingUserEntity = require('../entities/pendingUserEntity');
+const bcrypt = require('bcrypt');
 
 exports.login = async (req, res) => {
   const email = isValidEmail(req.body.email);
@@ -70,7 +74,12 @@ exports.register = async (req, res) => {
     return res.status(409).json({ message: 'User with this email already exists' });
   }
 
-  await UserEntity.create(cleanEmail, cleanPassword, 'database');
-  setCookie(res, cleanEmail);
-  res.status(201).json({ message: 'Registration successful' });
+  const otp = generateOTP();
+  const expiresAt = getExpiry();
+  const hashedPassword = await bcrypt.hash(cleanPassword, 10);
+
+  await PendingUserEntity.create(cleanEmail, hashedPassword, otp, expiresAt);
+
+  await sendOTPToEmail(cleanEmail, otp);
+  res.status(201).json({ message: 'OTP sent to email. Complete verification to finish registration.' });
 };

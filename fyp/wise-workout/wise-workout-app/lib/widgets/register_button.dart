@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import '../utils/sanitize.dart';
+import '../screens/otp_screen.dart';
 
 class RegisterButton extends StatefulWidget {
   final void Function(String msg) onSuccess;
@@ -58,32 +59,33 @@ class _RegisterButtonState extends State<RegisterButton> {
     setState(() => isSubmitting = true);
 
     try {
-        final response = await http.post(
-          Uri.parse('$backendUrl/auth/register'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'email': emailResult.value,
-            'password': passwordResult.value,
-          }),
-        );
+      final response = await http.post(
+        Uri.parse('$backendUrl/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': emailResult.value,
+          'password': passwordResult.value,
+        }),
+      );
 
-      final cookie = response.headers['set-cookie'];
-      if (response.statusCode == 201 && cookie != null) {
-        final jwt = cookie.split(';').first.split('=').last;
-        await secureStorage.write(key: 'jwt_cookie', value: jwt);
-        widget.onSuccess('Registration successful');
-        Navigator.pushReplacementNamed(context, '/home');
+      if (response.statusCode == 201) {
+        widget.onSuccess('OTP sent to your email');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OtpScreen(email: emailResult.value),
+          ),
+        );
       } else {
         final Map<String, dynamic> errorData = jsonDecode(response.body);
         widget.onError(errorData['message'] ?? 'Registration failed');
       }
-      } catch (e) {
-        widget.onError('Server error: $e');
-      } finally {
-        setState(() => isSubmitting = false);
-      }
+    } catch (e) {
+      widget.onError('Server error: $e');
+    } finally {
+      setState(() => isSubmitting = false);
     }
-
+  }
 
   @override
   void initState() {
