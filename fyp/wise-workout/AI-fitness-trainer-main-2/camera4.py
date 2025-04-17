@@ -81,8 +81,8 @@ def push_up_logic(img, lmlist, count, dir, tracker):
     body_angles = tracker.calculate_bilateral_angles(img, lmlist, body_points)
     
     # Calculate percentage for both arms
-    left_per = np.interp(arm_angles['left'], (85, 165), (0, 100))
-    right_per = np.interp(arm_angles['right'], (85, 165), (0, 100))
+    left_per = np.interp(arm_angles['left'], (75, 175), (0, 100))
+    right_per = np.interp(arm_angles['right'], (75, 175), (0, 100))
     
     # Check body alignment
     body_aligned = all(angle > 160 for angle in body_angles.values())
@@ -91,10 +91,10 @@ def push_up_logic(img, lmlist, count, dir, tracker):
     avg_per = (left_per + right_per) / 2
     
     # Count rep only if both arms are in correct position and body is aligned
-    if avg_per > 95 and body_aligned and dir == 0:
+    if avg_per > 85 and body_aligned and dir == 0:
         count += 0.5
         dir = 1
-    if avg_per < 5 and body_aligned and dir == 1:
+    if avg_per < 15 and body_aligned and dir == 1:
         count += 0.5
         dir = 0
         
@@ -128,8 +128,8 @@ def squats_logic(img, lmlist, count, dir, tracker):
     hip_angles = tracker.calculate_bilateral_angles(img, lmlist, hip_points)
     
     # Calculate percentages
-    left_per = np.interp(leg_angles['left'], (90, 170), (0, 100))
-    right_per = np.interp(leg_angles['right'], (90, 170), (0, 100))
+    left_per = np.interp(leg_angles['left'], (80, 180), (0, 100))
+    right_per = np.interp(leg_angles['right'], (80, 180), (0, 100))
     avg_per = (left_per + right_per) / 2
     
     # Check proper form
@@ -137,10 +137,10 @@ def squats_logic(img, lmlist, count, dir, tracker):
     proper_hip_hinge = all(angle >= 90 for angle in hip_angles.values())
     
     # Count rep
-    if avg_per > 95 and dir == 0:
+    if avg_per > 85 and dir == 0:
         count += 0.5
         dir = 1
-    if proper_depth and proper_hip_hinge and dir == 1:
+    if proper_depth and proper_hip_hinge and avg_per < 15 and dir == 1:
         count += 0.5
         dir = 0
     
