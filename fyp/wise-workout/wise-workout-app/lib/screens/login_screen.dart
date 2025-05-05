@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Login successful');
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/questionnaire');
     } else {
       showError('Invalid email or password');
     }
@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Google login successful');
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/questionnaire');
     } else {
       showError('Google login failed');
     }
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Facebook login successful');
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/questionnaire');
     } else {
       showError('Facebook login failed');
     }

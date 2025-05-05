@@ -34,7 +34,7 @@ class _OtpScreenState extends State<OtpScreen> {
       );
 
       if (response.statusCode == 201) {
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/questionnaire');
       } else {
         final data = jsonDecode(response.body);
         setState(() => error = data['message'] ?? 'Invalid OTP');
