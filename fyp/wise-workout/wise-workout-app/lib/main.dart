@@ -6,6 +6,8 @@ import 'screens/competition_screen.dart';
 import 'themes/app_theme.dart';
 import 'screens/register_screen.dart';
 import 'screens/questionnaire_screen.dart';
+import 'screens/forgot_password_screen.dart';
+import 'screens/verify_reset_screen.dart';
 
 void main() {
   runApp(WiseWorkoutApp());
@@ -23,6 +25,8 @@ class WiseWorkoutApp extends StatelessWidget {
         '/': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/verify-reset': (context) => const VerifyResetScreen(),
         '/questionnaire': (context) => QuestionnaireScreen(),
         '/workout': (context) => WorkoutTracker(),
         '/competition': (context) => CompetitionScreen(),
