@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 
-class QuestionnaireScreen extends StatefulWidget {
-  const QuestionnaireScreen({super.key});
+class QuestionnaireScreen4 extends StatefulWidget {
+  const QuestionnaireScreen4({super.key});
 
   @override
-  State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
+  State<QuestionnaireScreen4> createState() => _QuestionnaireScreen4State();
 }
 
-class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
+class _QuestionnaireScreen4State extends State<QuestionnaireScreen4> {
   int selectedIndex = -1;
 
   final List<String> options = [
-    'Never',
-    'Once To Twice A Week',
-    'Three To Four times A Week',
-    'Five To Six times A Week',
-    'Every Day',
+    'Beginner',
+    'Intermediate',
+    'Advanced',
+    'Athlete',
+    'Not Sure',
   ];
 
   void handleNext() {
     if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/questionnaire2');
+      Navigator.pushReplacementNamed(context, '/questionnaire5'); 
     }
   }
 
@@ -52,7 +52,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.1,
+                            value: 0.4,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -67,7 +67,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       Icon(Icons.fitness_center, color: Colors.amber),
                       SizedBox(width: 8),
                       Text(
-                        'HOW OFTEN DO YOU\nWORKOUT?',
+                        'WHAT’S YOUR CURRENT\nFITNESS LEVEL?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
@@ -84,9 +84,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   ...List.generate(options.length, (index) {
                     final isSelected = selectedIndex == index;
                     return GestureDetector(
-                      onTap: () {
-                        setState(() => selectedIndex = index);
-                      },
+                      onTap: () => setState(() => selectedIndex = index),
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

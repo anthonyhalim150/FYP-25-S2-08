@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
 
-class QuestionnaireScreen extends StatefulWidget {
-  const QuestionnaireScreen({super.key});
+class QuestionnaireScreen5 extends StatefulWidget {
+  const QuestionnaireScreen5({super.key});
 
   @override
-  State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
+  State<QuestionnaireScreen5> createState() => _QuestionnaireScreen5State();
 }
 
-class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
+class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
   int selectedIndex = -1;
 
   final List<String> options = [
-    'Never',
-    'Once To Twice A Week',
-    'Three To Four times A Week',
-    'Five To Six times A Week',
-    'Every Day',
+    'No',
+    'Yes, Minor (e.g., sore knee)',
+    'Yes, Major (e.g., heart condition)',
+    'Prefer Not to Say',
   ];
 
   void handleNext() {
     if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/questionnaire2');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -52,7 +51,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.1,
+                            value: 0.5,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -64,10 +63,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Icon(Icons.fitness_center, color: Colors.amber),
+                      Icon(Icons.health_and_safety, color: Colors.amber),
                       SizedBox(width: 8),
                       Text(
-                        'HOW OFTEN DO YOU\nWORKOUT?',
+                        'DO YOU HAVE ANY\nINJURIES OR CONDITIONS?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
@@ -77,16 +76,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.fitness_center, color: Colors.amber),
+                      Icon(Icons.health_and_safety, color: Colors.amber),
                     ],
                   ),
                   const SizedBox(height: 32),
                   ...List.generate(options.length, (index) {
                     final isSelected = selectedIndex == index;
                     return GestureDetector(
-                      onTap: () {
-                        setState(() => selectedIndex = index);
-                      },
+                      onTap: () => setState(() => selectedIndex = index),
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

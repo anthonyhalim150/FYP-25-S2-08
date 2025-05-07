@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 
-class QuestionnaireScreen extends StatefulWidget {
-  const QuestionnaireScreen({super.key});
+class QuestionnaireScreen3 extends StatefulWidget {
+  const QuestionnaireScreen3({super.key});
 
   @override
-  State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
+  State<QuestionnaireScreen3> createState() => _QuestionnaireScreen3State();
 }
 
-class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
+class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
   int selectedIndex = -1;
 
   final List<String> options = [
-    'Never',
-    'Once To Twice A Week',
-    'Three To Four times A Week',
-    'Five To Six times A Week',
-    'Every Day',
+    'Morning',
+    'Afternoon',
+    'Evening',
+    'Late Night',
+    'Varies Daily',
   ];
 
   void handleNext() {
     if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/questionnaire2');
+      Navigator.pushReplacementNamed(context, '/questionnaire4');
     }
   }
 
@@ -52,7 +52,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.1,
+                            value: 0.3,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -64,10 +64,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Icon(Icons.fitness_center, color: Colors.amber),
+                      Icon(Icons.schedule, color: Colors.amber),
                       SizedBox(width: 8),
                       Text(
-                        'HOW OFTEN DO YOU\nWORKOUT?',
+                        'WHAT TIME OF DAY DO YOU\nUSUALLY WORK OUT?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
@@ -77,16 +77,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.fitness_center, color: Colors.amber),
+                      Icon(Icons.schedule, color: Colors.amber),
                     ],
                   ),
                   const SizedBox(height: 32),
                   ...List.generate(options.length, (index) {
                     final isSelected = selectedIndex == index;
                     return GestureDetector(
-                      onTap: () {
-                        setState(() => selectedIndex = index);
-                      },
+                      onTap: () => setState(() => selectedIndex = index),
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
