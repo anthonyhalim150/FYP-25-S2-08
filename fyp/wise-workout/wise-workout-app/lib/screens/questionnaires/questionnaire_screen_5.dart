@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../../services/questionnaire_service.dart';
 
 class QuestionnaireScreen5 extends StatefulWidget {
   final int step;
@@ -21,7 +20,7 @@ class QuestionnaireScreen5 extends StatefulWidget {
 class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
   int selectedIndex = -1;
   bool isSubmitting = false;
-  final backendUrl = "http://10.0.2.2:3000";
+  final questionnaireService = QuestionnaireService();
 
   final List<String> options = [
     'No',
@@ -35,19 +34,15 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
 
     final fullResponses = {
       ...widget.responses,
-      'injuryStatus': options[selectedIndex],
+      'injury': options[selectedIndex],
     };
 
     setState(() => isSubmitting = true);
 
     try {
-      final response = await http.post(
-        Uri.parse('$backendUrl/questionnaire/submit'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(fullResponses),
-      );
+      final success = await questionnaireService.submitPreferences(fullResponses);
 
-      if (response.statusCode == 200) {
+      if (success) {
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -84,7 +79,7 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
                       Expanded(
