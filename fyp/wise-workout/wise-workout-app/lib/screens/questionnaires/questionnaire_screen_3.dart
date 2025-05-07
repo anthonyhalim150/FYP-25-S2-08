@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'questionnaire_screen_4.dart';
 
 class QuestionnaireScreen3 extends StatefulWidget {
-  const QuestionnaireScreen3({super.key});
+  final int step;
+  final int totalSteps;
+  final Map<String, dynamic> responses;
+
+  const QuestionnaireScreen3({
+    super.key,
+    required this.step,
+    this.totalSteps = 5,
+    required this.responses,
+  });
 
   @override
   State<QuestionnaireScreen3> createState() => _QuestionnaireScreen3State();
@@ -20,7 +30,20 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
 
   void handleNext() {
     if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/questionnaire4');
+      final updatedResponses = {
+        ...widget.responses,
+        'workoutTime': options[selectedIndex],
+      };
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuestionnaireScreen4(
+            step: widget.step + 1,
+            responses: updatedResponses,
+          ),
+        ),
+      );
     }
   }
 
@@ -52,7 +75,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.3,
+                            value: widget.step / widget.totalSteps,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -101,7 +124,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                             Expanded(
                               child: Text(
                                 options[index],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
@@ -125,7 +148,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.white),
+                        side: const BorderSide(color: Colors.white),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),

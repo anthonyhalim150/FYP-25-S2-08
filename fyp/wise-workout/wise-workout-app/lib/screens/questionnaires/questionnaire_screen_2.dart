@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'questionnaire_screen_3.dart';
 
 class QuestionnaireScreen2 extends StatefulWidget {
-  const QuestionnaireScreen2({super.key});
+  final int step;
+  final int totalSteps;
+  final Map<String, dynamic> responses;
+
+  const QuestionnaireScreen2({
+    super.key,
+    required this.step,
+    this.totalSteps = 5,
+    required this.responses,
+  });
 
   @override
   State<QuestionnaireScreen2> createState() => _QuestionnaireScreen2State();
@@ -20,7 +30,20 @@ class _QuestionnaireScreen2State extends State<QuestionnaireScreen2> {
 
   void handleNext() {
     if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/questionnaire3');
+      final updatedResponses = {
+        ...widget.responses,
+        'fitnessGoal': options[selectedIndex],
+      };
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuestionnaireScreen3(
+            step: widget.step + 1,
+            responses: updatedResponses,
+          ),
+        ),
+      );
     }
   }
 
@@ -52,7 +75,7 @@ class _QuestionnaireScreen2State extends State<QuestionnaireScreen2> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.2,
+                            value: widget.step / widget.totalSteps,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -125,7 +148,7 @@ class _QuestionnaireScreen2State extends State<QuestionnaireScreen2> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.white),
+                        side: const BorderSide(color: Colors.white),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),

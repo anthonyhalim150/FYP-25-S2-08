@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'questionnaires/questionnaire_screen.dart';
+
 
 class OtpScreen extends StatefulWidget {
   final String email;
@@ -34,7 +36,15 @@ class _OtpScreenState extends State<OtpScreen> {
       );
 
       if (response.statusCode == 201) {
-        Navigator.pushReplacementNamed(context, '/questionnaire');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => QuestionnaireScreen(
+              step: 1,
+              responses: {},
+            ),
+          ),
+        );
       } else {
         final data = jsonDecode(response.body);
         setState(() => error = data['message'] ?? 'Invalid OTP');

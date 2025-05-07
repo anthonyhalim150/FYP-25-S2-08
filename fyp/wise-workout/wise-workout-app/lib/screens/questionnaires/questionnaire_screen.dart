@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'questionnaire_screen_2.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
-  const QuestionnaireScreen({super.key});
+  final int step;
+  final int totalSteps;
+  final Map<String, dynamic> responses;
+
+  const QuestionnaireScreen({
+    super.key,
+    required this.step,
+    this.totalSteps = 5,
+    required this.responses,
+  });
 
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
@@ -20,7 +30,20 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   void handleNext() {
     if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/questionnaire2');
+      final updatedResponses = {
+        ...widget.responses,
+        'workoutFrequency': options[selectedIndex],
+      };
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuestionnaireScreen2(
+            step: widget.step + 1,
+            responses: updatedResponses,
+          ),
+        ),
+      );
     }
   }
 
@@ -52,7 +75,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.1,
+                            value: widget.step / widget.totalSteps,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -84,9 +107,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   ...List.generate(options.length, (index) {
                     final isSelected = selectedIndex == index;
                     return GestureDetector(
-                      onTap: () {
-                        setState(() => selectedIndex = index);
-                      },
+                      onTap: () => setState(() => selectedIndex = index),
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -103,7 +124,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                             Expanded(
                               child: Text(
                                 options[index],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
@@ -127,7 +148,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.white),
+                        side: const BorderSide(color: Colors.white),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),

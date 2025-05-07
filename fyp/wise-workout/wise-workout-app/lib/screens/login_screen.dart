@@ -8,6 +8,7 @@ import '../widgets/google_login_button.dart';
 import '../widgets/apple_login_button.dart';
 import '../widgets/facebook_login_button.dart';
 import '../utils/sanitize.dart';
+import 'questionnaires/questionnaire_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -53,7 +54,12 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Login successful');
-      Navigator.pushReplacementNamed(context, '/questionnaire');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
+        ),
+      );
     } else {
       showError('Invalid email or password');
     }
@@ -77,7 +83,13 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Google login successful');
-      Navigator.pushReplacementNamed(context, '/questionnaire');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
+        ),
+      );
+
     } else {
       showError('Google login failed');
     }
@@ -101,7 +113,13 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Facebook login successful');
-      Navigator.pushReplacementNamed(context, '/questionnaire');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
+        ),
+      );
+
     } else {
       showError('Facebook login failed');
     }

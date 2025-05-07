@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class QuestionnaireScreen5 extends StatefulWidget {
-  const QuestionnaireScreen5({super.key});
+  final int step;
+  final int totalSteps;
+  final Map<String, dynamic> responses;
+
+  const QuestionnaireScreen5({
+    super.key,
+    required this.step,
+    this.totalSteps = 5,
+    required this.responses,
+  });
 
   @override
   State<QuestionnaireScreen5> createState() => _QuestionnaireScreen5State();
@@ -9,6 +20,8 @@ class QuestionnaireScreen5 extends StatefulWidget {
 
 class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
   int selectedIndex = -1;
+  bool isSubmitting = false;
+  final backendUrl = "http://10.0.2.2:3000";
 
   final List<String> options = [
     'No',
@@ -17,9 +30,36 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
     'Prefer Not to Say',
   ];
 
-  void handleNext() {
-    if (selectedIndex != -1) {
-      Navigator.pushReplacementNamed(context, '/home');
+  Future<void> handleNext() async {
+    if (selectedIndex == -1) return;
+
+    final fullResponses = {
+      ...widget.responses,
+      'injuryStatus': options[selectedIndex],
+    };
+
+    setState(() => isSubmitting = true);
+
+    try {
+      final response = await http.post(
+        Uri.parse('$backendUrl/questionnaire/submit'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(fullResponses),
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Submission failed'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() => isSubmitting = false);
     }
   }
 
@@ -51,7 +91,7 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 32),
                           child: LinearProgressIndicator(
-                            value: 0.5,
+                            value: widget.step / widget.totalSteps,
                             color: Colors.purpleAccent,
                             backgroundColor: Colors.white24,
                           ),
@@ -100,7 +140,7 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
                             Expanded(
                               child: Text(
                                 options[index],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
@@ -120,17 +160,19 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: handleNext,
+                      onPressed: isSubmitting ? null : handleNext,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.white),
+                        side: const BorderSide(color: Colors.white),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: const Text("NEXT →", style: TextStyle(fontSize: 16)),
+                      child: isSubmitting
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text("FINISH →", style: TextStyle(fontSize: 16)),
                     ),
                   ),
                 ],
