@@ -4,7 +4,6 @@ const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanit
 const {generateOTP, getExpiry} = require('../utils/otp');
 const { sendOTPToEmail } = require('../services/otpService');
 const PendingUserEntity = require('../entities/pendingUserEntity');
-const bcrypt = require('bcrypt');
 
 exports.login = async (req, res) => {
   const email = isValidEmail(req.body.email);

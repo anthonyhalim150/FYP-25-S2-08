@@ -23,6 +23,13 @@ class UserEntity {
     );
     return rows[0] || null;
   }
+  async findByUsername(username) {
+    const [rows] = await db.execute(
+      'SELECT * FROM users WHERE username = ?',
+      [username]
+    );
+    return rows[0] || null;
+  }
 
   async verifyLogin(email, password) {
     const [rows] = await db.execute(
