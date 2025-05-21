@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 final _backendUrl = 'http://10.0.2.2:3000';
 
-Future<String?> registerUser(BuildContext context, String email, String password) async {
+Future<String?> registerUser(BuildContext context, String email, String username, String password) async {
   final sanitize = Sanitize();
   final emailResult = sanitize.isValidEmail(email);
   final passwordResult = sanitize.isValidPassword(password);
@@ -26,14 +26,13 @@ Future<String?> registerUser(BuildContext context, String email, String password
     );
 
     if (response.statusCode == 201) {
-      // Navigate to OTP screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => OtpScreen(email: emailResult.value),
         ),
       );
-      return null; // no error
+      return null;
     } else {
       final Map<String, dynamic> errorData = jsonDecode(response.body);
       return errorData['message'] ?? 'Registration failed';

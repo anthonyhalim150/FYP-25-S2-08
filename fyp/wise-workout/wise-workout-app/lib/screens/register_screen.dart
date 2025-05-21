@@ -10,6 +10,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
+  final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool showPassword = false;
@@ -32,17 +33,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    if (usernameController.text.trim().isEmpty) {
+      showSnack("Username cannot be empty");
+      return;
+    }
+
     if (passwordController.text != confirmPasswordController.text) {
       showSnack("Passwords do not match");
       return;
     }
 
     setState(() => isLoading = true);
+
     final error = await registerUser(
       context,
       emailController.text,
+      usernameController.text,
       passwordController.text,
     );
+
     setState(() => isLoading = false);
 
     if (error != null) {
@@ -75,6 +84,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: emailController,
                   decoration: InputDecoration(
                     hintText: 'Enter Your Email',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Username
+                const Text("Username", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    hintText: 'Choose a Username',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
