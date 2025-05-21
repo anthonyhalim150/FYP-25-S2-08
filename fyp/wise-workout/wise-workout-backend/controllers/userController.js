@@ -83,9 +83,8 @@ exports.register = async (req, res) => {
 
   const otp = generateOTP();
   const expiresAt = getExpiry();
-  const hashedPassword = await bcrypt.hash(cleanPassword, 10);
 
-  await PendingUserEntity.create(cleanEmail, cleanUsername, hashedPassword, otp, expiresAt);
+  await PendingUserEntity.create(cleanEmail, cleanUsername, cleanPassword, otp, expiresAt);
   await sendOTPToEmail(cleanEmail, otp);
 
   res.status(201).json({ message: 'OTP sent to email. Complete verification to finish registration.' });
