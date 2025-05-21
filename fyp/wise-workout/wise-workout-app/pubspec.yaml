@@ -27,3 +27,8 @@ flutter:
     - assets/icons/apple-icon.png
     - assets/icons/facebook-icon.png
     - assets/images/questionnaire_bg.png
+    - assets/icons/fitquest-icon.png
+    - assets/icons/Home.png
+    - assets/icons/Leaderboard.png
+    - assets/icons/Messages.png
+    - assets/icons/Profile.png
