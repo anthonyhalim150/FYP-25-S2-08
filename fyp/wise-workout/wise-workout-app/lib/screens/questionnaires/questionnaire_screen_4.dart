@@ -32,7 +32,7 @@ class _QuestionnaireScreen4State extends State<QuestionnaireScreen4> {
     if (selectedIndex != -1) {
       final updatedResponses = {
         ...widget.responses,
-        'fitnessLevel': options[selectedIndex],
+        'fitness_level': options[selectedIndex],
       };
 
       Navigator.push(

@@ -32,7 +32,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
     if (selectedIndex != -1) {
       final updatedResponses = {
         ...widget.responses,
-        'workoutTime': options[selectedIndex],
+        'workout_time': options[selectedIndex],
       };
 
       Navigator.push(

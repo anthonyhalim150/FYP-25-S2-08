@@ -1,12 +1,16 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET; 
+const JWT_SECRET = process.env.JWT_SECRET;
+const UserEntity = new (require('../entities/userEntity'))();
 
-exports.setCookie = (res, email) => {
-  const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1d' });
+exports.setCookie = async (res, email) => {
+  const user = await UserEntity.findByEmail(email);
+  if (!user) return;
+
+  const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1d' });
 
   res.cookie('session', token, {
     httpOnly: true,
-    secure: false, 
+    secure: false,
     sameSite: 'Lax',
     maxAge: 24 * 60 * 60 * 1000,
   });

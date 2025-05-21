@@ -5,7 +5,7 @@ class UserPreferencesEntity {
     const {
       workout_frequency,
       fitness_goal,
-      preferred_time,
+      workout_time,
       fitness_level,
       injury
     } = preferences;
@@ -15,7 +15,7 @@ class UserPreferencesEntity {
         user_id,
         workout_frequency,
         fitness_goal,
-        preferred_time,
+        workout_time,
         fitness_level,
         injury
       ) VALUES (?, ?, ?, ?, ?, ?)
@@ -25,7 +25,7 @@ class UserPreferencesEntity {
       userId,
       workout_frequency,
       fitness_goal,
-      preferred_time,
+      workout_time,
       fitness_level,
       injury
     ]);

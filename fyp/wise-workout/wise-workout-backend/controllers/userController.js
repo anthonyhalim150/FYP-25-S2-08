@@ -16,7 +16,7 @@ exports.login = async (req, res) => {
   const user = await UserEntity.verifyLogin(email, password);
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-  setCookie(res, email);
+  await setCookie(res, email);
   res.json({ message: 'Login successful' });
 };
 
@@ -29,7 +29,7 @@ exports.loginGoogle = async (req, res) => {
     await UserEntity.create(email, null, 'google');
   }
 
-  setCookie(res, email);
+  await setCookie(res, email);
   res.json({ message: 'Google login successful' });
 };
 
@@ -42,7 +42,7 @@ exports.loginApple = async (req, res) => {
     await UserEntity.create(email, null, 'apple');
   }
 
-  setCookie(res, email);
+  await setCookie(res, email);
   res.json({ message: 'Apple login successful' });
 };
 
@@ -55,7 +55,7 @@ exports.loginFacebook = async (req, res) => {
     await UserEntity.create(email, null, 'facebook');
   }
 
-  setCookie(res, email);
+  await setCookie(res, email);
   res.json({ message: 'Facebook login successful' });
 };
 

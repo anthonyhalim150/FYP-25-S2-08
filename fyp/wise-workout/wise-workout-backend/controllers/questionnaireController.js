@@ -26,7 +26,7 @@ const submitUserPreferences = async (req, res) => {
     const preferences = {
       workout_frequency,
       fitness_goal,
-      preferred_time: workout_time,
+      workout_time,
       fitness_level,
       injury
     };

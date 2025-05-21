@@ -25,6 +25,6 @@ exports.verifyOtpRegister = async (req, res) => {
   await UserEntity.create(email, pendingUser.username, pendingUser.password, 'database');
   await PendingUserEntity.deleteByEmail(email);
 
-  setCookie(res, email);
+  await setCookie(res, email);
   res.status(201).json({ message: 'Registration and verification successful' });
 };
