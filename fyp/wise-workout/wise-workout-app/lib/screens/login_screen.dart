@@ -1,14 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert';
-import 'dart:io';
 import '../services/auth_service.dart';
 import '../widgets/google_login_button.dart';
 import '../widgets/apple_login_button.dart';
 import '../widgets/facebook_login_button.dart';
 import '../utils/sanitize.dart';
-import 'questionnaires/questionnaire_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final authService = AuthService();
   final sanitize = Sanitize();
   final backendUrl = "http://10.0.2.2:3000";
+
+  bool _obscurePassword = true;
 
   Future<void> loginWithEmail() async {
     final emailResult = sanitize.isValidEmail(emailController.text);
@@ -42,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = emailResult.value;
     final password = passwordResult.value;
 
-
     final response = await http.post(
       Uri.parse('$backendUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
@@ -54,12 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Login successful');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       showError('Invalid email or password');
     }
@@ -83,13 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Google login successful');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
-        ),
-      );
-
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       showError('Google login failed');
     }
@@ -113,13 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Facebook login successful');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
-        ),
-      );
-
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       showError('Facebook login failed');
     }
@@ -151,37 +134,67 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  "Welcome Back",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge,
+                Image.asset(
+                  'assets/icons/fitquest-icon.png',
+                  height: 150,
                 ),
                 const SizedBox(height: 32),
+                const Text(
+                  "Email",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 6),
                 TextField(
                   controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(
+                    hintText: 'Enter Your Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                const Text(
+                  "Password",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 6),
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: loginWithEmail,
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: const [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text("or continue with"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo.shade900,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
                     ),
-                    Expanded(child: Divider()),
-                  ],
+                  ),
+                  onPressed: loginWithEmail,
+                  child: const Text(
+                    'CONTINUE YOUR JOURNEY! →',
+                    style: TextStyle(letterSpacing: 1.2),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 if (isAndroid) ...[
@@ -192,22 +205,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   const AppleLoginButton(),
                   const SizedBox(height: 12),
                 ],
-                FacebookLoginButton(
-                  onPressed: loginWithFacebook,
-                ),
+                FacebookLoginButton(onPressed: loginWithFacebook),
                 const SizedBox(height: 24),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/forgot-password');
+                    },
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Colors.indigo),
+                    ),
+                  ),
+                ),
                 Center(
                   child: TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/register');
                     },
-                    child: Text(
-                      "No account yet? Register here",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blue.shade700,
-                        decoration: TextDecoration.underline,
-                      ),
+                    child: const Text(
+                      'Create Account?',
+                      style: TextStyle(color: Colors.indigo),
                     ),
                   ),
                 ),

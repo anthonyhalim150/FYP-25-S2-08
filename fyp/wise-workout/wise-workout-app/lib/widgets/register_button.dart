@@ -1,150 +1,44 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import '../utils/sanitize.dart';
 import '../screens/otp_screen.dart';
+import 'package:flutter/material.dart';
 
-class RegisterButton extends StatefulWidget {
-  final void Function(String msg) onSuccess;
-  final void Function(String msg) onError;
+final _backendUrl = 'http://10.0.2.2:3000';
 
-  const RegisterButton({
-    super.key,
-    required this.onSuccess,
-    required this.onError,
-  });
-
-  @override
-  State<RegisterButton> createState() => _RegisterButtonState();
-}
-
-class _RegisterButtonState extends State<RegisterButton> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final secureStorage = FlutterSecureStorage();
-  final backendUrl = "http://10.0.2.2:3000";
+Future<String?> registerUser(BuildContext context, String email, String password) async {
   final sanitize = Sanitize();
+  final emailResult = sanitize.isValidEmail(email);
+  final passwordResult = sanitize.isValidPassword(password);
 
-  String? emailError;
-  String? passwordError;
-  bool isSubmitting = false;
-  bool hasTypedEmail = false;
-  bool hasTypedPassword = false;
-
-  void validateInputs() {
-    final emailResult = sanitize.isValidEmail(emailController.text);
-    final passwordResult = sanitize.isValidPassword(passwordController.text);
-
-    setState(() {
-      emailError = hasTypedEmail ? (emailResult.valid ? null : emailResult.message) : null;
-      passwordError = hasTypedPassword ? (passwordResult.valid ? null : passwordResult.message) : null;
-    });
+  if (!emailResult.valid || !passwordResult.valid) {
+    return 'Invalid input: ${emailResult.message ?? ''} ${passwordResult.message ?? ''}';
   }
 
-  bool get isFormValid =>
-      sanitize.isValidEmail(emailController.text).valid &&
-      sanitize.isValidPassword(passwordController.text).valid;
-
-  Future<void> register() async {
-    final emailResult = sanitize.isValidEmail(emailController.text);
-    final passwordResult = sanitize.isValidPassword(passwordController.text);
-
-    if (!emailResult.valid || !passwordResult.valid) {
-      validateInputs();
-      widget.onError('Please fix the input errors');
-      return;
-    }
-
-    setState(() => isSubmitting = true);
-
-    try {
-      final response = await http.post(
-        Uri.parse('$backendUrl/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': emailResult.value,
-          'password': passwordResult.value,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        widget.onSuccess('OTP sent to your email');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OtpScreen(email: emailResult.value),
-          ),
-        );
-      } else {
-        final Map<String, dynamic> errorData = jsonDecode(response.body);
-        widget.onError(errorData['message'] ?? 'Registration failed');
-      }
-    } catch (e) {
-      widget.onError('Server error: $e');
-    } finally {
-      setState(() => isSubmitting = false);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    emailController.addListener(() {
-      if (!hasTypedEmail && emailController.text.isNotEmpty) {
-        setState(() => hasTypedEmail = true);
-      }
-      validateInputs();
-    });
-    passwordController.addListener(() {
-      if (!hasTypedPassword && passwordController.text.isNotEmpty) {
-        setState(() => hasTypedPassword = true);
-      }
-      validateInputs();
-    });
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: emailController,
-          decoration: InputDecoration(
-            labelText: 'Email',
-            hintText: 'example@email.com',
-            errorText: emailError,
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: passwordController,
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: 'Must be at least 6 characters',
-            errorText: passwordError,
-          ),
-        ),
-        const SizedBox(height: 24),
-        ElevatedButton(
-          onPressed: isFormValid && !isSubmitting ? register : null,
-          child: isSubmitting
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Register'),
-        ),
-      ],
+  try {
+    final response = await http.post(
+      Uri.parse('$_backendUrl/auth/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': emailResult.value,
+        'password': passwordResult.value,
+      }),
     );
+
+    if (response.statusCode == 201) {
+      // Navigate to OTP screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OtpScreen(email: emailResult.value),
+        ),
+      );
+      return null; // no error
+    } else {
+      final Map<String, dynamic> errorData = jsonDecode(response.body);
+      return errorData['message'] ?? 'Registration failed';
+    }
+  } catch (e) {
+    return 'Server error: $e';
   }
 }

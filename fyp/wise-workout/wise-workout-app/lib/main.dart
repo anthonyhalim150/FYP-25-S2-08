@@ -27,12 +27,38 @@ class WiseWorkoutApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => LoginScreen(),
-        '/home': (context) => HomeScreen(),
+
+        // HomeScreen with all icons except workoutIcon
+        '/home': (context) => HomeScreen(
+          userName: 'John', //Hardcoded btw
+          homeIcon: Image.asset(
+            'assets/icons/Home.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          leaderboardIcon: Image.asset(
+            'assets/icons/Leaderboard.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          messagesIcon: Image.asset(
+            'assets/icons/Messages.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          profileIcon: Image.asset(
+            'assets/icons/Profile.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          // workoutIcon is omitted
+        ),
+
         '/register': (context) => const RegisterScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/verify-reset': (context) => const VerifyResetScreen(),
         '/workout': (context) => WorkoutTracker(),
         '/competition': (context) => CompetitionScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/verify-reset': (context) => const VerifyResetScreen(),
       },
     );
   }
