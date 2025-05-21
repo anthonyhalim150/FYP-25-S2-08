@@ -61,12 +61,14 @@ exports.loginFacebook = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, username, password } = req.body;
+
   const cleanEmail = isValidEmail(email);
   const cleanPassword = isValidPassword(password);
+  const cleanUsername = sanitizeInput(username);
 
-  if (!cleanEmail || !cleanPassword) {
-    return res.status(400).json({ message: 'Invalid email or password format' });
+  if (!cleanEmail || !cleanPassword || !cleanUsername) {
+    return res.status(400).json({ message: 'Invalid email, username, or password format' });
   }
 
   const existingUser = await UserEntity.findByEmail(cleanEmail);
@@ -74,11 +76,17 @@ exports.register = async (req, res) => {
     return res.status(409).json({ message: 'User with this email already exists' });
   }
 
+  const existingUsername = await UserEntity.findByUsername(cleanUsername);
+  if (existingUsername) {
+    return res.status(409).json({ message: 'Username is already taken' });
+  }
+
   const otp = generateOTP();
   const expiresAt = getExpiry();
+  const hashedPassword = await bcrypt.hash(cleanPassword, 10);
 
-  await PendingUserEntity.create(cleanEmail, cleanPassword, otp, expiresAt);
-
+  await PendingUserEntity.create(cleanEmail, cleanUsername, hashedPassword, otp, expiresAt);
   await sendOTPToEmail(cleanEmail, otp);
+
   res.status(201).json({ message: 'OTP sent to email. Complete verification to finish registration.' });
 };

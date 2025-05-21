@@ -2,7 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
 class UserEntity {
-  async create(email, username, password = null, method = 'database', isHashed = false) {
+  async create(email, username, password = null, method = 'database') {
     let hashedPassword = null;
     if (method === 'database' && password) {
       hashedPassword = isHashed ? password : await bcrypt.hash(password, 10);
