@@ -8,11 +8,12 @@ final _backendUrl = 'http://10.0.2.2:3000';
 
 Future<String?> registerUser(BuildContext context, String email, String username, String password) async {
   final sanitize = Sanitize();
+  final usernameResult = sanitize.isValidUsername(username);
   final emailResult = sanitize.isValidEmail(email);
   final passwordResult = sanitize.isValidPassword(password);
 
-  if (!emailResult.valid || !passwordResult.valid) {
-    return 'Invalid input: ${emailResult.message ?? ''} ${passwordResult.message ?? ''}';
+  if (!emailResult.valid || !passwordResult.valid || !usernameResult.valid) {
+    return 'Invalid input: ${emailResult.message ?? ''} ${passwordResult.message ?? ''} ${usernameResult.message ?? ''}';
   }
 
   try {
@@ -21,6 +22,7 @@ Future<String?> registerUser(BuildContext context, String email, String username
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': emailResult.value,
+        'username': usernameResult.value,
         'password': passwordResult.value,
       }),
     );

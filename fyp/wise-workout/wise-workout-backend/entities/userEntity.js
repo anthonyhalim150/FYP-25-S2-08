@@ -5,7 +5,7 @@ class UserEntity {
   async create(email, username, password = null, method = 'database') {
     let hashedPassword = null;
     if (method === 'database' && password) {
-      hashedPassword = isHashed ? password : await bcrypt.hash(password, 10);
+      hashedPassword = await bcrypt.hash(password, 10);
     }
 
     const [result] = await db.execute(
@@ -35,14 +35,6 @@ class UserEntity {
 
     const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
-  }
-
-  async findByUsername(username) {
-    const [rows] = await db.execute(
-      'SELECT * FROM users WHERE username = ?',
-      [username]
-    );
-    return rows[0] || null;
   }
 }
 

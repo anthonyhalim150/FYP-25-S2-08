@@ -46,4 +46,18 @@ class Sanitize {
 
     return SanitizeResult.valid(sanitized);
   }
+
+  SanitizeResult isValidUsername(String? username) {
+    final sanitized = sanitizeInput(username);
+
+    if (sanitized.isEmpty) {
+      return SanitizeResult.invalid("Username cannot be empty.");
+    }
+
+    if (sanitized.length < 4) {
+      return SanitizeResult.invalid("Username must be at least 4 characters.");
+    }
+
+    return SanitizeResult.valid(sanitized);
+  }
 }
