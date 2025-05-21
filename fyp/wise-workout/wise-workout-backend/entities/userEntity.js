@@ -2,15 +2,15 @@ const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
 class UserEntity {
-  async create(email, password = null, method = 'database') {
+  async create(email, username, password = null, method = 'database', isHashed = false) {
     let hashedPassword = null;
     if (method === 'database' && password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+      hashedPassword = isHashed ? password : await bcrypt.hash(password, 10);
     }
 
     const [result] = await db.execute(
-      'INSERT INTO users (email, password, method) VALUES (?, ?, ?)',
-      [email, hashedPassword, method]
+      'INSERT INTO users (email, username, password, method) VALUES (?, ?, ?, ?)',
+      [email, username, hashedPassword, method]
     );
 
     return result;
@@ -35,6 +35,14 @@ class UserEntity {
 
     const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
+  }
+
+  async findByUsername(username) {
+    const [rows] = await db.execute(
+      'SELECT * FROM users WHERE username = ?',
+      [username]
+    );
+    return rows[0] || null;
   }
 }
 

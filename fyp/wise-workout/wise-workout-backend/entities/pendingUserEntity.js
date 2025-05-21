@@ -1,20 +1,19 @@
 const db = require('../config/db');
 
 class PendingUserEntity {
-  async create(email, hashedPassword, otp, expiresAt) {
+  async create(email, username, hashedPassword, otp, expiresAt) {
     await db.execute(
-      'DELETE FROM pending_users WHERE email = ?',
-      [email]
+      'DELETE FROM pending_users WHERE email = ? OR username = ?',
+      [email, username]
     );
 
     const [result] = await db.execute(
-      'INSERT INTO pending_users (email, password, otp, expires_at) VALUES (?, ?, ?, ?)',
-      [email, hashedPassword, otp, expiresAt]
+      'INSERT INTO pending_users (email, username, password, otp, expires_at) VALUES (?, ?, ?, ?, ?)',
+      [email, username, hashedPassword, otp, expiresAt]
     );
 
     return result;
   }
-
 
   async findByEmail(email) {
     const [rows] = await db.execute(
