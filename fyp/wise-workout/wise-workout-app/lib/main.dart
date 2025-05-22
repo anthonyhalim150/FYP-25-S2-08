@@ -24,11 +24,11 @@ class WiseWorkoutApp extends StatelessWidget {
       title: 'Wise Workout',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/',
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      initialRoute: '/home',
       routes: {
-        '/': (context) => LoginScreen(),
-
-        // HomeScreen with all icons except workoutIcon
+        // '/home': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(
           userName: 'John', //Hardcoded btw
           homeIcon: Image.asset(
@@ -51,9 +51,7 @@ class WiseWorkoutApp extends StatelessWidget {
             height: 24,
             fit: BoxFit.contain,
           ),
-          // workoutIcon is omitted
         ),
-
         '/register': (context) => const RegisterScreen(),
         '/workout': (context) => WorkoutTracker(),
         '/competition': (context) => CompetitionScreen(),
