@@ -26,9 +26,9 @@ class WiseWorkoutApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: '/home',
+      initialRoute: '/',
       routes: {
-        // '/home': (context) => LoginScreen(),
+        '/': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(
           userName: 'John', //Hardcoded btw
           homeIcon: Image.asset(
