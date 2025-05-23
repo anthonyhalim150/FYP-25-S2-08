@@ -45,13 +45,13 @@ class _SemiCirclePainter extends CustomPainter {
     final backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 31
+      ..strokeWidth = 40
     ..strokeCap = StrokeCap.round;
 
     final progressPaint = Paint()
       ..color = progressColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 32
+      ..strokeWidth = 41
       ..strokeCap = StrokeCap.round;
 
     // Draw background arc (semi-circle)

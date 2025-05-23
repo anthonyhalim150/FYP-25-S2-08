@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/exercise_gauge.dart';
+import '../widgets/tournament_widget.dart';
+import 'workout_sample_data.dart';
 
 class HomeScreen extends StatelessWidget {
   final String userName;
@@ -160,7 +162,7 @@ class HomeScreen extends StatelessWidget {
                               child: ExerciseGauge(
                                 progress: currentSteps / maxSteps,
                                 backgroundColor: Theme.of(context).colorScheme.surface,
-                                progressColor: Theme.of(context).colorScheme.primary,
+                                progressColor: Theme.of(context).colorScheme.primaryContainer,
                               ),
                             ),
                             Positioned(
@@ -206,28 +208,13 @@ class HomeScreen extends StatelessWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  children: [
-                    WorkoutCardHomeScreen(
-                      imagePath: 'assets/images/push-up.jpg',
-                      workoutName: 'Push Ups',
-                      workoutLevel: 'Beginner Level',
-                    ),
-                    WorkoutCardHomeScreen(
-                      imagePath: 'assets/images/squats.jpg',
-                      workoutName: 'Squats',
-                      workoutLevel: 'Beginner Level',
-                    ),
-                    WorkoutCardHomeScreen(
-                      imagePath: 'assets/images/plank.jpg',
-                      workoutName: 'Plank',
-                      workoutLevel: 'Beginner Level',
-                    ),
-                    WorkoutCardHomeScreen(
-                      imagePath: 'assets/images/jumping_jacks.jpg',
-                      workoutName: 'Jumping Jacks',
-                      workoutLevel: 'Beginner Level',
-                    ),
-                  ],
+                  children: sampleWorkouts
+                      .map((workout) => WorkoutCardHomeScreen(
+                    imagePath: workout.imagePath,
+                    workoutName: workout.workoutName,
+                    workoutLevel: workout.workoutLevel,
+                  ))
+                      .toList(),
                 ),
               ),
               const SizedBox(height: 20),
@@ -293,6 +280,41 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+        const SizedBox(height: 20),
+        Container(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.only(left: 25.0),
+          child: Text(
+            "Tournaments",
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 220,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            children: [
+              const SizedBox(width: 5),
+              ...sampleTournaments
+                  .map((tournament) => TournamentWidget(
+                tournamentName: tournament.tournamentName,
+                prize: tournament.prize,
+                participants: tournament.participants,
+                progress: tournament.progress,
+                daysLeft: tournament.daysLeft,
+                cardWidth: 280,
+              ))
+                  .toList(),
+              const SizedBox(width: 5),
+            ],
+          ),
+        ),
             ],
           ),
         ),
