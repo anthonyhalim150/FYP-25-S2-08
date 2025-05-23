@@ -5,7 +5,6 @@ class TournamentWidget extends StatelessWidget {
   final String tournamentName;
   final String prize;
   final String participants;
-  final double progress;
   final String daysLeft;
   final double cardWidth;
 
@@ -14,7 +13,6 @@ class TournamentWidget extends StatelessWidget {
     required this.tournamentName,
     required this.prize,
     required this.participants,
-    required this.progress,
     required this.daysLeft,
     this.cardWidth = 300,
   });
@@ -82,16 +80,6 @@ class TournamentWidget extends StatelessWidget {
                 _buildInfoItem(Icons.emoji_events, prize),
                 _buildInfoItem(Icons.people, participants),
               ],
-            ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[200],
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary,
-              ),
-              borderRadius: BorderRadius.circular(8),
-              minHeight: 8,
             ),
             const SizedBox(height: 10),
             SizedBox(

@@ -4,6 +4,7 @@ import '../widgets/workout_card_home_screen.dart';
 import '../widgets/exercise_gauge.dart';
 import '../widgets/tournament_widget.dart';
 import 'workout_sample_data.dart';
+import 'competition_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String userName;
@@ -250,7 +251,12 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       GestureDetector(
                         onTap: () {
-                          // TODO: Add action
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CompetitionScreen(),
+                            ),
+                          );
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -306,7 +312,6 @@ class HomeScreen extends StatelessWidget {
                 tournamentName: tournament.tournamentName,
                 prize: tournament.prize,
                 participants: tournament.participants,
-                progress: tournament.progress,
                 daysLeft: tournament.daysLeft,
                 cardWidth: 280,
               ))
