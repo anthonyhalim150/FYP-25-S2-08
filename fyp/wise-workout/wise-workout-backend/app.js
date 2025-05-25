@@ -7,6 +7,7 @@ dotenv.config();
 const userRoutes = require('./routes/userRoutes');
 const pendingUserRoutes = require('./routes/pendingUserRoutes');
 const questionnaireRoutes = require('./routes/userPreferenceRoutes');
+const spinRoutes = require('./routes/spinRoutes');
 const authenticateUser = require('./middlewares/authMiddleware');
 const db = require('./config/db');
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 //This is public route.
 app.use('/auth', userRoutes);
 app.use('/auth', pendingUserRoutes);
+app.use('/lucky', spinRoutes);
 
 app.use(authenticateUser);
 

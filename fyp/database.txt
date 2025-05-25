@@ -5,9 +5,12 @@ CREATE TABLE users (
   username VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255), -- nullable for Google/Apple sign-ins
   method ENUM('database', 'google', 'apple') NOT NULL DEFAULT 'database',
+  role ENUM('user', 'admin', 'premium') NOT NULL DEFAULT 'user',
+  coins INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 CREATE TABLE pending_users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -32,5 +35,14 @@ CREATE TABLE user_preferences (
   fitness_level VARCHAR(50),
   injury VARCHAR(100),
   submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE spin_history (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  prize_label VARCHAR(100),
+  prize_type VARCHAR(50),
+  prize_value INT,
+  spun_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
