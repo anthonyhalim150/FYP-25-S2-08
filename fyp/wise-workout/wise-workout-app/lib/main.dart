@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/profile_screen.dart';
 import 'screens/workout_tracker.dart';
 import 'screens/competition_screen.dart';
 import 'themes/app_theme.dart';
@@ -53,12 +54,35 @@ class WiseWorkoutApp extends StatelessWidget {
             fit: BoxFit.contain,
           ),
         ),
+        '/profile': (context) => ProfileScreen(
+          userName: 'John',
+          homeIcon: Image.asset(
+            'assets/icons/Home.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          leaderboardIcon: Image.asset(
+            'assets/icons/Leaderboard.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          messagesIcon: Image.asset(
+            'assets/icons/Messages.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+          profileIcon: Image.asset(
+            'assets/icons/Profile.png',
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+        ),
         '/register': (context) => const RegisterScreen(),
         '/workout': (context) => WorkoutTracker(),
         '/competition': (context) => CompetitionScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/verify-reset': (context) => const VerifyResetScreen(),
-        '/lucky-spin': (context) => const LuckySpinScreen()
+        '/lucky-spin': (context) => const LuckySpinScreen(),
       },
     );
   }
