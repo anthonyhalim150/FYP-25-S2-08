@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { generateOTP, getExpiry } = require('../utils/otp');
 const { sendResetOTPToEmail } = require('../services/otpService');
 const PasswordResetEntity = require('../entities/passwordResetEntity');
