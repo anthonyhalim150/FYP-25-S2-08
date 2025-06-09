@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:wise_workout_app/widgets/journey_card.dart';
 import '../widgets/workout_card_home_screen.dart';
-import '../widgets/exercise_gauge.dart';
 import '../widgets/tournament_widget.dart';
 import 'workout_sample_data.dart';
 import 'competition_screen.dart';
 import '../widgets/app_drawer.dart'; // Import the new drawer file
+import '../widgets/journey_card.dart';
+import '../widgets/exercise_stats_card.dart';
 
 class HomeScreen extends StatelessWidget {
   final String userName;
@@ -120,61 +122,13 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 15),
-
         // Exercise Gauge
-        Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),],
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 160,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        SizedBox(
-                          width: 300,
-                          height: 210,
-                          child: ExerciseGauge(
-                            progress: currentSteps / maxSteps,
-                            backgroundColor: Theme.of(context).colorScheme.surface,
-                            progressColor: Theme.of(context).colorScheme.primaryContainer,
-                          ),
-                        ),
-                        Positioned(
-                          top: 98,
-                          left: 5,
-                          right: 20,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildStatItem(context, Icons.directions_walk, "Steps", "$currentSteps/$maxSteps"),
-                              const SizedBox(width: 10),
-                              _buildStatItem(context, Icons.local_fire_department, "Calories", "$caloriesBurned"),
-                              const SizedBox(width: 20),
-                              _buildStatItem(context, Icons.star, "XP", "$xpEarned"),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ),
+                ExerciseStatsCard(
+                  currentSteps: currentSteps,
+                  maxSteps: maxSteps,
+                  caloriesBurned: caloriesBurned,
+                  xpEarned: xpEarned,
+                ),
 
           const SizedBox(height: 20),
           Container(
@@ -205,74 +159,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Center(
-            child: Container(
-              width: 370,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF071655), // Navy background
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Let's start a journey!",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Lorem Ipsum lorem ipsum placeholder. We will explain in marketing way.",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CompetitionScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFFE066), Color(0xFFFFC300)],
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Join a Challenge or Tournament!",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Icon(Icons.arrow_forward, color: Colors.black),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
+          const JourneyCard(),
           const SizedBox(height: 20),
           Container(
             alignment: Alignment.centerLeft,
