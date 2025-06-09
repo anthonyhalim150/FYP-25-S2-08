@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'create_avatar.dart'; // Make sure the file path is correct
+import 'create_avatar.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
