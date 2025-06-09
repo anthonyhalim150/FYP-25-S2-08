@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'create_avatar.dart';
+import 'create_avatar.dart'; // Your avatar creator file
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
   final int xp;
   final int tokens;
   final String? profileImagePath;
+  final String? profileBgPath; // Add this if you support avatar background
   final bool isPremiumUser;
   final Widget? homeIcon;
   final Widget? leaderboardIcon;
@@ -17,9 +18,10 @@ class ProfileScreen extends StatefulWidget {
     Key? key,
     required this.userName,
     this.profileImagePath,
+    this.profileBgPath, // Pass in your user's avatar background if you want
     this.xp = 123,
     this.tokens = 27,
-    this.isPremiumUser = false,  // SET THIS TO true FOR PREMIUM DEMO (or pass from auth)
+    this.isPremiumUser = true,
     this.homeIcon,
     this.leaderboardIcon,
     this.messagesIcon,
@@ -33,11 +35,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileImagePath;
+  late String? _profileBgPath;
 
   @override
   void initState() {
     super.initState();
     _profileImagePath = widget.profileImagePath;
+    _profileBgPath = widget.profileBgPath ??
+        'assets/background/black.jpg'; // Default bg if none set
   }
 
   @override
@@ -47,63 +52,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFDCB39),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-              child: Column(
+            // Avatar + BG preview at the top
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: _profileImagePath != null
-                            ? (_profileImagePath!.startsWith('http')
-                            ? NetworkImage(_profileImagePath!)
-                            : AssetImage(_profileImagePath!)
-                        as ImageProvider)
-                            : const AssetImage('assets/icons/Profile.png'),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'Hi, ${widget.userName}!',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.menu),
-                        onPressed: () {},
-                      ),
-                    ],
+                  // BG image circle
+                  ClipOval(
+                    child: Image.asset(
+                      _profileBgPath ?? 'assets/background/black.jpg',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    height: 70,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(
-                        4,
-                            (_) => const CircleAvatar(
-                          backgroundColor: Color(0xFFDADADA),
-                          radius: 10,
-                        ),
-                      ),
-                    ),
+                  // Avatar
+                  CircleAvatar(
+                    radius: 54,
+                    backgroundImage: _profileImagePath != null
+                        ? (_profileImagePath!.startsWith('http')
+                        ? NetworkImage(_profileImagePath!)
+                        : AssetImage(_profileImagePath!)
+                    as ImageProvider)
+                        : const AssetImage('assets/icons/Profile.png'),
+                    backgroundColor: Colors.transparent,
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Hi, ${widget.userName}!',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 20),
@@ -163,19 +146,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Icons.person,
                     "Avatar",
                     onTap: () async {
-                      final newAvatar = await Navigator.push<String>(
+                      final result = await Navigator.push<Map<String, String?>>(
                         context,
                         MaterialPageRoute(
                           builder: (_) => CreateAvatarScreen(
                             username: widget.userName,
                             isPremiumUser: widget.isPremiumUser,
                             currentAvatarPath: _profileImagePath,
+                            currentBgPath: _profileBgPath,
                           ),
                         ),
                       );
-                      if (newAvatar != null) {
+
+                      if (result != null) {
                         setState(() {
-                          _profileImagePath = newAvatar;
+                          _profileImagePath = result['avatar'];
+                          _profileBgPath = result['background'];
                         });
                       }
                     },
