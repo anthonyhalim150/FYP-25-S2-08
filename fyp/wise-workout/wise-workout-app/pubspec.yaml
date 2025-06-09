@@ -34,4 +34,12 @@ flutter:
     - assets/icons/Messages.png
     - assets/icons/Profile.png
     - assets/images/push-up.jpg
-    - assets/images/
+    - assets/avatars/free/free1.png
+    - assets/avatars/free/free2.png
+    - assets/avatars/free/free3.png
+    - assets/avatars/premium/premium2.png
+    - assets/avatars/premium/premium3.png
+    - assets/avatars/premium/premium4.png
+    - assets/avatars/premium/premium5.png
+    - assets/avatars/premium/premium6.png
+    - assets/avatars/premium/premium7.png

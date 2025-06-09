@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'create_avatar.dart'; // Make sure the file path is correct
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final String userName;
   final int xp;
   final int tokens;
-
+  final String? profileImagePath;
+  final bool isPremiumUser;
   final Widget? homeIcon;
   final Widget? leaderboardIcon;
   final Widget? messagesIcon;
@@ -12,16 +14,31 @@ class ProfileScreen extends StatelessWidget {
   final Widget? workoutIcon;
 
   const ProfileScreen({
-    super.key,
+    Key? key,
     required this.userName,
+    this.profileImagePath,
     this.xp = 123,
     this.tokens = 27,
+    this.isPremiumUser = false,  // SET THIS TO true FOR PREMIUM DEMO (or pass from auth)
     this.homeIcon,
     this.leaderboardIcon,
     this.messagesIcon,
     this.profileIcon,
     this.workoutIcon,
-  });
+  }) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late String? _profileImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileImagePath = widget.profileImagePath;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +60,18 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage('assets/icons/Profile.png'),
+                        backgroundImage: _profileImagePath != null
+                            ? (_profileImagePath!.startsWith('http')
+                            ? NetworkImage(_profileImagePath!)
+                            : AssetImage(_profileImagePath!)
+                        as ImageProvider)
+                            : const AssetImage('assets/icons/Profile.png'),
                       ),
                       const SizedBox(width: 16),
                       Text(
-                        'Hi, $userName!',
+                        'Hi, ${widget.userName}!',
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -85,22 +107,19 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
             // XP and Level Cards
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  _infoCard(context, "XP", "$xp XP"),
+                  _infoCard(context, "XP", "${widget.xp} XP"),
                   const SizedBox(width: 15),
                   _infoCard(context, "Level", "Beginner"),
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-// Lucky Spin Card (Clickable)
+            // Lucky Spin Card (Clickable)
             GestureDetector(
               onTap: () {
                 Navigator.pushNamed(context, '/lucky-spin');
@@ -120,11 +139,12 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         const Text("Lucky Spin",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18)),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            )),
                         const SizedBox(height: 4),
-                        Text("$tokens Tokens",
+                        Text("${widget.tokens} Tokens",
                             style: const TextStyle(color: Colors.white70)),
                       ],
                     ),
@@ -133,15 +153,33 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
             // Profile Settings List
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  _profileItem(Icons.person, "Avatar"),
+                  _profileItem(
+                    Icons.person,
+                    "Avatar",
+                    onTap: () async {
+                      final newAvatar = await Navigator.push<String>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CreateAvatarScreen(
+                            username: widget.userName,
+                            isPremiumUser: widget.isPremiumUser,
+                            currentAvatarPath: _profileImagePath,
+                          ),
+                        ),
+                      );
+                      if (newAvatar != null) {
+                        setState(() {
+                          _profileImagePath = newAvatar;
+                        });
+                      }
+                    },
+                  ),
                   _profileItem(Icons.settings, "Profile", subtitle: "Username, Phone, etc."),
                   _profileItem(Icons.lock, "Password"),
                   _profileItem(Icons.watch, "Wearable", subtitle: "Redmi Watch Active 3"),
@@ -158,7 +196,6 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-
       // Bottom Navigation with FAB
       bottomNavigationBar: Stack(
         alignment: Alignment.bottomCenter,
@@ -190,11 +227,11 @@ class ProfileScreen extends StatelessWidget {
             },
             items: [
               BottomNavigationBarItem(
-                icon: homeIcon ?? const Icon(Icons.home),
+                icon: widget.homeIcon ?? const Icon(Icons.home),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: leaderboardIcon ?? const Icon(Icons.leaderboard),
+                icon: widget.leaderboardIcon ?? const Icon(Icons.leaderboard),
                 label: 'Leader board',
               ),
               const BottomNavigationBarItem(
@@ -202,11 +239,11 @@ class ProfileScreen extends StatelessWidget {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: messagesIcon ?? const Icon(Icons.message),
+                icon: widget.messagesIcon ?? const Icon(Icons.message),
                 label: 'Messages',
               ),
               BottomNavigationBarItem(
-                icon: profileIcon ?? const Icon(Icons.person),
+                icon: widget.profileIcon ?? const Icon(Icons.person),
                 label: 'Profile',
               ),
             ],
@@ -230,7 +267,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: workoutIcon ??
+                  child: widget.workoutIcon ??
                       const Icon(Icons.fitness_center, size: 36, color: Colors.white),
                 ),
               ),
@@ -271,14 +308,19 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _profileItem(IconData icon, String label, {String? subtitle}) {
+  Widget _profileItem(
+      IconData icon,
+      String label, {
+        String? subtitle,
+        VoidCallback? onTap,
+      }) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Colors.purple[300]),
       title: Text(label),
       subtitle: subtitle != null ? Text(subtitle) : null,
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }
