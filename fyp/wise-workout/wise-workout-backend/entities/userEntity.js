@@ -2,10 +2,15 @@ const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 class UserEntity {
-  async create(email, username, password = null, method = 'database') {
+  async create(email, username = null, password = null, method = 'database') {
     let hashedPassword = null;
     if (method === 'database' && password) {
       hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    if (!username) {
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      username = `user${randomSuffix}`;
     }
 
     const [result] = await db.execute(

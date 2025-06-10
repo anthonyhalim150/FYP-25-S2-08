@@ -38,6 +38,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileImagePath;
   late String? _profileBgPath;
+  late String _userName;
   bool _isPremiumUser = false;
 
   final ApiService apiService = ApiService();
@@ -48,6 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _profileImagePath = widget.profileImagePath;
     _profileBgPath = widget.profileBgPath ?? 'assets/background/black.jpg';
     _isPremiumUser = widget.isPremiumUser;
+    _userName = widget.userName;
     _loadProfile();
   }
 
@@ -58,6 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isPremiumUser = profile['role'] == 'premium';
         _profileImagePath = profile['avatar'] ?? 'assets/icons/Profile.png';
         _profileBgPath = profile['background'] ?? 'assets/background/black.jpg';
+        _userName = profile['username'] ?? widget.userName;
       });
     } catch (e) {
       print('Failed to load profile: $e');
@@ -100,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Hi, ${widget.userName}!',
+              'Hi, $_userName!',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             if (_isPremiumUser)
@@ -162,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (_) => CreateAvatarScreen(
-                            username: widget.userName,
+                            username: _userName,
                             isPremiumUser: _isPremiumUser,
                             currentAvatarPath: _profileImagePath,
                             currentBgPath: _profileBgPath,
@@ -194,7 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(
-        currentIndex: 0, // Index of 'Home'
+        currentIndex: 0,
         onTap: (index) {
           switch (index) {
             case 0:

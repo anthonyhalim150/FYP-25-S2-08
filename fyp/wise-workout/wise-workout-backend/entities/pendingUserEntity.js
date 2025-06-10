@@ -1,7 +1,12 @@
 const db = require('../config/db');
 
 class PendingUserEntity {
-  async create(email, username, hashedPassword, otp, expiresAt) {
+  async create(email, username = null, hashedPassword, otp, expiresAt) {
+    if (!username) {
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      username = `user${randomSuffix}`;
+    }
+
     await db.execute(
       'DELETE FROM pending_users WHERE email = ? OR username = ?',
       [email, username]
