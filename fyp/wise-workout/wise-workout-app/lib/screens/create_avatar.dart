@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'create_avatarbg.dart'; // IMPORTANT: you must have this file in your project
+import '../services/api_service.dart'; // Import to call API
+import 'create_avatarbg.dart'; // For premium background selection
 
 class CreateAvatarScreen extends StatefulWidget {
   final String username;
-  final bool isPremiumUser; // true = can change background
+  final bool isPremiumUser;
   final String? currentAvatarPath;
   final String? currentBgPath;
 
@@ -21,11 +22,9 @@ class CreateAvatarScreen extends StatefulWidget {
 
 class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
   static const List<String> avatarPaths = [
-    // First 3 are free avatars
     'assets/avatars/free/free1.png',
     'assets/avatars/free/free2.png',
     'assets/avatars/free/free3.png',
-    // Last 6 are premium avatars
     'assets/avatars/premium/premium2.png',
     'assets/avatars/premium/premium3.png',
     'assets/avatars/premium/premium4.png',
@@ -46,6 +45,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
     'assets/background/bg9.png',
   ];
 
+
   late String selectedAvatarPath;
   late String selectedBgPath;
 
@@ -56,16 +56,14 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
     selectedBgPath = widget.currentBgPath ?? bgPaths[0];
   }
 
-  /// Only PREMIUM users can edit background!
   void _editBackground() async {
     if (!widget.isPremiumUser) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Upgrade to premium to edit background!'),
-        ),
+        const SnackBar(content: Text('Upgrade to premium to edit background!')),
       );
       return;
     }
+
     final pickedBg = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -76,6 +74,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
         ),
       ),
     );
+
     if (pickedBg != null) {
       setState(() {
         selectedBgPath = pickedBg;
@@ -88,12 +87,45 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
     }
   }
 
-  void _confirmAvatar() {
-    Navigator.pop(context, {
-      'avatar': selectedAvatarPath,
-      'background': selectedBgPath,
-    });
+  void _confirmAvatar() async {
+    try {
+      final avatarId = _getAvatarIdFromPath(selectedAvatarPath);
+
+      final apiService = ApiService();
+      await apiService.setAvatar(avatarId);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Avatar updated successfully!')),
+      );
+
+      Navigator.pop(context, {
+        'avatar': selectedAvatarPath,
+        'background': selectedBgPath,
+      });
+    } catch (e) {
+      print('Failed to update avatar: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update avatar')),
+      );
+    }
   }
+
+  int _getAvatarIdFromPath(String path) {
+    final Map<String, int> avatarMap = {
+      'assets/avatars/free/free1.png': 1,
+      'assets/avatars/free/free2.png': 2,
+      'assets/avatars/free/free3.png': 3,
+      'assets/avatars/premium/premium2.png': 4,
+      'assets/avatars/premium/premium3.png': 5,
+      'assets/avatars/premium/premium4.png': 6,
+      'assets/avatars/premium/premium5.png': 7,
+      'assets/avatars/premium/premium6.png': 8,
+      'assets/avatars/premium/premium7.png': 9,
+    };
+
+    return avatarMap[path] ?? 1;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +134,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
               child: Row(
@@ -121,7 +152,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // Avatar preview (with background)
             Stack(
               alignment: Alignment.center,
               children: [
@@ -141,10 +171,11 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Text('@${widget.username}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            Text(
+              '@${widget.username}',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             const SizedBox(height: 16),
-            // Avatar selection grid
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -193,10 +224,10 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                           ),
                           itemBuilder: (context, index) {
                             final path = avatarPaths[index];
-                            final isFree = index < 3;
                             final isChosen = selectedAvatarPath == path;
                             final isPremium = index >= 3;
                             final locked = isPremium && !widget.isPremiumUser;
+
                             return GestureDetector(
                               onTap: () {
                                 if (locked) {
@@ -218,9 +249,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
-                                    color: isChosen
-                                        ? Colors.amber
-                                        : Colors.transparent,
+                                    color: isChosen ? Colors.amber : Colors.transparent,
                                     width: 2,
                                   ),
                                 ),
@@ -235,10 +264,8 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                                           height: 65,
                                           fit: BoxFit.cover,
                                           errorBuilder: (ctx, _, __) =>
-                                          const Icon(
-                                              Icons.image_not_supported,
-                                              size: 30,
-                                              color: Colors.grey),
+                                              const Icon(Icons.image_not_supported,
+                                                  size: 30, color: Colors.grey),
                                         ),
                                       ),
                                     ),
@@ -258,8 +285,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // For premium users, confirmation is after picking background!
-                    // For free users, confirm here.
                     if (!widget.isPremiumUser)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -267,14 +292,10 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 60,
-                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 60),
                         ),
                         onPressed: _confirmAvatar,
-                        child: const Text('Confirm',
-                            style: TextStyle(color: Colors.white)),
+                        child: const Text('Confirm', style: TextStyle(color: Colors.white)),
                       ),
                   ],
                 ),

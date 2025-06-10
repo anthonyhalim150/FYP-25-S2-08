@@ -8,11 +8,12 @@ CREATE TABLE users (
   role ENUM('user', 'admin', 'premium') NOT NULL DEFAULT 'user',
   coins INT NOT NULL DEFAULT 0,
   avatar_id INT DEFAULT NULL,
+  background_id INT DEFAULT NULL, 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (avatar_id) REFERENCES avatars(id) ON DELETE SET NULL
+  FOREIGN KEY (avatar_id) REFERENCES avatars(id) ON DELETE SET NULL,
+  FOREIGN KEY (background_id) REFERENCES backgrounds(id) ON DELETE SET NULL
 );
-
 CREATE TABLE pending_users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -54,3 +55,35 @@ CREATE TABLE avatars (
   image_url VARCHAR(255) NOT NULL,
   is_premium BOOLEAN DEFAULT false
 );
+CREATE TABLE backgrounds (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  image_url VARCHAR(255) NOT NULL,
+  is_premium BOOLEAN DEFAULT false
+);
+
+INSERT INTO avatars (name, image_url, is_premium)
+VALUES 
+  ('free1', 'assets/avatars/free/free1.png', false),
+  ('free2', 'assets/avatars/free/free2.png', false),
+  ('free3', 'assets/avatars/free/free3.png', false),
+  ('premium2', 'assets/avatars/premium/premium2.png', true),
+  ('premium3', 'assets/avatars/premium/premium3.png', true),
+  ('premium4', 'assets/avatars/premium/premium4.png', true),
+  ('premium5', 'assets/avatars/premium/premium5.png', true),
+  ('premium6', 'assets/avatars/premium/premium6.png', true),
+  ('premium7', 'assets/avatars/premium/premium7.png', true);
+
+
+
+INSERT INTO backgrounds (name, image_url, is_premium)
+VALUES 
+  ('bg1', 'assets/background/bg1.jpg', false),
+  ('bg2', 'assets/background/bg2.jpg', false),
+  ('bg3', 'assets/background/bg3.jpeg', false),
+  ('bg4', 'assets/background/bg4.jpg', false),
+  ('bg5', 'assets/background/bg5.png', false),
+  ('bg6', 'assets/background/bg6.png', false),
+  ('bg7', 'assets/background/bg7.png', false),
+  ('bg8', 'assets/background/bg8.png', false),
+  ('bg9', 'assets/background/bg9.png', false);

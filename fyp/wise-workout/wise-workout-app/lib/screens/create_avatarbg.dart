@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart'; // Import to call API
 
 class AvatarBackgroundPickerScreen extends StatefulWidget {
   final String selectedBgPath;
-  final String selectedAvatarPath; // <--- pass the avatar image path here!
+  final String selectedAvatarPath;
   final bool isPremiumUser;
 
   const AvatarBackgroundPickerScreen({
@@ -28,6 +29,7 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
     'assets/background/bg8.png',
     'assets/background/bg9.png',
   ];
+
 
   late String chosenBg;
 
@@ -57,6 +59,49 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
       ],
     );
   }
+
+  Future<void> _confirmBackground() async {
+    if (!widget.isPremiumUser) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Upgrade to premium to set background!')),
+      );
+      return;
+    }
+
+    try {
+      final backgroundId = _getBackgroundIdFromPath(chosenBg);
+
+      final apiService = ApiService();
+      await apiService.setBackground(backgroundId);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Background updated successfully!')),
+      );
+
+      Navigator.pop(context, chosenBg);
+    } catch (e) {
+      print('Failed to update background: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update background')),
+      );
+    }
+  }
+
+  int _getBackgroundIdFromPath(String path) {
+    final bgMap = {
+      'assets/background/bg1.jpg': 1,
+      'assets/background/bg2.jpg': 2,
+      'assets/background/bg3.jpeg': 3,
+      'assets/background/bg4.jpg': 4,
+      'assets/background/bg5.png': 5,
+      'assets/background/bg6.png': 6,
+      'assets/background/bg7.png': 7,
+      'assets/background/bg8.png': 8,
+      'assets/background/bg9.png': 9,
+    };
+    return bgMap[path] ?? 1;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -155,10 +200,7 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
                         horizontal: 60,
                       ),
                     ),
-                    onPressed: () {
-                      // Pop twice and return both avatar and bg
-                      Navigator.pop(context, chosenBg);
-                    },
+                    onPressed: _confirmBackground,
                     child: const Text('Confirm', style: TextStyle(color: Colors.white, fontSize: 18)),
                   ),
                 ],
