@@ -52,21 +52,6 @@ class UserEntity {
     return isMatch ? user : null;
   }
 
-  async updateAvatar(userId, avatarId) {
-    const [result] = await db.execute(
-      'UPDATE users SET avatar_id = ? WHERE id = ?',
-      [avatarId, userId]
-    );
-    return result;
-  }
-
-  async hasAvatar(userId) {
-    const [rows] = await db.execute(
-      'SELECT avatar_id FROM users WHERE id = ?',
-      [userId]
-    );
-    return rows[0]?.avatar_id || null;
-  }
 }
 
 module.exports = new UserEntity();

@@ -9,9 +9,16 @@ class AvatarEntity {
     return rows[0] || null;
   }
 
-  async getAllAvatars() {
+  async getAll() {
     const [rows] = await db.execute('SELECT * FROM avatars');
     return rows;
+  }
+  async updateAvatar(userId, avatarId) {
+    const [result] = await db.execute(
+      'UPDATE users SET avatar_id = ? WHERE id = ?',
+      [avatarId, userId]
+    );
+    return result;
   }
 }
 

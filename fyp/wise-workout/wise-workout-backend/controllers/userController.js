@@ -1,6 +1,6 @@
 const UserEntity = require('../entities/userEntity');
 const AvatarEntity = require('../entities/avatarEntity');
-const BackgroundEntity = require('../entities/backgroundEntity'); 
+const BackgroundEntity = require('../entities/backgroundEntity');
 
 exports.setAvatar = async (req, res) => {
   try {
@@ -16,7 +16,12 @@ exports.setAvatar = async (req, res) => {
       return res.status(400).json({ message: 'Avatar does not exist' });
     }
 
-    await UserEntity.updateAvatar(userId, avatarId);
+    const user = await UserEntity.findById(userId);
+    if (avatar.is_premium && user.role !== 'premium') {
+      return res.status(403).json({ message: 'Premium avatar requires a premium account' });
+    }
+
+    await AvatarEntity.updateAvatar(userId, avatarId);
     res.status(200).json({ message: 'Avatar updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -37,7 +42,12 @@ exports.setBackground = async (req, res) => {
       return res.status(400).json({ message: 'Background does not exist' });
     }
 
-    await UserEntity.updateBackground(userId, backgroundId);
+    const user = await UserEntity.findById(userId);
+    if (background.is_premium && user.role !== 'premium') {
+      return res.status(403).json({ message: 'Premium background requires a premium account' });
+    }
+
+    await BackgroundEntity.updateBackground(userId, backgroundId);
     res.status(200).json({ message: 'Background updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -51,12 +61,12 @@ exports.getCurrentAvatar = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const avatarId = await UserEntity.hasAvatar(userId);
-    if (!avatarId) {
+    const user = await UserEntity.findById(userId);
+    if (!user || !user.avatar_id) {
       return res.status(404).json({ message: 'No avatar set for this user' });
     }
 
-    const avatar = await AvatarEntity.findById(avatarId);
+    const avatar = await AvatarEntity.findById(user.avatar_id);
     if (!avatar) {
       return res.status(404).json({ message: 'Avatar data not found' });
     }
@@ -66,7 +76,6 @@ exports.getCurrentAvatar = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 
 exports.getCurrentBackground = async (req, res) => {
   try {
@@ -91,7 +100,6 @@ exports.getCurrentBackground = async (req, res) => {
   }
 };
 
-
 exports.getCurrentProfile = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -104,12 +112,15 @@ exports.getCurrentProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    const avatar = user.avatar_id ? await AvatarEntity.findById(user.avatar_id) : null;
+    const background = user.background_id ? await BackgroundEntity.findById(user.background_id) : null;
+
     res.status(200).json({
       username: user.username,
       role: user.role,
       coins: user.coins,
-      avatarId: user.avatar_id,
-      backgroundId: user.background_id 
+      avatar: avatar ? avatar.image_url : null,
+      background: background ? background.image_url : null
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

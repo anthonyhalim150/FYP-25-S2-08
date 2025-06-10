@@ -52,16 +52,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadProfile() async {
     try {
-      final profile = await apiService.getCurrentProfile(); 
-      //Uncomment below if u guys want to try premium
-      // setState(() {
-      //     _isPremiumUser = true;
-      //   });
-      if (profile['role'] == 'premium') {
-        setState(() {
-          _isPremiumUser = true;
-        });
-      }
+      final profile = await apiService.getCurrentProfile();
+      setState(() {
+        _isPremiumUser = profile['role'] == 'premium';
+        _profileImagePath = profile['avatar'] ?? 'assets/icons/Profile.png';
+        _profileBgPath = profile['background'] ?? 'assets/background/black.jpg';
+      });
     } catch (e) {
       print('Failed to load profile: $e');
     }
@@ -80,20 +76,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 alignment: Alignment.center,
                 children: [
                   ClipOval(
-                    child: Image.asset(
-                      _profileBgPath ?? 'assets/background/black.jpg',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ),
+                    child: _profileBgPath != null && _profileBgPath!.startsWith('http')
+                        ? Image.network(_profileBgPath!, width: 120, height: 120, fit: BoxFit.cover)
+                        : Image.asset(
+                            _profileBgPath ?? 'assets/background/black.jpg',
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   CircleAvatar(
                     radius: 54,
                     backgroundImage: _profileImagePath != null
                         ? (_profileImagePath!.startsWith('http')
                             ? NetworkImage(_profileImagePath!)
-                            : AssetImage(_profileImagePath!)
-                                as ImageProvider)
+                            : AssetImage(_profileImagePath!) as ImageProvider)
                         : const AssetImage('assets/icons/Profile.png'),
                     backgroundColor: Colors.transparent,
                   ),
@@ -103,21 +100,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 12),
             Text(
               'Hi, ${widget.userName}!',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             if (_isPremiumUser)
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text(
                   '🌟 Premium User 🌟',
-                  style: TextStyle(
-                    color: Colors.amber,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             const SizedBox(height: 20),
@@ -133,9 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/lucky-spin');
-              },
+              onTap: () => Navigator.pushNamed(context, '/lucky-spin'),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -150,14 +138,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text("Lucky Spin",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            )),
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                         const SizedBox(height: 4),
-                        Text("${widget.tokens} Tokens",
-                            style: const TextStyle(color: Colors.white70)),
+                        Text("${widget.tokens} Tokens", style: const TextStyle(color: Colors.white70)),
                       ],
                     ),
                     const Icon(Icons.stars, color: Colors.amber, size: 32),
@@ -174,8 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Icons.person,
                     "Avatar",
                     onTap: () async {
-                      final result =
-                          await Navigator.push<Map<String, String?>>(
+                      final result = await Navigator.push<Map<String, String?>>(
                         context,
                         MaterialPageRoute(
                           builder: (_) => CreateAvatarScreen(
@@ -186,7 +168,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       );
-
                       if (result != null) {
                         setState(() {
                           _profileImagePath = result['avatar'];
@@ -244,10 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: widget.leaderboardIcon ?? const Icon(Icons.leaderboard),
                 label: 'Leader board',
               ),
-              const BottomNavigationBarItem(
-                icon: SizedBox.shrink(),
-                label: '',
-              ),
+              const BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
               BottomNavigationBarItem(
                 icon: widget.messagesIcon ?? const Icon(Icons.message),
                 label: 'Messages',
@@ -269,11 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.amber,
                   shape: BoxShape.circle,
                   boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(0, 3),
-                    )
+                    BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
                   ],
                 ),
                 child: Center(
@@ -291,26 +265,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _infoCard(BuildContext context, String label, String value) {
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: IntrinsicHeight(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: const TextStyle(color: Colors.black54),
-                overflow: TextOverflow.ellipsis,
-              ),
+              Text(label, style: const TextStyle(color: Colors.black54), overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
-              Text(
-                value,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                overflow: TextOverflow.ellipsis,
-              ),
+              Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
@@ -318,12 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _profileItem(
-    IconData icon,
-    String label, {
-    String? subtitle,
-    VoidCallback? onTap,
-  }) {
+  Widget _profileItem(IconData icon, String label, {String? subtitle, VoidCallback? onTap}) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Colors.purple[300]),

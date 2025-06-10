@@ -128,7 +128,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
 
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF6EE),
       body: SafeArea(
@@ -297,6 +297,17 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                         onPressed: _confirmAvatar,
                         child: const Text('Confirm', style: TextStyle(color: Colors.white)),
                       ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 60),
+                      ),
+                      onPressed: _confirmAvatar,
+                      child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                    ),
                   ],
                 ),
               ),
