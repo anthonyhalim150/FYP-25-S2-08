@@ -45,7 +45,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
     'assets/background/bg9.png',
   ];
 
-
   late String selectedAvatarPath;
   late String selectedBgPath;
 
@@ -63,7 +62,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
       );
       return;
     }
-
     final pickedBg = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -74,12 +72,10 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
         ),
       ),
     );
-
     if (pickedBg != null) {
       setState(() {
         selectedBgPath = pickedBg;
       });
-      // After picking background, immediately confirm
       Navigator.pop(context, {
         'avatar': selectedAvatarPath,
         'background': selectedBgPath,
@@ -90,14 +86,11 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
   void _confirmAvatar() async {
     try {
       final avatarId = _getAvatarIdFromPath(selectedAvatarPath);
-
       final apiService = ApiService();
       await apiService.setAvatar(avatarId);
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Avatar updated successfully!')),
       );
-
       Navigator.pop(context, {
         'avatar': selectedAvatarPath,
         'background': selectedBgPath,
@@ -122,13 +115,11 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
       'assets/avatars/premium/premium6.png': 8,
       'assets/avatars/premium/premium7.png': 9,
     };
-
     return avatarMap[path] ?? 1;
   }
 
-
   @override
- Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF6EE),
       body: SafeArea(
@@ -227,7 +218,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                             final isChosen = selectedAvatarPath == path;
                             final isPremium = index >= 3;
                             final locked = isPremium && !widget.isPremiumUser;
-
                             return GestureDetector(
                               onTap: () {
                                 if (locked) {
@@ -264,8 +254,8 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                                           height: 65,
                                           fit: BoxFit.cover,
                                           errorBuilder: (ctx, _, __) =>
-                                              const Icon(Icons.image_not_supported,
-                                                  size: 30, color: Colors.grey),
+                                          const Icon(Icons.image_not_supported,
+                                              size: 30, color: Colors.grey),
                                         ),
                                       ),
                                     ),
@@ -285,18 +275,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    if (!widget.isPremiumUser)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 60),
-                        ),
-                        onPressed: _confirmAvatar,
-                        child: const Text('Confirm', style: TextStyle(color: Colors.white)),
-                      ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
