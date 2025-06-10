@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const { generateOTP, getExpiry } = require('../utils/otp');
 const { sendResetOTPToEmail } = require('../services/otpService');
 const PasswordResetEntity = require('../entities/passwordResetEntity');
-const UserEntity = new (require('../entities/userEntity'))();
+const UserEntity = require('../entities/userEntity');
 
 exports.requestPasswordReset = async (req, res) => {
   const email = req.body.email?.trim();

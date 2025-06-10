@@ -1,4 +1,4 @@
-const UserEntity = new (require('../entities/userEntity'))();
+const UserEntity = require('../entities/userEntity');
 const PendingUserEntity = require('../entities/pendingUserEntity');
 const { isValidEmail } = require('../utils/sanitize');
 const { setCookie } = require('../utils/cookieAuth');

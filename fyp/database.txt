@@ -7,8 +7,10 @@ CREATE TABLE users (
   method ENUM('database', 'google', 'apple') NOT NULL DEFAULT 'database',
   role ENUM('user', 'admin', 'premium') NOT NULL DEFAULT 'user',
   coins INT NOT NULL DEFAULT 0,
+  avatar_id INT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (avatar_id) REFERENCES avatars(id) ON DELETE SET NULL
 );
 
 CREATE TABLE pending_users (
@@ -45,4 +47,10 @@ CREATE TABLE spin_history (
   prize_value INT,
   spun_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE avatars (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  image_url VARCHAR(255) NOT NULL,
+  is_premium BOOLEAN DEFAULT false
 );
