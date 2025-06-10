@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wise_workout_app/widgets/workout_card_dashboard.dart';
 import '../widgets/bottom_navigation.dart';
+import '../widgets/app_drawer.dart';
+
 
 class WorkoutDashboard extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
   String selectedCategory = 'All';
   bool showFavoritesOnly = false;
   int _currentIndex = 2;
+  String userName = 'John';
 
   final List<String> categories = [
     "All",
@@ -60,82 +63,104 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Row(
-          children: const [
-            Text("Workout", style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(width: 8),
-            Icon(Icons.fitness_center, color: Colors.amber),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  final isSelected = selectedCategory == category;
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                    child: ChoiceChip(
-                      label: Text(category),
-                      selected: isSelected,
-                      onSelected: (_) {
-                        setState(() {
-                          selectedCategory = category;
-                        });
-                      },
-                      selectedColor: Colors.orange,
-                      backgroundColor: Colors.grey[200],
-                      labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                        fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
+      drawer: appDrawer(userName: userName, parentContext: context),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 0, 15),
+                child: Row(
+                  children: [
+                    Text(
+                      'Workout!',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                  );
-                },
+                    const Spacer(),
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.black),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredWorkouts.length,
-                itemBuilder: (context, index) {
-                  final workout = filteredWorkouts[index];
-                  return WorkoutCardDashboard(
-                    title: workout['title'],
-                    subtitle: workout['subtitle'],
-                    imageUrl: workout['image'],
-                    isFavorite: workout['isFavorite'],
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/workout');
-                    },
-                    onToggleFavorite: () {
-                      setState(() {
-                        final originalIndex = workouts.indexWhere(
-                                (w) => w['title'] == workout['title']);
-                        if (originalIndex != -1) {
-                          workouts[originalIndex]['isFavorite'] =
-                          !(workouts[originalIndex]['isFavorite'] ?? false);
-                        }
-                      });
-                    },
-                  );
-                },
+              SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final isSelected = selectedCategory == category;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                      child: ChoiceChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        onSelected: (_) {
+                          setState(() {
+                            selectedCategory = category;
+                          });
+                        },
+                        selectedColor: Colors.blue, // Blue when selected
+                        backgroundColor: Colors.grey[200], // Grey when not selected
+                        labelStyle: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                        shape: StadiumBorder( // This makes it more oval
+                          side: BorderSide(
+                            color: isSelected ? Colors.blue : Colors.grey[300]!,
+                            width: 1,
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjust padding for better shape
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredWorkouts.length,
+                  itemBuilder: (context, index) {
+                    final workout = filteredWorkouts[index];
+                    return WorkoutCardDashboard(
+                      title: workout['title'],
+                      subtitle: workout['subtitle'],
+                      imageUrl: workout['image'],
+                      isFavorite: workout['isFavorite'],
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/workout');
+                      },
+                      onToggleFavorite: () {
+                        setState(() {
+                          final originalIndex = workouts.indexWhere(
+                                  (w) => w['title'] == workout['title']);
+                          if (originalIndex != -1) {
+                            workouts[originalIndex]['isFavorite'] =
+                            !(workouts[originalIndex]['isFavorite'] ?? false);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(
@@ -160,6 +185,8 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
               break;
           }
         },
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.grey,
       ),
     );
   }
