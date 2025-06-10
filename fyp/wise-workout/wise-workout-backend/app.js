@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 
+const authRoutes = require('./routes/authRoutes'); 
 const userRoutes = require('./routes/userRoutes');
 const pendingUserRoutes = require('./routes/pendingUserRoutes');
 const questionnaireRoutes = require('./routes/userPreferenceRoutes');
@@ -19,11 +20,14 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-//This is public route.
-app.use('/auth', userRoutes);
+
+// Public routes
+app.use('/auth', authRoutes);
 app.use('/auth', pendingUserRoutes);
 
+// Authenticated routes
 app.use(authenticateUser);
+app.use('/user', userRoutes); 
 app.use('/lucky', spinRoutes);
 app.use('/questionnaire', questionnaireRoutes);
 

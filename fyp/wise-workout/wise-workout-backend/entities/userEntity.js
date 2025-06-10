@@ -15,6 +15,14 @@ class UserEntity {
 
     return result;
   }
+  async findById(userId) {
+    const [rows] = await db.execute(
+      'SELECT * FROM users WHERE id = ?',
+      [userId]
+    );
+    return rows[0] || null;
+  }
+
 
   async findByEmail(email) {
     const [rows] = await db.execute(

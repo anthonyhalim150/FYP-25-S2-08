@@ -1,20 +1,29 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  final String baseUrl = 'https://10.0.2.2/api';
+  final String backendUrl = 'http://10.0.2.2:3000';
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
-  Future<http.Response> getUserProfile(String token) {
-    return http.get(
-      Uri.parse('$baseUrl/user/profile'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-  }
+  Future<Map<String, dynamic>> getCurrentProfile() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) {
+      throw Exception('JWT not found in secure storage');
+    }
 
-  Future<http.Response> submitWorkoutData(Map<String, dynamic> data, String token) {
-    return http.post(
-      Uri.parse('$baseUrl/workout'),
-      headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
-      body: data,
+    final res = await http.get(
+      Uri.parse('$backendUrl/user/current-profile'),
+      headers: {'Cookie': 'session=$jwt'},
     );
+
+    print('Response status: ${res.statusCode}');
+    print('Response body: ${res.body}');
+
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body);
+    } else {
+      throw Exception('Failed to load profile');
+    }
   }
 }
