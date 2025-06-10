@@ -39,11 +39,11 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
     'assets/background/bg2.jpg',
     'assets/background/bg3.jpeg',
     'assets/background/bg4.jpg',
-    'assets/background/bg5.jpg',
-    'assets/background/bg6.jpg',
-    'assets/background/bg7.jpg',
-    'assets/background/bg8.jpg',
-    'assets/background/bg9.jpg',
+    'assets/background/bg5.png',
+    'assets/background/bg6.png',
+    'assets/background/bg7.png',
+    'assets/background/bg8.png',
+    'assets/background/bg9.png',
   ];
 
   late String selectedAvatarPath;
