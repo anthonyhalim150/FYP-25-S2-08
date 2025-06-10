@@ -37,5 +37,15 @@ const submitUserPreferences = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+const checkPreferences = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-module.exports = { submitUserPreferences };
+    const hasPreferences = await userPreferencesEntity.hasPreferences(userId);
+    res.status(200).json({ hasPreferences });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+module.exports = { submitUserPreferences, checkPreferences };

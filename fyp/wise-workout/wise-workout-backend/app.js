@@ -22,10 +22,9 @@ app.use(cookieParser());
 //This is public route.
 app.use('/auth', userRoutes);
 app.use('/auth', pendingUserRoutes);
-app.use('/lucky', spinRoutes);
 
 app.use(authenticateUser);
-
+app.use('/lucky', spinRoutes);
 app.use('/questionnaire', questionnaireRoutes);
 
 db.query('SELECT 1')

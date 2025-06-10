@@ -32,6 +32,14 @@ class UserPreferencesEntity {
 
     return result;
   }
+  async hasPreferences(userId) {
+    const [rows] = await db.execute(
+      'SELECT id FROM user_preferences WHERE user_id = ? LIMIT 1',
+      [userId]
+    );
+    return rows.length > 0;
+  }
 }
+
 
 module.exports = new UserPreferencesEntity();

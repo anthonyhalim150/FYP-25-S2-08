@@ -55,12 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Login successful');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
-        ),
-      );
+      await navigateAfterLogin(jwt);
     } else {
       showError('Invalid email or password');
     }
@@ -84,12 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Google login successful');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
-        ),
-      );
+      await navigateAfterLogin(jwt);
     } else {
       showError('Google login failed');
     }
@@ -113,14 +103,38 @@ class _LoginScreenState extends State<LoginScreen> {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
       showSuccess('Facebook login successful');
+      await navigateAfterLogin(jwt);
+    } else {
+      showError('Facebook login failed');
+    }
+  }
+
+  Future<void> navigateAfterLogin(String jwt) async {
+    final hasPreferences = await checkPreferences(jwt);
+    if (hasPreferences) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
         ),
       );
+    }
+  }
+
+  Future<bool> checkPreferences(String jwt) async {
+    final res = await http.get(
+      Uri.parse('$backendUrl/questionnaire/check'),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return data['hasPreferences'] as bool;
     } else {
-      showError('Facebook login failed');
+      showError('Failed to check preferences');
+      return false;
     }
   }
 
