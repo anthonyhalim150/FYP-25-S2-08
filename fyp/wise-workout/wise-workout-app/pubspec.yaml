@@ -30,6 +30,7 @@ flutter:
     - assets/icons/facebook-icon.png
     - assets/images/questionnaire_bg.png
     - assets/icons/fitquest-icon.png
+    - assets/icons/dumbell.jpg
     - assets/icons/Home.png
     - assets/icons/Leaderboard.png
     - assets/icons/Messages.png

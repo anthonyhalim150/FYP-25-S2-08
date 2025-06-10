@@ -9,6 +9,7 @@ import '../widgets/apple_login_button.dart';
 import '../widgets/facebook_login_button.dart';
 import '../utils/sanitize.dart';
 import 'questionnaires/questionnaire_screen.dart';
+import 'questionnaires/questionnaire_screen_start.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -117,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
+          builder: (_) => SplashAndOnboardingWrapper(),
         ),
       );
     }
