@@ -10,7 +10,7 @@ class WorkoutDashboard extends StatefulWidget {
 class _WorkoutDashboardState extends State<WorkoutDashboard> {
   String selectedCategory = 'All';
   bool showFavoritesOnly = false;
-
+  int _currentIndex = 2;
 
   final List<String> categories = [
     "All",
@@ -48,23 +48,21 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
     },
   ];
 
-
   @override
   Widget build(BuildContext context) {
     final filteredWorkouts = selectedCategory == 'All'
         ? workouts
-        : workouts
-        .where((workout) => workout['subtitle']!
-        .toLowerCase()
-        .contains(selectedCategory.toLowerCase()))
-        .toList();
-
+        : workouts.where((workout) {
+      return workout['subtitle']!
+          .toLowerCase()
+          .contains(selectedCategory.toLowerCase());
+    }).toList();
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
-          children: [
+          children: const [
             Text("Workout", style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(width: 8),
             Icon(Icons.fitness_center, color: Colors.amber),
@@ -78,7 +76,6 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Category Chips (scrollable row)
             SizedBox(
               height: 40,
               child: ListView.builder(
@@ -102,15 +99,15 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
                       backgroundColor: Colors.grey[200],
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.white : Colors.black,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                   );
                 },
               ),
             ),
-            SizedBox(height: 16),
-            // Workout Cards List
+            const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 itemCount: filteredWorkouts.length,
@@ -126,17 +123,14 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
                     },
                     onToggleFavorite: () {
                       setState(() {
-                        // Find the correct item in the original list
                         final originalIndex = workouts.indexWhere(
-                              (w) => w['title'] == workout['title'],
-                        );
+                                (w) => w['title'] == workout['title']);
                         if (originalIndex != -1) {
                           workouts[originalIndex]['isFavorite'] =
                           !(workouts[originalIndex]['isFavorite'] ?? false);
                         }
                       });
                     },
-
                   );
                 },
               ),
@@ -144,9 +138,10 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 0,
+      bottomNavigationBar: bottomNavigationBar(
+        currentIndex: _currentIndex,
         onTap: (index) {
+          setState(() => _currentIndex = index);
           switch (index) {
             case 0:
               Navigator.pushNamed(context, '/home');
@@ -166,7 +161,6 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
           }
         },
       ),
-
     );
   }
 }

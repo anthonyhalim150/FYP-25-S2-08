@@ -7,6 +7,7 @@ import 'competition_screen.dart';
 import '../widgets/app_drawer.dart'; // Import the new drawer file
 import '../widgets/journey_card.dart';
 import '../widgets/exercise_stats_card.dart';
+import '../widgets/bottom_navigation.dart';
 
 class HomeScreen extends StatelessWidget {
   final String userName;
@@ -197,83 +198,27 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          BottomNavigationBar(
-            selectedItemColor: Colors.amber,
-            unselectedItemColor: Colors.black54,
-            backgroundColor: Colors.white,
-            showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
-            currentIndex: 0,
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  Navigator.pushNamed(context, '/home');
-                  break;
-                case 1:
-                  Navigator.pushNamed(context, '/leaderboard');
-                  break;
-                case 2:
-                  break;
-                case 3:
-                  Navigator.pushNamed(context, '/messages');
-                  break;
-                case 4:
-                  Navigator.pushNamed(context, '/profile');
-                  break;
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: homeIcon ?? const Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: leaderboardIcon ?? const Icon(Icons.leaderboard),
-                label: 'Leader board',
-              ),
-              const BottomNavigationBarItem(
-                icon: SizedBox.shrink(),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: messagesIcon ?? const Icon(Icons.message),
-                label: 'Messages',
-              ),
-              BottomNavigationBarItem(
-                icon: profileIcon ?? const Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 40,
-            child: GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/workout-dashboard'),
-              child: Container(
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                    color: Colors.amber,
-                    shape: BoxShape.circle,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 8,
-                        offset: Offset(0, 3),
-                      ),]
-                ),
-                child: Center(
-                  child: workoutIcon ??
-                      const Icon(Icons.fitness_center, size: 36, color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ],
+      bottomNavigationBar: bottomNavigationBar(
+        currentIndex: 0, // Index of 'Home'
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/leaderboard');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/workout-dashboard');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/messages');
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/profile');
+              break;
+          }
+        },
       ),
     );
   }

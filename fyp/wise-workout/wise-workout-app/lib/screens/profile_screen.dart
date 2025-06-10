@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'create_avatar.dart';
 import '../services/api_service.dart';
+import '../widgets/bottom_navigation.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -192,72 +193,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          BottomNavigationBar(
-            selectedItemColor: Colors.amber,
-            unselectedItemColor: Colors.black54,
-            backgroundColor: Colors.white,
-            showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
-            currentIndex: 4,
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  Navigator.pushNamed(context, '/home');
-                  break;
-                case 1:
-                  Navigator.pushNamed(context, '/leaderboard');
-                  break;
-                case 3:
-                  Navigator.pushNamed(context, '/messages');
-                  break;
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: widget.homeIcon ?? const Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: widget.leaderboardIcon ?? const Icon(Icons.leaderboard),
-                label: 'Leader board',
-              ),
-              const BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
-              BottomNavigationBarItem(
-                icon: widget.messagesIcon ?? const Icon(Icons.message),
-                label: 'Messages',
-              ),
-              BottomNavigationBarItem(
-                icon: widget.profileIcon ?? const Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 40,
-            child: GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/workout'),
-              child: Container(
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  shape: BoxShape.circle,
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
-                  ],
-                ),
-                child: Center(
-                  child: widget.workoutIcon ??
-                      const Icon(Icons.fitness_center, size: 36, color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ],
+      bottomNavigationBar: bottomNavigationBar(
+        currentIndex: 0, // Index of 'Home'
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/leaderboard');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/workout-dashboard');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/messages');
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/profile');
+              break;
+          }
+        },
       ),
     );
   }
