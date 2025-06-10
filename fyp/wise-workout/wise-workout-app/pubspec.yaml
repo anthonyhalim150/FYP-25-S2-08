@@ -16,6 +16,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   flutter_facebook_auth: ^6.0.4
   flutter_fortune_wheel: ^1.2.0
+  blur: ^4.0.2
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +35,10 @@ flutter:
     - assets/icons/Messages.png
     - assets/icons/Profile.png
     - assets/images/push-up.jpg
+    - assets/images/squats.jpg
+    - assets/workoutImages/strength_training.jpg
+    - assets/workoutImages/yoga_training.jpg
+    - assets/workoutImages/core_training.jpg
     - assets/avatars/free/free1.png
     - assets/avatars/free/free2.png
     - assets/avatars/free/free3.png

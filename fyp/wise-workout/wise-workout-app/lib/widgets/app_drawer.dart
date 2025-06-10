@@ -64,6 +64,15 @@ class appDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.track_changes),
+            title: const Text('Track Workout'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/workout');
+              // Add navigation to settings screen here
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.fitness_center),
             title: const Text('Workout History'),
             onTap: () {
