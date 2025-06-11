@@ -3,19 +3,13 @@ import 'package:wise_workout_app/widgets/journey_card.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/tournament_widget.dart';
 import 'workout_sample_data.dart';
-import 'competition_screen.dart';
-import '../widgets/app_drawer.dart'; // Import the new drawer file
-import '../widgets/journey_card.dart';
+import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
+import '../services/health_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String userName;
-  final int currentSteps = 8542;
-  final int maxSteps = 10000;
-  final int caloriesBurned = 420;
-  final int xpEarned = 150;
-
   final Widget? homeIcon;
   final Widget? leaderboardIcon;
   final Widget? messagesIcon;
@@ -31,6 +25,41 @@ class HomeScreen extends StatelessWidget {
     this.profileIcon,
     this.workoutIcon,
   });
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final HealthService _healthService = HealthService();
+  int _currentSteps = 0;
+  final int maxSteps = 10000;
+  final int caloriesBurned = 420;
+  final int xpEarned = 150;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTodaySteps();
+  }
+
+  Future<void> _fetchTodaySteps() async {
+    print("Trying to connect to Health Connect...");
+
+    final connected = await _healthService.connect();
+    print("Connected: $connected");
+
+    if (connected) {
+      final steps = await _healthService.getTodaySteps();
+      print("Fetched steps: $steps");
+
+      setState(() {
+        _currentSteps = steps;
+      });
+    } else {
+      print("Not connected to Health Connect.");
+    }
+  }
 
   Widget _buildStatItem(BuildContext context, IconData icon, String label, String value) {
     return Column(
@@ -56,7 +85,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawer: appDrawer(userName: userName, parentContext: context),
+      drawer: appDrawer(userName: widget.userName, parentContext: context),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -68,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'Hello, $userName!',
+                      'Hello, ${widget.userName}!',
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -88,7 +117,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // Rest of your existing home screen content...
               // Search bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -118,14 +146,15 @@ class HomeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: const Icon(Icons.search, color: Colors.black),
-                      ),],
+                      ),
+                    ],
                   ),
                 ),
               ),
               const SizedBox(height: 15),
               // Exercise Gauge
               ExerciseStatsCard(
-                currentSteps: currentSteps,
+                currentSteps: _currentSteps,
                 maxSteps: maxSteps,
                 caloriesBurned: caloriesBurned,
                 xpEarned: xpEarned,
@@ -152,10 +181,10 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: sampleWorkouts
                       .map((workout) => WorkoutCardHomeScreen(
-                    imagePath: workout.imagePath,
-                    workoutName: workout.workoutName,
-                    workoutLevel: workout.workoutLevel,
-                  ))
+                            imagePath: workout.imagePath,
+                            workoutName: workout.workoutName,
+                            workoutLevel: workout.workoutLevel,
+                          ))
                       .toList(),
                 ),
               ),
@@ -183,12 +212,12 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(width: 5),
                     ...sampleTournaments
                         .map((tournament) => TournamentWidget(
-                      tournamentName: tournament.tournamentName,
-                      prize: tournament.prize,
-                      participants: tournament.participants,
-                      daysLeft: tournament.daysLeft,
-                      cardWidth: 280,
-                    ))
+                              tournamentName: tournament.tournamentName,
+                              prize: tournament.prize,
+                              participants: tournament.participants,
+                              daysLeft: tournament.daysLeft,
+                              cardWidth: 280,
+                            ))
                         .toList(),
                     const SizedBox(width: 5),
                   ],
@@ -199,7 +228,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(
-        currentIndex: 0, // Index of 'Home'
+        currentIndex: 0,
         onTap: (index) {
           switch (index) {
             case 0:

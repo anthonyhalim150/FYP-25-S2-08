@@ -17,6 +17,7 @@ dependencies:
   flutter_facebook_auth: ^6.0.4
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2
+  health: ^13.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '/services/wearable_service.dart'; // Make sure to create this file
+import 'package:health/health.dart';
+import '/services/wearable_service.dart';
 
 class WearableScreen extends StatefulWidget {
   const WearableScreen({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class WearableScreen extends StatefulWidget {
 class _WearableScreenState extends State<WearableScreen> {
   String? selectedDevice;
   final WearableService _wearableService = WearableService();
+  final Health _health = Health();
   bool _isConnecting = false;
   bool _isConnected = false;
 
@@ -22,15 +24,7 @@ class _WearableScreenState extends State<WearableScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 30),
-            // Wearable section
-            const Text(
-              'Wearable',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            _buildHeader(context),
             const SizedBox(height: 10),
             const Text(
               'Connect Your Device',
@@ -41,19 +35,18 @@ class _WearableScreenState extends State<WearableScreen> {
             ),
             const SizedBox(height: 10),
             const Text(
-              'FitQuest seamlessly connect to your fitness devices for seamless syncing of workouts, steps, and health stats—all in one place.',
+              'FitQuest seamlessly connects to your fitness devices for syncing workouts, steps, and health stats—all in one place.',
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.grey,
               ),
             ),
             const SizedBox(height: 20),
-
-            // Device selection buttons
             _buildDeviceButton('SAMSUNG'),
             const SizedBox(height: 12),
             _buildDeviceButton('@WATCH'),
-
+            const SizedBox(height: 12),
+            _buildDeviceButton('HEALTH CONNECT'),
             if (_isConnected)
               Padding(
                 padding: const EdgeInsets.only(top: 20),
@@ -66,16 +59,13 @@ class _WearableScreenState extends State<WearableScreen> {
                   ),
                 ),
               ),
-
             const Spacer(),
-
-            // Connect button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: (_isConnecting || selectedDevice == null || _isConnected)
+                onPressed: (_isConnecting || selectedDevice == null)
                     ? null
-                    : () => _connectToDevice(),
+                    : () => _isConnected ? _disconnectDevice() : _connectToDevice(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF071655),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -86,13 +76,13 @@ class _WearableScreenState extends State<WearableScreen> {
                 child: _isConnecting
                     ? const CircularProgressIndicator(color: Colors.white)
                     : Text(
-                  _isConnected ? 'DISCONNECT' : 'CONNECT',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                        _isConnected ? 'DISCONNECT' : 'CONNECT',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -101,9 +91,39 @@ class _WearableScreenState extends State<WearableScreen> {
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 20, 0, 15),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Text(
+            'Wearable',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Transform.translate(
+            offset: const Offset(-8, 0), // Shift 8 pixels to the left
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   Widget _buildDeviceButton(String deviceName) {
     final isSelected = selectedDevice == deviceName;
-
     return GestureDetector(
       onTap: () {
         if (!_isConnecting && !_isConnected) {
@@ -139,21 +159,43 @@ class _WearableScreenState extends State<WearableScreen> {
 
   Future<void> _connectToDevice() async {
     if (selectedDevice == null) return;
-
     setState(() => _isConnecting = true);
 
     try {
-      final success = await _wearableService.connectDevice(selectedDevice!);
+      if (selectedDevice == 'SAMSUNG' || selectedDevice == '@WATCH') {
+        final success = await _wearableService.connectDevice(selectedDevice!);
+        setState(() {
+          _isConnected = success;
+          _isConnecting = false;
+        });
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Successfully connected to $selectedDevice')),
+          );
+        }
+      } else if (selectedDevice == 'HEALTH CONNECT') {
+        final types = [
+          HealthDataType.STEPS,
+          HealthDataType.HEART_RATE,
+          HealthDataType.ACTIVE_ENERGY_BURNED,
+        ];
+        final permissions = types.map((e) => HealthDataAccess.READ).toList();
+        final isAuthorized = await _health.requestAuthorization(types, permissions: permissions);
 
-      setState(() {
-        _isConnected = success;
-        _isConnecting = false;
-      });
+        setState(() {
+          _isConnected = isAuthorized;
+          _isConnecting = false;
+        });
 
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Successfully connected to $selectedDevice')),
-        );
+        if (isAuthorized) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Successfully connected to Health Connect')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to connect to Health Connect')),
+          );
+        }
       }
     } catch (e) {
       setState(() => _isConnecting = false);
@@ -167,8 +209,11 @@ class _WearableScreenState extends State<WearableScreen> {
     setState(() => _isConnecting = true);
 
     try {
-      // In a real app, you would call a disconnect method from your service
-      await Future.delayed(const Duration(seconds: 1)); // Simulate disconnection
+      if (selectedDevice == 'HEALTH CONNECT') {
+        await Future.delayed(const Duration(milliseconds: 500));
+      } else {
+        await Future.delayed(const Duration(seconds: 1));
+      }
 
       setState(() {
         _isConnected = false;
