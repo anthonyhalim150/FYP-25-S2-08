@@ -40,13 +40,77 @@ class UnregisteredUserPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(
-                  color: Colors.black.withOpacity(0.3),
-                ),
+                child: Container(color: Colors.black.withOpacity(0.3)),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTournamentCard({
+    required BuildContext context,
+    required String title,
+    required String reward,
+    required String participants,
+    required String duration,
+    required Color badgeColor,
+    required Color cardColor,
+  }) {
+    return Container(
+      width: 250,
+      margin: const EdgeInsets.only(right: 10),
+      child: _buildBlurredCard(
+        context: context,
+        child: Container(
+          height: 160,
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: badgeColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(duration,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  const Icon(Icons.emoji_events, size: 16, color: Colors.orange),
+                  const SizedBox(width: 4),
+                  Text(reward, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  const Icon(Icons.group, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(participants),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _promptLogin(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF52796F),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  child: const Text('Join Now'),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -196,43 +260,87 @@ class UnregisteredUserPage extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.amber[100],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildTournamentCard(
+                    context: context,
+                    title: 'Summer Challenge',
+                    reward: '\$5,000',
+                    participants: '2.4k',
+                    duration: '5 Days',
+                    badgeColor: Colors.yellow[200]!,
+                    cardColor: Colors.grey[100]!,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.purple[100],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                  _buildTournamentCard(
+                    context: context,
+                    title: 'Plank Challenge',
+                    reward: 'Premium',
+                    participants: '1.2k',
+                    duration: '7 Days',
+                    badgeColor: Colors.green[100]!,
+                    cardColor: Colors.grey[100]!,
                   ),
-                ),
-              ],
+                  _buildTournamentCard(
+                    context: context,
+                    title: 'Yoga Mastery',
+                    reward: 'Free Merch',
+                    participants: '900',
+                    duration: '10 Days',
+                    badgeColor: Colors.purple[100]!,
+                    cardColor: Colors.grey[100]!,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          _promptLogin(context);
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.teal), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.emoji_events, color: Colors.orange), label: 'Leaderboard'),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center, color: Colors.amber), label: 'Workout'),
-          BottomNavigationBarItem(icon: Icon(Icons.message, color: Colors.purple), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.blueGrey), label: 'Profile'),
+      floatingActionButton: SizedBox(
+        height: 70,
+        width: 70,
+        child: FloatingActionButton(
+          onPressed: () => _promptLogin(context),
+          backgroundColor: Colors.amber,
+          shape: const CircleBorder(),
+          child: const Icon(
+            Icons.fitness_center,
+            size: 32,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _bottomIcon(context, 'assets/icons/Home.png', 'Home'),
+              _bottomIcon(context, 'assets/icons/Leaderboard.png', 'Leader boa...'),
+              const SizedBox(width: 40), // space for FAB
+              _bottomIcon(context, 'assets/icons/Messages.png', 'Messages'),
+              _bottomIcon(context, 'assets/icons/Profile.png', 'Profile'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _bottomIcon(BuildContext context, String assetPath, String label) {
+    return GestureDetector(
+      onTap: () => _promptLogin(context),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(assetPath, width: 24, height: 24),
+          const SizedBox(height: 4),
+          Text(label, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
