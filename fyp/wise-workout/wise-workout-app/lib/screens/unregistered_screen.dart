@@ -18,8 +18,9 @@ class UnregisteredUserPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // Navigate to login page
-              Navigator.pushNamed(context, '/');
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushNamed(context, '/');
+              });
             },
             child: const Text('Login'),
           ),
@@ -57,16 +58,22 @@ class UnregisteredUserPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5F3EF),
         elevation: 0,
-        title: const Text('Hello, John!',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Hello, John!',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/'),
-            child: const Text('Login', style: TextStyle(color: Colors.white)),
+            onPressed: () {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushNamed(context, '/');
+              });
+            },
             style: TextButton.styleFrom(
               backgroundColor: const Color(0xFF0D1B52),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
+            child: const Text('Login', style: TextStyle(color: Colors.white)),
           ),
           const SizedBox(width: 10),
         ],
@@ -80,7 +87,9 @@ class UnregisteredUserPage extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Search on FitQuest',
                 prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -92,7 +101,9 @@ class UnregisteredUserPage extends StatelessWidget {
                   color: Colors.orange[300],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Center(child: Icon(Icons.fitness_center, size: 40, color: Colors.red)),
+                child: const Center(
+                  child: Icon(Icons.fitness_center, size: 40, color: Colors.red),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -114,8 +125,10 @@ class UnregisteredUserPage extends StatelessWidget {
                       ),
                       alignment: Alignment.bottomLeft,
                       padding: const EdgeInsets.all(10),
-                      child: const Text('Push Up\nBeginner Level',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Push Up\nBeginner Level',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
@@ -128,14 +141,16 @@ class UnregisteredUserPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         image: const DecorationImage(
-                          image:AssetImage('assets/images/squats.jpg'),
+                          image: AssetImage('assets/images/squats.jpg'),
                           fit: BoxFit.cover,
                         ),
                       ),
                       alignment: Alignment.bottomLeft,
                       padding: const EdgeInsets.all(10),
-                      child: const Text('Squat\nAdvance Level',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Squat\nAdvance Level',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
@@ -176,8 +191,10 @@ class UnregisteredUserPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Challenges & Tournament',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            const Text(
+              'Challenges & Tournament',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -208,19 +225,14 @@ class UnregisteredUserPage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
-          // Optional: Add logic to show login prompt if necessary
+          _promptLogin(context);
         },
         items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home, color: Colors.teal), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events, color: Colors.orange), label: 'Leaderboard'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.fitness_center, color: Colors.amber), label: 'Workout'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.message, color: Colors.purple), label: 'Messages'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person, color: Colors.blueGrey), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.teal), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.emoji_events, color: Colors.orange), label: 'Leaderboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.fitness_center, color: Colors.amber), label: 'Workout'),
+          BottomNavigationBarItem(icon: Icon(Icons.message, color: Colors.purple), label: 'Messages'),
+          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.blueGrey), label: 'Profile'),
         ],
       ),
     );

@@ -6,6 +6,14 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+        <!-- ✅ These go inside <application>, not <activity> -->
+        <meta-data
+            android:name="flutter.renderer"
+            android:value="skia" />
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -26,7 +34,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Flutter generated plugin registration -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
@@ -49,7 +56,6 @@
 
     </application>
 
-    <!-- Required to query activities that can process text -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
