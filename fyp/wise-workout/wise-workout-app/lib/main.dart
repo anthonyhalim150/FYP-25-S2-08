@@ -15,7 +15,7 @@ import 'screens/forgot_password_screen.dart';
 import 'screens/verify_reset_screen.dart';
 import 'screens/lucky_spin_screen.dart';
 import 'screens/workout_dashboard.dart';
-import 'screens/UnregisteredUserPage.dart';
+import 'screens/unregistered_screen.dart';
 
 
 void main() {
@@ -47,7 +47,7 @@ class WiseWorkoutApp extends StatelessWidget {
         '/verify-reset': (context) => const VerifyResetScreen(),
         '/lucky-spin': (context) => const LuckySpinScreen(),
         '/workout-dashboard': (context) => WorkoutDashboard(),
-        '/UnregisteredUserPage': (context) => const UnregisteredUserPage(),
+        '/unregistered': (context) => const UnregisteredUserPage(),
       },
     );
   }
