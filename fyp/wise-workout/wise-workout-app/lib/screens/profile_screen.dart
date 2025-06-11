@@ -10,7 +10,6 @@ class ProfileScreen extends StatefulWidget {
   final String? profileImagePath;
   final String? profileBgPath;
   final bool isPremiumUser;
-
   final Widget? homeIcon;
   final Widget? leaderboardIcon;
   final Widget? messagesIcon;
@@ -41,7 +40,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileBgPath;
   late String _userName;
   late bool _isPremiumUser;
-
   final ApiService apiService = ApiService();
 
   @override
@@ -68,6 +66,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _showAvatarPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Stack for background + avatar
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  ClipOval(
+                    child: _profileBgPath != null &&
+                        _profileBgPath!.startsWith('http')
+                        ? Image.network(
+                      _profileBgPath!,
+                      width: 220,
+                      height: 220,
+                      fit: BoxFit.cover,
+                    )
+                        : Image.asset(
+                      _profileBgPath ?? 'assets/background/black.jpg',
+                      width: 220,
+                      height: 220,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  CircleAvatar(
+                    radius: 100,
+                    backgroundImage: _profileImagePath != null
+                        ? (_profileImagePath!.startsWith('http')
+                        ? NetworkImage(_profileImagePath!)
+                        : AssetImage(_profileImagePath!)
+                    as ImageProvider<Object>)
+                        : const AssetImage('assets/icons/Profile.png'),
+                    backgroundColor: Colors.transparent,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _userName,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (_isPremiumUser)
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    '🌟 Premium User 🌟',
+                    style: TextStyle(
+                        color: Colors.amber,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,11 +153,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
+            // Avatar with background, clickable for popup
             Stack(
               alignment: Alignment.center,
               children: [
                 ClipOval(
-                  child: _profileBgPath != null && _profileBgPath!.startsWith('http')
+                  child: _profileBgPath != null &&
+                      _profileBgPath!.startsWith('http')
                       ? Image.network(
                     _profileBgPath!,
                     width: 120,
@@ -94,14 +173,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                CircleAvatar(
-                  radius: 54,
-                  backgroundImage: _profileImagePath != null
-                      ? (_profileImagePath!.startsWith('http')
-                      ? NetworkImage(_profileImagePath!)
-                      : AssetImage(_profileImagePath!) as ImageProvider)
-                      : const AssetImage('assets/icons/Profile.png'),
-                  backgroundColor: Colors.transparent,
+                GestureDetector(
+                  onTap: () {
+                    _showAvatarPopup(context);
+                  },
+                  child: CircleAvatar(
+                    radius: 54,
+                    backgroundImage: _profileImagePath != null
+                        ? (_profileImagePath!.startsWith('http')
+                        ? NetworkImage(_profileImagePath!)
+                        : AssetImage(_profileImagePath!)
+                    as ImageProvider<Object>)
+                        : const AssetImage('assets/icons/Profile.png'),
+                    backgroundColor: Colors.transparent,
+                  ),
                 ),
               ],
             ),
@@ -115,11 +200,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text(
                   '🌟 Premium User 🌟',
-                  style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                      color: Colors.amber,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
                 ),
               ),
             const SizedBox(height: 20),
-
             // 🔹 Badge Collections Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -148,7 +235,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             const Text(
                               'Badge Collections',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             const SizedBox(height: 8),
                             Row(
@@ -173,7 +261,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
             // 🔹 XP + Level
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -186,13 +273,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
             // 🔹 Lucky Spin
             GestureDetector(
               onTap: () => Navigator.pushNamed(context, '/lucky-spin'),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                padding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 decoration: BoxDecoration(
                   color: const Color(0xFF071655),
                   borderRadius: BorderRadius.circular(16),
@@ -204,9 +291,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text("Lucky Spin",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
                         const SizedBox(height: 4),
-                        Text("${widget.tokens} Tokens", style: const TextStyle(color: Colors.white70)),
+                        Text("${widget.tokens} Tokens",
+                            style: const TextStyle(color: Colors.white70)),
                       ],
                     ),
                     const Icon(Icons.stars, color: Colors.amber, size: 32),
@@ -215,7 +306,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
             // 🔹 Scrollable Profile Settings
             Expanded(
               child: ListView(
@@ -225,7 +315,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Icons.person,
                     "Avatar",
                     onTap: () async {
-                      final result = await Navigator.push<Map<String, String?>>(
+                      final result =
+                      await Navigator.push<Map<String, String?>>(
                         context,
                         MaterialPageRoute(
                           builder: (_) => CreateAvatarScreen(
@@ -244,16 +335,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       }
                     },
                   ),
-                  _profileItem(Icons.settings, "Profile", subtitle: "Username, Phone, etc."),
+                  _profileItem(Icons.settings, "Profile",
+                      subtitle: "Username, Phone, etc."),
                   _profileItem(Icons.lock, "Password"),
-                  _profileItem(Icons.watch, "Wearable", subtitle: "Redmi Watch Active 3"),
+                  _profileItem(Icons.watch, "Wearable",
+                      subtitle: "Redmi Watch Active 3"),
                   _profileItem(Icons.history, "Workout History"),
                   _profileItem(Icons.bar_chart, "Body Metrics"),
                   _profileItem(Icons.notifications, "Notifications"),
                   _profileItem(Icons.workspace_premium, "Premium Plan"),
-                  _profileItem(Icons.language, "Language", subtitle: "English"),
+                  _profileItem(Icons.language, "Language",
+                      subtitle: "English"),
                   _profileItem(Icons.privacy_tip, "Privacy Policy"),
-                  _profileItem(Icons.palette, "Appearance", subtitle: "Default"),
+                  _profileItem(Icons.palette, "Appearance",
+                      subtitle: "Default"),
                 ],
               ),
             ),
@@ -288,21 +383,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _infoCard(BuildContext context, String label, String value) {
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label, style: const TextStyle(color: Colors.black54)),
             const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(value,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
       ),
     );
   }
 
-  Widget _profileItem(IconData icon, String label, {String? subtitle, VoidCallback? onTap}) {
+  Widget _profileItem(IconData icon, String label,
+      {String? subtitle, VoidCallback? onTap}) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Colors.purple[300]),
