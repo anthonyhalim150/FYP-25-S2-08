@@ -11,7 +11,6 @@ class ProfileScreen extends StatefulWidget {
   final String? profileBgPath;
   final bool isPremiumUser;
 
-  // Optional icons for bottom navigation bar.
   final Widget? homeIcon;
   final Widget? leaderboardIcon;
   final Widget? messagesIcon;
