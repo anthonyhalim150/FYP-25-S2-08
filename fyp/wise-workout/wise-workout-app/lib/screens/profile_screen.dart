@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final profile = await apiService.getCurrentProfile();
       setState(() {
         _isPremiumUser = profile['role'] == 'premium';
-        _profileImagePath = profile['avatar']; // <--- No default fallback
+        _profileImagePath = profile['avatar'];
         _profileBgPath = profile['background'] ?? 'assets/background/black.jpg';
         _userName = profile['username'] ?? widget.userName;
       });
