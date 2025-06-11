@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'create_avatar.dart';
 import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
+import 'lucky_spin_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -277,7 +278,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             // 🔹 Lucky Spin
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/lucky-spin'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LuckySpinScreen(tokens: _tokens), // Directly passing tokens
+                ),
+              ),  
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),

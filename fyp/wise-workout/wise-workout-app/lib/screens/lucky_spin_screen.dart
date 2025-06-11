@@ -4,7 +4,9 @@ import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import '../services/lucky_spin_service.dart';
 
 class LuckySpinScreen extends StatefulWidget {
-  const LuckySpinScreen({Key? key}) : super(key: key);
+  final int tokens;
+
+  const LuckySpinScreen({Key? key, required this.tokens}) : super(key: key);
 
   @override
   State<LuckySpinScreen> createState() => _LuckySpinScreenState();
@@ -24,6 +26,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
   @override
   void initState() {
     super.initState();
+    tokenCount = widget.tokens; 
     loadPrizesAndStatus();
   }
 
@@ -114,7 +117,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
 
       await Future.delayed(const Duration(milliseconds: 300));
       controller.add(index);
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 5));
       setState(() {
         prizeLabel = label;
         isSpinning = false;
@@ -219,6 +222,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                           width: 310,
                           child: FortuneWheel(
                             selected: controller.stream,
+                            animateFirst: false,
                             items: [
                               for (final item in items)
                                 FortuneItem(

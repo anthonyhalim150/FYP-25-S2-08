@@ -13,7 +13,6 @@
   import 'screens/questionnaires/questionnaire_screen_5.dart';
   import 'screens/forgot_password_screen.dart';
   import 'screens/verify_reset_screen.dart';
-  import 'screens/lucky_spin_screen.dart';
   import 'screens/workout_dashboard.dart';
   import 'screens/unregistered_screen.dart';
   import 'screens/badge_collection.dart';
@@ -46,7 +45,6 @@
           '/competition': (context) => CompetitionScreen(),
           '/forgot-password': (context) => const ForgotPasswordScreen(),
           '/verify-reset': (context) => const VerifyResetScreen(),
-          '/lucky-spin': (context) => const LuckySpinScreen(),
           '/workout-dashboard': (context) => WorkoutDashboard(),
           '/unregistered': (context) => const UnregisteredUserPage(),
           '/badge-collections': (context) => const BadgeCollectionScreen(),
