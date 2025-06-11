@@ -16,7 +16,7 @@
   import 'screens/workout_dashboard.dart';
   import 'screens/unregistered_screen.dart';
   import 'screens/badge_collection.dart';
-
+  import 'screens/wearable_screen.dart';
 
   void main() {
     runApp(WiseWorkoutApp());
@@ -48,6 +48,7 @@
           '/workout-dashboard': (context) => WorkoutDashboard(),
           '/unregistered': (context) => const UnregisteredUserPage(),
           '/badge-collections': (context) => const BadgeCollectionScreen(),
+          '/wearable-screen' : (context) => const WearableScreen(),
         },
       );
     }

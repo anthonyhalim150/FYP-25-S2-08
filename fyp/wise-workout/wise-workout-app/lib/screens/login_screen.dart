@@ -112,16 +112,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> navigateAfterLogin(String jwt) async {
     final hasPreferences = await checkPreferences(jwt);
-    if (hasPreferences) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SplashAndOnboardingWrapper(),
-        ),
-      );
-    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (hasPreferences) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SplashAndOnboardingWrapper(),
+          ),
+        );
+      }
+    });
   }
 
   Future<bool> checkPreferences(String jwt) async {

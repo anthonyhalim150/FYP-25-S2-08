@@ -101,7 +101,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  // Only show avatar if there IS one.
                   if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
                     CircleAvatar(
                       radius: 100,
@@ -141,6 +140,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _profileItem(IconData icon, String label,
+      {String? subtitle, VoidCallback? onTap}) {
+    // Default onTap handler if none provided
+    VoidCallback? handleTap = onTap;
+
+    // If no onTap provided, set up navigation based on label
+    if (handleTap == null) {
+      handleTap = () {
+        switch (label) {
+          case "Avatar":
+          // Already handled in the existing onTap
+            break;
+          case "Profile":
+            Navigator.pushNamed(context, '/profile-settings');
+            break;
+          case "Password":
+            Navigator.pushNamed(context, '/change-password');
+            break;
+          case "Wearable":
+            Navigator.pushNamed(context, '/wearable-screen');
+            break;
+          case "Workout History":
+            Navigator.pushNamed(context, '/workout-history');
+            break;
+          case "Body Metrics":
+            Navigator.pushNamed(context, '/body-metrics');
+            break;
+          case "Notifications":
+            Navigator.pushNamed(context, '/notification-settings');
+            break;
+          case "Premium Plan":
+            Navigator.pushNamed(context, '/premium-plan');
+            break;
+          case "Language":
+            Navigator.pushNamed(context, '/language-settings');
+            break;
+          case "Privacy Policy":
+            Navigator.pushNamed(context, '/privacy-policy');
+            break;
+          case "Appearance":
+            Navigator.pushNamed(context, '/appearance-settings');
+            break;
+          default:
+            print('No route defined for $label');
+        }
+      };
+    }
+
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+      leading: Icon(icon, color: Colors.purple[300]),
+      title: Text(label),
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: handleTap,
     );
   }
 
@@ -281,9 +338,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => LuckySpinScreen(tokens: _tokens), // Directly passing tokens
+                  builder: (_) => LuckySpinScreen(tokens: _tokens),
                 ),
-              ),  
+              ),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -404,18 +461,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _profileItem(IconData icon, String label,
-      {String? subtitle, VoidCallback? onTap}) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
-      leading: Icon(icon, color: Colors.purple[300]),
-      title: Text(label),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: onTap,
     );
   }
 }
