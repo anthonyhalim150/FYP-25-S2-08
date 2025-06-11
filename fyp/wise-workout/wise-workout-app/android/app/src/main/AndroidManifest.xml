@@ -6,7 +6,6 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- ✅ These go inside <application>, not <activity> -->
         <meta-data
             android:name="flutter.renderer"
             android:value="skia" />
