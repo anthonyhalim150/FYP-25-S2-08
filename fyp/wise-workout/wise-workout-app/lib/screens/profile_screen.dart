@@ -42,6 +42,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int _tokens = 23;
   final ApiService apiService = ApiService();
 
+  // this one is for backend. Now hardcoded.
+  final List<String> unlockedBadges = [
+    'assets/badges/badge_4.png',
+    'assets/badges/badge_5.png',
+    'assets/badges/badge_6.png',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -95,13 +102,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fit: BoxFit.cover,
                     )
                         : Image.asset(
-                      _profileBgPath ?? 'assets/background/black.jpg',
+                      _profileBgPath!,
                       width: 220,
                       height: 220,
                       fit: BoxFit.cover,
                     ),
                   ),
-                  if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
+                  if (_profileImagePath != null &&
+                      _profileImagePath!.isNotEmpty)
                     CircleAvatar(
                       radius: 100,
                       backgroundImage: _profileImagePath!.startsWith('http')
@@ -145,50 +153,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _profileItem(IconData icon, String label,
       {String? subtitle, VoidCallback? onTap}) {
-    // Default onTap handler if none provided
     VoidCallback? handleTap = onTap;
 
-    // If no onTap provided, set up navigation based on label
     if (handleTap == null) {
-      handleTap = () {
-        switch (label) {
-          case "Avatar":
-          // Already handled in the existing onTap
-            break;
-          case "Profile":
-            Navigator.pushNamed(context, '/profile-settings');
-            break;
-          case "Password":
-            Navigator.pushNamed(context, '/change-password');
-            break;
-          case "Wearable":
-            Navigator.pushNamed(context, '/wearable-screen');
-            break;
-          case "Workout History":
-            Navigator.pushNamed(context, '/workout-history');
-            break;
-          case "Body Metrics":
-            Navigator.pushNamed(context, '/body-metrics');
-            break;
-          case "Notifications":
-            Navigator.pushNamed(context, '/notification-settings');
-            break;
-          case "Premium Plan":
-            Navigator.pushNamed(context, '/premium-plan');
-            break;
-          case "Language":
-            Navigator.pushNamed(context, '/language-settings');
-            break;
-          case "Privacy Policy":
-            Navigator.pushNamed(context, '/privacy-policy');
-            break;
-          case "Appearance":
-            Navigator.pushNamed(context, '/appearance-settings');
-            break;
-          default:
-            print('No route defined for $label');
-        }
-      };
+      switch (label) {
+        case "Avatar":
+          handleTap = () async {
+            final result = await Navigator.push<Map<String, String?>>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CreateAvatarScreen(
+                  username: _userName,
+                  isPremiumUser: _isPremiumUser,
+                  currentAvatarPath: _profileImagePath,
+                  currentBgPath: _profileBgPath,
+                ),
+              ),
+            );
+
+            if (result != null) {
+              setState(() {
+                _profileImagePath = result['avatar'];
+                _profileBgPath = result['background'];
+              });
+            }
+          };
+          break;
+
+        case "Profile":
+          handleTap = () => Navigator.pushNamed(context, '/profile-settings');
+          break;
+
+        case "Password":
+          handleTap = () => Navigator.pushNamed(context, '/change-password');
+          break;
+
+        case "Wearable":
+          handleTap = () => Navigator.pushNamed(context, '/wearable-screen');
+          break;
+
+        case "Workout History":
+          handleTap = () => Navigator.pushNamed(context, '/workout-history');
+          break;
+
+        case "Body Metrics":
+          handleTap = () => Navigator.pushNamed(context, '/body-metrics');
+          break;
+
+        case "Notifications":
+          handleTap = () =>
+              Navigator.pushNamed(context, '/notification-settings');
+          break;
+
+        case "Premium Plan":
+          handleTap = () => Navigator.pushNamed(context, '/premium-plan');
+          break;
+
+        case "Language":
+          handleTap = () => Navigator.pushNamed(context, '/language-settings');
+          break;
+
+        case "Privacy Policy":
+          handleTap = () => Navigator.pushNamed(context, '/privacy-policy');
+          break;
+
+        case "Appearance":
+          handleTap = () => Navigator.pushNamed(context, '/appearance-settings');
+          break;
+
+        default:
+          print('No route defined for $label');
+          break;
+      }
     }
 
     return ListTile(
@@ -209,7 +245,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Avatar with background, clickable for popup
             Stack(
               alignment: Alignment.center,
               children: [
@@ -223,7 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fit: BoxFit.cover,
                   )
                       : Image.asset(
-                    _profileBgPath ?? 'assets/background/black.jpg',
+                    _profileBgPath!,
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,
@@ -244,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: Colors.transparent,
                   )
                       : const SizedBox(
-                    width: 108, // 2x radius
+                    width: 108,
                     height: 108,
                   ),
                 ),
@@ -253,7 +288,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 12),
             Text(
               'Hi, $_userName!',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 22, fontWeight: FontWeight.bold),
             ),
             if (_isPremiumUser)
               const Padding(
@@ -267,13 +303,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             const SizedBox(height: 20),
-            // 🔹 Badge Collections Section
+
+            // 🔹 Badge Collections Preview
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/badge-collections');
-                },
+                onTap: () => Navigator.pushNamed(context, '/badge-collections'),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -300,16 +335,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 8),
                             Row(
-                              children: List.generate(
-                                4,
-                                    (index) => Padding(
+                              children: List.generate(4, (index) {
+                                return Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: CircleAvatar(
-                                    radius: 8,
-                                    backgroundColor: Colors.grey.shade300,
+                                    radius: 16,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: index < unlockedBadges.length
+                                        ? AssetImage(unlockedBadges[index])
+                                        : const AssetImage('assets/icons/lock.png'),
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             ),
                           ],
                         ),
@@ -321,7 +358,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // 🔹 XP + Level
+
+            // 🔸 XP and Level
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -333,7 +371,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // 🔹 Lucky Spin
+
+            // 🔸 Lucky Spin
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
@@ -370,35 +409,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // 🔹 Scrollable Profile Settings
+
+            // 🔹 Profile Menu
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  _profileItem(
-                    Icons.person,
-                    "Avatar",
-                    onTap: () async {
-                      final result =
-                      await Navigator.push<Map<String, String?>>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CreateAvatarScreen(
-                            username: _userName,
-                            isPremiumUser: _isPremiumUser,
-                            currentAvatarPath: _profileImagePath,
-                            currentBgPath: _profileBgPath,
-                          ),
-                        ),
-                      );
-                      if (result != null) {
-                        setState(() {
-                          _profileImagePath = result['avatar'];
-                          _profileBgPath = result['background'];
-                        });
-                      }
-                    },
-                  ),
+                  _profileItem(Icons.person, "Avatar"),
                   _profileItem(Icons.settings, "Profile",
                       subtitle: "Username, Phone, etc."),
                   _profileItem(Icons.lock, "Password"),
@@ -420,7 +437,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: 4, // Assuming profile tab
         onTap: (index) {
           switch (index) {
             case 0:
@@ -448,7 +465,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(12)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

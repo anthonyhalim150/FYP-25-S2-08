@@ -5,8 +5,8 @@ class BadgeCollectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 12 badges
-    List<Map<String, String>> badges = List.generate(12, (index) {
+
+    List<Map<String, dynamic>> badges = List.generate(12, (index) {
       return {
         'image': 'assets/badges/badge_${index + 1}.png',
         'color': [
@@ -14,6 +14,7 @@ class BadgeCollectionScreen extends StatelessWidget {
           '#D6EDFF', '#D0F0FF', '#FFD6BD', '#C5F9D7', '#E5E5E5',
           '#FFE6E6', '#D9F0F4',
         ][index % 12],
+        'locked': index >= 6,
       };
     });
 
@@ -49,7 +50,9 @@ class BadgeCollectionScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 'Badges',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
               ),
             ),
             const SizedBox(height: 16),
@@ -70,18 +73,40 @@ class BadgeCollectionScreen extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     final badge = badges[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: HexColor.fromHex(badge['color']!),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: Image.asset(
-                        badge['image']!,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error_outline, size: 32),
-                      ),
+                    final isLocked = badge['locked'] as bool;
+
+                    return Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: HexColor.fromHex(badge['color']),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: ColorFiltered(
+                            colorFilter: isLocked
+                                ? ColorFilter.mode(
+                              Colors.grey.withOpacity(0.6),
+                              BlendMode.saturation,
+                            )
+                                : const ColorFilter.mode(
+                                Colors.transparent, BlendMode.multiply),
+                            child: Image.asset(
+                              badge['image'],
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.error_outline, size: 32),
+                            ),
+                          ),
+                        ),
+                        if (isLocked)
+                          const Positioned.fill(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Icon(Icons.lock, color: Colors.black54, size: 32),
+                            ),
+                          ),
+                      ],
                     );
                   },
                 ),
@@ -94,7 +119,7 @@ class BadgeCollectionScreen extends StatelessWidget {
   }
 }
 
-// Utility to create a Color from hex string
+// 💡 Utility to convert hex color string to Color
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     final colorStr = hexColor.toUpperCase().replaceAll("#", "");
