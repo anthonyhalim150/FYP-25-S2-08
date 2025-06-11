@@ -10,6 +10,8 @@ class ProfileScreen extends StatefulWidget {
   final String? profileImagePath;
   final String? profileBgPath;
   final bool isPremiumUser;
+
+  // Optional icons for bottom navigation bar.
   final Widget? homeIcon;
   final Widget? leaderboardIcon;
   final Widget? messagesIcon;
@@ -40,6 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileBgPath;
   late String _userName;
   late bool _isPremiumUser;
+
   final ApiService apiService = ApiService();
 
   @override
@@ -79,7 +82,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 ClipOval(
                   child: _profileBgPath != null && _profileBgPath!.startsWith('http')
-                      ? Image.network(_profileBgPath!, width: 120, height: 120, fit: BoxFit.cover)
+                      ? Image.network(
+                    _profileBgPath!,
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  )
                       : Image.asset(
                     _profileBgPath ?? 'assets/background/black.jpg',
                     width: 120,
@@ -113,12 +121,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             const SizedBox(height: 20),
 
-            // 🔹 Badge Collections Card (NEW)
+            // 🔹 Badge Collections Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, '/badge-collections'); // Route must be defined
+                  Navigator.pushNamed(context, '/badge-collections');
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -146,9 +154,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 8),
                             Row(
                               children: List.generate(
-                                4, // Show 4 badge placeholders
+                                4,
                                     (index) => Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
+                                  padding: const EdgeInsets.only(right: 8),
                                   child: CircleAvatar(
                                     radius: 8,
                                     backgroundColor: Colors.grey.shade300,
@@ -167,7 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
 
-            // 🔹 XP & Level Cards
+            // 🔹 XP + Level
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -209,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
 
-            // 🔹 Scrollable Profile Options
+            // 🔹 Scrollable Profile Settings
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -283,15 +291,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Container(
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: IntrinsicHeight(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: const TextStyle(color: Colors.black54)),
-              const SizedBox(height: 4),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: const TextStyle(color: Colors.black54)),
+            const SizedBox(height: 4),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ],
         ),
       ),
     );
