@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final profile = await apiService.getCurrentProfile();
       setState(() {
         _isPremiumUser = profile['role'] == 'premium';
-        _profileImagePath = profile['avatar'] ?? 'assets/icons/Profile.png';
+        _profileImagePath = profile['avatar']; // <--- No default fallback
         _profileBgPath = profile['background'] ?? 'assets/background/black.jpg';
         _userName = profile['username'] ?? widget.userName;
       });
@@ -70,8 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.transparent,
         child: Container(
           padding: const EdgeInsets.all(24),
@@ -82,7 +81,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Stack for background + avatar
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -102,16 +100,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  CircleAvatar(
-                    radius: 100,
-                    backgroundImage: _profileImagePath != null
-                        ? (_profileImagePath!.startsWith('http')
-                        ? NetworkImage(_profileImagePath!)
-                        : AssetImage(_profileImagePath!)
-                    as ImageProvider<Object>)
-                        : const AssetImage('assets/icons/Profile.png'),
-                    backgroundColor: Colors.transparent,
-                  ),
+                  // Only show avatar if there IS one.
+                  if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
+                    CircleAvatar(
+                      radius: 100,
+                      backgroundImage: _profileImagePath!.startsWith('http')
+                          ? NetworkImage(_profileImagePath!)
+                          : AssetImage(_profileImagePath!)
+                      as ImageProvider<Object>,
+                      backgroundColor: Colors.transparent,
+                    ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -177,15 +175,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onTap: () {
                     _showAvatarPopup(context);
                   },
-                  child: CircleAvatar(
+                  child: (_profileImagePath != null &&
+                      _profileImagePath!.isNotEmpty)
+                      ? CircleAvatar(
                     radius: 54,
-                    backgroundImage: _profileImagePath != null
-                        ? (_profileImagePath!.startsWith('http')
+                    backgroundImage: _profileImagePath!.startsWith('http')
                         ? NetworkImage(_profileImagePath!)
                         : AssetImage(_profileImagePath!)
-                    as ImageProvider<Object>)
-                        : const AssetImage('assets/icons/Profile.png'),
+                    as ImageProvider<Object>,
                     backgroundColor: Colors.transparent,
+                  )
+                      : const SizedBox(
+                    width: 108, // 2x radius
+                    height: 108,
                   ),
                 ),
               ],
