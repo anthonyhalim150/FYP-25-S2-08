@@ -1,12 +1,5 @@
 const db = require('../config/db');
 
-const prizes = [
-  { label: '10 Coins', type: 'coins', value: 10 },
-  { label: '50 Coins', type: 'coins', value: 50 },
-  { label: 'Nothing', type: 'none', value: 0 },
-  { label: 'Premium 1 Day', type: 'premium', value: 1 },
-];
-
 class SpinEntity {
   async hasSpunToday(userId) {
     const [rows] = await db.execute(
@@ -24,18 +17,18 @@ class SpinEntity {
     return rows[0] || null;
   }
 
-  async deductCoins(userId, amount) {
+  async deductTokens(userId, amount) {
     const [result] = await db.execute(
-      'UPDATE users SET coins = coins - ? WHERE id = ? AND coins >= ?',
+      'UPDATE users SET tokens = tokens - ? WHERE id = ? AND tokens >= ?',
       [amount, userId, amount]
     );
     return result.affectedRows > 0;
   }
 
   async applyPrize(userId, prize) {
-    if (prize.type === 'coins') {
+    if (prize.type === 'tokens') {
       await db.execute(
-        'UPDATE users SET coins = coins + ? WHERE id = ?',
+        'UPDATE users SET tokens = tokens + ? WHERE id = ?',
         [prize.value, userId]
       );
     } else if (prize.type === 'premium') {
@@ -53,8 +46,9 @@ class SpinEntity {
     );
   }
 
-  getRandomPrize() {
-    return prizes[Math.floor(Math.random() * prizes.length)];
+  async getAllPrizes() {
+    const [rows] = await db.execute('SELECT * FROM prizes');
+    return rows;
   }
 }
 

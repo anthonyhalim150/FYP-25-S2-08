@@ -1,24 +1,31 @@
 const spinEntity = require('../entities/spinEntity');
+const PrizeEntity = require('../entities/prizeEntity');
 
 exports.spin = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-  const usingCoins = req.query.force === 'true';
+  const usingTokens = req.query.force === 'true';
   const hasSpun = await spinEntity.hasSpunToday(userId);
 
-  if (hasSpun && !usingCoins) {
+  if (hasSpun && !usingTokens) {
     return res.status(403).json({ message: 'Already spun today' });
   }
 
-  if (hasSpun && usingCoins) {
-    const success = await spinEntity.deductCoins(userId, 50);
+  if (hasSpun && usingTokens) {
+    const success = await spinEntity.deductTokens(userId, 50);
     if (!success) {
-      return res.status(403).json({ message: 'Not enough coins to re-spin' });
+      return res.status(403).json({ message: 'Not enough tokens to re-spin' });
     }
   }
 
-  const prize = spinEntity.getRandomPrize();
+  const prizes = await PrizeEntity.getAll();
+  if (prizes.length === 0) {
+    return res.status(500).json({ message: 'No prizes configured' });
+  }
+  const randomIndex = Math.floor(Math.random() * prizes.length);
+  const prize = prizes[randomIndex];
+
   await spinEntity.logSpin(userId, prize);
   await spinEntity.applyPrize(userId, prize);
 

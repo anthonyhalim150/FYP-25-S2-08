@@ -9,6 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 const pendingUserRoutes = require('./routes/pendingUserRoutes');
 const questionnaireRoutes = require('./routes/userPreferenceRoutes');
 const spinRoutes = require('./routes/spinRoutes');
+const prizeRoutes = require('./routes/prizeRoutes');
 const authenticateUser = require('./middlewares/authMiddleware');
 const db = require('./config/db');
 
@@ -30,6 +31,7 @@ app.use(authenticateUser);
 app.use('/user', userRoutes); 
 app.use('/lucky', spinRoutes);
 app.use('/questionnaire', questionnaireRoutes);
+app.use('/prizes', prizeRoutes);
 
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))

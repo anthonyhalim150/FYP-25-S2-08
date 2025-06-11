@@ -6,7 +6,6 @@ import '../widgets/bottom_navigation.dart';
 class ProfileScreen extends StatefulWidget {
   final String userName;
   final int xp;
-  final int tokens;
   final String? profileImagePath;
   final String? profileBgPath;
   final bool isPremiumUser;
@@ -16,13 +15,12 @@ class ProfileScreen extends StatefulWidget {
   final Widget? profileIcon;
   final Widget? workoutIcon;
 
-  const ProfileScreen({
+  ProfileScreen({
     Key? key,
     required this.userName,
     this.profileImagePath,
     this.profileBgPath,
     this.xp = 123,
-    this.tokens = 27,
     this.isPremiumUser = false,
     this.homeIcon,
     this.leaderboardIcon,
@@ -40,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileBgPath;
   late String _userName;
   late bool _isPremiumUser;
+  int _tokens = 23;
   final ApiService apiService = ApiService();
 
   @override
@@ -60,6 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _profileImagePath = profile['avatar'];
         _profileBgPath = profile['background'] ?? 'assets/background/black.jpg';
         _userName = profile['username'] ?? widget.userName;
+        _tokens = profile['tokens'] ?? 0;
       });
     } catch (e) {
       print('Failed to load profile: $e');
@@ -280,8 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () => Navigator.pushNamed(context, '/lucky-spin'),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding:
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 decoration: BoxDecoration(
                   color: const Color(0xFF071655),
                   borderRadius: BorderRadius.circular(16),
@@ -298,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18)),
                         const SizedBox(height: 4),
-                        Text("${widget.tokens} Tokens",
+                        Text("$_tokens Tokens",
                             style: const TextStyle(color: Colors.white70)),
                       ],
                     ),

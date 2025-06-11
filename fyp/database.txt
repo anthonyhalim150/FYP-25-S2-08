@@ -6,7 +6,7 @@ CREATE TABLE users (
   password VARCHAR(255), -- nullable for Google/Apple sign-ins
   method ENUM('database', 'google', 'apple') NOT NULL DEFAULT 'database',
   role ENUM('user', 'admin', 'premium') NOT NULL DEFAULT 'user',
-  coins INT NOT NULL DEFAULT 0,
+  tokens INT NOT NULL DEFAULT 0,
   avatar_id INT DEFAULT NULL,
   background_id INT DEFAULT NULL, 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -49,6 +49,14 @@ CREATE TABLE spin_history (
   spun_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE prizes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  label VARCHAR(100) NOT NULL,
+  type ENUM('tokens', 'freeze', 'avatar', 'background', 'trial', 'none') NOT NULL,
+  value INT NOT NULL
+);
+
 CREATE TABLE avatars (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -87,3 +95,15 @@ VALUES
   ('bg7', 'assets/background/bg7.png', false),
   ('bg8', 'assets/background/bg8.png', false),
   ('bg9', 'assets/background/bg9.png', false);
+
+INSERT INTO prizes (label, type, value) VALUES
+('10 Tokens', 'tokens', 10),
+('1 Freeze', 'freeze', 1),
+('50 Tokens', 'tokens', 50),
+('3 Freezes', 'freeze', 3),
+('1 Tokens', 'tokens', 1),
+('1 Avatar', 'avatar', 1),
+('1 Background', 'background', 1),
+('150 Tokens', 'tokens', 150),
+('5 Freezes', 'freeze', 5),
+('1 Day Trial', 'trial', 1);
