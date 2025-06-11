@@ -39,8 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileImagePath;
   late String? _profileBgPath;
   late String _userName;
-  bool _isPremiumUser = false;
-
+  late bool _isPremiumUser;
   final ApiService apiService = ApiService();
 
   @override
@@ -74,32 +73,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  ClipOval(
-                    child: _profileBgPath != null && _profileBgPath!.startsWith('http')
-                        ? Image.network(_profileBgPath!, width: 120, height: 120, fit: BoxFit.cover)
-                        : Image.asset(
-                            _profileBgPath ?? 'assets/background/black.jpg',
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
+            const SizedBox(height: 20),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipOval(
+                  child: _profileBgPath != null && _profileBgPath!.startsWith('http')
+                      ? Image.network(_profileBgPath!, width: 120, height: 120, fit: BoxFit.cover)
+                      : Image.asset(
+                    _profileBgPath ?? 'assets/background/black.jpg',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
                   ),
-                  CircleAvatar(
-                    radius: 54,
-                    backgroundImage: _profileImagePath != null
-                        ? (_profileImagePath!.startsWith('http')
-                            ? NetworkImage(_profileImagePath!)
-                            : AssetImage(_profileImagePath!) as ImageProvider)
-                        : const AssetImage('assets/icons/Profile.png'),
-                    backgroundColor: Colors.transparent,
-                  ),
-                ],
-              ),
+                ),
+                CircleAvatar(
+                  radius: 54,
+                  backgroundImage: _profileImagePath != null
+                      ? (_profileImagePath!.startsWith('http')
+                      ? NetworkImage(_profileImagePath!)
+                      : AssetImage(_profileImagePath!) as ImageProvider)
+                      : const AssetImage('assets/icons/Profile.png'),
+                  backgroundColor: Colors.transparent,
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Text(
@@ -115,6 +112,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             const SizedBox(height: 20),
+
+            // 🔹 Badge Collections Card (NEW)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/badge-collections'); // Route must be defined
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Badge Collections',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: List.generate(
+                                4, // Show 4 badge placeholders
+                                    (index) => Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: CircleAvatar(
+                                    radius: 8,
+                                    backgroundColor: Colors.grey.shade300,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios, size: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // 🔹 XP & Level Cards
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -126,6 +179,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // 🔹 Lucky Spin
             GestureDetector(
               onTap: () => Navigator.pushNamed(context, '/lucky-spin'),
               child: Container(
@@ -153,6 +208,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // 🔹 Scrollable Profile Options
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -230,9 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(color: Colors.black54), overflow: TextOverflow.ellipsis),
+              Text(label, style: const TextStyle(color: Colors.black54)),
               const SizedBox(height: 4),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
+              Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
         ),
