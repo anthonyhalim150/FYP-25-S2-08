@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'analysis_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
-  // this is hardcoded, have to change for backend
+  // Hardcoded for now; replace with data from backend when ready
   final List<Map<String, dynamic>> workoutHistory = const [
     {
       'date': '2024-06-10',
@@ -64,78 +65,100 @@ class HistoryScreen extends StatelessWidget {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, i) {
           final entry = workoutHistory[i];
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.07),
-                  blurRadius: 4,
-                  offset: const Offset(1, 2),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(18),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(entry['icon'] as IconData, color: Color(0xFF071655), size: 38),
-                const SizedBox(width: 13),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry['date'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF071655),
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        entry['workout'],
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Row(
-                        children: [
-                          Icon(Icons.timer, size: 16, color: Colors.grey),
-                          const SizedBox(width: 2),
-                          Text(entry['duration'],
-                              style: const TextStyle(color: Colors.grey, fontSize: 13)),
-                          const SizedBox(width: 15),
-                          Icon(Icons.local_fire_department, size: 16, color: Colors.amber),
-                          const SizedBox(width: 2),
-                          Text("${entry['calories']} kcal",
-                              style: const TextStyle(color: Colors.amber, fontSize: 13)),
-                          const SizedBox(width: 15),
-                          Icon(Icons.trending_up, size: 15, color: Colors.deepPurple),
-                          const SizedBox(width: 2),
-                          Text(
-                            entry['intensity'],
-                            style: const TextStyle(fontSize: 13, color: Colors.deepPurple),
-                          )
-                        ],
-                      ),
-                      if (entry['notes'] != null && (entry['notes'] as String).isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 7.0),
-                          child: Text(
-                            entry['notes'],
-                            style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic, color: Colors.black54),
-                          ),
-                        ),
-                    ],
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AnalysisScreen(
+                    date: entry['date'],
+                    workout: entry['workout'],
+                    icon: entry['icon'],
+                    duration: entry['duration'],
+                    calories: entry['calories'],
+                    intensity: entry['intensity'],
+                    notes: entry['notes'],
+                    // Pass extraStats here if you want
                   ),
                 ),
-              ],
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.07),
+                    blurRadius: 4,
+                    offset: const Offset(1, 2),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(18),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(entry['icon'] as IconData, color: Color(0xFF071655), size: 38),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry['date'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF071655),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          entry['workout'],
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            Icon(Icons.timer, size: 16, color: Colors.grey),
+                            const SizedBox(width: 2),
+                            Text(entry['duration'],
+                                style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                            const SizedBox(width: 15),
+                            Icon(Icons.local_fire_department, size: 16, color: Colors.amber),
+                            const SizedBox(width: 2),
+                            Text("${entry['calories']} kcal",
+                                style: const TextStyle(color: Colors.amber, fontSize: 13)),
+                            const SizedBox(width: 15),
+                            Icon(Icons.trending_up, size: 15, color: Colors.deepPurple),
+                            const SizedBox(width: 2),
+                            Text(
+                              entry['intensity'],
+                              style: const TextStyle(fontSize: 13, color: Colors.deepPurple),
+                            )
+                          ],
+                        ),
+                        if (entry['notes'] != null && (entry['notes'] as String).isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 7.0),
+                            child: Text(
+                              entry['notes'],
+                              style: const TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

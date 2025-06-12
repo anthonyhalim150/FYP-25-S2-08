@@ -18,6 +18,7 @@ dependencies:
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2
   health: ^13.0.1
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:
