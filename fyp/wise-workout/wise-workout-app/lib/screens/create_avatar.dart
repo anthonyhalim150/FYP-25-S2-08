@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart'; // Import to call API
-import 'create_avatarbg.dart'; // For premium background selection
+import '../services/api_service.dart';
+import 'create_avatarbg.dart';
+import 'buypremium_screen.dart';
 
 class CreateAvatarScreen extends StatefulWidget {
   final String username;
@@ -57,8 +58,8 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
 
   void _editBackground() async {
     if (!widget.isPremiumUser) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upgrade to premium to edit background!')),
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const BuyPremiumScreen()),
       );
       return;
     }
@@ -186,14 +187,16 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                         const Spacer(),
                         const Text(
                           'Avatar',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         const Spacer(),
                         GestureDetector(
                           onTap: _editBackground,
                           child: Icon(
                             Icons.arrow_forward,
-                            color: widget.isPremiumUser ? Colors.black : Colors.grey,
+                            color:
+                            widget.isPremiumUser ? Colors.black : Colors.grey,
                           ),
                         ),
                       ],
@@ -208,7 +211,8 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                         padding: const EdgeInsets.all(18),
                         child: GridView.builder(
                           itemCount: avatarPaths.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             mainAxisSpacing: 20,
                             crossAxisSpacing: 20,
@@ -221,10 +225,9 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                             return GestureDetector(
                               onTap: () {
                                 if (locked) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('This avatar is for premium users only!'),
-                                    ),
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (_) => const BuyPremiumScreen()),
                                   );
                                 } else {
                                   setState(() {
@@ -239,7 +242,8 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
-                                    color: isChosen ? Colors.amber : Colors.transparent,
+                                    color:
+                                    isChosen ? Colors.amber : Colors.transparent,
                                     width: 2,
                                   ),
                                 ),
@@ -253,7 +257,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                                           width: 65,
                                           height: 65,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (ctx, _, __) =>
+                                          errorBuilder: (ctx, _error, _stack) =>
                                           const Icon(Icons.image_not_supported,
                                               size: 30, color: Colors.grey),
                                         ),
@@ -281,10 +285,12 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(22),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 60),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 60),
                       ),
                       onPressed: _confirmAvatar,
-                      child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                      child: const Text('Confirm',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
