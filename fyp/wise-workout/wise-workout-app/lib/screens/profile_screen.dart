@@ -343,7 +343,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     backgroundColor: Colors.white,
                                     backgroundImage: index < unlockedBadges.length
                                         ? AssetImage(unlockedBadges[index])
-                                        : const AssetImage('assets/icons/lock.png'),
+                                        : const AssetImage('assets/icons/lock.jpg'),
                                   ),
                                 );
                               }),
