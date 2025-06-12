@@ -424,7 +424,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _profileItem(Icons.history, "Workout History"),
                   _profileItem(Icons.bar_chart, "Body Metrics"),
                   _profileItem(Icons.notifications, "Notifications"),
-                  _profileItem(Icons.workspace_premium, "Premium Plan"),
+                  if (!_isPremiumUser) // won't show if it's premium
+                    _profileItem(Icons.workspace_premium, "Premium Plan"),
                   _profileItem(Icons.language, "Language",
                       subtitle: "English"),
                   _profileItem(Icons.privacy_tip, "Privacy Policy"),

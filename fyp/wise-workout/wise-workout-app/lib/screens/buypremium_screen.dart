@@ -19,8 +19,7 @@ final List<Map<String, dynamic>> premiumReviews = [
 ];
 
 class BuyPremiumScreen extends StatefulWidget {
-  final bool isPremiumUser;
-  const BuyPremiumScreen({Key? key, required this.isPremiumUser}) : super(key: key);
+  const BuyPremiumScreen({Key? key}) : super(key: key);
 
   @override
   State<BuyPremiumScreen> createState() => _BuyPremiumScreenState();
@@ -31,12 +30,6 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isPremiumUser) {
-      Future.delayed(Duration.zero, () {
-        Navigator.pop(context);
-      });
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -72,7 +65,6 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
     );
   }
 
-  // --- Here is the new top banner with icon/logo on top ---
   Widget _topBanner() => Container(
     decoration: BoxDecoration(
       color: Colors.white,
@@ -92,7 +84,7 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
         Icon(
           Icons.workspace_premium,
           size: 70,
-          color: Colors.amber[700], // gold premium color
+          color: Colors.amber[700],
         ),
         const SizedBox(height: 16),
         const Text(
@@ -125,8 +117,7 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
       style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 18,
-          color: Color(0xFF071655)
-      ),
+          color: Color(0xFF071655)),
     ),
   );
 
@@ -141,7 +132,8 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
           _benefitTile(Icons.block, "100% Ad-free experience"),
           _benefitTile(Icons.emoji_emotions, "Exclusive avatar selections"),
           _benefitTile(Icons.smart_toy, "Auto-suggested plan with AI"),
-          _benefitTile(Icons.play_circle_fill_rounded, "Step-by-step HD video tutorials"),
+          _benefitTile(
+              Icons.play_circle_fill_rounded, "Step-by-step HD video tutorials"),
           _benefitTile(Icons.flash_on, "Priority support and faster updates"),
         ],
       ),
@@ -167,7 +159,7 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: const [
           Text("• Fitness plans for all levels", style: TextStyle(fontSize: 15)),
           SizedBox(height: 4),
           Text("• Advanced progress tracking", style: TextStyle(fontSize: 15)),
@@ -224,7 +216,6 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
   }) {
     final selectedColor = highlight ? Colors.purple[100] : Colors.white;
     final selectedBorder = highlight ? Colors.deepPurple : Colors.purple.shade100;
-
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -246,7 +237,7 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
                 BoxShadow(
                   color: Colors.deepPurple.withOpacity(0.13),
                   blurRadius: 14,
-                  offset: Offset(0, 5),
+                  offset: const Offset(0, 5),
                 ),
             ],
           ),
@@ -279,8 +270,8 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 9, vertical: 3),
+                      padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.amber,
                         borderRadius: BorderRadius.circular(9),
@@ -288,7 +279,9 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
                       child: const Text(
                         "Best Value",
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
                       ),
                     ),
                   ),
@@ -320,7 +313,8 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.account_circle_rounded, color: Colors.purple[300], size: 35),
+            Icon(Icons.account_circle_rounded,
+                color: Colors.purple[300], size: 35),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -328,8 +322,14 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
                 children: [
                   Row(
                     children: [
-                      ...List.generate(stars, (_) => Icon(Icons.star, size: 16, color: Colors.amber)),
-                      ...List.generate(5 - stars, (_) => Icon(Icons.star_border, size: 16, color: Colors.grey)),
+                      ...List.generate(
+                          stars,
+                              (_) => Icon(Icons.star,
+                              size: 16, color: Colors.amber)),
+                      ...List.generate(
+                          5 - stars,
+                              (_) => Icon(Icons.star_border,
+                              size: 16, color: Colors.grey)),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -338,7 +338,11 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 4),
-                  Text("- ${review["user"]}", style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black54)),
+                  Text("- ${review["user"]}",
+                      style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54)),
                 ],
               ),
             ),
@@ -366,7 +370,9 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
               Text(
                 "7-Day Money Back Guarantee",
                 style: TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
               SizedBox(height: 6),
               Text(
@@ -387,17 +393,18 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.amber[700],
           foregroundColor: Colors.white,
-          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+          textStyle:
+          const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(13)),
           padding: const EdgeInsets.symmetric(vertical: 16),
           elevation: 2,
         ),
         onPressed: () {
-          // Handle trial start and pass selectedPlan (0, 1, 2)
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
                   'Start 7-day FREE Trial for ${["Monthly", "Annual", "Lifetime"][selectedPlan]} Plan')));
-          // integrate purchase logic for backend?
+          // Integrate purchase logic here
         },
         child: const Text("Start 7-day FREE Trial"),
       ),

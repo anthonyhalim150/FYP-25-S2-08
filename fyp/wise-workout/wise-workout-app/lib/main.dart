@@ -53,10 +53,7 @@
           '/badge-collections': (context) => const BadgeCollectionScreen(),
           '/wearable-screen' : (context) => const WearableScreen(),
           '/workout-history': (context) => const HistoryScreen(),
-          '/premium-plan': (context) => BuyPremiumScreen(
-            isPremiumUser:
-            false, // for testing (idk how to pass backend data)
-          ),
+          '/premium-plan': (context) => BuyPremiumScreen(),
         },
       );
     }
