@@ -321,7 +321,7 @@ class UnregisteredUserPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _bottomIcon(context, 'assets/icons/Home.png', 'Home'),
-              _bottomIcon(context, 'assets/icons/Leaderboard.png', 'Leader boa...'),
+              _bottomIcon(context, 'assets/icons/Leaderboard.png', 'Leaderboa...'),
               const SizedBox(width: 40), // space for FAB
               _bottomIcon(context, 'assets/icons/Messages.png', 'Messages'),
               _bottomIcon(context, 'assets/icons/Profile.png', 'Profile'),

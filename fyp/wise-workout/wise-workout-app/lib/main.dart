@@ -18,6 +18,8 @@
   import 'screens/badge_collection.dart';
   import 'screens/wearable_screen.dart';
   import 'screens/history_screen.dart';
+  import 'screens/buypremium_screen.dart';
+
 
   void main() {
     runApp(WiseWorkoutApp());
@@ -51,6 +53,10 @@
           '/badge-collections': (context) => const BadgeCollectionScreen(),
           '/wearable-screen' : (context) => const WearableScreen(),
           '/workout-history': (context) => const HistoryScreen(),
+          '/premium-plan': (context) => BuyPremiumScreen(
+            isPremiumUser:
+            false, // for testing (idk how to pass backend data)
+          ),
         },
       );
     }
