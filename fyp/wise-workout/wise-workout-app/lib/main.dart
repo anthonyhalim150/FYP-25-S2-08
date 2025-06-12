@@ -1,4 +1,5 @@
   import 'package:flutter/material.dart';
+import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/login_screen.dart';
   import 'screens/home_screen.dart';
   import 'screens/profile_screen.dart';
@@ -54,6 +55,10 @@
           '/wearable-screen' : (context) => const WearableScreen(),
           '/workout-history': (context) => const HistoryScreen(),
           '/premium-plan': (context) => BuyPremiumScreen(),
+          '/workout-selection-screen': (ctx) => WorkoutScreen(
+          workoutID: ModalRoute.of(ctx)!.settings.arguments as int,
+          workoutName: '',
+          ),
         },
       );
     }

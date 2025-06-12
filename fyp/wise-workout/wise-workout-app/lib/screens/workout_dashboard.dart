@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_workout_app/screens/workout_selection_screen.dart';
 import 'package:wise_workout_app/widgets/workout_card_dashboard.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/app_drawer.dart';
@@ -26,24 +27,28 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
 
   final List<Map<String, dynamic>> workouts = [
     {
+      'id': 1,
       'title': 'Strength Training',
       'subtitle': '9 Minutes | Advanced',
       'image': 'assets/workoutImages/strength_training.jpg',
       'isFavorite': false,
     },
     {
+      'id': 2,
       'title': 'Home Yoga',
       'subtitle': '6 Minutes | Beginner',
       'image': 'assets/workoutImages/yoga_training.jpg',
       'isFavorite': false,
     },
     {
+      'id': 3,
       'title': 'Core Training',
       'subtitle': '8 Minutes | Intermediate',
       'image': 'assets/workoutImages/core_training.jpg',
       'isFavorite': false,
     },
     {
+      'id': 4,
       'title': 'HIIT Blast',
       'subtitle': '5 Minutes | HIIT',
       'image': 'https://via.placeholder.com/300x150?text=HIIT+Blast',
@@ -143,7 +148,16 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
                       imageUrl: workout['image'],
                       isFavorite: workout['isFavorite'],
                       onPressed: () {
-                        Navigator.pushNamed(context, '/workout');
+                        final int workoutID = workout['id'];
+                        final String workoutName = workout['title'];
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => WorkoutScreen(
+                              workoutID: workoutID,
+                              workoutName: workoutName,
+                            ),
+                          ),
+                        );
                       },
                       onToggleFavorite: () {
                         setState(() {
