@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../services/workout_service.dart';
 
-class ExerciseTile extends StatelessWidget {
+class WorkoutTile extends StatelessWidget {
   final Workout workout;
   final VoidCallback onTap;
 
 
-  const ExerciseTile({Key? key, required this.workout, required this.onTap}) : super(key: key);
+  const WorkoutTile({Key? key, required this.workout, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

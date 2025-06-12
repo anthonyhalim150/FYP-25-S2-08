@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wise_workout_app/screens/workout_exercises_screen.dart';
 import '../widgets/bottom_navigation.dart';
-import '../widgets/exercise_tile.dart';
+import '../widgets/workout_tile.dart';
 import '../screens/exercise_detail_screen.dart';
 import '../services/workout_service.dart';
 
@@ -99,13 +100,15 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       // Exercise tiles list
                       ...exercises.map((ex) => Padding(
                         padding: const EdgeInsets.only(bottom: 0),
-                        child: ExerciseTile(
+                        child: WorkoutTile(
                           workout: ex,
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ExerciseDetailScreen(workout: ex),
+                                builder: (_) => WorkoutExercisesScreen(workoutId: 1,
+                                workoutName: 'Chest',
+                                workoutImageUrl: 'assets/workoutImages/strength_training.jpg',),
                               ),
                             );
                           },
