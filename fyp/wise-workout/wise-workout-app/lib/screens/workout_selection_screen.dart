@@ -20,7 +20,7 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  late Future<List<Exercise>> _exercisesFuture;
+  late Future<List<Workout>> _exercisesFuture;
   final WorkoutService _service = WorkoutService();
 
   @override
@@ -33,7 +33,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: FutureBuilder<List<Exercise>>(
+      body: FutureBuilder<List<Workout>>(
         future: _exercisesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -100,12 +100,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       ...exercises.map((ex) => Padding(
                         padding: const EdgeInsets.only(bottom: 0),
                         child: ExerciseTile(
-                          exercise: ex,
+                          workout: ex,
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ExerciseDetailScreen(exercise: ex),
+                                builder: (_) => ExerciseDetailScreen(workout: ex),
                               ),
                             );
                           },

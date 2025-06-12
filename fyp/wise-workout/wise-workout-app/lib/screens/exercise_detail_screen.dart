@@ -3,28 +3,28 @@ import '../widgets/bottom_navigation.dart';
 import '../services/workout_service.dart';
 
 class ExerciseDetailScreen extends StatelessWidget {
-  final Exercise exercise;
+  final Workout workout;
 
-  const ExerciseDetailScreen({Key? key, required this.exercise}) : super(key: key);
+  const ExerciseDetailScreen({Key? key, required this.workout}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(exercise.title)),
+      appBar: AppBar(title: Text(workout.title)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(exercise.imageUrl),
+            Image.network(workout.imageUrl),
             SizedBox(height: 16),
             Text(
-              exercise.title,
+              workout.title,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              exercise.description,
+              workout.description,
               style: TextStyle(fontSize: 16),
             ),
           ],

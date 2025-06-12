@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import '../services/workout_service.dart';
 
 class ExerciseTile extends StatelessWidget {
-  final Exercise exercise;
+  final Workout workout;
   final VoidCallback onTap;
 
 
-  const ExerciseTile({Key? key, required this.exercise, required this.onTap}) : super(key: key);
+  const ExerciseTile({Key? key, required this.workout, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final url = exercise.imageUrl;
+    final url = workout.imageUrl;
     final isNetwork = url.startsWith('http');
 
     return Column(
@@ -61,7 +61,7 @@ class ExerciseTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      exercise.title,
+                      workout.title,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
@@ -70,7 +70,7 @@ class ExerciseTile extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      exercise.description,
+                      workout.description,
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[700],
@@ -81,7 +81,7 @@ class ExerciseTile extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '${exercise.duration} Minutes',
+                      '${workout.duration} Minutes',
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.orange, // Highlight duration
