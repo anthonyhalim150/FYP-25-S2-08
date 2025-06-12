@@ -4,7 +4,7 @@ import 'analysis_screen.dart';
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
-  // Hardcoded for now; replace with data from backend when ready
+  // hardcoded for now, replace this with backend
   final List<Map<String, dynamic>> workoutHistory = const [
     {
       'date': '2024-06-10',
@@ -78,7 +78,7 @@ class HistoryScreen extends StatelessWidget {
                     calories: entry['calories'],
                     intensity: entry['intensity'],
                     notes: entry['notes'],
-                    // Pass extraStats here if you want
+                    // can always add more stuff if we need
                   ),
                 ),
               );

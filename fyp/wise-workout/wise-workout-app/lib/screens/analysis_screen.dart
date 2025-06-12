@@ -24,6 +24,7 @@ class AnalysisScreen extends StatelessWidget {
     this.extraStats,
   }) : super(key: key);
 
+  // this is for sharing, hardcoded.
   String buildShareContent() {
     final stats = extraStats ?? {
       "Average Heart Rate": "123 bpm",
@@ -114,6 +115,7 @@ class AnalysisScreen extends StatelessWidget {
     );
   }
 
+  // this is hardcoded, replace with backend
   @override
   Widget build(BuildContext context) {
     final stats = extraStats ?? {
@@ -131,7 +133,6 @@ class AnalysisScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Workout Analysis"),
         backgroundColor: const Color(0xFF071655),
-        // actions removed here!
       ),
       backgroundColor: const Color(0xFFFAF6EE),
       body: SingleChildScrollView(
