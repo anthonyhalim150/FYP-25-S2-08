@@ -1,347 +1,294 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../widgets/exercise_stats_card.dart';
+import '../widgets/tournament_widget.dart';
+import '../widgets/workout_card_home_screen.dart';
+import '../widgets/bottom_navigation.dart';
+import 'workout_sample_data.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
+  final int currentSteps = 3000;
+  final int maxSteps = 10000;
+  final int caloriesBurned = 250;
+  final int xpEarned = 100;
+
   const UnregisteredUserPage({super.key});
 
-  void _promptLogin(BuildContext context) {
+  void _showRegistrationPrompt(BuildContext context) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Login Required'),
-        content: const Text('Please register or log in to access this content.'),
+        title: const Text("Create an Account"),
+        content: const Text(
+          "Please login or create a account to view more",
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text("Later"),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushNamed(context, '/');
-              });
+              Navigator.pushNamed(context, '/register');
             },
-            child: const Text('Login'),
+            child: const Text("Register"),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBlurredCard({required BuildContext context, required Widget child}) {
+  Widget _wrapWithPrompt(BuildContext context, Widget child) {
     return GestureDetector(
-      onTap: () => _promptLogin(context),
-      child: Stack(
-        children: [
-          child,
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(color: Colors.black.withOpacity(0.3)),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTournamentCard({
-    required BuildContext context,
-    required String title,
-    required String reward,
-    required String participants,
-    required String duration,
-    required Color badgeColor,
-    required Color cardColor,
-  }) {
-    return Container(
-      width: 250,
-      margin: const EdgeInsets.only(right: 10),
-      child: _buildBlurredCard(
-        context: context,
-        child: Container(
-          height: 160,
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: badgeColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(duration,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  const Icon(Icons.emoji_events, size: 16, color: Colors.orange),
-                  const SizedBox(width: 4),
-                  Text(reward, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  const Icon(Icons.group, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(participants),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => _promptLogin(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF52796F),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                  ),
-                  child: const Text('Join Now'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      onTap: () => _showRegistrationPrompt(context),
+      child: child,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3EF),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F3EF),
-        elevation: 0,
-        title: const Text(
-          'Hello, John!',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushNamed(context, '/');
-              });
-            },
-            style: TextButton.styleFrom(
-              backgroundColor: const Color(0xFF0D1B52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('Login', style: TextStyle(color: Colors.white)),
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Search on FitQuest',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            _buildBlurredCard(
-              context: context,
-              child: Container(
-                height: 160,
-                decoration: BoxDecoration(
-                  color: Colors.orange[300],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Icon(Icons.fitness_center, size: 40, color: Colors.red),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text('Workout', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildBlurredCard(
-                    context: context,
-                    child: Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/images/push-up.jpg'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      alignment: Alignment.bottomLeft,
-                      padding: const EdgeInsets.all(10),
-                      child: const Text(
-                        'Push Up\nBeginner Level',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _buildBlurredCard(
-                    context: context,
-                    child: Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/images/squats.jpg'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      alignment: Alignment.bottomLeft,
-                      padding: const EdgeInsets.all(10),
-                      child: const Text(
-                        'Squat\nAdvance Level',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D1B52),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Let’s start a journey!",
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Lorem Ipsum lorem ipsum placeholder. We will explain in marketing way.",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  const SizedBox(height: 15),
-                  ElevatedButton(
-                    onPressed: () => _promptLogin(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Text('Join a Challenge or Tournament!'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Challenges & Tournament',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildTournamentCard(
-                    context: context,
-                    title: 'Summer Challenge',
-                    reward: '\$5,000',
-                    participants: '2.4k',
-                    duration: '5 Days',
-                    badgeColor: Colors.yellow[200]!,
-                    cardColor: Colors.grey[100]!,
-                  ),
-                  _buildTournamentCard(
-                    context: context,
-                    title: 'Plank Challenge',
-                    reward: 'Premium',
-                    participants: '1.2k',
-                    duration: '7 Days',
-                    badgeColor: Colors.green[100]!,
-                    cardColor: Colors.grey[100]!,
-                  ),
-                  _buildTournamentCard(
-                    context: context,
-                    title: 'Yoga Mastery',
-                    reward: 'Free Merch',
-                    participants: '900',
-                    duration: '10 Days',
-                    badgeColor: Colors.purple[100]!,
-                    cardColor: Colors.grey[100]!,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: SizedBox(
-        height: 70,
-        width: 70,
-        child: FloatingActionButton(
-          onPressed: () => _promptLogin(context),
-          backgroundColor: Colors.amber,
-          shape: const CircleBorder(),
-          child: const Icon(
-            Icons.fitness_center,
-            size: 32,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _bottomIcon(context, 'assets/icons/Home.png', 'Home'),
-              _bottomIcon(context, 'assets/icons/Leaderboard.png', 'Leaderboa...'),
-              const SizedBox(width: 40), // space for FAB
-              _bottomIcon(context, 'assets/icons/Messages.png', 'Messages'),
-              _bottomIcon(context, 'assets/icons/Profile.png', 'Profile'),
+              // Header with login
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Welcome to FitQuest!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent.withOpacity(0.1), // background color
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/');
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: _wrapWithPrompt(
+                  context,
+                  Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: const [
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: Text(
+                            'Search on FitQuest',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 15),
+                          child: Icon(Icons.search, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Exercise stats
+              _wrapWithPrompt(
+                context,
+                ExerciseStatsCard(
+                  currentSteps: currentSteps,
+                  maxSteps: maxSteps,
+                  caloriesBurned: caloriesBurned,
+                  xpEarned: xpEarned,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Workout title
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  "Workout",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Workout cards
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: sampleWorkouts.length,
+                  itemBuilder: (_, index) {
+                    final workout = sampleWorkouts[index];
+                    return _wrapWithPrompt(
+                      context,
+                      WorkoutCardHomeScreen(
+                        imagePath: workout.imagePath,
+                        workoutName: workout.workoutName,
+                        workoutLevel: workout.workoutLevel,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Yellow banner: join challenge
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _wrapWithPrompt(
+                  context,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF001F6D),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Let's start a journey!",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Join challenges or tournaments and reach your fitness goals.",
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        const SizedBox(height: 15),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.yellow[700],
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
+                          ),
+                          child: const Text(
+                            "Join a Challenge or Tournament!",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Tournaments title
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  "Tournaments",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Tournament cards
+              SizedBox(
+                height: 230,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  children: sampleTournaments.map((tournament) {
+                    return _wrapWithPrompt(
+                      context,
+                      TournamentWidget(
+                        tournamentName: tournament.tournamentName,
+                        prize: tournament.prize,
+                        participants: tournament.participants,
+                        daysLeft: tournament.daysLeft,
+                        cardWidth: 280,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
 
-  Widget _bottomIcon(BuildContext context, String assetPath, String label) {
-    return GestureDetector(
-      onTap: () => _promptLogin(context),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(assetPath, width: 24, height: 24),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ],
+      // Floating action and bottom nav
+      floatingActionButton: GestureDetector(
+        onTap: () => _showRegistrationPrompt(context),
+        child: Container(
+          height: 70,
+          width: 70,
+          decoration: const BoxDecoration(
+            color: Colors.amber,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: const Center(
+            child: Icon(Icons.fitness_center, size: 38, color: Colors.white),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      bottomNavigationBar: bottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          _showRegistrationPrompt(context);
+        },
       ),
     );
   }

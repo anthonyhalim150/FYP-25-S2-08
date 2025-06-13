@@ -19,6 +19,7 @@ dependencies:
   blur: ^4.0.2
   health: ^13.0.1
   share_plus: ^7.2.1
+  percent_indicator: ^4.2.3
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +40,8 @@ flutter:
     - assets/icons/Profile.png
     - assets/images/push-up.jpg
     - assets/images/squats.jpg
+    - assets/images/plank.jpg
+    - assets/images/jumping_jacks.jpg
     - assets/workoutImages/strength_training.jpg
     - assets/workoutImages/yoga_training.jpg
     - assets/workoutImages/core_training.jpg
