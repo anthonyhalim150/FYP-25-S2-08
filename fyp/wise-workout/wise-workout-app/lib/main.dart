@@ -24,6 +24,8 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/buypremium_screen.dart';
   import 'screens/exercise_detail_screen.dart';
   import 'services/exercise_service.dart';
+  import 'screens/leaderboard_screen.dart';
+
 
 
   void main() {
@@ -55,6 +57,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           '/verify-reset': (context) => const VerifyResetScreen(),
           '/workout-dashboard': (context) => WorkoutDashboard(),
           '/unregistered': (context) => const UnregisteredUserPage(),
+          '/leaderboard': (context) => const LeaderboardPage(),
           '/badge-collections': (context) => const BadgeCollectionScreen(),
           '/wearable-screen' : (context) => const WearableScreen(),
           '/workout-history': (context) => const HistoryScreen(),
