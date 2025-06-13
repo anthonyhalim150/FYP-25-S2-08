@@ -145,7 +145,7 @@ class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
                       // Navigate to exercise details
                       Navigator.pushNamed(
                         context,
-                        '/exercise-detail-screen',
+                        '/exercise-start-screen',
                         arguments: exercise, // Pass the full object
                       );
                     },
@@ -225,7 +225,7 @@ class ExerciseTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${exercise.sets} sets • ${exercise.reps} reps',
+                      '${exercise.sets} sets • ${exercise.suggestedReps} reps',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,

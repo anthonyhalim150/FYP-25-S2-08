@@ -25,6 +25,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/exercise_detail_screen.dart';
   import 'services/exercise_service.dart';
   import 'screens/leaderboard_screen.dart';
+  import 'screens/exercise_start.dart';
 
 
 
@@ -68,10 +69,10 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           ),
         },
         onGenerateRoute: (settings) {
-          if (settings.name == '/exercise-detail-screen') {
+          if (settings.name == '/exercise-start-screen') {
             final exercise = settings.arguments as Exercise;
             return MaterialPageRoute(
-              builder: (_) => ExerciseDetailScreen(exercise: exercise),
+              builder: (_) => ExerciseStartScreen(exercise: exercise),
             );
           }
 
