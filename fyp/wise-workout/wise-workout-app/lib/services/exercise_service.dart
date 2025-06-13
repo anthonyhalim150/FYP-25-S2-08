@@ -12,7 +12,7 @@ class WorkoutService {
         workoutId: 1,
         title: 'Push Up',
         description: 'A fundamental bodyweight exercise targeting chest, shoulders, and triceps',
-        imageUrl: 'assets/workoutImages/push_up.jpg',
+        imageUrl: 'assets/exerciseImages/pushup_gif.jpg',
         sets: 3,
         reps: 15,
         instructions: '1. Start in a plank position\n2. Lower your body until chest nearly touches floor\n3. Push back up to starting position',
