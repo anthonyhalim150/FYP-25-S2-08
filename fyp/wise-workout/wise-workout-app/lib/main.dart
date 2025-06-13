@@ -20,6 +20,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/wearable_screen.dart';
   import 'screens/history_screen.dart';
   import 'screens/buypremium_screen.dart';
+  import 'screens/leaderboard_screen.dart';
 
 
   void main() {
@@ -35,7 +36,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        initialRoute: '/unregistered',
+        initialRoute: '/',
         routes: {
           '/': (context) => LoginScreen(),
           '/home': (context) => HomeScreen(
@@ -51,6 +52,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           '/verify-reset': (context) => const VerifyResetScreen(),
           '/workout-dashboard': (context) => WorkoutDashboard(),
           '/unregistered': (context) => const UnregisteredUserPage(),
+          '/leaderboard': (context) => const LeaderboardPage(),
           '/badge-collections': (context) => const BadgeCollectionScreen(),
           '/wearable-screen' : (context) => const WearableScreen(),
           '/workout-history': (context) => const HistoryScreen(),
