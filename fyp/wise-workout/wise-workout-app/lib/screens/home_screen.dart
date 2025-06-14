@@ -7,6 +7,7 @@ import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
 import '../services/health_service.dart';
+import '../services/api_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
 
 
@@ -39,10 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final int caloriesBurned = 420;
   final int xpEarned = 150;
 
+  String? _displayName;
+
   @override
   void initState() {
     super.initState();
     _fetchTodaySteps();
+    _fetchProfile();
   }
 
   Future<void> _fetchTodaySteps() async {
@@ -60,6 +64,15 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } else {
       print("Not connected to Health Connect.");
+    }
+  }
+
+  Future<void> _fetchProfile() async {
+    final profile = await ApiService().getCurrentProfile();
+    if (profile != null) {
+      setState(() {
+        _displayName = profile['username'];
+      });
     }
   }
 
@@ -87,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawer: appDrawer(userName: widget.userName, parentContext: context),
+      drawer: appDrawer(userName: _displayName ?? widget.userName, parentContext: context),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -99,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Text(
-                        'Hello, ${widget.userName}!',
+                        'Hello, ${_displayName ?? widget.userName}!',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
