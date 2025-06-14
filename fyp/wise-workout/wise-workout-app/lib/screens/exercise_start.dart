@@ -5,6 +5,7 @@ import 'package:wise_workout_app/services/exercise_service.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/exercise_timer.dart';
 import '../services/exercise_edit_controller.dart';
+import 'exercise_detail_screen.dart';
 
 class ExerciseStartScreen extends StatefulWidget {
   final Exercise exercise;
@@ -53,28 +54,10 @@ class _ExerciseStartScreenState extends State<ExerciseStartScreen> {
   }
 
   void _showFullScreenImage() {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Color(0x688EA3),
-        insetPadding: EdgeInsets.zero,
-        child: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Color(0xFF688EA3),
-            child: InteractiveViewer(
-              panEnabled: true,
-              minScale: 0.5,
-              maxScale: 3.0,
-              child: Image.asset(
-                _getExerciseImagePath(currentExercise.title),
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExerciseDetailScreen(exercise: currentExercise),
       ),
     );
   }

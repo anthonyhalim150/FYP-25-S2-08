@@ -24,6 +24,8 @@ dependencies:
   web_socket_channel: ^2.4.0
   camera: ^0.10.5+9 
   image: ^4.1.3
+  video_player: ^2.8.0
+  chewie: ^1.11.3
 
 dev_dependencies:
   flutter_test:
@@ -82,3 +84,5 @@ flutter:
     - assets/badges/badge_11.png
     - assets/badges/badge_12.png
     - assets/icons/lock.jpg
+    - assets/exerciseGif/push_up.mp4
+    - assets/exerciseGif/push_up.gif

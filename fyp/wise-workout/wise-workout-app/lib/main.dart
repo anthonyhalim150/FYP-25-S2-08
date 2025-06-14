@@ -67,6 +67,9 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           workoutID: ModalRoute.of(ctx)!.settings.arguments as int,
           workoutName: '',
           ),
+          '/exercise-detail': (context) => ExerciseDetailScreen(
+            exercise: ModalRoute.of(context)!.settings.arguments as Exercise,
+          ),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/exercise-start-screen') {
