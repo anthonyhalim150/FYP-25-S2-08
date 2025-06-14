@@ -7,6 +7,8 @@ import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
 import '../services/health_service.dart';
+import '../screens/camera/SquatPoseScreen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -93,29 +95,39 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
-                child: Row(
-                  children: [
-                    Text(
-                      'Hello, ${widget.userName}!',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Hello, ${widget.userName}!',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    Builder(
-                      builder: (context) => IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.black),
+                      const SizedBox(width: 12),
+                      IconButton(
+                        icon: const Icon(Icons.camera_alt_outlined, color: Colors.black),
                         onPressed: () {
-                          Scaffold.of(context).openDrawer();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
+                          );
                         },
                       ),
-                    ),
-                  ],
+                      const Spacer(),
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(Icons.menu, color: Colors.black),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
               // Search bar
               Padding(
