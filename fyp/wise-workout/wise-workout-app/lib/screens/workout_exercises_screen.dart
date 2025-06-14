@@ -193,7 +193,7 @@ class ExerciseTile extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.asset(
-                  exercise.imageUrl,
+                  _getExerciseImagePath(exercise.title),
                   width: 180,
                   height: 120,
                   fit: BoxFit.cover,
@@ -249,4 +249,9 @@ class ExerciseTile extends StatelessWidget {
       ),
     );
   }
+}
+String _getExerciseImagePath(String exerciseTitle) {
+  // Convert to lowercase and replace spaces with underscores
+  final formattedName = exerciseTitle.toLowerCase().replaceAll(' ', '_');
+  return 'assets/exerciseImages/${formattedName}_gif.jpg';
 }

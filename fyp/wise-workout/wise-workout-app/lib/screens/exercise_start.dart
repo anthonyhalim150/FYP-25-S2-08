@@ -1,7 +1,10 @@
+// lib/screens/exercise_start_screen.dart
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:wise_workout_app/services/exercise_service.dart';
 import '../widgets/bottom_navigation.dart';
+import '../widgets/exercise_timer.dart';
+import '../services/exercise_edit_controller.dart';
 
 class ExerciseStartScreen extends StatefulWidget {
   final Exercise exercise;
@@ -10,6 +13,12 @@ class ExerciseStartScreen extends StatefulWidget {
 
   @override
   _ExerciseStartScreenState createState() => _ExerciseStartScreenState();
+}
+
+String _getExerciseImagePath(String exerciseTitle) {
+  // Convert to lowercase and replace spaces with underscores
+  final formattedName = exerciseTitle.toLowerCase().replaceAll(' ', '_');
+  return 'assets/exerciseImages/${formattedName}_gif.jpg';
 }
 
 class WorkoutSet {
@@ -28,38 +37,39 @@ class WorkoutSet {
 
 class _ExerciseStartScreenState extends State<ExerciseStartScreen> {
   late Exercise currentExercise;
-  List<WorkoutSet> completedSets = [];
-  WorkoutSet currentSet = WorkoutSet(weight: 0, reps: 0);
+  List<WorkoutSet> sets = [];
   final CountDownController _timerController = CountDownController();
 
   @override
   void initState() {
     super.initState();
     currentExercise = widget.exercise;
-    currentSet = WorkoutSet(
+
+    // Initialize with the number of sets from exercise object
+    sets = List.generate(currentExercise.sets, (index) => WorkoutSet(
       weight: currentExercise.suggestedWeight,
       reps: currentExercise.suggestedReps,
-    );
+    ));
   }
 
   void _showFullScreenImage() {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0x688EA3),
         insetPadding: EdgeInsets.zero,
         child: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            color: Colors.black87,
+            color: Color(0xFF688EA3),
             child: InteractiveViewer(
               panEnabled: true,
               minScale: 0.5,
               maxScale: 3.0,
               child: Image.asset(
-                'assets/pushup_gif.png',
+                _getExerciseImagePath(currentExercise.title),
                 fit: BoxFit.contain,
               ),
             ),
@@ -69,215 +79,103 @@ class _ExerciseStartScreenState extends State<ExerciseStartScreen> {
     );
   }
 
-  void _showRestTimer() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Rest Timer", textAlign: TextAlign.center),
-        content: CircularCountDownTimer(
-          duration: 60,
-          initialDuration: 0,
-          controller: _timerController,
-          width: 120,
-          height: 120,
-          ringColor: Colors.grey[300]!,
-          fillColor: Colors.blue[500]!,
-          backgroundColor: Colors.white,
-          strokeWidth: 10.0,
-          strokeCap: StrokeCap.round,
-          isTimerTextShown: true,
-          isReverse: true,
-          textStyle: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          onComplete: () => Navigator.pop(context),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => _timerController.pause(),
-            child: const Text("Pause"),
-          ),
-          TextButton(
-            onPressed: () => _timerController.resume(),
-            child: const Text("Resume"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEditWeightDialog(WorkoutSet set, int index, {bool isCurrent = false}) {
-    TextEditingController controller = TextEditingController(
-      text: set.weight.toStringAsFixed(1),
-    );
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Edit Weight"),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: "Weight (kgs)",
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              final newWeight = int.tryParse(controller.text);
-              if (newWeight != null && newWeight > 0) {
-                setState(() {
-                  if (isCurrent) {
-                    currentSet.weight = newWeight;
-                  } else {
-                    completedSets[index].weight = newWeight;
-                  }
-                });
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Save"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEditRepsDialog(WorkoutSet set, int index, {bool isCurrent = false}) {
-    TextEditingController controller = TextEditingController(
-      text: set.reps.toString(),
-    );
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Edit Reps"),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: "Repetitions",
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              final newReps = int.tryParse(controller.text);
-              if (newReps != null && newReps > 0) {
-                setState(() {
-                  if (isCurrent) {
-                    currentSet.reps = newReps;
-                  } else {
-                    completedSets[index].reps = newReps;
-                  }
-                });
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Save"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSetRow(WorkoutSet set, int index, {bool isCurrent = false}) {
+  Widget _buildSetRow(WorkoutSet set, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          // Set number
           SizedBox(
             width: 40,
             child: set.isCompleted
                 ? const Icon(Icons.check, color: Colors.green)
                 : Text(
-              isCurrent ? "+" : "${index + 1}",
+              "${index + 1}",
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                color: isCurrent ? Colors.blue : Colors.black,
+                color: set.isCompleted ? Colors.grey : Colors.blue,
               ),
               textAlign: TextAlign.center,
             ),
           ),
+          // Weight
           SizedBox(
             width: 80,
             child: InkWell(
-              onTap: () => _showEditWeightDialog(set, index, isCurrent: isCurrent),
+              onTap: () => ExerciseEditController.showEditWeightDialog(
+                context,
+                set.weight.toString(),
+                    (newValue) {
+                  final newWeight = int.tryParse(newValue);
+                  if (newWeight != null && newWeight > 0) {
+                    setState(() {
+                      set.weight = newWeight;
+                    });
+                  }
+                },
+              ),
               child: Text(
                 "${set.weight.toStringAsFixed(1)} ${set.unit}",
                 style: TextStyle(
                   fontSize: 18,
-                  color: isCurrent ? Colors.blue : Colors.black,
+                  color: set.isCompleted ? Colors.grey : Colors.blue,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
           ),
+          // Reps
           SizedBox(
             width: 80,
             child: InkWell(
-              onTap: () => _showEditRepsDialog(set, index, isCurrent: isCurrent),
+              onTap: () => ExerciseEditController.showEditRepsDialog(
+                context,
+                set.reps.toString(),
+                    (newValue) {
+                  final newReps = int.tryParse(newValue);
+                  if (newReps != null && newReps > 0) {
+                    setState(() {
+                      set.reps = newReps;
+                    });
+                  }
+                },
+              ),
               child: Text(
                 "${set.reps} reps",
                 style: TextStyle(
                   fontSize: 18,
-                  color: isCurrent ? Colors.blue : Colors.black,
+                  color: set.isCompleted ? Colors.grey : Colors.blue,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
           ),
-          if (isCurrent)
-            SizedBox(
-              width: 80,
-              child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    // Mark as completed and add to completed sets
-                    currentSet.isCompleted = true;
-                    completedSets.add(currentSet);
-
-                    // Create new current set with previous weight
-                    currentSet = WorkoutSet(
-                      weight: currentSet.weight,
-                      reps: currentExercise.suggestedReps,
-                    );
-
-                    // Show rest timer
-                    _showRestTimer();
-                  });
-                },
-                child: const Text(
-                  "Finish Set",
-                  style: TextStyle(color: Colors.green),
-                ),
+          // Action button
+          SizedBox(
+            width: 80,
+            child: !set.isCompleted
+                ? TextButton(
+              onPressed: () {
+                setState(() {
+                  set.isCompleted = true;
+                  ExerciseTimer.showRestTimer(context, _timerController);
+                });
+              },
+              child: const Text(
+                "Finish Set",
+                style: TextStyle(color: Colors.green),
               ),
             )
-          else
-            SizedBox(
-              width: 80,
-              child: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  setState(() {
-                    completedSets.removeAt(index);
-                  });
-                },
-              ),
+                : IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                setState(() {
+                  sets.removeAt(index);
+                });
+              },
             ),
+          ),
         ],
       ),
     );
@@ -286,65 +184,96 @@ class _ExerciseStartScreenState extends State<ExerciseStartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(currentExercise.title),
-        centerTitle: true,
-      ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 40.0), // Adjust top padding as needed
+            child: Center(
+              child: Text(
+                currentExercise.title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // You can change this if needed
+                ),
+              ),
+            ),
+          ),
           // Large exercise image with tap to expand
           GestureDetector(
             onTap: _showFullScreenImage,
             child: Container(
               height: 200,
-              width: double.infinity,
+              width: 380,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: Color(0xFF688EA3),
                 borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
               ),
               child: Image.asset(
-                'assets/pushup_gif.png',
-                fit: BoxFit.cover,
+                _getExerciseImagePath(currentExercise.title),
+                fit: BoxFit.contain,
               ),
             ),
           ),
           const SizedBox(height: 20),
-          // Header row
+          // Table header with new column names
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const Text("Set", style: TextStyle(fontWeight: FontWeight.bold)),
-                const Text("Weight", style: TextStyle(fontWeight: FontWeight.bold)),
-                const Text("Reps", style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(width: 80), // Space for action button
+              children: const [
+                SizedBox(width: 40, child: Text("Set", style: TextStyle(fontWeight: FontWeight.bold))),
+                SizedBox(width: 80, child: Text("Weight", style: TextStyle(fontWeight: FontWeight.bold))),
+                SizedBox(width: 80, child: Text("Reps", style: TextStyle(fontWeight: FontWeight.bold))),
+                SizedBox(width: 80, child: Text("Action", style: TextStyle(fontWeight: FontWeight.bold))),
               ],
             ),
           ),
           const Divider(thickness: 1.5, indent: 20, endIndent: 20),
-          // Completed sets
-          ...List.generate(
-            completedSets.length,
-                (index) => _buildSetRow(completedSets[index], index),
+          // Display all sets from exercise object
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...List.generate(
+                    sets.length,
+                        (index) => _buildSetRow(sets[index], index),
+                  ),
+                  // Add Set button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.add),
+                      label: const Text("Add Set"),
+                      onPressed: () {
+                        setState(() {
+                          final lastWeight = sets.isNotEmpty
+                              ? sets.last.weight
+                              : currentExercise.suggestedWeight;
+                          sets.add(WorkoutSet(
+                            weight: lastWeight,
+                            reps: currentExercise.suggestedReps,
+                          ));
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          // Current set
-          _buildSetRow(
-            currentSet,
-            completedSets.length,
-            isCurrent: true,
-          ),
-          const Spacer(),
           // Rest Timer Button
           Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
             child: ElevatedButton.icon(
               icon: const Icon(Icons.timer),
               label: const Text("Rest Timer"),
-              onPressed: _showRestTimer,
+              onPressed: () => ExerciseTimer.showRestTimer(context, _timerController),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 backgroundColor: Colors.blue[700],

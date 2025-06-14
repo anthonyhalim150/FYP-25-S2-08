@@ -12,7 +12,7 @@ class WorkoutService {
         workoutId: 1,
         title: 'Push Up',
         description: 'A fundamental bodyweight exercise targeting chest, shoulders, and triceps',
-        imageUrl: 'assets/exerciseImages/pushup_gif.jpg',
+        imageUrl: 'assets/exerciseImages/push_up_gif.jpg',
         sets: 3,
         suggestedReps: 15,
         suggestedWeight: 10,
