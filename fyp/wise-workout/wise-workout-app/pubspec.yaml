@@ -11,15 +11,24 @@ dependencies:
     sdk: flutter
   google_sign_in: ^6.1.4
   sign_in_with_apple: ^7.0.1
-  flutter_local_notifications: ^17.0.0
+  flutter_local_notifications: ^19.2.1
   http: ^1.2.1
   flutter_secure_storage: ^9.2.4
-  flutter_facebook_auth: ^6.0.4
+
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2
   health: ^13.0.1
   share_plus: ^7.2.1
   percent_indicator: ^4.2.3
+  circular_countdown_timer: ^0.2.0
+  web_socket_channel: ^2.4.0
+  camera: ^0.10.5+9 
+  image: ^4.1.3
+  video_player: ^2.8.0
+  chewie: ^1.11.3
+
+  flutter_facebook_auth: ^7.1.2
+
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +54,7 @@ flutter:
     - assets/workoutImages/strength_training.jpg
     - assets/workoutImages/yoga_training.jpg
     - assets/workoutImages/core_training.jpg
+    - assets/exerciseImages/push_up_gif.jpg
     - assets/avatars/free/free1.png
     - assets/avatars/free/free2.png
     - assets/avatars/free/free3.png
@@ -77,3 +87,5 @@ flutter:
     - assets/badges/badge_11.png
     - assets/badges/badge_12.png
     - assets/icons/lock.jpg
+    - assets/exerciseGif/push_up.mp4
+    - assets/exerciseGif/push_up.gif

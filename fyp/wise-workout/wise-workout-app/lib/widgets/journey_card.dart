@@ -30,7 +30,7 @@ class JourneyCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              "Lorem Ipsum lorem ipsum placeholder. We will explain in marketing way.",
+              "Smarter training. Stronger results. Your personalized fitness journey starts here.",
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white70,

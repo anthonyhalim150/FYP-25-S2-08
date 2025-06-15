@@ -5,14 +5,22 @@ class BadgeCollectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     List<Map<String, dynamic>> badges = List.generate(12, (index) {
       return {
         'image': 'assets/badges/badge_${index + 1}.png',
         'color': [
-          '#DCF0F7', '#F0FDD7', '#FFF3AD', '#EAD8FF', '#FFDEDE',
-          '#D6EDFF', '#D0F0FF', '#FFD6BD', '#C5F9D7', '#E5E5E5',
-          '#FFE6E6', '#D9F0F4',
+          '#DCF0F7',
+          '#F0FDD7',
+          '#FFF3AD',
+          '#EAD8FF',
+          '#FFDEDE',
+          '#D6EDFF',
+          '#D0F0FF',
+          '#FFD6BD',
+          '#C5F9D7',
+          '#E5E5E5',
+          '#FFE6E6',
+          '#D9F0F4',
         ][index % 12],
         'locked': index >= 6,
       };
@@ -38,7 +46,7 @@ class BadgeCollectionScreen extends StatelessWidget {
       body: Container(
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
-          color: Color(0xFFFFD233), // Yellow background
+          color: Color(0xFFFFD233),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
@@ -50,9 +58,7 @@ class BadgeCollectionScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 'Badges',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
             const SizedBox(height: 16),
@@ -75,38 +81,77 @@ class BadgeCollectionScreen extends StatelessWidget {
                     final badge = badges[index];
                     final isLocked = badge['locked'] as bool;
 
-                    return Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: HexColor.fromHex(badge['color']),
-                            borderRadius: BorderRadius.circular(16),
+                    return InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: Text(isLocked ? 'Locked Badge' : 'Badge Detail'),
+                            content: isLocked
+                                ? const Text("Badge is locked")
+                                : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  badge['image'],
+                                  height: 100,
+                                  errorBuilder: (context, error, _) =>
+                                  const Icon(Icons.error),
+                                ),
+                                const SizedBox(height: 10),
+                                const Text("You've unlocked this badge!"),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("Close"),
+                              ),
+                            ],
                           ),
-                          padding: const EdgeInsets.all(8),
-                          child: ColorFiltered(
-                            colorFilter: isLocked
-                                ? ColorFilter.mode(
-                              Colors.grey.withOpacity(0.6),
-                              BlendMode.saturation,
-                            )
-                                : const ColorFilter.mode(
-                                Colors.transparent, BlendMode.multiply),
-                            child: Image.asset(
-                              badge['image'],
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error_outline, size: 32),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: HexColor.fromHex(badge['color']),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: ColorFiltered(
+                              colorFilter: isLocked
+                                  ? ColorFilter.mode(
+                                Colors.grey.withOpacity(0.6),
+                                BlendMode.saturation,
+                              )
+                                  : const ColorFilter.mode(
+                                  Colors.transparent, BlendMode.multiply),
+                              child: Image.asset(
+                                badge['image'],
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.error_outline, size: 32),
+                              ),
                             ),
                           ),
-                        ),
-                        if (isLocked)
-                          const Positioned.fill(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Icon(Icons.lock, color: Colors.black54, size: 32),
+                          if (isLocked)
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.4),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.lock,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     );
                   },
                 ),

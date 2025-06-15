@@ -1,4 +1,6 @@
   import 'package:flutter/material.dart';
+import 'package:wise_workout_app/screens/exercise_detail_screen.dart';
+import 'package:wise_workout_app/screens/workout_sample_data.dart';
 import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/login_screen.dart';
   import 'screens/home_screen.dart';
@@ -20,7 +22,11 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/wearable_screen.dart';
   import 'screens/history_screen.dart';
   import 'screens/buypremium_screen.dart';
+  import 'screens/exercise_detail_screen.dart';
+  import 'services/exercise_service.dart';
   import 'screens/leaderboard_screen.dart';
+  import 'screens/exercise_start.dart';
+
 
 
   void main() {
@@ -36,14 +42,14 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        initialRoute: '/',
+        initialRoute: '/unregistered',
         routes: {
           '/': (context) => LoginScreen(),
           '/home': (context) => HomeScreen(
-            userName: 'John', //Hardcoded btw
+            userName: '', //Hardcoded btw
           ),
           '/profile': (context) => ProfileScreen(
-            userName: 'John',
+            userName: '',
           ),
           '/register': (context) => const RegisterScreen(),
           '/workout': (context) => WorkoutTracker(),
@@ -61,6 +67,20 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           workoutID: ModalRoute.of(ctx)!.settings.arguments as int,
           workoutName: '',
           ),
+          '/exercise-detail': (context) => ExerciseDetailScreen(
+            exercise: ModalRoute.of(context)!.settings.arguments as Exercise,
+          ),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/exercise-start-screen') {
+            final exercise = settings.arguments as Exercise;
+            return MaterialPageRoute(
+              builder: (_) => ExerciseStartScreen(exercise: exercise),
+            );
+          }
+
+          // You can handle other dynamic routes here if needed later
+          return null;
         },
       );
     }

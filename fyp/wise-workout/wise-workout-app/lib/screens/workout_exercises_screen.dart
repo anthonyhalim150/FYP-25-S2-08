@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/exercise_service.dart';
+import 'exercise_detail_screen.dart';
+import '../widgets/bottom_navigation.dart';
 
 class WorkoutExercisesScreen extends StatefulWidget {
   final int workoutId;
@@ -20,6 +22,7 @@ class WorkoutExercisesScreen extends StatefulWidget {
 class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
   late Future<List<Exercise>> _exercisesFuture;
   final WorkoutService _workoutService = WorkoutService();
+  int _currentIndex = 2;
 
   @override
   void initState() {
@@ -44,6 +47,31 @@ class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
           final exercises = snapshot.data!;
           return _buildSliverContent(exercises);
         },
+      ),
+      bottomNavigationBar: bottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() => _currentIndex = index);
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/leaderboard');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/workout-dashboard');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/messages');
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/profile');
+              break;
+          }
+        },
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.grey,
       ),
     );
   }
@@ -115,9 +143,11 @@ class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
                     exercise: exercise,
                     onTap: () {
                       // Navigate to exercise details
-                      // Navigator.push(context, MaterialPageRoute(
-                      //   builder: (context) => ExerciseDetailsScreen(exercise: exercise),
-                      // ));
+                      Navigator.pushNamed(
+                        context,
+                        '/exercise-start-screen',
+                        arguments: exercise, // Pass the full object
+                      );
                     },
                     onPlayPressed: () {
                       // Handle play button action
@@ -150,7 +180,7 @@ class ExerciseTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(12),
-      color: Colors.white,
+      color: const Color(0xFF688EA3),
       elevation: 2,
       child: InkWell(
         onTap: onTap,
@@ -163,14 +193,14 @@ class ExerciseTile extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.asset(
-                  exercise.imageUrl,
-                  width: 60,
-                  height: 60,
+                  _getExerciseImagePath(exercise.title),
+                  width: 180,
+                  height: 120,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    width: 60,
-                    height: 60,
-                    color: Colors.grey[200],
+                    width: 180,
+                    height: 120,
+                    color: Color(0x688EA3),
                     child: const Icon(Icons.image),
                   ),
                 ),
@@ -186,36 +216,31 @@ class ExerciseTile extends StatelessWidget {
                     Text(
                       exercise.title,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${exercise.sets} sets • ${exercise.reps} reps',
+                      '${exercise.sets} sets • ${exercise.suggestedReps} reps',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Level: ${exercise.level}',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
+                        fontSize: 14,
+                        color: Colors.white,
                       ),
                     ),
                   ],
-                ),
-              ),
-
-              // Play Button
-              IconButton(
-                onPressed: onPlayPressed,
-                icon: const Icon(Icons.play_circle_fill,
-                  color: Colors.blue,
-                  size: 36,
                 ),
               ),
             ],
@@ -224,4 +249,9 @@ class ExerciseTile extends StatelessWidget {
       ),
     );
   }
+}
+String _getExerciseImagePath(String exerciseTitle) {
+  // Convert to lowercase and replace spaces with underscores
+  final formattedName = exerciseTitle.toLowerCase().replaceAll(' ', '_');
+  return 'assets/exerciseImages/${formattedName}_gif.jpg';
 }
