@@ -50,9 +50,9 @@ const ADashboard = () => {
       <header>
         <img src="/white-logo.png" alt="FitQuest Logo" className='logo'/>
         <nav>
-          <Link to="/users">Users</Link>
-          <Link to="/challenges">Challenge</Link>
-          <Link to="/tournaments">Tournament</Link>
+          <Link to="/All-Users">Users</Link>
+          <Link to="/All-Challenges">Challenge</Link>
+          <Link to="/All-Tournaments">Tournament</Link>
         </nav>
       </header>
 
