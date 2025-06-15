@@ -6,114 +6,121 @@ class WorkoutService {
   Future<List<Exercise>> fetchExercises(int workoutID) async {
     await Future.delayed(Duration(milliseconds: 500));
 
-    // Sample exercises with sets and reps
-    return [
+    final allExercises = [
+      // 🏋️ Dumbbell Strength (Workout ID = 1)
       Exercise(
+        exerciseId: 1,
         workoutId: 1,
         title: 'Push Up',
-        description: 'A fundamental bodyweight exercise targeting chest, shoulders, and triceps',
-        imageUrl: 'assets/exerciseImages/push_up_gif.jpg',
+        description: 'Targets chest, shoulders, and triceps.',
         sets: 3,
         suggestedReps: 15,
-        suggestedWeight: 10,
-        instructions: '1. Start in a plank position\n2. Lower your body until chest nearly touches floor\n3. Push back up to starting position',
+        suggestedWeight: 0,
+        instructions: 'Start in plank, lower body, push back up.',
         level: 'Beginner',
         equipment: 'Bodyweight',
       ),
       Exercise(
-        workoutId: 2,
+        exerciseId: 2,
+        workoutId: 1,
         title: 'Dumbbell Bench Press',
-        description: 'Compound exercise for chest development',
-        imageUrl: 'assets/workoutImages/dumbbell_bench.jpg',
+        description: 'Chest press with dumbbells.',
         sets: 3,
         suggestedReps: 12,
         suggestedWeight: 10,
-        instructions: '1. Lie on bench with dumbbells at chest level\n2. Press dumbbells upward until arms are extended\n3. Lower slowly to starting position',
+        instructions: 'Lie on bench, press dumbbells up and down.',
         level: 'Intermediate',
         equipment: 'Dumbbells, Bench',
       ),
       Exercise(
-        workoutId: 3,
+        exerciseId: 3,
+        workoutId: 1,
         title: 'Bent Over Row',
-        description: 'Back strengthening exercise targeting lats and rhomboids',
-        imageUrl: 'assets/workoutImages/bent_over_row.jpg',
+        description: 'Strengthens back.',
         sets: 3,
         suggestedReps: 15,
         suggestedWeight: 10,
-        instructions: '1. Bend at hips with slight knee bend\n2. Pull dumbbells toward lower chest\n3. Lower slowly with control',
+        instructions: 'Hinge hips, pull dumbbells to torso.',
         level: 'Intermediate',
         equipment: 'Dumbbells',
       ),
       Exercise(
-        workoutId: 4,
+        exerciseId: 4,
+        workoutId: 1,
         title: 'Shoulder Press',
-        description: 'Develops shoulder strength and stability',
-        imageUrl: 'assets/workoutImages/shoulder_press.jpg',
+        description: 'Develops shoulder strength.',
         sets: 3,
         suggestedReps: 10,
         suggestedWeight: 10,
-        instructions: '1. Sit with dumbbells at shoulder height\n2. Press upward until arms are extended\n3. Lower slowly back to shoulders',
+        instructions: 'Press dumbbells overhead, return slowly.',
         level: 'Intermediate',
-        equipment: 'Dumbbells, Bench',
-      ),
-      Exercise(
-        workoutId: 5,
-        title: 'Bicep Curls',
-        description: 'Isolates the biceps for arm development',
-        imageUrl: 'assets/workoutImages/bicep_curl.jpg',
-        sets: 3,
-        suggestedReps: 15,
-        suggestedWeight: 10,
-        instructions: '1. Stand with dumbbells at sides\n2. Curl weights toward shoulders\n3. Lower slowly with control',
-        level: 'Beginner',
         equipment: 'Dumbbells',
       ),
       Exercise(
-        workoutId: 6,
+        exerciseId: 5,
+        workoutId: 1,
         title: 'Bicep Curls',
-        description: 'Isolates the biceps for arm development',
-        imageUrl: 'assets/workoutImages/bicep_curl.jpg',
+        description: 'Bicep isolation.',
         sets: 3,
         suggestedReps: 15,
         suggestedWeight: 10,
-        instructions: '1. Stand with dumbbells at sides\n2. Curl weights toward shoulders\n3. Lower slowly with control',
+        instructions: 'Curl and lower dumbbells with control.',
         level: 'Beginner',
         equipment: 'Dumbbells',
       ),
+
+      // 🧘 Yoga (Workout ID = 2)
       Exercise(
-        workoutId: 7,
-        title: 'Bicep Curls',
-        description: 'Isolates the biceps for arm development',
-        imageUrl: 'assets/workoutImages/bicep_curl.jpg',
-        sets: 3,
-        suggestedReps: 15,
-        suggestedWeight: 10,
-        instructions: '1. Stand with dumbbells at sides\n2. Curl weights toward shoulders\n3. Lower slowly with control',
+        exerciseId: 6,
+        workoutId: 2,
+        title: 'Child’s Pose',
+        description: 'Resting yoga pose to stretch hips and back.',
+        sets: 1,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Sit back on heels, reach arms forward.',
         level: 'Beginner',
-        equipment: 'Dumbbells',
+        equipment: 'Mat',
       ),
       Exercise(
-        workoutId: 8,
-        title: 'Bicep Curls',
-        description: 'Isolates the biceps for arm development',
-        imageUrl: 'assets/workoutImages/bicep_curl.jpg',
-        sets: 3,
-        suggestedReps: 15,
-        suggestedWeight: 10,
-        instructions: '1. Stand with dumbbells at sides\n2. Curl weights toward shoulders\n3. Lower slowly with control',
+        exerciseId: 7,
+        workoutId: 2,
+        title: 'Downward Dog',
+        description: 'Stretch hamstrings and spine.',
+        sets: 1,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Hips up, heels down, arms extended.',
         level: 'Beginner',
-        equipment: 'Dumbbells',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 8,
+        workoutId: 2,
+        title: 'Cobra Pose',
+        description: 'Stretches chest and strengthens spine.',
+        sets: 1,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Lie on stomach, lift chest up with arms.',
+        level: 'Beginner',
+        equipment: 'Mat',
       ),
     ];
+
+    // Return only the exercises that match the workoutId
+    return allExercises.where((e) => e.workoutId == workoutID).toList();
   }
+
 }
+
 
 // Update your Exercise model to include new fields
 class Exercise {
-  final int workoutId;
+  final int exerciseId;
+  final int workoutId; // ← link to the Workout
   final String title;
   final String description;
-  final String imageUrl;
   final int sets;
   final int suggestedReps;
   final int suggestedWeight;
@@ -122,10 +129,10 @@ class Exercise {
   final String equipment;
 
   Exercise({
+    required this.exerciseId,
     required this.workoutId,
     required this.title,
     required this.description,
-    required this.imageUrl,
     required this.sets,
     required this.suggestedWeight,
     required this.suggestedReps,
