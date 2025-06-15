@@ -9,7 +9,6 @@ class AnalysisScreen extends StatelessWidget {
   final int calories;
   final String intensity;
   final String? notes;
-
   final Map<String, dynamic>? extraStats;
 
   const AnalysisScreen({
@@ -24,7 +23,7 @@ class AnalysisScreen extends StatelessWidget {
     this.extraStats,
   }) : super(key: key);
 
-  // this is for sharing, hardcoded.
+  // Build sharing message (need to implement backend)
   String buildShareContent() {
     final stats = extraStats ?? {
       "Average Heart Rate": "123 bpm",
@@ -45,29 +44,42 @@ class AnalysisScreen extends StatelessWidget {
     String text =
         "🏋️ Workout: $workout\n📅 Date: $date\n⏱ Duration: $duration\n🔥 Calories: $calories kcal\n"
         "⬆️ Intensity: $intensity\n$statString";
+
     if (notes != null && notes!.trim().isNotEmpty) {
       text += "\n📝 Notes: ${notes!}";
     }
+
     text += "\n\nShared via MyWorkoutApp 💪";
     return text;
   }
 
+  // Share dialog with editable message
   void _showShareEditDialog(BuildContext context, String initialText) {
     final controller = TextEditingController(text: initialText);
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       isScrollControlled: true,
       builder: (context) {
-        final padding = MediaQuery.of(context).viewInsets; // For keyboard
+        final padding = MediaQuery.of(context).viewInsets;
+
         return Padding(
           padding: padding,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 18),
-              Container(width: 50, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+              Container(
+                width: 50,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Edit your share message',
@@ -94,7 +106,9 @@ class AnalysisScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF071655), padding: const EdgeInsets.symmetric(vertical: 13)),
+                      backgroundColor: const Color(0xFF071655),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
                     icon: const Icon(Icons.share),
                     label: const Text("Share"),
                     onPressed: () {
@@ -115,7 +129,6 @@ class AnalysisScreen extends StatelessWidget {
     );
   }
 
-  // this is hardcoded, replace with backend
   @override
   Widget build(BuildContext context) {
     final stats = extraStats ?? {
@@ -130,17 +143,27 @@ class AnalysisScreen extends StatelessWidget {
     };
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFFFCF2),
+
       appBar: AppBar(
-        title: const Text("Workout Analysis"),
-        backgroundColor: const Color(0xFF071655),
+        backgroundColor: Colors.amber,
+        elevation: 0,
+        title: const Text(
+          "Workout Analysis",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      backgroundColor: const Color(0xFFFAF6EE),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Main info
+            // Header Section
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -156,8 +179,7 @@ class AnalysisScreen extends StatelessWidget {
                     children: [
                       Text(
                         workout,
-                        style: const TextStyle(
-                            fontSize: 21, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -166,8 +188,7 @@ class AnalysisScreen extends StatelessWidget {
                           const SizedBox(width: 5),
                           Text(
                             date,
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.black54),
+                            style: const TextStyle(fontSize: 13, color: Colors.black54),
                           ),
                         ],
                       ),
@@ -176,9 +197,10 @@ class AnalysisScreen extends StatelessWidget {
                 )
               ],
             ),
+
             const SizedBox(height: 25),
 
-            // Quick stats
+            // Top Summary Cards
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -187,9 +209,10 @@ class AnalysisScreen extends StatelessWidget {
                 _statCard(Icons.trending_up, "Intensity", intensity),
               ],
             ),
+
             const SizedBox(height: 28),
 
-            // Detailed stats
+            // Detailed Stats
             const Text(
               "Detailed Stats",
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
@@ -219,7 +242,7 @@ class AnalysisScreen extends StatelessWidget {
               ),
             )),
 
-            // Notes
+            // Notes section
             if (notes != null && notes!.isNotEmpty) ...[
               const SizedBox(height: 22),
               const Text(
@@ -229,12 +252,15 @@ class AnalysisScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 notes!,
-                style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 15),
+                style: const TextStyle(
+                    fontStyle: FontStyle.italic, fontSize: 15),
               ),
             ],
           ],
         ),
       ),
+
+      // Share FAB
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           _showShareEditDialog(context, buildShareContent());
@@ -246,7 +272,7 @@ class AnalysisScreen extends StatelessWidget {
     );
   }
 
-  // A small card widget for top 3 stats
+  // Top card component match design
   Widget _statCard(IconData icon, String label, String value) {
     return Container(
       width: 95,
@@ -267,15 +293,17 @@ class AnalysisScreen extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
           const SizedBox(height: 2),
-          Text(label,
-              style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300))
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.black54,
+              fontSize: 12,
+              fontWeight: FontWeight.w300,
+            ),
+          )
         ],
       ),
     );
