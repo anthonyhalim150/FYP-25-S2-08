@@ -5,7 +5,7 @@ import "../styles/Styles.css";
 import AllUsersPage from './ViewAllUsers';
 import AllChallengesPage from './ViewAllChallenges';
 import AllTournamentsPage from './ViewAllTournaments';
-import AllWorkoutsPage from './ViewAllWorkouts';
+import AllWorkoutsPage from './ViewAllWorkoutCategories';
 import AllAvatarsPage from './ViewAllAvatars';
 import AllFeedbacksPage from './ViewAllFeedbacks';
 

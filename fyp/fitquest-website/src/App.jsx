@@ -1,20 +1,26 @@
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import ADashboard from './pages/ADashboard';
 import AllUsersPage from './pages/ViewAllUsers';
-import ViewAUser from '../src/components/ViewAUser';
+import ViewAUser from './components/ViewAUser';
+import ViewAllWorkoutCategories from './pages/ViewAllWorkoutCategories';
+import ViewAWorkoutCategory from './pages/ViewAWorkoutCategory';
+import ViewAllAvatars from './pages/ViewAllAvatars';
 
 const App = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/dashboard" element={<ADashboard/>} />
-                <Route path="/All-Users" element={<AllUsersPage />} />
-                <Route path="/users/:id" element={<ViewAUser />} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<ADashboard />} />
+        <Route path="/All-Users" element={<AllUsersPage />} />
+        <Route path="/users/:id" element={<ViewAUser />} />
+        <Route path="/All-Workouts" element={<ViewAllWorkoutCategories />} />
+        <Route path="/admin/workouts/:categoryId" element={<ViewAWorkoutCategory />} />
+        <Route path="/All-Avatars" element={<ViewAllAvatars />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;
