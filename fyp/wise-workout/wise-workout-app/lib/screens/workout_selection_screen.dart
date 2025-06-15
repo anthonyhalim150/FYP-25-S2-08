@@ -106,8 +106,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => WorkoutExercisesScreen(workoutId: 1,
-                                workoutName: 'Chest',
+                                builder: (_) => WorkoutExercisesScreen(workoutId: widget.workoutID, workoutName: widget.workoutName,
                                 workoutImageUrl: 'assets/workoutImages/strength_training.jpg',),
                               ),
                             );
