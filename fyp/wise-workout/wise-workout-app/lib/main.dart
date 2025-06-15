@@ -64,7 +64,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           '/workout-history': (context) => const HistoryScreen(),
           '/premium-plan': (context) => BuyPremiumScreen(),
           '/workout-selection-screen': (ctx) => WorkoutScreen(
-          workoutID: ModalRoute.of(ctx)!.settings.arguments as int,
+            workoutId: ModalRoute.of(ctx)!.settings.arguments as int,
           workoutName: '',
           ),
           '/exercise-detail': (context) => ExerciseDetailScreen(

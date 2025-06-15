@@ -153,7 +153,7 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => WorkoutScreen(
-                              workoutID: workoutID,
+                              workoutId: workoutID,
                               workoutName: workoutName,
                             ),
                           ),

@@ -2,7 +2,7 @@ import 'dart:async';
 
 // Model representing an exercise
 class Workout {
-  final int id;
+  final int workoutId;
   final String title;
   final String category;
   final String description;
@@ -11,7 +11,7 @@ class Workout {
 
   Workout({
     required this.category,
-    required this.id,
+    required this.workoutId,
     required this.title,
     required this.description,
     required this.duration,
@@ -28,7 +28,7 @@ class WorkoutService {
     return [
       // Strength workouts
       Workout(
-        id: 1,
+        workoutId: 1,
         title: 'Dumbbell Strength',
         category: 'strength',
         description: 'Grab your dumbbells and get to work with this fast-paced, high-burn strength workout.',
@@ -36,7 +36,7 @@ class WorkoutService {
         level: 'Beginner',
       ),
       Workout(
-        id: 2,
+        workoutId: 2,
         title: 'Upper Body Blast',
         category: 'strength',
         description: 'Focus on your chest, shoulders, and triceps using compound dumbbell movements.',
@@ -44,7 +44,7 @@ class WorkoutService {
         level: 'Intermediate',
       ),
       Workout(
-        id: 3,
+        workoutId: 3,
         title: 'Leg Day Power Burn',
         category: 'strength',
         description: 'Ignite your lower body with squats, lunges, and glute bridges in this power-packed workout.',
@@ -52,7 +52,7 @@ class WorkoutService {
         level: 'Advanced',
       ),
       Workout(
-        id: 4,
+        workoutId: 4,
         title: 'Total Body Core Circuit',
         category: 'strength',
         description: 'Strengthen your entire body and core with this functional circuit training routine.',
@@ -62,7 +62,7 @@ class WorkoutService {
 
       // Yoga workouts
       Workout(
-        id: 5,
+        workoutId: 5,
         title: 'Morning Flow Yoga',
         category: 'yoga',
         description: 'Start your day with a gentle yoga flow to wake up your body and mind.',
@@ -70,7 +70,7 @@ class WorkoutService {
         level: 'Beginner',
       ),
       Workout(
-        id: 6,
+        workoutId: 6,
         title: 'Power Vinyasa',
         category: 'yoga',
         description: 'Build strength and flexibility with this dynamic vinyasa flow sequence.',
@@ -78,7 +78,7 @@ class WorkoutService {
         level: 'Intermediate',
       ),
       Workout(
-        id: 7,
+        workoutId: 7,
         title: 'Evening Wind Down Yoga',
         category: 'yoga',
         description: 'Relax and stretch your body in preparation for a good night’s sleep.',

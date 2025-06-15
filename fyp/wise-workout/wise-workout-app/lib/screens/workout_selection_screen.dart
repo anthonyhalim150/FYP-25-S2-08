@@ -7,12 +7,12 @@ import '../services/workout_service.dart';
 
 // Main screen displaying a list of exercises for a workout
 class WorkoutScreen extends StatefulWidget {
-  final int workoutID;
+  final int workoutId;
   final String workoutName;
 
   const WorkoutScreen({
     Key? key,
-    required this.workoutID,
+    required this.workoutId,
     required this.workoutName,
   }) : super(key: key);
 
@@ -27,7 +27,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   @override
   void initState() {
     super.initState();
-    _exercisesFuture = _service.fetchExercises(widget.workoutID);
+    _exercisesFuture = _service.fetchExercises(widget.workoutId);
   }
 
   @override
@@ -106,7 +106,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => WorkoutExercisesScreen(workoutId: widget.workoutID, workoutName: widget.workoutName,
+                                builder: (_) => WorkoutExercisesScreen(workoutId: ex.workoutId, workoutName: ex.title,
                                 workoutImageUrl: 'assets/workoutImages/strength_training.jpg',),
                               ),
                             );
