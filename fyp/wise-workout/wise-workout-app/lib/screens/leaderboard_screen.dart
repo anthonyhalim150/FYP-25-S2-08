@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/leaderboard_content.dart'; // The widget we'll create for the middle content
+import '../widgets/leaderboard_content.dart';
 import '../widgets/bottom_navigation.dart';
 
 class LeaderboardPage extends StatefulWidget {
@@ -10,14 +10,26 @@ class LeaderboardPage extends StatefulWidget {
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
-  int _currentIndex = 1; // Leaderboard is at index 1
-  bool _isChallengeSelected = true;
+  int _currentIndex = 1; // Bottom Nav Index
+  int _selectedPage = 0; // 0 = Challenge, 1 = Tournament
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedPage);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   void _onNavBarTap(int index) {
     setState(() {
       _currentIndex = index;
     });
-    // Navigate based on index
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');
@@ -34,18 +46,27 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     }
   }
 
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedPage = index;
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1C3A), // Dark background like image
+      backgroundColor: const Color(0xFF0B1C3A),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/profile');
-          },
+          onPressed: () => Navigator.pushReplacementNamed(context, '/profile'),
         ),
         title: const Text('Leaderboard', style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -55,24 +76,24 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildToggleButton('Challenge', _isChallengeSelected, () {
-                  setState(() {
-                    _isChallengeSelected = true;
-                  });
-                }),
+                _buildToggleButton('Challenge', _selectedPage == 0, () => _onTabSelected(0)),
                 const SizedBox(width: 8),
-                _buildToggleButton('Tournament', !_isChallengeSelected, () {
-                  setState(() {
-                    _isChallengeSelected = false;
-                  });
-                }),
+                _buildToggleButton('Tournament', _selectedPage == 1, () => _onTabSelected(1)),
               ],
             ),
           ),
           Expanded(
-            child: LeaderboardContent(isChallengeSelected: _isChallengeSelected),
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() => _selectedPage = index);
+              },
+              children: const [
+                LeaderboardContent(isChallengeSelected: true),
+                LeaderboardContent(isChallengeSelected: false),
+              ],
+            ),
           ),
         ],
       ),
