@@ -6,6 +6,8 @@ import ViewAUser from './components/ViewAUser';
 import ViewAllWorkoutCategories from './pages/ViewAllWorkoutCategories';
 import ViewAWorkoutCategory from './pages/ViewAWorkoutCategory';
 import ViewAllAvatars from './pages/ViewAllAvatars';
+import ViewAllFeedbacks from './pages/ViewAllFeedbacks';
+import ViewAllTournaments from './pages/ViewAllTournaments';
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
         <Route path="/All-Workouts" element={<ViewAllWorkoutCategories />} />
         <Route path="/admin/workouts/:categoryId" element={<ViewAWorkoutCategory />} />
         <Route path="/All-Avatars" element={<ViewAllAvatars />} />
+        <Route path='/All-Feedbacks' element={<ViewAllFeedbacks />} />
+        <Route path='All-Tournaments' element={ <ViewAllTournaments/>} />
       </Routes>
     </Router>
   );
