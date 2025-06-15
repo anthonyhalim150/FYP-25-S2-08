@@ -4,8 +4,10 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const loginRoutes = require('./routes/loginRoutes');
 const db = require('./config/db');
+
+const loginRoutes = require('./routes/loginRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -20,6 +22,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/auth', loginRoutes);
+app.use('/api', userRoutes);
 
 // Test DB connection
 db.query('SELECT DATABASE() AS db_name')
