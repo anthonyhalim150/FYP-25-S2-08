@@ -89,3 +89,10 @@ flutter:
     - assets/icons/lock.jpg
     - assets/exerciseGif/push_up.mp4
     - assets/exerciseGif/push_up.gif
+    - assets/workoutImages/dumbbell_strength.jpg
+    - assets/workoutImages/evening_wind_down_yoga.jpg
+    - assets/workoutImages/leg_day_power_burn.jpg
+    - assets/workoutImages/morning_flow_yoga.jpg
+    - assets/workoutImages/power_vinyasa.jpg
+    - assets/workoutImages/upper_body_blast.jpg
+    - assets/workoutImages/total_body_core_circuit.jpg
