@@ -214,7 +214,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               // Fields
                               dataItem("First Name", isEditing ? buildField(firstNameController) : firstName),
                               dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName),
-                              dataItem("Username", isEditing ? buildField(usernameController) : username, isGrey: !isEditing),
+                              dataItem("Username", isEditing ? buildField(usernameController) : username),
                               dataItem("Date of Birth", isEditing ? buildField(dobController) : dateOfBirth),
                               dataItem("Email", isEditing ? buildField(emailController) : email),
                               const SizedBox(height: 20),
