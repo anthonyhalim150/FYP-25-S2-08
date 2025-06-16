@@ -1,7 +1,7 @@
 import 'dart:async';
 
-// Model representing an exercise
 class Workout {
+  final String workoutKey;
   final int workoutId;
   final String title;
   final String category;
@@ -10,24 +10,23 @@ class Workout {
   final String level;
 
   Workout({
-    required this.category,
+    required this.workoutKey,
     required this.workoutId,
     required this.title,
+    required this.category,
     required this.description,
     required this.duration,
     required this.level,
   });
 }
 
-// Service that fetches exercises for a given workoutID
 class WorkoutService {
-  // In a real app this would query your SQL database
-  Future<List<Workout>> fetchExercises(String categoryName) async {
+  Future<List<Workout>> fetchWorkouts(String categoryName) async {
     await Future.delayed(Duration(milliseconds: 500));
 
     return [
-      // Strength workouts
       Workout(
+        workoutKey: 'dumbbell_strength',
         workoutId: 1,
         title: 'Dumbbell Strength',
         category: 'strength',
@@ -36,6 +35,7 @@ class WorkoutService {
         level: 'Beginner',
       ),
       Workout(
+        workoutKey: 'upper_body_blast',
         workoutId: 2,
         title: 'Upper Body Blast',
         category: 'strength',
@@ -44,14 +44,16 @@ class WorkoutService {
         level: 'Intermediate',
       ),
       Workout(
+        workoutKey: 'leg_day_power_burn',
         workoutId: 3,
         title: 'Leg Day Power Burn',
         category: 'strength',
-        description: 'Ignite your lower body with squats, lunges, and glute bridges in this power-packed workout.',
+        description: 'Ignite your lower body with squats, lunges, and glute bridges.',
         duration: '30',
         level: 'Advanced',
       ),
       Workout(
+        workoutKey: 'total_core_circuit',
         workoutId: 4,
         title: 'Total Body Core Circuit',
         category: 'strength',
@@ -59,9 +61,8 @@ class WorkoutService {
         duration: '22',
         level: 'Beginner',
       ),
-
-      // Yoga workouts
       Workout(
+        workoutKey: 'morning_yoga',
         workoutId: 5,
         title: 'Morning Flow Yoga',
         category: 'yoga',
@@ -70,6 +71,7 @@ class WorkoutService {
         level: 'Beginner',
       ),
       Workout(
+        workoutKey: 'power_vinyasa',
         workoutId: 6,
         title: 'Power Vinyasa',
         category: 'yoga',
@@ -78,6 +80,7 @@ class WorkoutService {
         level: 'Intermediate',
       ),
       Workout(
+        workoutKey: 'evening_wind_down',
         workoutId: 7,
         title: 'Evening Wind Down Yoga',
         category: 'yoga',
@@ -86,48 +89,52 @@ class WorkoutService {
         level: 'Beginner',
       ),
       Workout(
+        workoutKey: 'bodyweight_leg_blast',
         workoutId: 8,
         title: 'Bodyweight Leg Blast',
         category: 'leg',
-        description: 'No equipment needed! Burn your thighs and glutes with squats, lunges, and wall sits.',
+        description: 'Burn your thighs and glutes with squats, lunges, and wall sits.',
         duration: '18',
         level: 'Beginner',
       ),
       Workout(
+        workoutKey: 'explosive_plyo_legs',
         workoutId: 9,
         title: 'Explosive Plyo Legs',
         category: 'leg',
-        description: 'Add power and agility to your legs with jump squats, skater hops, and more.',
+        description: 'Add power and agility to your legs with jump squats and skater hops.',
         duration: '25',
         level: 'Intermediate',
       ),
       Workout(
+        workoutKey: 'glute_isolation',
         workoutId: 10,
         title: 'Glute Isolation Session',
         category: 'leg',
-        description: 'A focused routine to tone and build your glutes using bridges, pulses, and holds.',
+        description: 'Tone and build your glutes using bridges, pulses, and holds.',
         duration: '20',
         level: 'Advanced',
       ),
-
-      // Cardio workouts
       Workout(
+        workoutKey: 'quick_hiit',
         workoutId: 11,
         title: 'Quick HIIT Circuit',
         category: 'cardio',
-        description: 'Short but intense high-intensity intervals to get your heart pumping.',
+        description: 'Short but intense high-intensity intervals.',
         duration: '15',
         level: 'Beginner',
       ),
       Workout(
+        workoutKey: 'endurance_cardio',
         workoutId: 12,
         title: 'Endurance Cardio Burn',
         category: 'cardio',
-        description: 'Keep moving for a sustained burn with jumping jacks, mountain climbers, and burpees.',
+        description: 'Jumping jacks, mountain climbers, and burpees for fat burn.',
         duration: '30',
         level: 'Intermediate',
       ),
       Workout(
+        workoutKey: 'cardio_kickboxing',
         workoutId: 13,
         title: 'Cardio Kickboxing',
         category: 'cardio',
@@ -137,5 +144,4 @@ class WorkoutService {
       ),
     ];
   }
-
 }

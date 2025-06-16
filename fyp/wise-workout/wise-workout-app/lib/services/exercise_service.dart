@@ -1,124 +1,8 @@
 import 'dart:async';
 
-// In workout_service.dart
-
-class ExerciseService {
-  Future<List<Exercise>> fetchExercises(int workoutID) async {
-    await Future.delayed(Duration(milliseconds: 500));
-
-    final allExercises = [
-      // 🏋️ Dumbbell Strength (Workout ID = 1)
-      Exercise(
-        exerciseId: 1,
-        workoutId: 1,
-        title: 'Push Up',
-        description: 'Targets chest, shoulders, and triceps.',
-        sets: 3,
-        suggestedReps: 15,
-        suggestedWeight: 0,
-        instructions: 'Start in plank, lower body, push back up.',
-        level: 'Beginner',
-        equipment: 'Bodyweight',
-      ),
-      Exercise(
-        exerciseId: 2,
-        workoutId: 1,
-        title: 'Dumbbell Bench Press',
-        description: 'Chest press with dumbbells.',
-        sets: 3,
-        suggestedReps: 12,
-        suggestedWeight: 10,
-        instructions: 'Lie on bench, press dumbbells up and down.',
-        level: 'Intermediate',
-        equipment: 'Dumbbells, Bench',
-      ),
-      Exercise(
-        exerciseId: 3,
-        workoutId: 1,
-        title: 'Bent Over Row',
-        description: 'Strengthens back.',
-        sets: 3,
-        suggestedReps: 15,
-        suggestedWeight: 10,
-        instructions: 'Hinge hips, pull dumbbells to torso.',
-        level: 'Intermediate',
-        equipment: 'Dumbbells',
-      ),
-      Exercise(
-        exerciseId: 4,
-        workoutId: 1,
-        title: 'Shoulder Press',
-        description: 'Develops shoulder strength.',
-        sets: 3,
-        suggestedReps: 10,
-        suggestedWeight: 10,
-        instructions: 'Press dumbbells overhead, return slowly.',
-        level: 'Intermediate',
-        equipment: 'Dumbbells',
-      ),
-      Exercise(
-        exerciseId: 5,
-        workoutId: 1,
-        title: 'Bicep Curls',
-        description: 'Bicep isolation.',
-        sets: 3,
-        suggestedReps: 15,
-        suggestedWeight: 10,
-        instructions: 'Curl and lower dumbbells with control.',
-        level: 'Beginner',
-        equipment: 'Dumbbells',
-      ),
-
-      // 🧘 Yoga (Workout ID = 2)
-      Exercise(
-        exerciseId: 6,
-        workoutId: 2,
-        title: 'Child’s Pose',
-        description: 'Resting yoga pose to stretch hips and back.',
-        sets: 1,
-        suggestedReps: 1,
-        suggestedWeight: 0,
-        instructions: 'Sit back on heels, reach arms forward.',
-        level: 'Beginner',
-        equipment: 'Mat',
-      ),
-      Exercise(
-        exerciseId: 7,
-        workoutId: 2,
-        title: 'Downward Dog',
-        description: 'Stretch hamstrings and spine.',
-        sets: 1,
-        suggestedReps: 1,
-        suggestedWeight: 0,
-        instructions: 'Hips up, heels down, arms extended.',
-        level: 'Beginner',
-        equipment: 'Mat',
-      ),
-      Exercise(
-        exerciseId: 8,
-        workoutId: 2,
-        title: 'Cobra Pose',
-        description: 'Stretches chest and strengthens spine.',
-        sets: 1,
-        suggestedReps: 1,
-        suggestedWeight: 0,
-        instructions: 'Lie on stomach, lift chest up with arms.',
-        level: 'Beginner',
-        equipment: 'Mat',
-      ),
-    ];
-
-    // Return only the exercises that match the workoutId
-    return allExercises.where((e) => e.workoutId == workoutID).toList();
-  }
-
-}
-
-
-// Update your Exercise model to include new fields
 class Exercise {
   final int exerciseId;
-  final int workoutId; // ← link to the Workout
+  final String workoutKey;
   final String title;
   final String description;
   final int sets;
@@ -130,14 +14,381 @@ class Exercise {
 
   Exercise({
     required this.exerciseId,
-    required this.workoutId,
+    required this.workoutKey,
     required this.title,
     required this.description,
     required this.sets,
-    required this.suggestedWeight,
     required this.suggestedReps,
+    required this.suggestedWeight,
     required this.instructions,
     required this.level,
     required this.equipment,
   });
+}
+
+class ExerciseService {
+  Future<List<Exercise>> fetchExercises(String workoutKey) async {
+    await Future.delayed(Duration(milliseconds: 500));
+
+    final allExercises = [
+
+      // dumbbell_strength
+      Exercise(
+        exerciseId: 1,
+        workoutKey: 'dumbbell_strength',
+        title: 'Push Ups',
+        description: 'Strengthens chest and arms.',
+        sets: 3,
+        suggestedReps: 12,
+        suggestedWeight: 0,
+        instructions: 'Keep body straight, lower and push up.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+      Exercise(
+        exerciseId: 2,
+        workoutKey: 'dumbbell_strength',
+        title: 'Dumbbell Shoulder Press',
+        description: 'Works shoulders and triceps.',
+        sets: 3,
+        suggestedReps: 10,
+        suggestedWeight: 8,
+        instructions: 'Press dumbbells overhead, lower slowly.',
+        level: 'Beginner',
+        equipment: 'Dumbbells',
+      ),
+      Exercise(
+        exerciseId: 3,
+        workoutKey: 'dumbbell_strength',
+        title: 'Bent Over Rows',
+        description: 'Builds back muscles.',
+        sets: 3,
+        suggestedReps: 12,
+        suggestedWeight: 10,
+        instructions: 'Pull dumbbells to ribs, hold, and release.',
+        level: 'Intermediate',
+        equipment: 'Dumbbells',
+      ),
+
+      // upper_body_blast
+      Exercise(
+        exerciseId: 4,
+        workoutKey: 'upper_body_blast',
+        title: 'Incline Dumbbell Press',
+        description: 'Chest-focused movement.',
+        sets: 4,
+        suggestedReps: 10,
+        suggestedWeight: 12,
+        instructions: 'Lie inclined, press dumbbells upward.',
+        level: 'Intermediate',
+        equipment: 'Dumbbells, Bench',
+      ),
+      Exercise(
+        exerciseId: 5,
+        workoutKey: 'upper_body_blast',
+        title: 'Dumbbell Lateral Raises',
+        description: 'Targets deltoid muscles.',
+        sets: 3,
+        suggestedReps: 15,
+        suggestedWeight: 6,
+        instructions: 'Raise arms to sides to shoulder level.',
+        level: 'Beginner',
+        equipment: 'Dumbbells',
+      ),
+      Exercise(
+        exerciseId: 6,
+        workoutKey: 'upper_body_blast',
+        title: 'Tricep Kickbacks',
+        description: 'Isolates triceps.',
+        sets: 3,
+        suggestedReps: 12,
+        suggestedWeight: 5,
+        instructions: 'Extend elbows back while bent forward.',
+        level: 'Beginner',
+        equipment: 'Dumbbells',
+      ),
+
+      // leg_day_power_burn
+      Exercise(
+        exerciseId: 7,
+        workoutKey: 'leg_day_power_burn',
+        title: 'Barbell Squat',
+        description: 'Total lower body strength.',
+        sets: 4,
+        suggestedReps: 8,
+        suggestedWeight: 40,
+        instructions: 'Keep back straight, squat deep.',
+        level: 'Advanced',
+        equipment: 'Barbell',
+      ),
+      Exercise(
+        exerciseId: 8,
+        workoutKey: 'leg_day_power_burn',
+        title: 'Walking Lunges',
+        description: 'Targets legs and glutes.',
+        sets: 3,
+        suggestedReps: 12,
+        suggestedWeight: 10,
+        instructions: 'Step forward into lunges repeatedly.',
+        level: 'Intermediate',
+        equipment: 'Dumbbells',
+      ),
+      Exercise(
+        exerciseId: 9,
+        workoutKey: 'leg_day_power_burn',
+        title: 'Calf Raises',
+        description: 'Strengthens calves.',
+        sets: 3,
+        suggestedReps: 20,
+        suggestedWeight: 0,
+        instructions: 'Raise heels and hold briefly.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+
+      // total_core_circuit
+      Exercise(
+        exerciseId: 10,
+        workoutKey: 'total_core_circuit',
+        title: 'Plank',
+        description: 'Engages full core.',
+        sets: 3,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Hold plank position for 30-60 sec.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+      Exercise(
+        exerciseId: 11,
+        workoutKey: 'total_core_circuit',
+        title: 'Russian Twists',
+        description: 'Targets obliques.',
+        sets: 3,
+        suggestedReps: 20,
+        suggestedWeight: 5,
+        instructions: 'Twist torso side to side.',
+        level: 'Intermediate',
+        equipment: 'Dumbbell',
+      ),
+      Exercise(
+        exerciseId: 12,
+        workoutKey: 'total_core_circuit',
+        title: 'Leg Raises',
+        description: 'Strengthens lower abs.',
+        sets: 3,
+        suggestedReps: 15,
+        suggestedWeight: 0,
+        instructions: 'Lift legs straight, control the descent.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+
+      // morning_yoga
+      Exercise(
+        exerciseId: 13,
+        workoutKey: 'morning_yoga',
+        title: 'Cat-Cow Stretch',
+        description: 'Wakes up spine and core.',
+        sets: 2,
+        suggestedReps: 10,
+        suggestedWeight: 0,
+        instructions: 'Alternate arching and rounding back.',
+        level: 'Beginner',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 14,
+        workoutKey: 'morning_yoga',
+        title: 'Sun Salutation',
+        description: 'Full-body warmup sequence.',
+        sets: 2,
+        suggestedReps: 5,
+        suggestedWeight: 0,
+        instructions: 'Flow through yoga poses.',
+        level: 'Beginner',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 15,
+        workoutKey: 'morning_yoga',
+        title: 'Child’s Pose',
+        description: 'Relaxes back and hips.',
+        sets: 1,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Hold position and breathe.',
+        level: 'Beginner',
+        equipment: 'Mat',
+      ),
+
+      // power_vinyasa
+      Exercise(
+        exerciseId: 16,
+        workoutKey: 'power_vinyasa',
+        title: 'Warrior II',
+        description: 'Builds strength and stability.',
+        sets: 2,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Hold pose and focus on breath.',
+        level: 'Intermediate',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 17,
+        workoutKey: 'power_vinyasa',
+        title: 'Chaturanga',
+        description: 'Upper body control.',
+        sets: 3,
+        suggestedReps: 5,
+        suggestedWeight: 0,
+        instructions: 'Lower body in a slow push-up motion.',
+        level: 'Intermediate',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 18,
+        workoutKey: 'power_vinyasa',
+        title: 'Downward Dog',
+        description: 'Full-body stretch.',
+        sets: 2,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Hold position and stretch.',
+        level: 'Beginner',
+        equipment: 'Mat',
+      ),
+
+      // evening_wind_down
+      Exercise(
+        exerciseId: 19,
+        workoutKey: 'evening_wind_down',
+        title: 'Seated Forward Fold',
+        description: 'Hamstring and back stretch.',
+        sets: 2,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Reach forward and hold.',
+        level: 'Beginner',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 20,
+        workoutKey: 'evening_wind_down',
+        title: 'Reclined Twist',
+        description: 'Relieves spinal tension.',
+        sets: 2,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Lay back and twist gently to one side.',
+        level: 'Beginner',
+        equipment: 'Mat',
+      ),
+      Exercise(
+        exerciseId: 21,
+        workoutKey: 'evening_wind_down',
+        title: 'Legs Up the Wall',
+        description: 'Promotes relaxation and circulation.',
+        sets: 1,
+        suggestedReps: 1,
+        suggestedWeight: 0,
+        instructions: 'Lie with legs resting vertically on a wall.',
+        level: 'Beginner',
+        equipment: 'Wall, Mat',
+      ),
+
+      // bodyweight_leg_blast
+      Exercise(
+        exerciseId: 22,
+        workoutKey: 'bodyweight_leg_blast',
+        title: 'Bodyweight Squats',
+        description: 'Engages thighs and glutes.',
+        sets: 3,
+        suggestedReps: 15,
+        suggestedWeight: 0,
+        instructions: 'Lower into squat and return.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+      Exercise(
+        exerciseId: 23,
+        workoutKey: 'bodyweight_leg_blast',
+        title: 'Reverse Lunges',
+        description: 'Activates glutes and balance.',
+        sets: 3,
+        suggestedReps: 12,
+        suggestedWeight: 0,
+        instructions: 'Step backward and bend both knees.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+
+      // explosive_plyo_legs
+      Exercise(
+        exerciseId: 24,
+        workoutKey: 'explosive_plyo_legs',
+        title: 'Jump Lunges',
+        description: 'Explosive leg work.',
+        sets: 3,
+        suggestedReps: 12,
+        suggestedWeight: 0,
+        instructions: 'Lunge and switch legs mid-air.',
+        level: 'Intermediate',
+        equipment: 'Bodyweight',
+      ),
+      Exercise(
+        exerciseId: 25,
+        workoutKey: 'explosive_plyo_legs',
+        title: 'Skater Hops',
+        description: 'Lateral movement and coordination.',
+        sets: 3,
+        suggestedReps: 20,
+        suggestedWeight: 0,
+        instructions: 'Hop side to side like a skater.',
+        level: 'Intermediate',
+        equipment: 'Bodyweight',
+      ),
+      Exercise(
+        exerciseId: 26,
+        workoutKey: 'explosive_plyo_legs',
+        title: 'Tuck Jumps',
+        description: 'Cardio + leg blast.',
+        sets: 3,
+        suggestedReps: 10,
+        suggestedWeight: 0,
+        instructions: 'Jump high, tucking knees in mid-air.',
+        level: 'Advanced',
+        equipment: 'Bodyweight',
+      ),
+
+      // cardio_kickboxing
+      Exercise(
+        exerciseId: 27,
+        workoutKey: 'cardio_kickboxing',
+        title: 'Jab-Cross Combo',
+        description: 'Punch combo for cardio.',
+        sets: 4,
+        suggestedReps: 20,
+        suggestedWeight: 0,
+        instructions: 'Jab with front hand, cross with back hand.',
+        level: 'Intermediate',
+        equipment: 'Bodyweight',
+      ),
+      Exercise(
+        exerciseId: 28,
+        workoutKey: 'cardio_kickboxing',
+        title: 'High Knees',
+        description: 'Heart-pumping cardio.',
+        sets: 3,
+        suggestedReps: 30,
+        suggestedWeight: 0,
+        instructions: 'Run in place with knees high.',
+        level: 'Beginner',
+        equipment: 'Bodyweight',
+      ),
+    ];
+
+    return allExercises.where((e) => e.workoutKey == workoutKey).toList();
+  }
 }

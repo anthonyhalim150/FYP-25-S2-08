@@ -150,6 +150,7 @@ class _WorkoutDashboardState extends State<WorkoutDashboard> {
                                     workoutId: workout.categoryId,
                                     workoutName: workout.categoryTitle,
                                     categoryName: workout.categoryName,
+                                    workoutKey: '',
                                   ),
                                 ),
                               );

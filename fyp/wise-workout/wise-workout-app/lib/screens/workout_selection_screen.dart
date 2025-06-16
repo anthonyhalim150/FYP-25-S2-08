@@ -10,12 +10,14 @@ class WorkoutScreen extends StatefulWidget {
   final int workoutId;
   final String workoutName;
   final String categoryName;
+  final String workoutKey;
 
   const WorkoutScreen({
     Key? key,
     required this.workoutId,
     required this.workoutName,
     required this.categoryName,
+    required this.workoutKey,
   }) : super(key: key);
 
   @override
@@ -27,12 +29,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   final WorkoutService _service = WorkoutService();
   late final String _categoryName;
   late final String _workoutName;
+  late final String _workoutKey;
   @override
   void initState() {
     super.initState();
+    _workoutKey = widget.workoutKey;
     _categoryName = widget.categoryName;
     _workoutName = widget.workoutName;
-    _exercisesFuture = _service.fetchExercises(_categoryName);
+    _exercisesFuture = _service.fetchWorkouts(_categoryName);
   }
 
   @override
@@ -115,7 +119,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => WorkoutExercisesScreen(workoutId: ex.workoutId, workoutName: ex.title,
+                                builder: (_) => WorkoutExercisesScreen(workoutId: ex.workoutId, workoutName: ex.title, workoutKey: ex.workoutKey,
                                 workoutImageUrl: 'assets/workoutImages/strength_training.jpg',),
                               ),
                             );

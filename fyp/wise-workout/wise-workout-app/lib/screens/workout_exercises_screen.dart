@@ -7,12 +7,14 @@ class WorkoutExercisesScreen extends StatefulWidget {
   final int workoutId;
   final String workoutName;
   final String workoutImageUrl;
+  final String workoutKey;
 
   const WorkoutExercisesScreen({
     super.key,
     required this.workoutId,
     required this.workoutName,
     required this.workoutImageUrl,
+    required this.workoutKey,
   });
 
   @override
@@ -27,7 +29,7 @@ class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
   @override
   void initState() {
     super.initState();
-    _exercisesFuture = _workoutService.fetchExercises(widget.workoutId);
+    _exercisesFuture = _workoutService.fetchExercises(widget.workoutKey);
   }
 
   @override
