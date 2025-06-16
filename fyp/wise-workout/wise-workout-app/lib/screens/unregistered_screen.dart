@@ -6,10 +6,10 @@ import '../widgets/bottom_navigation.dart';
 import 'workout_sample_data.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
-  final int currentSteps = 3000;
-  final int maxSteps = 10000;
-  final int caloriesBurned = 250;
-  final int xpEarned = 100;
+  final int currentSteps = 0;
+  final int maxSteps = 0;
+  final int caloriesBurned = 0;
+  final int xpEarned = 0;
 
   const UnregisteredUserPage({super.key});
 
@@ -70,7 +70,7 @@ class UnregisteredUserPage extends StatelessWidget {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.blueAccent.withOpacity(0.1), // background color
+                        color: Colors.blueAccent.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: TextButton(
@@ -282,7 +282,10 @@ class UnregisteredUserPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: CustomFloatingActionButtonLocation(
+        FloatingActionButtonLocation.centerDocked,
+        offsetY: 9,
+      ),
 
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,
@@ -291,5 +294,19 @@ class UnregisteredUserPage extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+/// Custom FAB location class to move FAB upwards slightly
+class CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  final FloatingActionButtonLocation baseLocation;
+  final double offsetY;
+
+  CustomFloatingActionButtonLocation(this.baseLocation, {this.offsetY = 0});
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final baseOffset = baseLocation.getOffset(scaffoldGeometry);
+    return Offset(baseOffset.dx, baseOffset.dy + offsetY);
   }
 }
