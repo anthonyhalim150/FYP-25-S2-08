@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -18,34 +19,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String email = "pitbulk@gmail.com";
   String level = "Intermediate";
   String accountType = "Premium";
-
   final String profileImage = "assets/avatars/free/free1.png";
   final String backgroundImage = "assets/background/bg1.jpg";
 
-  // Controllers
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
-  late TextEditingController usernameController;
   late TextEditingController dobController;
-  late TextEditingController emailController;
 
   @override
   void initState() {
     super.initState();
     firstNameController = TextEditingController(text: firstName);
     lastNameController = TextEditingController(text: lastName);
-    usernameController = TextEditingController(text: username);
     dobController = TextEditingController(text: dateOfBirth);
-    emailController = TextEditingController(text: email);
   }
 
   @override
   void dispose() {
     firstNameController.dispose();
     lastNameController.dispose();
-    usernameController.dispose();
     dobController.dispose();
-    emailController.dispose();
     super.dispose();
   }
 
@@ -57,9 +50,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       firstName = firstNameController.text;
       lastName = lastNameController.text;
-      username = usernameController.text;
       dateOfBirth = dobController.text;
-      email = emailController.text;
       isEditing = false;
     });
   }
@@ -68,11 +59,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       firstNameController.text = firstName;
       lastNameController.text = lastName;
-      usernameController.text = username;
       dobController.text = dateOfBirth;
-      emailController.text = email;
       isEditing = false;
     });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate = DateTime.tryParse(_parseToISODate(dobController.text)) ?? DateTime(1990, 1, 1);
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900, 1),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      String formatted = DateFormat('dd MMM yyyy').format(picked);
+      setState(() {
+        dobController.text = formatted;
+      });
+    }
+  }
+
+  String _parseToISODate(String value) {
+    try {
+      return DateFormat('dd MMM yyyy').parse(value).toIso8601String();
+    } catch (_) {
+      return DateTime.now().toIso8601String();
+    }
   }
 
   @override
@@ -81,7 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       backgroundColor: const Color(0xFFFFFCF2),
       body: Stack(
         children: [
-          // 🏞 Background at top
+          // Background
           Container(
             height: 250,
             decoration: BoxDecoration(
@@ -91,14 +104,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ),
-
-          // 👇 Scrollable content
+          // Scrollable content
           SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 100),
             child: Column(
               children: [
                 const SizedBox(height: 40),
-
                 // Profile title & back arrow
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -125,13 +136,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48), // Spacer to balance layout
+                        const SizedBox(width: 48),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 // Avatar w/ background + card
                 Stack(
                   alignment: Alignment.center,
@@ -178,8 +188,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                               ),
                               const SizedBox(height: 30),
-
-                              // 🧾 Personal Details + Edit button
+                              // Personal Details + Edit button
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -210,16 +219,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-
-                              // Fields
-                              dataItem("First Name", isEditing ? buildField(firstNameController) : firstName),
-                              dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName),
-                              dataItem("Username", isEditing ? buildField(usernameController) : username),
-                              dataItem("Date of Birth", isEditing ? buildField(dobController) : dateOfBirth),
-                              dataItem("Email", isEditing ? buildField(emailController) : email),
+                              // Fields: Only First/Last Name and Date of Birth are editable
+                              dataItem(
+                                  "First Name",
+                                  isEditing
+                                      ? buildField(firstNameController)
+                                      : firstName),
+                              dataItem(
+                                  "Last Name",
+                                  isEditing
+                                      ? buildField(lastNameController)
+                                      : lastName),
+                              dataItem("Username", username, isGrey: true),
+                              dataItem(
+                                "Date of Birth",
+                                isEditing
+                                    ? buildDOBField(context, dobController)
+                                    : dateOfBirth,
+                              ),
+                              dataItem("Email", email, isGrey: true),
                               const SizedBox(height: 20),
-
-                              // 🧾 Account Section
+                              // Account Section
                               const Text(
                                 "Account Details",
                                 style: TextStyle(
@@ -235,7 +255,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
-
                     // Avatar with circular background behind it
                     Positioned(
                       top: 0,
@@ -264,7 +283,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
 
-          // 💾 Save / Cancel buttons
           if (isEditing)
             Positioned(
               bottom: 20,
@@ -340,6 +358,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(6)),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDOBField(BuildContext context, TextEditingController controller) {
+    return GestureDetector(
+      onTap: () => _selectDate(context),
+      child: AbsorbPointer(
+        child: TextField(
+          controller: controller,
+          readOnly: true,
+          style: const TextStyle(fontSize: 14),
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            ),
+            suffixIcon: Icon(Icons.calendar_today, size: 18, color: Colors.grey[700]),
+          ),
         ),
       ),
     );
