@@ -43,7 +43,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        initialRoute: '/',
+        initialRoute: '/unregistered',
         routes: {
           '/': (context) => LoginScreen(),
           '/home': (context) => HomeScreen(
