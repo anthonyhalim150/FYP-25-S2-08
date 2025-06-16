@@ -22,9 +22,17 @@ exports.verifyOtpRegister = async (req, res) => {
     return res.status(409).json({ message: 'User already exists' });
   }
 
-  await UserEntity.create(email, pendingUser.username, pendingUser.password, 'database');
-  await PendingUserEntity.deleteByEmail(email);
+  await UserEntity.create(
+    email,
+    pendingUser.username,
+    pendingUser.password,
+    'database',
+    pendingUser.firstName,
+    pendingUser.lastName
+  );
 
+  await PendingUserEntity.deleteByEmail(email);
   await setCookie(res, email);
+
   res.status(201).json({ message: 'Registration and verification successful' });
 };

@@ -60,4 +60,23 @@ class Sanitize {
 
     return SanitizeResult.valid(sanitized);
   }
+  SanitizeResult isValidFirstName(String? firstName) {
+    final sanitized = sanitizeInput(firstName);
+
+    if (sanitized.isEmpty) {
+      return SanitizeResult.invalid("First name cannot be empty.");
+    }
+
+    return SanitizeResult.valid(sanitized);
+  }
+
+  SanitizeResult isValidLastName(String? lastName) {
+    final sanitized = sanitizeInput(lastName);
+
+    if (sanitized.isEmpty) {
+      return SanitizeResult.invalid("Last name cannot be empty.");
+    }
+
+    return SanitizeResult.valid(sanitized);
+  }
 }

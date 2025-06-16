@@ -117,6 +117,8 @@ exports.getCurrentProfile = async (req, res) => {
 
     res.status(200).json({
       username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
       role: user.role,
       tokens: user.tokens,
       avatar: avatar ? avatar.image_url : null,

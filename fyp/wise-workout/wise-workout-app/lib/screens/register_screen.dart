@@ -10,6 +10,8 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -50,6 +52,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       emailController.text,
       usernameController.text,
       passwordController.text,
+      firstNameController.text,
+      lastNameController.text,
     );
 
     setState(() => isLoading = false);
@@ -77,7 +81,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // Email
                 const Text("Email", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -89,7 +92,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Username
+                const Text("First Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: firstNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Your First Name',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                const Text("Last Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: lastNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Your Last Name',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 const Text("Username", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -101,7 +125,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password
                 const Text("Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -120,7 +143,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Confirm Password
                 const Text("Confirm Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -139,7 +161,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Terms
                 Row(
                   children: [
                     Checkbox(
@@ -163,7 +184,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Register Button
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -178,18 +198,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: isLoading
                         ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                         : const Text(
-                      "LEVEL UP! →",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        letterSpacing: 1,
-                      ),
-                    ),
+                            "LEVEL UP! →",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              letterSpacing: 1,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // Back to login
                 Center(
                   child: TextButton(
                     onPressed: () {

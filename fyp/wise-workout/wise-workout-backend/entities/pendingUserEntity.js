@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 class PendingUserEntity {
-  async create(email, username = null, hashedPassword, otp, expiresAt) {
+  async create(email, username = null, hashedPassword, otp, expiresAt, firstName, lastName) {
     if (!username) {
       const randomSuffix = Math.floor(1000 + Math.random() * 9000);
       username = `user${randomSuffix}`;
@@ -13,8 +13,8 @@ class PendingUserEntity {
     );
 
     const [result] = await db.execute(
-      'INSERT INTO pending_users (email, username, password, otp, expires_at) VALUES (?, ?, ?, ?, ?)',
-      [email, username, hashedPassword, otp, expiresAt]
+      'INSERT INTO pending_users (email, username, password, otp, expires_at, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [email, username, hashedPassword, otp, expiresAt, firstName, lastName]
     );
 
     return result;

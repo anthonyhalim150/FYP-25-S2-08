@@ -2,7 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 class UserEntity {
-  async create(email, username = null, password = null, method = 'database') {
+  async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '') {
     let hashedPassword = null;
     if (method === 'database' && password) {
       hashedPassword = await bcrypt.hash(password, 10);
@@ -14,12 +14,13 @@ class UserEntity {
     }
 
     const [result] = await db.execute(
-      'INSERT INTO users (email, username, password, method) VALUES (?, ?, ?, ?)',
-      [email, username, hashedPassword, method]
+      'INSERT INTO users (email, username, password, method, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?)',
+      [email, username, hashedPassword, method, firstName, lastName]
     );
 
     return result;
   }
+
   async findById(userId) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE id = ?',
@@ -28,7 +29,6 @@ class UserEntity {
     return rows[0] || null;
   }
 
-
   async findByEmail(email) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ?',
@@ -36,6 +36,7 @@ class UserEntity {
     );
     return rows[0] || null;
   }
+
   async findByUsername(username) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE username = ?',
@@ -56,7 +57,6 @@ class UserEntity {
     const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
   }
-
 }
 
 module.exports = new UserEntity();

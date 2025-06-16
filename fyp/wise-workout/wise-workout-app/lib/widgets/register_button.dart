@@ -6,14 +6,23 @@ import 'package:flutter/material.dart';
 
 final _backendUrl = 'http://10.0.2.2:3000';
 
-Future<String?> registerUser(BuildContext context, String email, String username, String password) async {
+Future<String?> registerUser(
+  BuildContext context,
+  String email,
+  String username,
+  String password,
+  String firstName,
+  String lastName,
+) async {
   final sanitize = Sanitize();
   final usernameResult = sanitize.isValidUsername(username);
   final emailResult = sanitize.isValidEmail(email);
   final passwordResult = sanitize.isValidPassword(password);
+  final firstNameResult = sanitize.isValidFirstName(firstName);
+  final lastNameResult = sanitize.isValidLastName(lastName);
 
-  if (!emailResult.valid || !passwordResult.valid || !usernameResult.valid) {
-    return 'Invalid input: ${emailResult.message ?? ''} ${passwordResult.message ?? ''} ${usernameResult.message ?? ''}';
+  if (!emailResult.valid || !passwordResult.valid || !usernameResult.valid || !firstNameResult.valid || !lastNameResult.valid) {
+    return 'Invalid input: ${emailResult.message ?? ''} ${passwordResult.message ?? ''} ${usernameResult.message ?? ''} ${firstNameResult.message ?? ''} ${lastNameResult.message ?? ''}';
   }
 
   try {
@@ -24,6 +33,8 @@ Future<String?> registerUser(BuildContext context, String email, String username
         'email': emailResult.value,
         'username': usernameResult.value,
         'password': passwordResult.value,
+        'firstName': firstNameResult.value,
+        'lastName': lastNameResult.value,
       }),
     );
 
