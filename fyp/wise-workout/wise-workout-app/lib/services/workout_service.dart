@@ -22,7 +22,7 @@ class Workout {
 // Service that fetches exercises for a given workoutID
 class WorkoutService {
   // In a real app this would query your SQL database
-  Future<List<Workout>> fetchExercises(int workoutID) async {
+  Future<List<Workout>> fetchExercises(String categoryName) async {
     await Future.delayed(Duration(milliseconds: 500));
 
     return [
@@ -84,6 +84,56 @@ class WorkoutService {
         description: 'Relax and stretch your body in preparation for a good night’s sleep.',
         duration: '20',
         level: 'Beginner',
+      ),
+      Workout(
+        workoutId: 8,
+        title: 'Bodyweight Leg Blast',
+        category: 'leg',
+        description: 'No equipment needed! Burn your thighs and glutes with squats, lunges, and wall sits.',
+        duration: '18',
+        level: 'Beginner',
+      ),
+      Workout(
+        workoutId: 9,
+        title: 'Explosive Plyo Legs',
+        category: 'leg',
+        description: 'Add power and agility to your legs with jump squats, skater hops, and more.',
+        duration: '25',
+        level: 'Intermediate',
+      ),
+      Workout(
+        workoutId: 10,
+        title: 'Glute Isolation Session',
+        category: 'leg',
+        description: 'A focused routine to tone and build your glutes using bridges, pulses, and holds.',
+        duration: '20',
+        level: 'Advanced',
+      ),
+
+      // Cardio workouts
+      Workout(
+        workoutId: 11,
+        title: 'Quick HIIT Circuit',
+        category: 'cardio',
+        description: 'Short but intense high-intensity intervals to get your heart pumping.',
+        duration: '15',
+        level: 'Beginner',
+      ),
+      Workout(
+        workoutId: 12,
+        title: 'Endurance Cardio Burn',
+        category: 'cardio',
+        description: 'Keep moving for a sustained burn with jumping jacks, mountain climbers, and burpees.',
+        duration: '30',
+        level: 'Intermediate',
+      ),
+      Workout(
+        workoutId: 13,
+        title: 'Cardio Kickboxing',
+        category: 'cardio',
+        description: 'Punch and kick your way through this calorie-burning cardio session.',
+        duration: '25',
+        level: 'Advanced',
       ),
     ];
   }

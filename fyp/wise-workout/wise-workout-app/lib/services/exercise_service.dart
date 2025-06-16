@@ -2,7 +2,7 @@ import 'dart:async';
 
 // In workout_service.dart
 
-class WorkoutService {
+class ExerciseService {
   Future<List<Exercise>> fetchExercises(int workoutID) async {
     await Future.delayed(Duration(milliseconds: 500));
 

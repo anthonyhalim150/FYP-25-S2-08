@@ -3,6 +3,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
 import 'package:wise_workout_app/widgets/workout_card_dashboard.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/app_drawer.dart';
+import '../services/workout_category_service.dart';
 
 
 class WorkoutDashboard extends StatefulWidget {
@@ -11,170 +12,160 @@ class WorkoutDashboard extends StatefulWidget {
 }
 
 class _WorkoutDashboardState extends State<WorkoutDashboard> {
+  final WorkoutCategoryService _categoryService = WorkoutCategoryService();
+
+  late Future<List<WorkoutCategory>> _categoriesFuture;
+
   String selectedCategory = 'All';
-  bool showFavoritesOnly = false;
   int _currentIndex = 2;
   String userName = 'John';
 
-  final List<String> categories = [
-    "All",
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-    "HIIT",
-    "Yoga"
-  ];
-
-  final List<Map<String, dynamic>> workouts = [
-    {
-      'id': 1,
-      'title': 'Strength Training',
-      'subtitle': '9 Minutes | Advanced',
-      'image': 'assets/workoutImages/strength_training.jpg',
-      'isFavorite': false,
-    },
-    {
-      'id': 2,
-      'title': 'Home Yoga',
-      'subtitle': '6 Minutes | Beginner',
-      'image': 'assets/workoutImages/yoga_training.jpg',
-      'isFavorite': false,
-    },
-    {
-      'id': 3,
-      'title': 'Core Training',
-      'subtitle': '8 Minutes | Intermediate',
-      'image': 'assets/workoutImages/core_training.jpg',
-      'isFavorite': false,
-    },
-    {
-      'id': 4,
-      'title': 'HIIT Blast',
-      'subtitle': '5 Minutes | HIIT',
-      'image': 'https://via.placeholder.com/300x150?text=HIIT+Blast',
-      'isFavorite': false,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _categoriesFuture = _categoryService.fetchCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filteredWorkouts = selectedCategory == 'All'
-        ? workouts
-        : workouts.where((workout) {
-      return workout['subtitle']!
-          .toLowerCase()
-          .contains(selectedCategory.toLowerCase());
-    }).toList();
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: appDrawer(userName: userName, parentContext: context),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 5, 0, 15),
-                child: Row(
-                  children: [
-                    Text(
-                      'Workout!',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const Spacer(),
-                    Builder(
-                      builder: (context) => IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.black),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 40,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    final isSelected = selectedCategory == category;
+        child: FutureBuilder<List<WorkoutCategory>>(
+          future: _categoriesFuture,
+          builder: (context, catSnapshot) {
+            if (catSnapshot.connectionState != ConnectionState.done) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (catSnapshot.hasError) {
+              return Center(child: Text('Error loading categories'));
+            }
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                      child: ChoiceChip(
-                        label: Text(category),
-                        selected: isSelected,
-                        onSelected: (_) {
-                          setState(() {
-                            selectedCategory = category;
-                          });
-                        },
-                        selectedColor: Colors.blue, // Blue when selected
-                        backgroundColor: Colors.grey[200], // Grey when not selected
-                        labelStyle: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            // Build list of category names, including 'All'
+            final categories = ['All'] +
+                catSnapshot.data!.map((c) => c.categoryName).toList();
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Workout!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        shape: StadiumBorder( // This makes it more oval
-                          side: BorderSide(
-                            color: isSelected ? Colors.blue : Colors.grey[300]!,
-                            width: 1,
-                          ),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjust padding for better shape
                       ),
-                    );
-                  },
+                      Spacer(),
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: Icon(Icons.menu, color: Colors.black),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredWorkouts.length,
-                  itemBuilder: (context, index) {
-                    final workout = filteredWorkouts[index];
-                    return WorkoutCardDashboard(
-                      title: workout['title'],
-                      subtitle: workout['subtitle'],
-                      imageUrl: workout['image'],
-                      isFavorite: workout['isFavorite'],
-                      onPressed: () {
-                        final int workoutID = workout['id'];
-                        final String workoutName = workout['title'];
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => WorkoutScreen(
-                              workoutId: workoutID,
-                              workoutName: workoutName,
+                SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      final isSelected = selectedCategory == category;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: ChoiceChip(
+                          label: Text(category),
+                          selected: isSelected,
+                          onSelected: (_) {
+                            setState(() {
+                              selectedCategory = category;
+                            });
+                          },
+                          selectedColor: Colors.blue,
+                          backgroundColor: Colors.grey[200],
+                          labelStyle: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black,
+                            fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          shape: StadiumBorder(
+                            side: BorderSide(
+                              color: isSelected
+                                  ? Colors.blue
+                                  : Colors.grey[300]!,
+                              width: 1,
                             ),
                           ),
-                        );
-                      },
-                      onToggleFavorite: () {
-                        setState(() {
-                          final originalIndex = workouts.indexWhere(
-                                  (w) => w['title'] == workout['title']);
-                          if (originalIndex != -1) {
-                            workouts[originalIndex]['isFavorite'] =
-                            !(workouts[originalIndex]['isFavorite'] ?? false);
-                          }
-                        });
-                      },
-                    );
-                  },
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: FutureBuilder<List<WorkoutCategory>>(
+                    future: _categoriesFuture,
+                    builder: (context, wkSnapshot) {
+                      if (wkSnapshot.connectionState !=
+                          ConnectionState.done) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (wkSnapshot.hasError) {
+                        return Center(child: Text('Error loading workouts'));
+                      }
+
+                      // Filter workouts by selected category
+                      final allWorkouts = wkSnapshot.data!;
+                      final filtered = selectedCategory == 'All'
+                          ? allWorkouts
+                          : allWorkouts
+                          .where((w) =>
+                      w.categoryName.toLowerCase() ==
+                          selectedCategory.toLowerCase())
+                          .toList();
+
+                      return ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final workout = filtered[index];
+                          return WorkoutCardDashboard(
+                            title: workout.categoryTitle,
+                            subtitle: workout.categoryDescription, // replace with real URL field
+                            isFavorite: false,
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => WorkoutScreen(
+                                    workoutId: workout.categoryId,
+                                    workoutName: workout.categoryTitle,
+                                    categoryName: workout.categoryName,
+                                  ),
+                                ),
+                              );
+                            },
+                            onToggleFavorite: () {
+                              // handle favorite toggle if supported
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(

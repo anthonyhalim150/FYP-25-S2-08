@@ -21,7 +21,7 @@ class WorkoutExercisesScreen extends StatefulWidget {
 
 class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
   late Future<List<Exercise>> _exercisesFuture;
-  final WorkoutService _workoutService = WorkoutService();
+  final ExerciseService _workoutService = ExerciseService();
   int _currentIndex = 2;
 
   @override

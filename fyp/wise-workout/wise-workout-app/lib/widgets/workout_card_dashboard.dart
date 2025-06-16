@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class WorkoutCardDashboard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String imageUrl;
   final bool isFavorite;
   final VoidCallback onPressed;
   final VoidCallback onToggleFavorite;
@@ -12,18 +11,19 @@ class WorkoutCardDashboard extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    required this.imageUrl,
     required this.onPressed,
     required this.isFavorite,
     required this.onToggleFavorite,
   });
 
+
+
   @override
   Widget build(BuildContext context) {
+    final imageUrl = 'assets/workoutCategory/${title.toLowerCase().replaceAll(' ', '_')}.jpg';
     final bool isNetworkImage = imageUrl.startsWith('http');
-
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // ← added horizontal margin
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       child: InkWell(

@@ -96,3 +96,7 @@ flutter:
     - assets/workoutImages/power_vinyasa.jpg
     - assets/workoutImages/upper_body_blast.jpg
     - assets/workoutImages/total_body_core_circuit.jpg
+    - assets/workoutCategory/cardio_burn.jpg
+    - assets/workoutCategory/leg_workout.jpg
+    - assets/workoutCategory/push.jpg
+    - assets/workoutCategory/relaxing.jpg

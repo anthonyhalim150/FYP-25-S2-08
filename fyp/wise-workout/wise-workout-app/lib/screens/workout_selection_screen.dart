@@ -9,11 +9,13 @@ import '../services/workout_service.dart';
 class WorkoutScreen extends StatefulWidget {
   final int workoutId;
   final String workoutName;
+  final String categoryName;
 
   const WorkoutScreen({
     Key? key,
     required this.workoutId,
     required this.workoutName,
+    required this.categoryName,
   }) : super(key: key);
 
   @override
@@ -23,11 +25,14 @@ class WorkoutScreen extends StatefulWidget {
 class _WorkoutScreenState extends State<WorkoutScreen> {
   late Future<List<Workout>> _exercisesFuture;
   final WorkoutService _service = WorkoutService();
-
+  late final String _categoryName;
+  late final String _workoutName;
   @override
   void initState() {
     super.initState();
-    _exercisesFuture = _service.fetchExercises(widget.workoutId);
+    _categoryName = widget.categoryName;
+    _workoutName = widget.workoutName;
+    _exercisesFuture = _service.fetchExercises(_categoryName);
   }
 
   @override
@@ -44,7 +49,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             return Center(child: Text('Error loading exercises'));
           }
 
-          final exercises = snapshot.data!;
+          final allExercises = snapshot.data!;
+          final exercises = allExercises
+              .where((ex) => ex.category.toLowerCase() == _categoryName.toLowerCase())
+              .toList();
+
 
           return CustomScrollView(
             slivers: [
@@ -59,7 +68,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   title: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1),
                     child: Text(
-                      widget.workoutName,
+                      _workoutName,
                       style: const TextStyle(
                         color: Colors.orange,
                         fontSize: 25,
