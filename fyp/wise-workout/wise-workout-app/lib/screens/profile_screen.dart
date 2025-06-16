@@ -372,14 +372,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
 
-            // 🔸 Lucky Spin
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => LuckySpinScreen(tokens: _tokens),
-                ),
-              ),
+              onTap: () async {
+                final updatedTokens = await Navigator.push<int>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LuckySpinScreen(tokens: _tokens),
+                  ),
+                );
+
+                if (updatedTokens != null) {
+                  setState(() {
+                    _tokens = updatedTokens;
+                  });
+                }
+              },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),

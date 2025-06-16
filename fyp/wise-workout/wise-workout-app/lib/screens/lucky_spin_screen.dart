@@ -99,6 +99,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
       final data = await luckySpinService.spin(useTokens: useTokens);
       final label = data['prize']['label'];
       final index = items.indexWhere((item) => item.trim() == label.trim());
+      final updatedTokens = data['tokens'];
 
       if (index == -1) {
         setState(() => isSpinning = false);
@@ -122,6 +123,9 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
         prizeLabel = label;
         isSpinning = false;
         canSpinFree = false;
+        if (updatedTokens != null) {
+          tokenCount = updatedTokens;
+        }
       });
       await checkSpinStatus();
     } catch (e) {
@@ -167,7 +171,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(tokenCount),
                       ),
                       const Expanded(
                         child: Center(

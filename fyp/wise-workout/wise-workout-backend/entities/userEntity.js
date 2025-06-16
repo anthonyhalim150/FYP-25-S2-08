@@ -57,6 +57,14 @@ class UserEntity {
     const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
   }
+  async getTokenCount(userId) {
+    const [rows] = await db.execute(
+      'SELECT tokens FROM users WHERE id = ?',
+      [userId]
+    );
+    return rows[0]?.tokens ?? 0;
+  }
+
 }
 
 module.exports = new UserEntity();

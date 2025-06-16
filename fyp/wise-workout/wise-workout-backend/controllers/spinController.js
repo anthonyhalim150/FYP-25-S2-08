@@ -1,5 +1,6 @@
 const spinEntity = require('../entities/spinEntity');
 const PrizeEntity = require('../entities/prizeEntity');
+const UserEntity = require('../entities/userEntity');
 
 exports.spin = async (req, res) => {
   const userId = req.user?.id;
@@ -23,13 +24,16 @@ exports.spin = async (req, res) => {
   if (prizes.length === 0) {
     return res.status(500).json({ message: 'No prizes configured' });
   }
+
   const randomIndex = Math.floor(Math.random() * prizes.length);
   const prize = prizes[randomIndex];
 
   await spinEntity.logSpin(userId, prize);
   await spinEntity.applyPrize(userId, prize);
 
-  res.json({ prize });
+  const updatedTokens = await UserEntity.getTokenCount(userId);
+
+  res.json({ prize, tokens: updatedTokens });
 };
 
 exports.getSpinStatus = async (req, res) => {
