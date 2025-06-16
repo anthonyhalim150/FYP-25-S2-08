@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 
+// Instructions to earn a badge
+const List<String> badgeUnlockInstructions = [
+  "Complete 100 workouts to earn this badge.",
+  "Maintain a workout streak for 30 consecutive days.",
+  "Burn more calories in a single session than ever before.",
+  "Achieve your personal best in any tracked category.",
+  "Record your longest workout session.",
+  "Maintain consistently high performance in your workouts.",
+  "Level up by gaining enough experience points.",
+  "Reach a new workout streak milestone.",
+  "Win a workout challenge.",
+  "Complete a workout with a friend.",
+  "Complete 50 workouts.",
+  "Complete a mindful or recovery activity.",
+];
+
 class BadgeCollectionScreen extends StatelessWidget {
   const BadgeCollectionScreen({Key? key}) : super(key: key);
 
@@ -23,6 +39,7 @@ class BadgeCollectionScreen extends StatelessWidget {
           '#D9F0F4',
         ][index % 12],
         'locked': index >= 6,
+        'unlockInstruction': badgeUnlockInstructions[index],
       };
     });
 
@@ -85,30 +102,7 @@ class BadgeCollectionScreen extends StatelessWidget {
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (_) => AlertDialog(
-                            title: Text(isLocked ? 'Locked Badge' : 'Badge Detail'),
-                            content: isLocked
-                                ? const Text("Badge is locked")
-                                : Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  badge['image'],
-                                  height: 100,
-                                  errorBuilder: (context, error, _) =>
-                                  const Icon(Icons.error),
-                                ),
-                                const SizedBox(height: 10),
-                                const Text("You've unlocked this badge!"),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text("Close"),
-                              ),
-                            ],
-                          ),
+                          builder: (_) => _BadgeDetailDialog(badge: badge),
                         );
                       },
                       borderRadius: BorderRadius.circular(16),
@@ -164,7 +158,95 @@ class BadgeCollectionScreen extends StatelessWidget {
   }
 }
 
-// 💡 Utility to convert hex color string to Color
+// BIGGER BADGE DIALOG
+class _BadgeDetailDialog extends StatelessWidget {
+  final Map<String, dynamic> badge;
+  const _BadgeDetailDialog({required this.badge});
+
+  @override
+  Widget build(BuildContext context) {
+    final isLocked = badge['locked'] as bool;
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: HexColor.fromHex(badge['color']),
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: ColorFiltered(
+                    colorFilter: isLocked
+                        ? ColorFilter.mode(
+                      Colors.grey.withOpacity(0.7),
+                      BlendMode.saturation,
+                    )
+                        : const ColorFilter.mode(
+                        Colors.transparent, BlendMode.multiply),
+                    child: Image.asset(
+                      badge['image'],
+                      height: 220,
+                      width: 220,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error_outline, size: 100),
+                    ),
+                  ),
+                ),
+                if (isLocked)
+                  const Positioned(
+                    child: Icon(Icons.lock, color: Colors.white, size: 64),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 28),
+            Text(
+              isLocked ? "Locked Badge" : "Badge Unlocked!",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            const SizedBox(height: 16),
+            if (isLocked) ...[
+              Text(
+                "How to unlock:",
+                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                badge['unlockInstruction'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 17, color: Colors.black87),
+              ),
+            ] else ...[
+              const Text(
+                "You've unlocked this badge! Congratulations!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 17, color: Colors.black87),
+              ),
+            ],
+            const SizedBox(height: 22),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              ),
+              child: const Text("Close"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Utility to convert hex color string to Color class
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     final colorStr = hexColor.toUpperCase().replaceAll("#", "");
