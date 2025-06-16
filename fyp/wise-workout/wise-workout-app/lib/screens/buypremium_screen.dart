@@ -13,19 +13,19 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
   final List<Map<String, dynamic>> plans = [
     {
       'name': 'Monthly',
-      'price': '\$5.99',
+      'price': '\$2.99',
       'period': '/month',
       'highlight': false,
     },
     {
       'name': 'Annual',
-      'price': '\$49.99',
+      'price': '\$19.99',
       'period': '/year',
       'highlight': true,
     },
     {
       'name': 'Lifetime',
-      'price': '\$129',
+      'price': '\$49',
       'period': '',
       'highlight': false,
     },
