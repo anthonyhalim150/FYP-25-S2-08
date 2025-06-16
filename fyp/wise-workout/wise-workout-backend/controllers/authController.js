@@ -22,11 +22,14 @@ exports.login = async (req, res) => {
 
 exports.loginGoogle = async (req, res) => {
   const email = isValidEmail(req.body.email);
+  const firstName = sanitizeInput(req.body.firstName || '');
+  const lastName = sanitizeInput(req.body.lastName || '');
+
   if (!email) return res.status(400).json({ message: 'Invalid email' });
 
   let user = await UserEntity.findByEmail(email);
   if (!user) {
-    await UserEntity.create(email, null, 'google');
+    await UserEntity.create(email, null, null, 'google', firstName, lastName); 
   }
 
   await setCookie(res, email);
@@ -35,11 +38,14 @@ exports.loginGoogle = async (req, res) => {
 
 exports.loginApple = async (req, res) => {
   const email = isValidEmail(req.body.email);
+  const firstName = sanitizeInput(req.body.firstName || '');
+  const lastName = sanitizeInput(req.body.lastName || '');
+
   if (!email) return res.status(400).json({ message: 'Invalid email' });
 
   let user = await UserEntity.findByEmail(email);
   if (!user) {
-    await UserEntity.create(email, null, 'apple');
+    await UserEntity.create(email, null, null, 'apple', firstName, lastName); 
   }
 
   await setCookie(res, email);
@@ -48,16 +54,20 @@ exports.loginApple = async (req, res) => {
 
 exports.loginFacebook = async (req, res) => {
   const email = isValidEmail(req.body.email);
+  const firstName = sanitizeInput(req.body.firstName || '');
+  const lastName = sanitizeInput(req.body.lastName || '');
+
   if (!email) return res.status(400).json({ message: 'Invalid email' });
 
   let user = await UserEntity.findByEmail(email);
   if (!user) {
-    await UserEntity.create(email, null, 'facebook');
+    await UserEntity.create(email, null, null, 'facebook', firstName, lastName); 
   }
 
   await setCookie(res, email);
   res.json({ message: 'Facebook login successful' });
 };
+
 
 exports.register = async (req, res) => {
   const { email, username, password } = req.body;

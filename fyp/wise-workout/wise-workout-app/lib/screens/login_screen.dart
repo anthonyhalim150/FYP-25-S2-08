@@ -63,8 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginWithGoogle() async {
-    final email = await authService.signInWithGoogle();
-    if (email == null) {
+    final googleData = await authService.signInWithGoogle();
+    if (googleData == null) {
       showError('Google sign-in was cancelled or failed');
       return;
     }
@@ -72,8 +72,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final response = await http.post(
       Uri.parse('$backendUrl/auth/google'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
+      body: jsonEncode({
+        'email': googleData['email'],
+        'firstName': googleData['firstName'],
+        'lastName': googleData['lastName'],
+      }),
     );
+
+    print('Google login status: ${response.statusCode}');
+    print('Google login response: ${response.body}');
 
     final cookie = response.headers['set-cookie'];
     if (response.statusCode == 200 && cookie != null) {
@@ -87,8 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginWithFacebook() async {
-    final email = await authService.signInWithFacebook();
-    if (email == null) {
+    final fbData = await authService.signInWithFacebook();
+    if (fbData == null) {
       showError('Facebook sign-in was cancelled or failed');
       return;
     }
@@ -96,8 +103,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final response = await http.post(
       Uri.parse('$backendUrl/auth/facebook'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
+      body: jsonEncode({
+        'email': fbData['email'],
+        'firstName': fbData['firstName'],
+        'lastName': fbData['lastName'],
+      }),
     );
+
+    print('Facebook login status: ${response.statusCode}');
+    print('Facebook login response: ${response.body}');
 
     final cookie = response.headers['set-cookie'];
     if (response.statusCode == 200 && cookie != null) {
@@ -107,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await navigateAfterLogin(jwt);
     } else {
       showError('Facebook login failed');
-    }
+      }
   }
 
   Future<void> navigateAfterLogin(String jwt) async {
