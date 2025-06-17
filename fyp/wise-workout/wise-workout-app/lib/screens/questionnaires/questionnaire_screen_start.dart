@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'questionnaire_screen.dart';
+import 'questionnaire_screen_dob.dart';
 
 class SplashAndOnboardingWrapper extends StatefulWidget {
   const SplashAndOnboardingWrapper({super.key});
@@ -86,7 +86,7 @@ class OnboardingScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
+                          builder: (_) => QuestionnaireDobScreen(step: 1, responses: {}),
                         ),
                       );
                     },

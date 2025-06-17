@@ -1,4 +1,5 @@
 const userPreferencesEntity = require('../entities/userPreferencesEntity');
+const UserEntity = require('../entities/userEntity');
 
 const submitUserPreferences = async (req, res) => {
   try {
@@ -10,7 +11,8 @@ const submitUserPreferences = async (req, res) => {
       fitness_goal,
       workout_time,
       fitness_level,
-      injury
+      injury,
+      dob
     } = req.body;
 
     if (
@@ -18,10 +20,13 @@ const submitUserPreferences = async (req, res) => {
       !fitness_goal ||
       !workout_time ||
       !fitness_level ||
-      !injury
+      !injury ||
+      !dob
     ) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
+
+    await UserEntity.updateDOB(userId, dob);
 
     const preferences = {
       workout_frequency,

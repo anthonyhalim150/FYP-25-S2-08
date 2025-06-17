@@ -64,6 +64,14 @@ class UserEntity {
     );
     return rows[0]?.tokens ?? 0;
   }
+  async updateDOB(userId, dob) {
+    const [result] = await db.execute(
+      'UPDATE users SET dob = ? WHERE id = ?',
+      [dob, userId]
+    );
+    return result;
+  }
+
 
 }
 
