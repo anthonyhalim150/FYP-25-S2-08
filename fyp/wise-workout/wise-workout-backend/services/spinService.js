@@ -2,59 +2,41 @@ const SpinModel = require('../models/spinModel');
 const PrizeModel = require('../models/prizeModel');
 const UserModel = require('../models/userModel');
 
-exports.spin = async (req, res) => {
-  const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+class SpinService {
+  static async performSpin(userId, forceSpin = false) {
+    const hasSpun = await SpinModel.hasSpunToday(userId);
 
-  const usingTokens = req.query.force === 'true';
-  const hasSpun = await SpinModel.hasSpunToday(userId);
-
-  if (hasSpun && !usingTokens) {
-    return res.status(403).json({ message: 'Already spun today' });
-  }
-
-  if (hasSpun && usingTokens) {
-    const success = await SpinModel.deductTokens(userId, 50);
-    if (!success) {
-      return res.status(403).json({ message: 'Not enough tokens to re-spin' });
+    if (hasSpun && !forceSpin) throw new Error('ALREADY_SPUN');
+    if (hasSpun && forceSpin) {
+      const success = await SpinModel.deductTokens(userId, 50);
+      if (!success) throw new Error('NOT_ENOUGH_TOKENS');
     }
+
+    const prizes = await PrizeModel.getAll();
+    if (prizes.length === 0) throw new Error('NO_PRIZES');
+
+    const prize = prizes[Math.floor(Math.random() * prizes.length)];
+    await SpinModel.logSpin(userId, prize);
+    await SpinModel.applyPrize(userId, prize);
+
+    const updatedTokens = await UserModel.getTokenCount(userId);
+
+    return { prize, tokens: updatedTokens };
   }
 
-  const prizes = await PrizeModel.getAll();
-  if (prizes.length === 0) {
-    return res.status(500).json({ message: 'No prizes configured' });
+  static async getSpinStatus(userId) {
+    const lastSpin = await SpinModel.getLastSpin(userId);
+    if (!lastSpin) return { hasSpunToday: false, nextFreeSpinAt: null };
+
+    const now = new Date();
+    const hasSpunToday = new Date(lastSpin.spun_at).toDateString() === now.toDateString();
+
+    const nextFreeSpinAt = hasSpunToday
+      ? new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString()
+      : null;
+
+    return { hasSpunToday, nextFreeSpinAt };
   }
+}
 
-  const randomIndex = Math.floor(Math.random() * prizes.length);
-  const prize = prizes[randomIndex];
-
-  await SpinModel.logSpin(userId, prize);
-  await SpinModel.applyPrize(userId, prize);
-
-  const updatedTokens = await UserModel.getTokenCount(userId);
-
-  res.json({ prize, tokens: updatedTokens });
-};
-
-exports.getSpinStatus = async (req, res) => {
-  const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
-  const lastSpin = await SpinModel.getLastSpin(userId);
-  if (!lastSpin) {
-    return res.json({ hasSpunToday: false });
-  }
-
-  const lastSpinDate = new Date(lastSpin.spun_at);
-  const now = new Date();
-  const hasSpunToday = lastSpinDate.toDateString() === now.toDateString();
-
-  const nextFreeSpinAt = hasSpunToday
-    ? new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
-    : null;
-
-  res.json({
-    hasSpunToday,
-    nextFreeSpinAt: nextFreeSpinAt?.toISOString() ?? null,
-  });
-};
+module.exports = SpinService;
