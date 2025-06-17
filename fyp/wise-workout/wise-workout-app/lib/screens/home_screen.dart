@@ -10,7 +10,6 @@ import '../services/health_service.dart';
 import '../services/api_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
 
-
 class HomeScreen extends StatefulWidget {
   final String userName;
   final Widget? homeIcon;
@@ -18,7 +17,6 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
-
   const HomeScreen({
     super.key,
     required this.userName,
@@ -39,26 +37,29 @@ class _HomeScreenState extends State<HomeScreen> {
   final int maxSteps = 10000;
   final int caloriesBurned = 420;
   final int xpEarned = 150;
-
   String? _displayName;
+
+  // hardcoded, need to implement backend
+  final List<String> unlockedBadges = [
+    'assets/badges/badge_4.png',
+    'assets/badges/badge_5.png',
+    'assets/badges/badge_6.png',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _fetchTodaySteps();
+    fetchTodaySteps();
     _fetchProfile();
   }
 
-  Future<void> _fetchTodaySteps() async {
+  Future<void> fetchTodaySteps() async {
     print("Trying to connect to Health Connect...");
-
     final connected = await _healthService.connect();
     print("Connected: $connected");
-
     if (connected) {
       final steps = await _healthService.getTodaySteps();
       print("Fetched steps: $steps");
-
       setState(() {
         _currentSteps = steps;
       });
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _buildStatItem(BuildContext context, IconData icon, String label, String value) {
+  Widget buildStatItem(BuildContext context, IconData icon, String label, String value) {
     return Column(
       children: [
         Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
@@ -96,6 +97,61 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget buildBadgeCollection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, '/badge-collections'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Badge Collections',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: List.generate(4, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.white,
+                            backgroundImage: index < unlockedBadges.length
+                                ? AssetImage(unlockedBadges[index])
+                                : const AssetImage('assets/icons/lock.jpg'),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,39 +164,39 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // Header
               Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Hello, ${_displayName ?? widget.userName}!',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
+                child: Row(
+                  children: [
+                    Text(
+                      'Hello, ${_displayName ?? widget.userName}!',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      const SizedBox(width: 12),
-                      IconButton(
-                        icon: const Icon(Icons.camera_alt_outlined, color: Colors.black),
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      icon: const Icon(Icons.camera_alt_outlined, color: Colors.black),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
+                        );
+                      },
+                    ),
+                    const Spacer(),
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.black),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
-                          );
+                          Scaffold.of(context).openDrawer();
                         },
                       ),
-                      const Spacer(),
-                      Builder(
-                        builder: (context) => IconButton(
-                          icon: const Icon(Icons.menu, color: Colors.black),
-                          onPressed: () {
-                            Scaffold.of(context).openDrawer();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
 
               // Search bar
               Padding(
@@ -177,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 15),
+
               // Exercise Gauge
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
@@ -184,7 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 caloriesBurned: caloriesBurned,
                 xpEarned: xpEarned,
               ),
-
+              const SizedBox(height: 20),
+              buildBadgeCollection(context),
               const SizedBox(height: 20),
               Container(
                 alignment: Alignment.centerLeft,
@@ -206,10 +264,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: sampleWorkouts
                       .map((workout) => WorkoutCardHomeScreen(
-                            imagePath: workout.imagePath,
-                            workoutName: workout.workoutName,
-                            workoutLevel: workout.workoutLevel,
-                          ))
+                    imagePath: workout.imagePath,
+                    workoutName: workout.workoutName,
+                    workoutLevel: workout.workoutLevel,
+                  ))
                       .toList(),
                 ),
               ),
@@ -237,12 +295,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 5),
                     ...sampleTournaments
                         .map((tournament) => TournamentWidget(
-                              tournamentName: tournament.tournamentName,
-                              prize: tournament.prize,
-                              participants: tournament.participants,
-                              daysLeft: tournament.daysLeft,
-                              cardWidth: 280,
-                            ))
+                      tournamentName: tournament.tournamentName,
+                      prize: tournament.prize,
+                      participants: tournament.participants,
+                      daysLeft: tournament.daysLeft,
+                      cardWidth: 280,
+                    ))
                         .toList(),
                     const SizedBox(width: 5),
                   ],
