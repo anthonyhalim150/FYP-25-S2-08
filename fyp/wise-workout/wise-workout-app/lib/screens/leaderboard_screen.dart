@@ -11,7 +11,7 @@ class LeaderboardPage extends StatefulWidget {
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
   int _currentIndex = 1; // Bottom Nav Index
-  int _selectedPage = 0; // 0 = Challenge, 1 = Tournament
+  int _selectedPage = 0; // 0 = Challenge, 1 = Tournament, 2 = Levels
   late PageController _pageController;
 
   @override
@@ -35,8 +35,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-      // Already on leaderboard
-        break;
+        break; // Already here
       case 3:
         Navigator.pushReplacementNamed(context, '/messages');
         break;
@@ -80,6 +79,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 _buildToggleButton('Challenge', _selectedPage == 0, () => _onTabSelected(0)),
                 const SizedBox(width: 8),
                 _buildToggleButton('Tournament', _selectedPage == 1, () => _onTabSelected(1)),
+                const SizedBox(width: 8),
+                _buildToggleButton('Levels', _selectedPage == 2, () => _onTabSelected(2)),
               ],
             ),
           ),
@@ -92,6 +93,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               children: const [
                 LeaderboardContent(isChallengeSelected: true),
                 LeaderboardContent(isChallengeSelected: false),
+                LevelsLeaderboardWidget(), // <--- NEW TAB CONTENT
               ],
             ),
           ),
