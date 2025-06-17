@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
-class PendingUserEntity {
-  async create(email, username = null, hashedPassword, otp, expiresAt, firstName, lastName) {
+class PendingUserModel {
+  static async create(email, username = null, hashedPassword, otp, expiresAt, firstName, lastName) {
     if (!username) {
       const randomSuffix = Math.floor(1000 + Math.random() * 9000);
       username = `user${randomSuffix}`;
@@ -13,14 +13,15 @@ class PendingUserEntity {
     );
 
     const [result] = await db.execute(
-      'INSERT INTO pending_users (email, username, password, otp, expires_at, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      `INSERT INTO pending_users (email, username, password, otp, expires_at, firstName, lastName)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [email, username, hashedPassword, otp, expiresAt, firstName, lastName]
     );
 
     return result;
   }
 
-  async findByEmail(email) {
+  static async findByEmail(email) {
     const [rows] = await db.execute(
       'SELECT * FROM pending_users WHERE email = ?',
       [email]
@@ -28,15 +29,16 @@ class PendingUserEntity {
     return rows[0] || null;
   }
 
-  async verifyOTP(email, code) {
+  static async verifyOTP(email, code) {
     const [rows] = await db.execute(
-      'SELECT * FROM pending_users WHERE email = ? AND otp = ? AND expires_at > NOW()',
+      `SELECT * FROM pending_users
+       WHERE email = ? AND otp = ? AND expires_at > NOW()`,
       [email, code]
     );
     return rows[0] || null;
   }
 
-  async deleteByEmail(email) {
+  static async deleteByEmail(email) {
     await db.execute(
       'DELETE FROM pending_users WHERE email = ?',
       [email]
@@ -44,4 +46,4 @@ class PendingUserEntity {
   }
 }
 
-module.exports = new PendingUserEntity();
+module.exports = PendingUserModel;

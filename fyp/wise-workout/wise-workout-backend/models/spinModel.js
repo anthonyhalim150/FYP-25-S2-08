@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
-class SpinEntity {
-  async hasSpunToday(userId) {
+class SpinModel {
+  static async hasSpunToday(userId) {
     const [rows] = await db.execute(
       'SELECT * FROM spin_history WHERE user_id = ? AND DATE(spun_at) = CURDATE()',
       [userId]
@@ -9,7 +9,7 @@ class SpinEntity {
     return rows.length > 0;
   }
 
-  async getLastSpin(userId) {
+  static async getLastSpin(userId) {
     const [rows] = await db.execute(
       'SELECT spun_at FROM spin_history WHERE user_id = ? ORDER BY spun_at DESC LIMIT 1',
       [userId]
@@ -17,7 +17,7 @@ class SpinEntity {
     return rows[0] || null;
   }
 
-  async deductTokens(userId, amount) {
+  static async deductTokens(userId, amount) {
     const [result] = await db.execute(
       'UPDATE users SET tokens = tokens - ? WHERE id = ? AND tokens >= ?',
       [amount, userId, amount]
@@ -25,7 +25,7 @@ class SpinEntity {
     return result.affectedRows > 0;
   }
 
-  async applyPrize(userId, prize) {
+  static async applyPrize(userId, prize) {
     if (prize.type === 'tokens') {
       await db.execute(
         'UPDATE users SET tokens = tokens + ? WHERE id = ?',
@@ -39,17 +39,17 @@ class SpinEntity {
     }
   }
 
-  async logSpin(userId, prize) {
+  static async logSpin(userId, prize) {
     await db.execute(
       'INSERT INTO spin_history (user_id, prize_label, prize_type, prize_value) VALUES (?, ?, ?, ?)',
       [userId, prize.label, prize.type, prize.value]
     );
   }
 
-  async getAllPrizes() {
+  static async getAllPrizes() {
     const [rows] = await db.execute('SELECT * FROM prizes');
     return rows;
   }
 }
 
-module.exports = new SpinEntity();
+module.exports = SpinModel;

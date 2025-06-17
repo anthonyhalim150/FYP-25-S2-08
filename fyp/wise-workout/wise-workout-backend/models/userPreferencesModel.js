@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
-class UserPreferencesEntity {
-  async savePreferences(userId, preferences) {
+class UserPreferencesModel {
+  static async savePreferences(userId, preferences) {
     const {
       workout_frequency,
       fitness_goal,
@@ -32,7 +32,8 @@ class UserPreferencesEntity {
 
     return result;
   }
-  async hasPreferences(userId) {
+
+  static async hasPreferences(userId) {
     const [rows] = await db.execute(
       'SELECT id FROM user_preferences WHERE user_id = ? LIMIT 1',
       [userId]
@@ -41,5 +42,4 @@ class UserPreferencesEntity {
   }
 }
 
-
-module.exports = new UserPreferencesEntity();
+module.exports = UserPreferencesModel;

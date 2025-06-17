@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
-class AvatarEntity {
-  async findById(avatarId) {
+class AvatarModel {
+  static async findById(avatarId) {
     const [rows] = await db.execute(
       'SELECT * FROM avatars WHERE id = ?',
       [avatarId]
@@ -9,11 +9,12 @@ class AvatarEntity {
     return rows[0] || null;
   }
 
-  async getAll() {
+  static async getAll() {
     const [rows] = await db.execute('SELECT * FROM avatars');
     return rows;
   }
-  async updateAvatar(userId, avatarId) {
+
+  static async updateAvatar(userId, avatarId) {
     const [result] = await db.execute(
       'UPDATE users SET avatar_id = ? WHERE id = ?',
       [avatarId, userId]
@@ -22,4 +23,4 @@ class AvatarEntity {
   }
 }
 
-module.exports = new AvatarEntity();
+module.exports = AvatarModel;

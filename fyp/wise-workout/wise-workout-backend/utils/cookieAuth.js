@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
-const UserEntity = require('../entities/userEntity');
+const UserEntity = require('../models/userModel');
 
 exports.setCookie = async (res, email) => {
   const user = await UserEntity.findByEmail(email);

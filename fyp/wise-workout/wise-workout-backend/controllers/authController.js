@@ -1,9 +1,9 @@
-const UserEntity = require('../entities/userEntity');
+const UserEntity = require('../models/userModel');
 const { setCookie } = require('../utils/cookieAuth');
 const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanitize');
 const { generateOTP, getExpiry } = require('../utils/otp');
 const { sendOTPToEmail } = require('../services/otpService');
-const PendingUserEntity = require('../entities/pendingUserEntity');
+const PendingUserEntity = require('../models/pendingUserModel');
 
 exports.login = async (req, res) => {
   const email = isValidEmail(req.body.email);

@@ -1,8 +1,8 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
-class UserEntity {
-  async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '') {
+class UserModel {
+  static async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '') {
     let hashedPassword = null;
     if (method === 'database' && password) {
       hashedPassword = await bcrypt.hash(password, 10);
@@ -14,14 +14,15 @@ class UserEntity {
     }
 
     const [result] = await db.execute(
-      'INSERT INTO users (email, username, password, method, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?)',
+      `INSERT INTO users (email, username, password, method, firstName, lastName)
+       VALUES (?, ?, ?, ?, ?, ?)`,
       [email, username, hashedPassword, method, firstName, lastName]
     );
 
     return result;
   }
 
-  async findById(userId) {
+  static async findById(userId) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE id = ?',
       [userId]
@@ -29,7 +30,7 @@ class UserEntity {
     return rows[0] || null;
   }
 
-  async findByEmail(email) {
+  static async findByEmail(email) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ?',
       [email]
@@ -37,7 +38,7 @@ class UserEntity {
     return rows[0] || null;
   }
 
-  async findByUsername(username) {
+  static async findByUsername(username) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE username = ?',
       [username]
@@ -45,7 +46,7 @@ class UserEntity {
     return rows[0] || null;
   }
 
-  async verifyLogin(email, password) {
+  static async verifyLogin(email, password) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ? AND method = "database"',
       [email]
@@ -57,21 +58,24 @@ class UserEntity {
     const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
   }
-  async getTokenCount(userId) {
+
+  static async getTokenCount(userId) {
     const [rows] = await db.execute(
       'SELECT tokens FROM users WHERE id = ?',
       [userId]
     );
     return rows[0]?.tokens ?? 0;
   }
-  async updateDOB(userId, dob) {
+
+  static async updateDOB(userId, dob) {
     const [result] = await db.execute(
       'UPDATE users SET dob = ? WHERE id = ?',
       [dob, userId]
     );
     return result;
   }
-  async updateProfile(userId, updates) {
+
+  static async updateProfile(userId, updates) {
     const fields = [];
     const values = [];
 
@@ -99,7 +103,6 @@ class UserEntity {
     const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
     await db.execute(sql, values);
   }
-
 }
 
-module.exports = new UserEntity();
+module.exports = UserModel;

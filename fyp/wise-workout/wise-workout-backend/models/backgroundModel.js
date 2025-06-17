@@ -1,16 +1,17 @@
 const db = require('../config/db');
 
-class BackgroundEntity {
-  async findById(id) {
+class BackgroundModel {
+  static async findById(id) {
     const [rows] = await db.execute('SELECT * FROM backgrounds WHERE id = ?', [id]);
     return rows[0] || null;
   }
 
-  async getAll() {
+  static async getAll() {
     const [rows] = await db.execute('SELECT * FROM backgrounds');
     return rows;
   }
-  async updateBackground(userId, backgroundId) {
+
+  static async updateBackground(userId, backgroundId) {
     const [result] = await db.execute(
       'UPDATE users SET background_id = ? WHERE id = ?',
       [backgroundId, userId]
@@ -19,4 +20,4 @@ class BackgroundEntity {
   }
 }
 
-module.exports = new BackgroundEntity();
+module.exports = BackgroundModel;

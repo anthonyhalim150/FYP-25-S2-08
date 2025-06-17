@@ -1,12 +1,12 @@
 const db = require('../config/db');
 
-class PrizeEntity {
-  async getAll() {
+class PrizeModel {
+  static async getAll() {
     const [rows] = await db.execute('SELECT * FROM prizes');
     return rows;
   }
 
-  async findById(prizeId) {
+  static async findById(prizeId) {
     const [rows] = await db.execute(
       'SELECT * FROM prizes WHERE id = ?',
       [prizeId]
@@ -15,4 +15,4 @@ class PrizeEntity {
   }
 }
 
-module.exports = new PrizeEntity();
+module.exports = PrizeModel;
