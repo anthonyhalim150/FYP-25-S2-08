@@ -2,7 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final String firstName;
+  final String lastName;
+  final String username;
+  final String dob;
+  final String email;
+  final String level;
+  final String accountType;
+  final String profileImage;
+  final String backgroundImage;
+
+  const EditProfileScreen({
+    super.key,
+    required this.firstName,
+    required this.lastName,
+    required this.username,
+    required this.dob,
+    required this.email,
+    required this.level,
+    required this.accountType,
+    required this.profileImage,
+    required this.backgroundImage,
+  });
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -11,16 +32,15 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isEditing = false;
 
-  // hard coded user data, avatar and background
-  String firstName = "Pittzza";
-  String lastName = "Bull";
-  String username = "@PitBulk101";
-  String dateOfBirth = "12 May 1998";
-  String email = "pitbulk@gmail.com";
-  String level = "Intermediate";
-  String accountType = "Premium";
-  final String profileImage = "assets/avatars/free/free1.png";
-  final String backgroundImage = "assets/background/bg1.jpg";
+  late String firstName;
+  late String lastName;
+  late String username;
+  late String dateOfBirth;
+  late String email;
+  late String level;
+  late String accountType;
+  late String profileImage;
+  late String backgroundImage;
 
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
@@ -29,9 +49,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    firstName = widget.firstName;
+    lastName = widget.lastName;
+    username = widget.username;
+    dateOfBirth = widget.dob;
+    email = widget.email;
+    level = widget.level;
+    accountType = widget.accountType;
+    profileImage = widget.profileImage;
+    backgroundImage = widget.backgroundImage;
+
     firstNameController = TextEditingController(text: firstName);
     lastNameController = TextEditingController(text: lastName);
-    dobController = TextEditingController(text: dateOfBirth);
+    dobController = TextEditingController(
+      text: _formatIncomingDOB(dateOfBirth),
+    );
   }
 
   @override
@@ -63,9 +95,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       isEditing = false;
     });
   }
+  String _formatIncomingDOB(String dob) {
+    try {
+      final parsed = DateTime.parse(dob);
+      return DateFormat('dd MMM yyyy').format(parsed);
+    } catch (_) {
+      return dob; 
+    }
+  }
+
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime initialDate = DateTime.tryParse(_parseToISODate(dobController.text)) ?? DateTime(1990, 1, 1);
+    DateTime initialDate =
+        DateTime.tryParse(_parseToISODate(dobController.text)) ?? DateTime(1990, 1, 1);
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -94,7 +136,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       backgroundColor: const Color(0xFFFFFCF2),
       body: Stack(
         children: [
-          // Background
           Container(
             height: 250,
             decoration: BoxDecoration(
@@ -104,13 +145,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ),
-          // Scrollable content
           SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 100),
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                // Profile title & back arrow
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
@@ -142,11 +181,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Avatar w/ background + card
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Card
                     Container(
                       margin: const EdgeInsets.only(top: 55),
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -161,7 +198,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Centered user info
                               Center(
                                 child: Column(
                                   children: [
@@ -173,22 +209,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    const Text(
-                                      'Premium',
-                                      style: TextStyle(
+                                    Text(
+                                      accountType,
+                                      style: const TextStyle(
                                         color: Colors.amber,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const Text(
-                                      'Lvl. 27',
-                                      style: TextStyle(color: Colors.grey),
+                                    Text(
+                                      'Lvl. $level',
+                                      style: const TextStyle(color: Colors.grey),
                                     ),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 30),
-                              // Personal Details + Edit button
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -209,8 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         foregroundColor: Colors.black,
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 4, horizontal: 12),
-                                        textStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -219,27 +253,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              // Fields: Only First/Last Name and Date of Birth are editable
-                              dataItem(
-                                  "First Name",
-                                  isEditing
-                                      ? buildField(firstNameController)
-                                      : firstName),
-                              dataItem(
-                                  "Last Name",
-                                  isEditing
-                                      ? buildField(lastNameController)
-                                      : lastName),
+                              dataItem("First Name", isEditing ? buildField(firstNameController) : firstName),
+                              dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName),
                               dataItem("Username", username, isGrey: true),
-                              dataItem(
-                                "Date of Birth",
-                                isEditing
-                                    ? buildDOBField(context, dobController)
-                                    : dateOfBirth,
-                              ),
+                              dataItem("Date of Birth", isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth)),
                               dataItem("Email", email, isGrey: true),
                               const SizedBox(height: 20),
-                              // Account Section
                               const Text(
                                 "Account Details",
                                 style: TextStyle(
@@ -255,7 +274,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
-                    // Avatar with circular background behind it
                     Positioned(
                       top: 0,
                       child: Stack(
@@ -282,7 +300,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
           ),
-
           if (isEditing)
             Positioned(
               bottom: 20,
@@ -327,8 +344,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget dataItem(String label, dynamic value,
-      {bool isGrey = false, bool isBold = false}) {
+  Widget dataItem(String label, dynamic value, {bool isGrey = false, bool isBold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -337,12 +353,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Text(label),
           value is String
               ? Text(
-            value,
-            style: TextStyle(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: isGrey ? Colors.grey : Colors.black,
-            ),
-          )
+                  value,
+                  style: TextStyle(
+                    fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                    color: isGrey ? Colors.grey : Colors.black,
+                  ),
+                )
               : SizedBox(width: 180, child: value),
         ],
       ),

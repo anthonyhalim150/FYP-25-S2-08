@@ -3,6 +3,7 @@ import 'create_avatar.dart';
 import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
 import 'lucky_spin_screen.dart';
+import 'editprofile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -38,9 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String? _profileImagePath;
   late String? _profileBgPath;
   late String _userName;
+  late String? _dob;
   late bool _isPremiumUser;
   int _tokens = 23;
   final ApiService apiService = ApiService();
+  Map<String, dynamic> _profileData = {};
+
 
   // this one is for backend. Now hardcoded.
   final List<String> unlockedBadges = [
@@ -62,11 +66,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadProfile() async {
     try {
       final profile = await apiService.getCurrentProfile();
-      setState(() {
+       setState(() {
+        _profileData = profile;
         _isPremiumUser = profile['role'] == 'premium';
         _profileImagePath = profile['avatar'];
         _profileBgPath = profile['background'] ?? 'assets/background/black.jpg';
         _userName = profile['username'] ?? widget.userName;
+        _dob = profile['dob'];
         _tokens = profile['tokens'] ?? 0;
       });
     } catch (e) {
@@ -181,7 +187,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           break;
 
         case "Profile":
-          handleTap = () => Navigator.pushNamed(context, '/profile-settings');
+          handleTap = () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EditProfileScreen(
+                firstName: _profileData['firstName'] ?? '',
+                lastName: _profileData['lastName'] ?? '',
+                username: _profileData['username'] ?? '',
+                dob: _profileData['dob'] ?? '',
+                email: _profileData['email'] ?? '',
+                level: "Beginner", // or real value if available
+                accountType: _profileData['role'] ?? 'user',
+                profileImage: _profileData['avatar'] ?? 'assets/avatars/free/free1.png',
+                backgroundImage: _profileData['background'] ?? 'assets/background/black.jpg',
+              ),
+            ),
+          );
+        };
+
+
           break;
 
         case "Password":
