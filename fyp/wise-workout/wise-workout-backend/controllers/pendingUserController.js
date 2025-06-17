@@ -1,7 +1,6 @@
-const UserEntity = require('../entities/userEntity');
-const PendingUserEntity = require('../entities/pendingUserEntity');
 const { isValidEmail } = require('../utils/sanitize');
 const { setCookie } = require('../utils/cookieAuth');
+const PendingUserService = require('../services/pendingUserService');
 
 exports.verifyOtpRegister = async (req, res) => {
   const email = isValidEmail(req.body.email);
@@ -11,28 +10,17 @@ exports.verifyOtpRegister = async (req, res) => {
     return res.status(400).json({ message: 'Invalid email or code' });
   }
 
-  const pendingUser = await PendingUserEntity.verifyOTP(email, code);
-  if (!pendingUser) {
-    return res.status(400).json({ message: 'Invalid or expired OTP' });
+  try {
+    await PendingUserService.verifyOtpAndRegister(email, code);
+    await setCookie(res, email);
+    res.status(201).json({ message: 'Registration and verification successful' });
+  } catch (err) {
+    if (err.message === 'INVALID_OTP') {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+    if (err.message === 'USER_EXISTS') {
+      return res.status(409).json({ message: 'User already exists' });
+    }
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
-
-  const existingUser = await UserEntity.findByEmail(email);
-  if (existingUser) {
-    await PendingUserEntity.deleteByEmail(email);
-    return res.status(409).json({ message: 'User already exists' });
-  }
-
-  await UserEntity.create(
-    email,
-    pendingUser.username,
-    pendingUser.password,
-    'database',
-    pendingUser.firstName,
-    pendingUser.lastName
-  );
-
-  await PendingUserEntity.deleteByEmail(email);
-  await setCookie(res, email);
-
-  res.status(201).json({ message: 'Registration and verification successful' });
 };

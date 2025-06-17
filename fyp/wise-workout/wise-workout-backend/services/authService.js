@@ -1,0 +1,35 @@
+const UserModel = require('../models/userModel');
+const PendingUserModel = require('../models/pendingUserModel');
+const bcrypt = require('bcryptjs');
+const { generateOTP, getExpiry } = require('../utils/otp');
+
+class AuthService {
+  static async loginWithCredentials(email, password) {
+    return await UserModel.verifyLogin(email, password);
+  }
+
+  static async loginWithOAuth(email, firstName, lastName, method) {
+    let user = await UserModel.findByEmail(email);
+    if (!user) {
+      await UserModel.create(email, null, null, method, firstName, lastName);
+    }
+    return user || { email };
+  }
+
+  static async registerUser(email, username, password) {
+    const existingUser = await UserModel.findByEmail(email);
+    if (existingUser) throw new Error('EMAIL_EXISTS');
+
+    const existingUsername = await UserModel.findByUsername(username);
+    if (existingUsername) throw new Error('USERNAME_EXISTS');
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const otp = generateOTP();
+    const expiresAt = getExpiry();
+
+    await PendingUserModel.create(email, username, hashedPassword, otp, expiresAt);
+    return otp;
+  }
+}
+
+module.exports = AuthService;

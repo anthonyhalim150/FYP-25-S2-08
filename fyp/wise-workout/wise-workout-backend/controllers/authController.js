@@ -1,9 +1,7 @@
-const UserEntity = require('../models/userModel');
+const AuthService = require('../services/authService');
 const { setCookie } = require('../utils/cookieAuth');
 const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanitize');
-const { generateOTP, getExpiry } = require('../utils/otp');
-const { sendOTPToEmail } = require('../services/otpService');
-const PendingUserEntity = require('../models/pendingUserModel');
+const { sendOTPToEmail } = require('../utils/otpService');
 
 exports.login = async (req, res) => {
   const email = isValidEmail(req.body.email);
@@ -13,7 +11,7 @@ exports.login = async (req, res) => {
     return res.status(400).json({ message: 'Invalid email or password format' });
   }
 
-  const user = await UserEntity.verifyLogin(email, password);
+  const user = await AuthService.loginWithCredentials(email, password);
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
   await setCookie(res, email);
@@ -27,11 +25,7 @@ exports.loginGoogle = async (req, res) => {
 
   if (!email) return res.status(400).json({ message: 'Invalid email' });
 
-  let user = await UserEntity.findByEmail(email);
-  if (!user) {
-    await UserEntity.create(email, null, null, 'google', firstName, lastName); 
-  }
-
+  await AuthService.loginWithOAuth(email, firstName, lastName, 'google');
   await setCookie(res, email);
   res.json({ message: 'Google login successful' });
 };
@@ -43,11 +37,7 @@ exports.loginApple = async (req, res) => {
 
   if (!email) return res.status(400).json({ message: 'Invalid email' });
 
-  let user = await UserEntity.findByEmail(email);
-  if (!user) {
-    await UserEntity.create(email, null, null, 'apple', firstName, lastName); 
-  }
-
+  await AuthService.loginWithOAuth(email, firstName, lastName, 'apple');
   await setCookie(res, email);
   res.json({ message: 'Apple login successful' });
 };
@@ -59,15 +49,10 @@ exports.loginFacebook = async (req, res) => {
 
   if (!email) return res.status(400).json({ message: 'Invalid email' });
 
-  let user = await UserEntity.findByEmail(email);
-  if (!user) {
-    await UserEntity.create(email, null, null, 'facebook', firstName, lastName); 
-  }
-
+  await AuthService.loginWithOAuth(email, firstName, lastName, 'facebook');
   await setCookie(res, email);
   res.json({ message: 'Facebook login successful' });
 };
-
 
 exports.register = async (req, res) => {
   const { email, username, password } = req.body;
@@ -80,21 +65,17 @@ exports.register = async (req, res) => {
     return res.status(400).json({ message: 'Invalid email, username, or password format' });
   }
 
-  const existingUser = await UserEntity.findByEmail(cleanEmail);
-  if (existingUser) {
-    return res.status(409).json({ message: 'User with this email already exists' });
+  try {
+    const otp = await AuthService.registerUser(cleanEmail, cleanUsername, cleanPassword);
+    await sendOTPToEmail(cleanEmail, otp);
+    res.status(201).json({ message: 'OTP sent to email. Complete verification to finish registration.' });
+  } catch (err) {
+    if (err.message === 'EMAIL_EXISTS') {
+      return res.status(409).json({ message: 'User with this email already exists' });
+    }
+    if (err.message === 'USERNAME_EXISTS') {
+      return res.status(409).json({ message: 'Username is already taken' });
+    }
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
-
-  const existingUsername = await UserEntity.findByUsername(cleanUsername);
-  if (existingUsername) {
-    return res.status(409).json({ message: 'Username is already taken' });
-  }
-
-  const otp = generateOTP();
-  const expiresAt = getExpiry();
-
-  await PendingUserEntity.create(cleanEmail, cleanUsername, cleanPassword, otp, expiresAt);
-  await sendOTPToEmail(cleanEmail, otp);
-
-  res.status(201).json({ message: 'OTP sent to email. Complete verification to finish registration.' });
 };

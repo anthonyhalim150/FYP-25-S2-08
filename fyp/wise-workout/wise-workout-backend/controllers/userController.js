@@ -1,30 +1,19 @@
-const UserEntity = require('../entities/userEntity');
-const AvatarEntity = require('../entities/avatarEntity');
-const BackgroundEntity = require('../entities/backgroundEntity');
+const UserService = require('../services/userService');
 
 exports.setAvatar = async (req, res) => {
   try {
     const userId = req.user?.id;
     const { avatarId } = req.body;
 
-    if (!userId || !avatarId) {
-      return res.status(400).json({ message: 'Missing userId or avatarId' });
-    }
-
-    const avatar = await AvatarEntity.findById(avatarId);
-    if (!avatar) {
-      return res.status(400).json({ message: 'Avatar does not exist' });
-    }
-
-    const user = await UserEntity.findById(userId);
-    if (avatar.is_premium && user.role !== 'premium') {
-      return res.status(403).json({ message: 'Premium avatar requires a premium account' });
-    }
-
-    await AvatarEntity.updateAvatar(userId, avatarId);
+    await UserService.setAvatar(userId, avatarId);
     res.status(200).json({ message: 'Avatar updated successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const map = {
+      MISSING_DATA: 400,
+      AVATAR_NOT_FOUND: 400,
+      PREMIUM_REQUIRED: 403
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
   }
 };
 
@@ -33,101 +22,56 @@ exports.setBackground = async (req, res) => {
     const userId = req.user?.id;
     const { backgroundId } = req.body;
 
-    if (!userId || !backgroundId) {
-      return res.status(400).json({ message: 'Missing userId or backgroundId' });
-    }
-
-    const background = await BackgroundEntity.findById(backgroundId);
-    if (!background) {
-      return res.status(400).json({ message: 'Background does not exist' });
-    }
-
-    const user = await UserEntity.findById(userId);
-    if (background.is_premium && user.role !== 'premium') {
-      return res.status(403).json({ message: 'Premium background requires a premium account' });
-    }
-
-    await BackgroundEntity.updateBackground(userId, backgroundId);
+    await UserService.setBackground(userId, backgroundId);
     res.status(200).json({ message: 'Background updated successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const map = {
+      MISSING_DATA: 400,
+      BACKGROUND_NOT_FOUND: 400,
+      PREMIUM_REQUIRED: 403
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
   }
 };
 
 exports.getCurrentAvatar = async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    const user = await UserEntity.findById(userId);
-    if (!user || !user.avatar_id) {
-      return res.status(404).json({ message: 'No avatar set for this user' });
-    }
-
-    const avatar = await AvatarEntity.findById(user.avatar_id);
-    if (!avatar) {
-      return res.status(404).json({ message: 'Avatar data not found' });
-    }
-
+    const avatar = await UserService.getCurrentAvatar(userId);
     res.status(200).json({ avatar });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const map = {
+      NO_AVATAR: 404,
+      AVATAR_DATA_MISSING: 404
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
   }
 };
 
 exports.getCurrentBackground = async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    const user = await UserEntity.findById(userId);
-    if (!user || !user.background_id) {
-      return res.status(404).json({ message: 'No background set for this user' });
-    }
-
-    const background = await BackgroundEntity.findById(user.background_id);
-    if (!background) {
-      return res.status(404).json({ message: 'Background data not found' });
-    }
-
+    const background = await UserService.getCurrentBackground(userId);
     res.status(200).json({ background });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const map = {
+      NO_BACKGROUND: 404,
+      BACKGROUND_DATA_MISSING: 404
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
   }
 };
 
 exports.getCurrentProfile = async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    const user = await UserEntity.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const avatar = user.avatar_id ? await AvatarEntity.findById(user.avatar_id) : null;
-    const background = user.background_id ? await BackgroundEntity.findById(user.background_id) : null;
-
-    res.status(200).json({
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      dob: user.dob,  
-      role: user.role,
-      tokens: user.tokens,
-      avatar: avatar ? avatar.image_url : null,
-      background: background ? background.image_url : null
-    });
+    const profile = await UserService.getCurrentProfile(userId);
+    res.status(200).json(profile);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const map = {
+      USER_NOT_FOUND: 404
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
   }
 };
 
@@ -136,18 +80,12 @@ exports.updateProfile = async (req, res) => {
     const userId = req.user?.id;
     const { username, firstName, lastName, dob } = req.body;
 
-    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
-    if (username) {
-      const existing = await UserEntity.findByUsername(username);
-      if (existing && existing.id !== userId) {
-        return res.status(409).json({ message: 'Username already taken' });
-      }
-    }
-
-    await UserEntity.updateProfile(userId, { username, firstName, lastName, dob });
+    await UserService.updateProfile(userId, { username, firstName, lastName, dob });
     res.status(200).json({ message: 'Profile updated successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const map = {
+      USERNAME_EXISTS: 409
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
   }
 };

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const questionnaireController = require('../controllers/questionnaireController');
+const userPreferencesController = require('../controllers/userPreferencesController');
 
-router.post('/submit', questionnaireController.submitUserPreferences);
-router.get('/check', questionnaireController.checkPreferences);
+router.post('/submit', userPreferencesController.submitUserPreferences);
+router.get('/check', userPreferencesController.checkPreferences);
 
 module.exports = router;
