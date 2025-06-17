@@ -8,7 +8,8 @@ const db = mysql.createPool({
   port: 3306,
   waitForConnections: true,
   connectionLimit: 100,
-  queueLimit: 5
+  queueLimit: 5,
+  dateStrings: true,//this is to avoid conversions btw, since I had a problem where it would shift the timezone
 });
 
 module.exports = db;

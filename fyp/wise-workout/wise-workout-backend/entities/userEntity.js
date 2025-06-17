@@ -71,7 +71,34 @@ class UserEntity {
     );
     return result;
   }
+  async updateProfile(userId, updates) {
+    const fields = [];
+    const values = [];
 
+    if (updates.username) {
+      fields.push('username = ?');
+      values.push(updates.username);
+    }
+    if (updates.firstName) {
+      fields.push('firstName = ?');
+      values.push(updates.firstName);
+    }
+    if (updates.lastName) {
+      fields.push('lastName = ?');
+      values.push(updates.lastName);
+    }
+    if (updates.dob) {
+      fields.push('dob = ?');
+      values.push(updates.dob);
+    }
+
+    if (fields.length === 0) return;
+
+    values.push(userId);
+
+    const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+    await db.execute(sql, values);
+  }
 
 }
 

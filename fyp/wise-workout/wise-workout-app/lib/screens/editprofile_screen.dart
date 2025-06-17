@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_workout_app/services/profile_edit_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String firstName;
@@ -45,6 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
   late TextEditingController dobController;
+  late TextEditingController usernameController;
 
   @override
   void initState() {
@@ -64,6 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     dobController = TextEditingController(
       text: _formatIncomingDOB(dateOfBirth),
     );
+    usernameController = TextEditingController(text: username);
   }
 
   @override
@@ -71,6 +74,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     firstNameController.dispose();
     lastNameController.dispose();
     dobController.dispose();
+    usernameController.dispose();
     super.dispose();
   }
 
@@ -78,13 +82,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => isEditing = true);
   }
 
-  void saveEdits() {
+  void saveEdits() async {
     setState(() {
-      firstName = firstNameController.text;
-      lastName = lastNameController.text;
+      firstName = firstNameController.text.trim();
+      lastName = lastNameController.text.trim();
+      username = usernameController.text.trim();
       dateOfBirth = dobController.text;
       isEditing = false;
     });
+
+    final isoDOB = _parseToISODate(dateOfBirth);
+
+    final success = await ProfileEditService().updateProfile(
+      username: username,
+      firstName: firstName,
+      lastName: lastName,
+      dob: isoDOB,
+    );
+
+    if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update profile')),
+      );
+    }
   }
 
   void cancelEdits() {
@@ -124,11 +144,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   String _parseToISODate(String value) {
     try {
-      return DateFormat('dd MMM yyyy').parse(value).toIso8601String();
+      final parsed = DateFormat('dd MMM yyyy').parse(value);
+      return DateFormat('yyyy-MM-dd').format(parsed);
     } catch (_) {
-      return DateTime.now().toIso8601String();
+      return DateFormat('yyyy-MM-dd').format(DateTime.now());
     }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +279,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               const SizedBox(height: 12),
                               dataItem("First Name", isEditing ? buildField(firstNameController) : firstName),
                               dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName),
-                              dataItem("Username", username, isGrey: true),
+                              dataItem("Username", isEditing ? buildField(usernameController) : username),
                               dataItem("Date of Birth", isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth)),
                               dataItem("Email", email, isGrey: true),
                               const SizedBox(height: 20),

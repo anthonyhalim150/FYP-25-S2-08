@@ -120,12 +120,33 @@ exports.getCurrentProfile = async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      dob: user.dob,
+      dob: user.dob,  
       role: user.role,
       tokens: user.tokens,
       avatar: avatar ? avatar.image_url : null,
       background: background ? background.image_url : null
     });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { username, firstName, lastName, dob } = req.body;
+
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    if (username) {
+      const existing = await UserEntity.findByUsername(username);
+      if (existing && existing.id !== userId) {
+        return res.status(409).json({ message: 'Username already taken' });
+      }
+    }
+
+    await UserEntity.updateProfile(userId, { username, firstName, lastName, dob });
+    res.status(200).json({ message: 'Profile updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
