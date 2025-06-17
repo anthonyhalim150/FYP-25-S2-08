@@ -186,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.arrow_back, color: Colors.black),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(context, true),
                         ),
                         const Expanded(
                           child: Text(
@@ -311,10 +311,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               fit: BoxFit.cover,
                             ),
                           ),
-                          CircleAvatar(
+                           CircleAvatar(
                             radius: 54,
-                            backgroundImage: AssetImage(profileImage),
-                            backgroundColor: Colors.transparent,
+                            backgroundImage: profileImage.isNotEmpty
+                                ? AssetImage(profileImage)
+                                : null,
+                            backgroundColor: profileImage.isNotEmpty
+                                ? Colors.transparent
+                                : Colors.black,
                           ),
                         ],
                       ),

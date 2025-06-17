@@ -186,28 +186,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
           };
           break;
 
-        case "Profile":
-          handleTap = () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => EditProfileScreen(
-                firstName: _profileData['firstName'] ?? '',
-                lastName: _profileData['lastName'] ?? '',
-                username: _profileData['username'] ?? '',
-                dob: _profileData['dob'] ?? '',
-                email: _profileData['email'] ?? '',
-                level: "Beginner", // or real value if available
-                accountType: _profileData['role'] ?? 'user',
-                profileImage: _profileData['avatar'] ?? 'assets/avatars/free/free1.png',
-                backgroundImage: _profileData['background'] ?? 'assets/background/black.jpg',
+         case "Profile":
+          handleTap = () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EditProfileScreen(
+                  firstName: _profileData['firstName'] ?? '',
+                  lastName: _profileData['lastName'] ?? '',
+                  username: _profileData['username'] ?? '',
+                  dob: _profileData['dob'] ?? '',
+                  email: _profileData['email'] ?? '',
+                  level: "Beginner",
+                  accountType: _profileData['role'] ?? 'user',
+                  profileImage: _profileImagePath  ?? '',
+                  backgroundImage: _profileBgPath  ?? 'assets/background/black.jpg',
+                ),
               ),
-            ),
-          );
-        };
-
-
+            );
+            if (result != null) {
+              _loadProfile();
+            }
+          };
           break;
+
 
         case "Password":
           handleTap = () => Navigator.pushNamed(context, '/change-password');
