@@ -24,6 +24,8 @@ CREATE TABLE pending_users (
   password VARCHAR(255) NOT NULL,
   otp VARCHAR(6) NOT NULL,
   expires_at DATETIME NOT NULL,
+  firstName VARCHAR(100),
+  lastName VARCHAR(100),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE password_resets (

@@ -16,7 +16,7 @@ class AuthService {
     return user || { email };
   }
 
-  static async registerUser(email, username, password) {
+  static async registerUser(email, username, password, firstName, lastName) {
     const existingUser = await UserModel.findByEmail(email);
     if (existingUser) throw new Error('EMAIL_EXISTS');
 
@@ -27,7 +27,7 @@ class AuthService {
     const otp = generateOTP();
     const expiresAt = getExpiry();
 
-    await PendingUserModel.create(email, username, hashedPassword, otp, expiresAt);
+    await PendingUserModel.create(email, username, hashedPassword, otp, expiresAt, firstName, lastName);
     return otp;
   }
 }

@@ -55,18 +55,26 @@ exports.loginFacebook = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, username, password, firstName, lastName } = req.body;
 
   const cleanEmail = isValidEmail(email);
   const cleanPassword = isValidPassword(password);
   const cleanUsername = sanitizeInput(username);
+  const cleanFirstName = sanitizeInput(firstName || '');
+  const cleanLastName = sanitizeInput(lastName || '');
 
   if (!cleanEmail || !cleanPassword || !cleanUsername) {
     return res.status(400).json({ message: 'Invalid email, username, or password format' });
   }
 
   try {
-    const otp = await AuthService.registerUser(cleanEmail, cleanUsername, cleanPassword);
+    const otp = await AuthService.registerUser(
+      cleanEmail,
+      cleanUsername,
+      cleanPassword,
+      cleanFirstName,
+      cleanLastName
+    );
     await sendOTPToEmail(cleanEmail, otp);
     res.status(201).json({ message: 'OTP sent to email. Complete verification to finish registration.' });
   } catch (err) {
@@ -79,3 +87,4 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
