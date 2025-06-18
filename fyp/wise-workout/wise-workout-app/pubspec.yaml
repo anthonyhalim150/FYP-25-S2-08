@@ -54,14 +54,14 @@ flutter:
     - assets/workoutImages/strength_training.jpg
     - assets/workoutImages/yoga_training.jpg
     - assets/workoutImages/core_training.jpg
-    - assets/exerciseImages/push_up_gif.jpg
+    - assets/exerciseImages/push_ups_gif.jpg
     - assets/avatars/free/free1.png
     - assets/avatars/free/free2.png
     - assets/avatars/free/free3.png
     - assets/avatars/premium/premium2.png
     - assets/avatars/premium/premium3.png
     - assets/avatars/premium/premium4.png
-    - assets/avatars/premium/premium5.png
+    - assets/avatars/premium/premium5.pngm
     - assets/avatars/premium/premium6.png
     - assets/avatars/premium/premium7.png
     - assets/background/bg1.jpg
@@ -87,8 +87,8 @@ flutter:
     - assets/badges/badge_11.png
     - assets/badges/badge_12.png
     - assets/icons/lock.jpg
-    - assets/exerciseGif/push_up.mp4
-    - assets/exerciseGif/push_up.gif
+    - assets/exerciseGif/push_ups.mp4
+    - assets/exerciseGif/push_ups.gif
     - assets/workoutImages/dumbbell_strength.jpg
     - assets/workoutImages/evening_wind_down_yoga.jpg
     - assets/workoutImages/leg_day_power_burn.jpg

@@ -147,7 +147,7 @@ class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
                       // Navigate to exercise details
                       Navigator.pushNamed(
                         context,
-                        '/exercise-start-screen',
+                        '/exercise-detail',
                         arguments: exercise, // Pass the full object
                       );
                     },
