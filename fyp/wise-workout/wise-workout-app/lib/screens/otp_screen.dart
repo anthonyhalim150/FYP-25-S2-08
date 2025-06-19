@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'questionnaires/questionnaire_screen.dart';
+import 'questionnaires/questionnaire_screen_start.dart';
 
 class OtpScreen extends StatefulWidget {
   final String email;
@@ -54,16 +55,18 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> navigateAfterVerification(String jwt) async {
     final hasPreferences = await checkPreferences(jwt);
-    if (hasPreferences) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const QuestionnaireScreen(step: 1, responses: {}),
-        ),
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (hasPreferences) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SplashAndOnboardingWrapper(),
+          ),
+        );
+      }
+    });
   }
 
   Future<bool> checkPreferences(String jwt) async {

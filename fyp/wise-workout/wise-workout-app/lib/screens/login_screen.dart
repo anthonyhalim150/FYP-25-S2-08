@@ -8,7 +8,6 @@ import '../widgets/google_login_button.dart';
 import '../widgets/apple_login_button.dart';
 import '../widgets/facebook_login_button.dart';
 import '../utils/sanitize.dart';
-import 'questionnaires/questionnaire_screen.dart';
 import 'questionnaires/questionnaire_screen_start.dart';
 
 class LoginScreen extends StatefulWidget {
