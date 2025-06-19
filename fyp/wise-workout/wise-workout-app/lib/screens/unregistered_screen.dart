@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/exercise_stats_card.dart';
+import '../widgets/exercise_gauge.dart';
 import '../widgets/tournament_widget.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/bottom_navigation.dart';
@@ -131,13 +132,22 @@ class UnregisteredUserPage extends StatelessWidget {
               // Exercise stats
               _wrapWithPrompt(
                 context,
-                ExerciseStatsCard(
-                  currentSteps: currentSteps,
-                  maxSteps: maxSteps,
-                  caloriesBurned: caloriesBurned,
-                  xpEarned: xpEarned,
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: Theme.of(context).colorScheme.copyWith(
+                      surface: Colors.white.withOpacity(1), // Background arc
+                      primaryContainer: Colors.white, // Foreground arc
+                    ),
+                  ),
+                  child: ExerciseStatsCard(
+                    currentSteps: currentSteps,
+                    maxSteps: maxSteps == 0 ? 1 : maxSteps, // avoid div by zero
+                    caloriesBurned: caloriesBurned,
+                    xpEarned: xpEarned,
+                  ),
                 ),
               ),
+
               const SizedBox(height: 20),
 
               // Workout title
