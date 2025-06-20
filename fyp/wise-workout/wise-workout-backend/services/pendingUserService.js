@@ -18,7 +18,8 @@ class PendingUserService {
       pendingUser.password,
       'database',
       pendingUser.firstName,
-      pendingUser.lastName
+      pendingUser.lastName,
+      true
     );
 
     await PendingUserModel.deleteByEmail(email);

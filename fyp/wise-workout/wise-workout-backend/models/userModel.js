@@ -2,23 +2,19 @@ const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 class UserModel {
-  static async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '') {
+  static async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '', skipHash = false) {
     let hashedPassword = null;
     if (method === 'database' && password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+        hashedPassword = skipHash ? password : await bcrypt.hash(password, 10);
     }
-
     if (!username) {
-      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-      username = `user${randomSuffix}`;
+        const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+        username = `user${randomSuffix}`;
     }
-
     const [result] = await db.execute(
-      `INSERT INTO users (email, username, password, method, firstName, lastName)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [email, username, hashedPassword, method, firstName, lastName]
+        `INSERT INTO users (email, username, password, method, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?)`,
+        [email, username, hashedPassword, method, firstName, lastName]
     );
-
     return result;
   }
 
