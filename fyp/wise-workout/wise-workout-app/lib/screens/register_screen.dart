@@ -198,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: isLoading
                         ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                         : const Text(
-                            "LEVEL UP! →",
+                            "Create Account",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
