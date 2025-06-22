@@ -55,6 +55,8 @@ flutter:
     - assets/workoutImages/yoga_training.jpg
     - assets/workoutImages/core_training.jpg
     - assets/exerciseImages/push_ups_gif.jpg
+    - assets/exerciseImages/sit_up_gif.jpg
+    - assets/exerciseImages/squat_gif.jpg
     - assets/avatars/free/free1.png
     - assets/avatars/free/free2.png
     - assets/avatars/free/free3.png
@@ -87,15 +89,22 @@ flutter:
     - assets/badges/badge_11.png
     - assets/badges/badge_12.png
     - assets/icons/lock.jpg
-    - assets/exerciseGif/push_ups.mp4
     - assets/exerciseGif/push_ups.gif
+    - assets/exerciseGif/squat.gif
     - assets/workoutImages/dumbbell_strength.jpg
     - assets/workoutImages/evening_wind_down_yoga.jpg
     - assets/workoutImages/leg_day_power_burn.jpg
     - assets/workoutImages/morning_flow_yoga.jpg
     - assets/workoutImages/power_vinyasa.jpg
+    - assets/workoutImages/bodyweight_leg_blast.jpg
+    - assets/workoutImages/explosive_plyo_legs.jpg
+    - assets/workoutImages/glute_isolation_session.jpg
+    - assets/workoutImages/quick_hiit_circuit.jpg
+    - assets/workoutImages/endurance_cardio_burn.jpg
+    - assets/workoutImages/cardio_kickboxing.jpg
     - assets/workoutImages/upper_body_blast.jpg
     - assets/workoutImages/total_body_core_circuit.jpg
+    - assets/workoutImages/calisthenics.jpg
     - assets/workoutCategory/cardio_burn.jpg
     - assets/workoutCategory/leg_workout.jpg
     - assets/workoutCategory/push.jpg

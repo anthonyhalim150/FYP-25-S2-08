@@ -26,11 +26,11 @@ class WorkoutService {
 
     return [
       Workout(
-        workoutKey: 'dumbbell_strength',
+        workoutKey: 'calisthenics',
         workoutId: 1,
-        title: 'Dumbbell Strength',
+        title: 'Calisthenics',
         category: 'strength',
-        description: 'Grab your dumbbells and get to work with this fast-paced, high-burn strength workout.',
+        description: 'Strength training that uses the resistance of your body and gravity.',
         duration: '20',
         level: 'Beginner',
       ),

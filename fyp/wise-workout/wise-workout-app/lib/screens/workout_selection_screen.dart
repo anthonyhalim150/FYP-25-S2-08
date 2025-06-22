@@ -81,7 +81,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     ),
                   ),
                   background: Image.asset(
-                    'assets/workoutImages/strength_training.jpg',
+                    'assets/workoutCategory/${_workoutName.toLowerCase().replaceAll(' ', '_')}.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),

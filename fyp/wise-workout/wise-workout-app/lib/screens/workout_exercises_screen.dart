@@ -103,7 +103,7 @@ class _WorkoutExercisesScreenState extends State<WorkoutExercisesScreen> {
               ),
             ),
             background: Image.asset(
-              widget.workoutImageUrl,
+              'assets/workoutImages/${widget.workoutName.toLowerCase().replaceAll(' ', '_')}.jpg',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
                 color: Colors.grey[300],
