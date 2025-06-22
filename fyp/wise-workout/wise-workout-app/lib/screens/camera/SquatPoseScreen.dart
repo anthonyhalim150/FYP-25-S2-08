@@ -24,63 +24,57 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
   int currentCameraIndex = 0;
   List<String> feedbackMessages = [];
   Uint8List? processedImage;
+  String poseStatus = '';
 
   @override
   void initState() {
     super.initState();
-    print('[INIT] Initializing camera...');
     initCamera();
   }
 
   Future<void> initCamera() async {
     try {
       cameras = await availableCameras();
-      print('[CAMERA] Found ${cameras.length} cameras');
       await initializeController(cameras[currentCameraIndex]);
     } catch (e) {
-      print('[ERROR] Failed to initialize camera: $e');
+      print('[ERROR] Camera init failed: $e');
     }
   }
 
   Future<void> initializeController(CameraDescription camera) async {
     try {
       _controller?.dispose();
-      _controller = CameraController(camera, ResolutionPreset.low);
+      _controller = CameraController(camera, ResolutionPreset.medium);
       await _controller!.initialize();
-      print('[CAMERA] Controller initialized');
 
       if (mounted) {
         setState(() => isCameraReady = true);
       }
 
-      print('[WEBSOCKET] Connecting to backend...');
       channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8080/ws/squats'));
       isWebSocketOpen = true;
 
       channel!.stream.listen((message) {
-        print('[WEBSOCKET] Message received');
-        final data = jsonDecode(message);
-        if (mounted) {
-          setState(() {
-            correct = data['correct'] ?? 0;
-            incorrect = data['incorrect'] ?? 0;
-            feedbackMessages = List<String>.from(data['feedback'] ?? []);
-            if (data['image'] != null) {
-              processedImage = base64Decode(data['image']);
-              print('[IMAGE] Processed frame received and decoded');
-            }
-          });
+        try {
+          final data = jsonDecode(message);
+          if (mounted) {
+            setState(() {
+              correct = data['correct'] ?? 0;
+              incorrect = data['incorrect'] ?? 0;
+              feedbackMessages = List<String>.from(data['feedback'] ?? []);
+              poseStatus = data['status'] ?? '';
+              if (data['image'] != null) {
+                processedImage = base64Decode(data['image']);
+              }
+            });
+          }
+        } catch (e) {
+          print('[WEBSOCKET ERROR] Failed to decode: $e');
         }
       }, onDone: () {
-        print('[WEBSOCKET] Connection closed');
-        if (mounted) {
-          setState(() => isWebSocketOpen = false);
-        }
+        if (mounted) setState(() => isWebSocketOpen = false);
       }, onError: (error) {
-        print('[WEBSOCKET] Error: $error');
-        if (mounted) {
-          setState(() => isWebSocketOpen = false);
-        }
+        if (mounted) setState(() => isWebSocketOpen = false);
       });
 
       _controller!.startImageStream((CameraImage image) async {
@@ -89,11 +83,8 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
         try {
           final jpegBytes = convertCameraImageToJpeg(image);
           final base64Image = base64Encode(jpegBytes);
-          print('[STREAM] Sending image frame to backend...');
           channel!.sink.add(base64Image);
-        } catch (e) {
-          print('[ERROR] Failed to send frame: $e');
-        } finally {
+        } catch (_) {} finally {
           await Future.delayed(const Duration(milliseconds: 500));
           isSending = false;
         }
@@ -106,22 +97,43 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
   void switchCamera() async {
     if (cameras.isEmpty) return;
     currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
-    print('[CAMERA] Switching to camera $currentCameraIndex');
     await initializeController(cameras[currentCameraIndex]);
+  }
+
+  Widget _buildPoseStatusBanner(String status) {
+    if (status == 'camera_misaligned') {
+      return _statusBox("📐 Please align the camera to your side", Colors.orange);
+    } else if (status == 'incorrect_pose') {
+      return _statusBox("⚠️ Incorrect posture detected", Colors.red);
+    } else if (status == 'inactive_reset') {
+      return _statusBox("🕒 Inactivity detected. Counter reset", Colors.blueGrey);
+    } else if (status == 'no_pose_detected') {
+      return _statusBox("🙈 No pose detected in frame", Colors.grey);
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _statusBox(String message, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      width: double.infinity,
+      color: bgColor,
+      child: Text(
+        message,
+        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   @override
   void dispose() {
     try {
       _controller?.dispose();
-      print('[DISPOSE] Camera controller disposed');
       if (isWebSocketOpen) {
         channel?.sink.close();
-        print('[DISPOSE] WebSocket closed');
       }
-    } catch (e) {
-      print('[DISPOSE ERROR] $e');
-    }
+    } catch (_) {}
     super.dispose();
   }
 
@@ -137,48 +149,46 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Correct ✅: $correct'),
-            Text('Incorrect ❌: $incorrect'),
-            const SizedBox(height: 16),
-            if (feedbackMessages.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: feedbackMessages.map((msg) => Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.red),
+      body: Column(
+        children: [
+          if (poseStatus.isNotEmpty) _buildPoseStatusBanner(poseStatus),
+          if (feedbackMessages.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: feedbackMessages.map((msg) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    border: Border.all(color: Colors.red),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    msg,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Text(
-                      msg,
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  )).toList(),
-                ),
+                  ),
+                )).toList(),
               ),
-            const SizedBox(height: 20),
-            if (processedImage != null)
-              Image.memory(processedImage!)
-            else if (_controller != null && _controller!.value.isInitialized)
-              AspectRatio(
-                aspectRatio: _controller!.value.aspectRatio,
-                child: CameraPreview(_controller!),
-              )
-            else
-              const CircularProgressIndicator(),
-          ],
-        ),
+            ),
+          Expanded(
+            child: Center(
+              child: processedImage != null
+                ? Image.memory(processedImage!, width: double.infinity, fit: BoxFit.contain)
+                : (_controller != null && _controller!.value.isInitialized)
+                  ? CameraPreview(_controller!)
+                  : const CircularProgressIndicator(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text('✅ $correct   ❌ $incorrect', style: const TextStyle(fontSize: 16)),
+          )
+        ],
       ),
     );
   }
