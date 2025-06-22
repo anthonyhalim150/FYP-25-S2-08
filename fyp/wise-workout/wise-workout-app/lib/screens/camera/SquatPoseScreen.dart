@@ -22,19 +22,23 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
   bool isCameraReady = false;
   bool isWebSocketOpen = false;
   int currentCameraIndex = 0;
+  List<String> feedbackMessages = [];
+  Uint8List? processedImage;
 
   @override
   void initState() {
     super.initState();
+    print('[INIT] Initializing camera...');
     initCamera();
   }
 
   Future<void> initCamera() async {
     try {
       cameras = await availableCameras();
+      print('[CAMERA] Found ${cameras.length} cameras');
       await initializeController(cameras[currentCameraIndex]);
     } catch (e) {
-      print("Camera initialization failed: $e");
+      print('[ERROR] Failed to initialize camera: $e');
     }
   }
 
@@ -43,42 +47,40 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
       _controller?.dispose();
       _controller = CameraController(camera, ResolutionPreset.low);
       await _controller!.initialize();
+      print('[CAMERA] Controller initialized');
 
       if (mounted) {
-        setState(() {
-          isCameraReady = true;
-        });
+        setState(() => isCameraReady = true);
       }
 
+      print('[WEBSOCKET] Connecting to backend...');
       channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8080/ws/squats'));
       isWebSocketOpen = true;
 
       channel!.stream.listen((message) {
+        print('[WEBSOCKET] Message received');
         final data = jsonDecode(message);
         if (mounted) {
           setState(() {
             correct = data['correct'] ?? 0;
             incorrect = data['incorrect'] ?? 0;
+            feedbackMessages = List<String>.from(data['feedback'] ?? []);
+            if (data['image'] != null) {
+              processedImage = base64Decode(data['image']);
+              print('[IMAGE] Processed frame received and decoded');
+            }
           });
         }
       }, onDone: () {
+        print('[WEBSOCKET] Connection closed');
         if (mounted) {
-          setState(() {
-            isWebSocketOpen = false;
-          });
-        } else {
-          isWebSocketOpen = false;
+          setState(() => isWebSocketOpen = false);
         }
-        print('WebSocket closed');
       }, onError: (error) {
+        print('[WEBSOCKET] Error: $error');
         if (mounted) {
-          setState(() {
-            isWebSocketOpen = false;
-          });
-        } else {
-          isWebSocketOpen = false;
+          setState(() => isWebSocketOpen = false);
         }
-        print('WebSocket error: $error');
       });
 
       _controller!.startImageStream((CameraImage image) async {
@@ -87,22 +89,24 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
         try {
           final jpegBytes = convertCameraImageToJpeg(image);
           final base64Image = base64Encode(jpegBytes);
+          print('[STREAM] Sending image frame to backend...');
           channel!.sink.add(base64Image);
         } catch (e) {
-          print("Frame conversion error: $e");
+          print('[ERROR] Failed to send frame: $e');
         } finally {
           await Future.delayed(const Duration(milliseconds: 500));
           isSending = false;
         }
       });
     } catch (e) {
-      print("Controller error: $e");
+      print('[ERROR] Controller setup failed: $e');
     }
   }
 
   void switchCamera() async {
     if (cameras.isEmpty) return;
     currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+    print('[CAMERA] Switching to camera $currentCameraIndex');
     await initializeController(cameras[currentCameraIndex]);
   }
 
@@ -110,10 +114,14 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
   void dispose() {
     try {
       _controller?.dispose();
+      print('[DISPOSE] Camera controller disposed');
       if (isWebSocketOpen) {
         channel?.sink.close();
+        print('[DISPOSE] WebSocket closed');
       }
-    } catch (_) {}
+    } catch (e) {
+      print('[DISPOSE ERROR] $e');
+    }
     super.dispose();
   }
 
@@ -133,10 +141,36 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Correct: $correct'),
-            Text('Incorrect: $incorrect'),
+            Text('Correct ✅: $correct'),
+            Text('Incorrect ❌: $incorrect'),
+            const SizedBox(height: 16),
+            if (feedbackMessages.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: feedbackMessages.map((msg) => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.red),
+                    ),
+                    child: Text(
+                      msg,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )).toList(),
+                ),
+              ),
             const SizedBox(height: 20),
-            if (_controller != null && _controller!.value.isInitialized)
+            if (processedImage != null)
+              Image.memory(processedImage!)
+            else if (_controller != null && _controller!.value.isInitialized)
               AspectRatio(
                 aspectRatio: _controller!.value.aspectRatio,
                 child: CameraPreview(_controller!),
