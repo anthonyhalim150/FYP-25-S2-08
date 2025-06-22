@@ -1,64 +1,127 @@
 import React, { useState } from 'react';
-import '../styles/Styles.css'; // Use your existing style
+import '../styles/Styles.css';
+import ViewATournament from '../components/ViewATournament';
+import NavigationBar from '../components/NavigationBar';
 
 const dummyTournaments = [
   {
     id: 't001',
-    title: 'Summer Fitness Challenge',
-    description: 'A 4-week fitness tournament for all users.',
-    startDate: '2024-07-01',
-    endDate: '2024-07-31',
+    number: 1,
+    title: 'Summer Fitness ‘25',
+    description: 'A 21-day all-round fitness event designed to help users stay active through summer heat — challenges include HIIT, mobility, and hydration tracking.',
+    startDate: 'Jun 10, 2025',
+    endDate: 'Jul 1, 2025',
+    duration: '21 days',
     prize: 'Summer Edition FitQuest Shirt',
-    status: 'Upcoming',
+    status: 'ongoing',
   },
   {
     id: 't002',
-    title: 'Muscle Madness',
-    description: 'Push your limits in this 2-week strength challenge!',
-    startDate: '2024-06-01',
-    endDate: '2024-06-15',
+    number: 2,
+    title: 'HIIT HeatWave',
+    description: 'A high-intensity 10-day burst to push stamina and speed. Perfect for users wanting a quick, sweaty transformation.',
+    startDate: 'Jun 10, 2025',
+    endDate: 'Jun 20, 2025',
+    duration: '10 days',
     prize: 'FitQuest Gym Bag',
-    status: 'Completed',
+    status: 'completed',
+  },
+  {
+    id: 't003',
+    number: 3,
+    title: 'FitBliz 30-day',
+    description: 'A consistent, full-month challenge focused on balance: strength, cardio, flexibility — great for long-term goal setters.',
+    startDate: 'Jun 10, 2025',
+    endDate: 'July 10, 2025',
+    duration: '30 days',
+    prize: 'Badge Unlock',
+    status: 'ongoing',
+  },
+  {
+    id: 't004',
+    number: 4,
+    title: 'CoreClash',
+    description: 'A consistent, full-month challenge focused on balance: strength, cardio, flexibility — great for long-term goal setters.',
+    startDate: 'Jun 10, 2025',
+    endDate: 'Jun 30, 2025',
+    duration: '20 days',
+    prize: 'Resistance Band',
+    status: 'ongoing',
+  },
+  {
+    id: 't005',
+    number: 5,
+    title: 'Stretch Surge',
+    description: 'A 21-day all-round fitness event designed to help users stay active through summer heat — challenges include HIIT, mobility, and hydration tracking.',
+    startDate: 'Jun 10, 2025',
+    endDate: 'July 1, 2025',
+    duration: '22 days',
+    prize: 'Yoga Mat',
+    status: 'ongoing',
   },
 ];
 
 const ViewAllTournaments = () => {
   const [selectedTournament, setSelectedTournament] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredTournaments = dummyTournaments.filter(t =>
+    t.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="all-users-container">
-      <header>
+      <header className="admin-header">
         <img src="/white-logo.png" alt="FitQuest Logo" className="logo" />
-        <nav><a href="/dashboard">Dashboard</a></nav>
+        <NavigationBar />
       </header>
 
       <div className="page-title-with-search">
         <h2>All Tournaments</h2>
+         <div className="search-bar-container">
+          <input
+            className="search-bar"
+            type="text"
+            placeholder="Search tournaments..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="search-icon-btn">
+            <img src="/icon-search.png" alt="Search" />
+          </button>
+        </div>
         <button
           className="upload-btn"
-          onClick={() => console.log('Create New Tournament')}
-        >
+          onClick={() => window.location.href = '/create-tournament'}>
           + Create Tournament
         </button>
       </div>
 
-      <table className="users-table">
+      <table className="tournament-table">
         <thead>
           <tr>
-            <th>Title</th>
+            <th>No.</th>
+            <th>Tournaments</th>
+            <th>Start Date</th>
+            <th>End Date</th>
             <th>Duration</th>
             <th>Status</th>
-            <th>Prize</th>
-            <th>Action</th>
+            <th>Manage</th>
           </tr>
         </thead>
         <tbody>
-          {dummyTournaments.map(tour => (
+          {dummyTournaments.map((tour) => (
             <tr key={tour.id} onClick={() => setSelectedTournament(tour)}>
+              <td>{tour.number}</td>
               <td>{tour.title}</td>
-              <td>{tour.startDate} → {tour.endDate}</td>
-              <td><span className={`badge ${tour.status.toLowerCase()}`}>{tour.status}</span></td>
-              <td>{tour.prize}</td>
+              <td>{tour.startDate}</td>
+              <td>{tour.endDate}</td>
+              <td>{tour.duration}</td>
+              <td>
+                <span className={`badge ${tour.status.toLowerCase()}`}>
+                  {tour.status}
+                </span>
+              </td>
               <td>
                 <button className="edit-btn">Edit</button>
               </td>
@@ -67,18 +130,11 @@ const ViewAllTournaments = () => {
         </tbody>
       </table>
 
-      {/* Placeholder for modal/panel */}
       {selectedTournament && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>{selectedTournament.title}</h3>
-            <p>{selectedTournament.description}</p>
-            <p>Duration: {selectedTournament.startDate} to {selectedTournament.endDate}</p>
-            <p>Prize: {selectedTournament.prize}</p>
-            <button onClick={() => console.log("Edit tournament logic here")}>Save Changes</button>
-            <button onClick={() => setSelectedTournament(null)}>Close</button>
-          </div>
-        </div>
+        <ViewATournament
+          tournament={selectedTournament}
+          onClose={() => setSelectedTournament(null)}
+        />
       )}
     </div>
   );

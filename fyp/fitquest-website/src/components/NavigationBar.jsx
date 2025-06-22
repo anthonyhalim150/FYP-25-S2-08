@@ -30,7 +30,6 @@ const NavigationBar = () => {
             </nav>
             <div className="sidebar-logout">
               <button onClick={handleLogout}>
-                <img src="/icon-logout.png" alt="logout" style={{ width: '16px', marginRight: '8px' }} />
                 Logout
               </button>
             </div>

@@ -1,5 +1,3 @@
-/* AdminDashboard.css */
-
 body {
   margin: 0;
   font-family: 'Poppins', 'Alegreya';
@@ -562,6 +560,130 @@ header nav a {
   background-color: #ffdb4d;
 }
 
+.view-tournament-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto; /* enable scrolling */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  padding: 4rem 1rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.date-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.date-group-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.date-group-row span {
+  width: 100px;
+  font-weight: 500;
+}
+
+.date-time-inputs {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.date-time-inputs input {
+  flex: 1;
+}
+
+.form-row-2col {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.form-group-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group-col select {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+
+}
+
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tournament-table {
+  width: 95%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.tournament-table th, .tournament-table td {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tournament-table th {
+  background-color: #001f5f;
+  color: white;
+  font-weight: 600;
+}
+
+/* .tournament-table td button.edit-btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  background-color: #001f5f;
+  color: white;
+  border: none;
+  cursor: pointer;
+} */
+
+/* .tournament-table td button.edit-btn:hover {
+  background-color: #003399;
+} */
+
+.badge.ongoing {
+  color: #36ae03;
+  font-weight: 600;
+  padding: 0.3rem 2rem;
+  border-radius: 25px;
+}
+
+.badge.completed {
+  color: #001f5f;
+  font-weight: 600;
+  padding: 0.3rem 1.5rem;
+  border-radius: 25px;
+}
+
+
 .preferences-modal {
   position: fixed;
   top: 0;
@@ -576,13 +698,41 @@ header nav a {
 }
 
 .modal-content {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 400px;
-  text-align: left;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  padding: 3rem;
+  border-radius: 20px;
+  max-width: 720px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  /* box-sizing: border-box; */
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  max-width: 70vw;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.modal-content label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.modal-content .date-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .modal-content h3 {
@@ -598,6 +748,17 @@ header nav a {
 
 .modal-content li {
   margin-bottom: 0.5rem;
+}
+
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .close-btn {
@@ -721,7 +882,7 @@ header nav a {
   align-items: center;
   z-index: 1000;
 }
-
+/*
 .modal-content {
   background: #ffff;
   height: auto;
@@ -745,7 +906,7 @@ header nav a {
   background: none;
   border: none;
   cursor: pointer;
-}
+} */
 
 
 .workout-banner-list {
@@ -848,15 +1009,32 @@ header nav a {
 
 .edit-btn {
   align-self: flex-start;
-  background-color: #001f5f;
-  color: white;
+  background-color: #ffe135;
+  color: rgb(0, 0, 0);
   border: none;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 2rem;
   font-size: 0.85rem;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
+.edit-btn :hover {
+  background-color: #bfa200;
+  color: rgb(0, 0, 0);
+}
+
+.save-btn{
+  background-color: #ffd900;
+  color: rgb(0, 0, 0);
+  padding: 0.6rem 2.5rem;
+  font-size: 0.95rem;
+  border-radius: 30px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 /* === Avatar Grid & Background Grid === */
 .avatar-grid {
   display: grid;
@@ -923,6 +1101,13 @@ header nav a {
   border-bottom: 3px solid #001f5f;
 }
 
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
 .upload-btn-container {
   display: flex;
   justify-content: center;
@@ -939,11 +1124,11 @@ header nav a {
 }
 
 .upload-btn {
-  background-color: #001f5f;
+  background-color: #1261ff;
   color: white;
-  padding: 0.6rem 1.4rem;
+  padding: 0.6rem 2.5rem;
   font-size: 0.95rem;
-  border-radius: 10px;
+  border-radius: 30px;
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -1116,7 +1301,7 @@ header nav a {
   background: #fffaf3;
   width: 260px;
   height: 100%;
-  padding: 1.5rem 1rem;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1133,12 +1318,13 @@ header nav a {
   flex-direction: column;
   gap: 1rem;
   font-weight: bold;
+  padding-top: 1rem;
 }
 
 .sidebar-links a {
   color: black;
   text-decoration: none;
-  padding: 0.5rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 4px;
 }
 
@@ -1147,20 +1333,31 @@ header nav a {
 }
 
 .sidebar-logout {
-  text-align: left;
-  padding-top: 1rem;
+  margin-top: auto;
+  padding-top: 2rem;
 }
 
 .sidebar-logout button {
   background: none;
   border: none;
-  font-weight: bold;
   color: black;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  width: 100%;
   cursor: pointer;
   display: flex;
   align-items: center;
+  transition: background-color 0.2s ease;
+  margin-bottom: 5rem;
 }
+
+.sidebar-logout button:hover {
+  background-color: #fceabb;
+}
+
 
 .badge {
   font-weight: bold;
@@ -1186,12 +1383,24 @@ header nav a {
 .accept-btn,
 .reject-btn {
   margin-right: 0.5rem;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8rem;
-  border-radius: 6px;
+  /* cursor: pointer; */
+  /* font-weight: 500; */
+  color: white;
+  /* padding: 0.6rem 2.5rem; */
+  font-size: 0.95rem;
+  border-radius: 30px;
+  /* font-weight: 600; */
   border: none;
   cursor: pointer;
-  font-weight: 500;
+  transition: background-color 0.2s ease;
+
+  border: none;
+  padding: 0.4rem 2rem;
+  font-weight: bold;
+  border-radius: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .accept-btn {
@@ -1205,7 +1414,6 @@ header nav a {
 }
 
 
-
 @keyframes bounce {
   0%, 100% {
     transform: translateY(0);
@@ -1217,7 +1425,7 @@ header nav a {
 .view-btn {
   background-color: #ffe135;
   border: none;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 2rem;
   font-weight: bold;
   border-radius: 25px;
   color: #001f5f;
@@ -1229,7 +1437,7 @@ header nav a {
   background-color: #e60012;
   color: white;
   border: none;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 2rem;
   font-weight: bold;
   border-radius: 25px;
   cursor: pointer;
@@ -1239,8 +1447,100 @@ header nav a {
   background-color: #28a745;
   color: white;
   border: none;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 1.5rem;
   font-weight: bold;
   border-radius: 25px;
   cursor: pointer;
+}
+
+
+/* Updated ViewAUser Modal (Two-Panel Split) */
+.modal-content.user-modal-split {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  overflow: hidden;
+  max-width: 800px;
+  border-radius: 20px;
+  background: white;
+  position: relative;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Left Panel: User Info */
+.user-info-panel {
+  background-color: #ffe135;
+  flex: 1;
+  padding: 2.5rem;
+  text-align: left;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.6rem;
+}
+
+.user-info-panel h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.user-info-panel p {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.user-info-panel strong {
+  font-weight: 600;
+}
+
+.user-info-panel .edit-btn {
+  margin-top: 1.5rem;
+  background-color: #1261ff;
+  color: white;
+  padding: 0.6rem 1.8rem;
+  font-size: 0.9rem;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Avatar */
+.user-avatar-large {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+/* Right Panel: Preferences */
+.user-preferences-panel {
+  flex: 1;
+  padding: 3rem;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: flex-start; */
+}
+
+.user-preferences-panel h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+  color: #001f5f;
+}
+
+.user-preferences-panel ul {
+  list-style: none;
+  padding: 0;
+}
+
+.user-preferences-panel li {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
 }
