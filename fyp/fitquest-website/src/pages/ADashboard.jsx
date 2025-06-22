@@ -1,6 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Routes, Route, Link, useNavigate } from 'react-router-dom';
 import "../styles/Styles.css";
+import NavigationBar from '../components/NavigationBar';
+
 
 import AllUsersPage from './ViewAllUsers';
 import AllChallengesPage from './ViewAllChallenges';
@@ -38,23 +40,20 @@ const ADashboard = () => {
 
      const cards = [
     { icon: "/icon-totalUsers.png", label: "All Users", color: "gradient-maroon", path: "/All-Users" },
-    { icon: "/icon-challenge.png", label: "All Challenges", color: "gradient-yellow", path: "/All-Challenges" },
+    // { icon: "/icon-challenge.png", label: "All Challenges", color: "gradient-yellow", path: "/All-Challenges" },
     { icon: "/icon-tournament.png", label: "All Tournaments", color: "gradient-red", path: "/All-Tournaments" },
-    { icon: "/icon-workout.png", label: "All Workouts", color: "gradient-gray", path: "/All-Workouts" },
-    { icon: "/icon-avatar.png", label: "All Avatars", color: "gradient-blue", path: "/All-Avatars" },
+    // { icon: "/icon-workout.png", label: "All Workouts", color: "gradient-gray", path: "/All-Workouts" },
+    // { icon: "/icon-avatar.png", label: "All Avatars", color: "gradient-blue", path: "/All-Avatars" },
     { icon: "/icon-feedback.png", label: "All Feedbacks", color: "gradient-pink", path: "/All-Feedbacks" }
   ];
 
  return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#fff' }}>
-      <header>
-        <img src="/white-logo.png" alt="FitQuest Logo" className='logo'/>
-        <nav>
-          <Link to="/All-Users">Users</Link>
-          <Link to="/All-Challenges">Challenge</Link>
-          <Link to="/All-Tournaments">Tournament</Link>
-        </nav>
-      </header>
+    <header className="admin-header">
+      <img src="/white-logo.png" alt="FitQuest Logo" className="logo"/>
+      <NavigationBar />
+    </header>
+
 
       <section className="hero-section">
         <div className="hero-left">
@@ -93,19 +92,22 @@ const ADashboard = () => {
 
       <section className="manage-section" ref={manageSectionRef}>
         <div className={`manage-card-container ${isVisible ? 'slide-up' : ''}`}>
-          {cards.map((item, index) => (
-            <div
-              className="manage-card-wrapper"
-              key={index}
-              onClick={() => navigate(item.path)}
-              style={{ cursor: 'pointer' }}
-            >
-              <img className="manage-icon" src={item.icon} alt={item.label} />
-              <div className={`manage-card ${item.color}`}>
-                <p>{item.label}</p>
+          {cards.map((item, index) => {
+            const isSecondRowCenterFix = cards.length === 5 && (index === 3 || index === 4);
+            return (
+              <div
+                key={index}
+                className={`manage-card-wrapper ${isSecondRowCenterFix ? 'centered-last-row' : ''}`}
+                onClick={() => navigate(item.path)}
+                style={{ cursor: 'pointer' }}
+              >
+                <img className="manage-icon" src={item.icon} alt={item.label} />
+                <div className="manage-card">
+                  <p>{item.label}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>
@@ -117,10 +119,10 @@ export default function AdminRoutes() {
     <Routes>
       <Route path="/" element={<ADashboard />} />
       <Route path="/All-Users" element={<AllUsersPage />} />
-      <Route path="/All-Challenges" element={<AllChallengesPage />} />
+      {/* <Route path="/All-Challenges" element={<AllChallengesPage />} /> */}
       <Route path="/All-Tournaments" element={<AllTournamentsPage />} />
-      <Route path="/All-Workouts" element={<AllWorkoutsPage />} />
-      <Route path="/All-Avatars" element={<AllAvatarsPage />} />
+      {/* <Route path="/All-Workouts" element={<AllWorkoutsPage />} /> */}
+      {/* <Route path="/All-Avatars" element={<AllAvatarsPage />} /> */}
       <Route path="/All-Feedbacks" element={<AllFeedbacksPage />} />
     </Routes>
   );

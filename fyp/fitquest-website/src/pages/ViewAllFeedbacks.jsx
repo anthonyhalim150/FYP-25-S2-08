@@ -1,94 +1,146 @@
 import React, { useState } from 'react';
-import '../styles/Styles.css'; // Add feedback styles here or extend your existing CSS
+import '../styles/Styles.css';
+import NavigationBar from '../components/NavigationBar';
 
 const dummyFeedbacks = [
   {
     id: 'f001',
     user: 'Matilda Swayne',
     email: 'matilda@gmail.com',
-    submittedAt: '2024-06-15',
+    submittedAt: '2025-06-20',
     status: 'Pending',
-    type: 'Bug Report',
-    message: 'The log button sometimes doesn’t respond.',
+    message: 'The log button sometimes doesn’t respond. Please check.',
+    avatar: '/icon-avatar2.png',
+    accountType: 'Premium',
   },
   {
     id: 'f002',
     user: 'Jacob Tan',
     email: 'jacob@gmail.com',
-    submittedAt: '2024-06-14',
+    submittedAt: '2025-07-01',
     status: 'Accepted',
-    type: 'Suggestion',
-    message: 'Add a night mode toggle to the dashboard.',
+    message: 'FitQuest is very useful and I enjoy using it every day!',
+    avatar: '/icon-avatar1.png',
+    accountType: 'Free',
   },
   {
     id: 'f003',
     user: 'Alisa Yuen',
     email: 'alisa@gmail.com',
-    submittedAt: '2024-06-13',
+    submittedAt: '2025-06-30',
     status: 'Rejected',
-    type: 'Bug Report',
-    message: 'Images don’t load properly when offline.',
+    message: 'There is a bug with my level not updating properly.',
+    avatar: '/icon-avatar3.png',
+    accountType: 'Premium',
   },
 ];
 
 const ViewAllFeedbacks = () => {
   const [filter, setFilter] = useState('All');
+  const [showConfirm, setShowConfirm] = useState(null);
+  const [modalFeedback, setModalFeedback] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const filteredFeedbacks =
-    filter === 'All' ? dummyFeedbacks : dummyFeedbacks.filter(f => f.status === filter);
+    filter === 'All'
+      ? dummyFeedbacks.filter(fb =>
+          fb.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fb.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fb.message.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : dummyFeedbacks.filter(f => f.status === filter);
 
   return (
     <div className="all-users-container">
-      <header>
-        <img src="/white-logo.png" alt="Logo" className="logo" />
-        <nav><a href="/dashboard">Dashboard</a></nav>
-      </header>
-
+    <header className="admin-header">
+      <img src="/white-logo.png" alt="FitQuest Logo" className="logo"/>
+      <NavigationBar />
+    </header>
       <div className="page-title-with-search">
-        <h2>All Feedbacks</h2>
-        <select onChange={(e) => setFilter(e.target.value)} value={filter}>
-          <option value="All">All</option>
-          <option value="Pending">Inbox</option>
-          <option value="Accepted">Accepted</option>
-          <option value="Rejected">Rejected</option>
-        </select>
+        <h2 className="pixel-font">All Feedbacks</h2>
+        <div className="search-bar-container" style={{ maxWidth: '400px' }}>
+          <input
+            type="text"
+            placeholder="Search feedback by email or words ..."
+            className="search-bar"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="search-icon-btn">
+            <img src="/icon-search.png" alt="Search" />
+          </button>
+        </div>
       </div>
 
       <table className="users-table">
         <thead>
           <tr>
-            <th>From</th>
+            <th>Username</th>
             <th>Email</th>
-            <th>Submitted</th>
-            <th>Type</th>
+            <th>Submitted Date</th>
             <th>Status</th>
-            <th>Action</th>
+            <th>Manage</th>
           </tr>
         </thead>
         <tbody>
-          {filteredFeedbacks.map(fb => (
-            <tr key={fb.id} onClick={() => console.log("View details for:", fb.id)}>
+          {filteredFeedbacks.map((fb) => (
+            <tr key={fb.id} onClick={() => setModalFeedback(fb)}>
               <td>{fb.user}</td>
               <td>{fb.email}</td>
-              <td>{fb.submittedAt}</td>
-              <td>{fb.type}</td>
+              <td>{new Date(fb.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ (\d{4})$/, ',$1')}</td>
+              <td className={`badge ${fb.status.toLowerCase()}`}>{fb.status}</td>
               <td>
-                <span className={`badge ${fb.status.toLowerCase()}`}>
-                  {fb.status}
-                </span>
-              </td>
-              <td>
-                {fb.status === 'Pending' && (
+                {fb.status === 'Pending' ? (
                   <>
-                    <button className="accept-btn">Accept</button>
-                    <button className="reject-btn">Reject</button>
+                    <button className="accept-btn" onClick={(e) => { e.stopPropagation(); setShowConfirm({ id: fb.id, action: 'publish' }); }}>Publish</button>
+                    <button className="reject-btn" onClick={(e) => { e.stopPropagation(); setShowConfirm({ id: fb.id, action: 'reject' }); }}>Reject</button>
                   </>
+                ) : (
+                  <button className="view-btn" onClick={(e) => { e.stopPropagation(); setModalFeedback(fb); }}>View</button>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="modal-overlay" onClick={() => setShowConfirm(null)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()} style={{ background: 'white', padding: '2rem', borderRadius: '16px', textAlign: 'center' }}>
+            <p style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>
+              Are you sure you want to {showConfirm.action === 'publish' ? 'publish' : 'reject'}?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+              <button className="reject-btn" onClick={() => setShowConfirm(null)}>Cancel</button>
+              <button className="accept-btn" onClick={() => setShowConfirm(null)}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Detail Modal */}
+      {modalFeedback && (
+        <div className="modal-overlay" onClick={() => setModalFeedback(null)}>
+          <div className="feedback-detail-modal" style={{ background: 'white', borderRadius: '16px', padding: '2rem', maxWidth: '720px', margin: '0 auto', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }} onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModalFeedback(null)} style={{ float: 'right' }}>✕</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+              <img src={modalFeedback.avatar} alt="Avatar" style={{ width: 60, height: 60, borderRadius: '50%' }} />
+              <div>
+                <h3 style={{ margin: 0 }}>@{modalFeedback.user}</h3>
+                <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>{modalFeedback.accountType}</p>
+              </div>
+              <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+                <p style={{ color: modalFeedback.status === 'Rejected' ? 'red' : 'green', fontWeight: 'bold', margin: 0 }}>{modalFeedback.status}</p>
+                <p style={{ fontStyle: 'italic', fontWeight: 'bold', fontSize: '0.9rem', margin: 0 }}>
+                  {new Date(modalFeedback.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ (\d{4})$/, ',$1')}
+                </p>
+              </div>
+            </div>
+            <p style={{ fontSize: '1rem', lineHeight: '1.7', color: '#333' }}>{modalFeedback.message}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -13,7 +13,7 @@ const Login = ({ onLoginSuccess }) => {
     const { email, password } = formData;
 
     try {
-      const res = await fetch("http://localhost:8080/auth/login", {
+      const res = await fetch("http://localhost:8080/api/login", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 
 
-app.use('/api', authenticateUser, userRoutes);
+app.use('/api', userRoutes);
 
 // Test DB connection
 db.query('SELECT DATABASE() AS db_name')

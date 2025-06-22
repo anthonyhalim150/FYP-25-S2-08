@@ -12,7 +12,13 @@ const UserModal = ({ user, onClose }) => {
         
           {/* Left Panel: Personal Info */}
           <div className="user-left-panel">
-            <img src={user.avatar} alt="User Avatar" className="user-avatar-large" />
+            {/* <img src={user.avatar} alt="User Avatar" className="user-avatar-large" /> */}
+            <img
+              src={user.avatar || `/icon-avatar${(user.id % 6 || 6)}.png`}
+              alt="User Avatar"
+              className="user-avatar-large"
+            />
+
             <h2>{user.username}</h2>
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Role:</strong> {user.role}</p>

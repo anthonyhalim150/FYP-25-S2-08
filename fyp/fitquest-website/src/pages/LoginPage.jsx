@@ -23,16 +23,6 @@ const LoginPage = () => {
           <img src={blackFitQuestLogo} alt="FitQuest Logo" className="fitquest-logo" />
           <h2>Log In</h2>
           <Login onLoginSuccess={handleLoginSuccess} />
-          <p className="fitquest-signup-note">or sign up with</p>
-          <div className="social-buttons">
-            <button className="social-btn google">
-                <img src={googleLogo} alt="Google Log In" />
-            </button>
-            <button className="social-btn facebook">
-                <img src={facebookLogo} alt="Facebook Log In" />
-            </button>
-
-          </div>
         </div>
       </div>
     <img

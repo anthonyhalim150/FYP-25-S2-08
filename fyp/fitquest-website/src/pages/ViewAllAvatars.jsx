@@ -3,6 +3,8 @@ import AvatarSlider from '../components/AvatarSlider';
 import BackgroundSlider from '../components/BackgroundSlider';
 import '../styles/Styles.css';
 
+import NavigationBar from '../components/NavigationBar';
+
 const ViewAllAvatars = () => {
   const [tab, setTab] = useState('avatar');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -11,13 +13,13 @@ const ViewAllAvatars = () => {
 
   return (
     <div className="all-workouts-container">
-      <header>
-        <img src="/white-logo.png" alt="Logo" className="logo" />
-        <nav><a href="/dashboard">Dashboard</a></nav>
-      </header>
+    <header className="admin-header">
+      <img src="/white-logo.png" alt="FitQuest Logo" className="logo"/>
+      <NavigationBar />
+    </header>
 
       <div className="avatar-tabs">
-        <div className="upload-btn-wrapper">
+        {/* <div className="upload-btn-wrapper">
         {tab === 'avatar' ? (
             <button className="upload-btn" onClick={() => console.log('Upload New Avatar')}>
             Upload New Avatar
@@ -27,7 +29,7 @@ const ViewAllAvatars = () => {
             Upload New Background
             </button>
         )}
-        </div>
+        </div> */}
 
         <button
           className={tab === 'avatar' ? 'active-tab' : ''}
