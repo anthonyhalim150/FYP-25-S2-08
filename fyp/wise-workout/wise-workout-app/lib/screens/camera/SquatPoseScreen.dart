@@ -47,9 +47,7 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
       _controller = CameraController(camera, ResolutionPreset.medium);
       await _controller!.initialize();
 
-      if (mounted) {
-        setState(() => isCameraReady = true);
-      }
+      if (mounted) setState(() => isCameraReady = true);
 
       channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8080/ws/squats'));
       isWebSocketOpen = true;
@@ -116,11 +114,11 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
   Widget _statusBox(String message, Color bgColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      width: double.infinity,
-      color: bgColor,
+      margin: const EdgeInsets.only(top: 16),
+      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
       child: Text(
         message,
-        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
     );
@@ -130,9 +128,7 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
   void dispose() {
     try {
       _controller?.dispose();
-      if (isWebSocketOpen) {
-        channel?.sink.close();
-      }
+      if (isWebSocketOpen) channel?.sink.close();
     } catch (_) {}
     super.dispose();
   }
@@ -143,51 +139,66 @@ class _SquatPoseScreenState extends State<SquatPoseScreen> {
       appBar: AppBar(
         title: const Text("Squat Tracker"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.cameraswitch),
-            onPressed: switchCamera,
-          ),
+          IconButton(icon: const Icon(Icons.cameraswitch), onPressed: switchCamera),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          if (poseStatus.isNotEmpty) _buildPoseStatusBanner(poseStatus),
-          if (feedbackMessages.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: feedbackMessages.map((msg) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade100,
-                    border: Border.all(color: Colors.red),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    msg,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )).toList(),
-              ),
-            ),
-          Expanded(
-            child: Center(
-              child: processedImage != null
-                ? Image.memory(processedImage!, width: double.infinity, fit: BoxFit.contain)
+          Positioned.fill(
+            child: processedImage != null
+                ? Image.memory(processedImage!, fit: BoxFit.cover)
                 : (_controller != null && _controller!.value.isInitialized)
-                  ? CameraPreview(_controller!)
-                  : const CircularProgressIndicator(),
+                    ? CameraPreview(_controller!)
+                    : const Center(child: CircularProgressIndicator()),
+          ),
+          Positioned(
+            top: 16,
+            left: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (poseStatus.isNotEmpty) _buildPoseStatusBanner(poseStatus),
+                if (feedbackMessages.isNotEmpty)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.center,
+                    children: feedbackMessages.map((msg) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        border: Border.all(color: Colors.red),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        msg,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )).toList(),
+                  ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text('✅ $correct   ❌ $incorrect', style: const TextStyle(fontSize: 16)),
-          )
+          Positioned(
+            bottom: 24,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                '✅ $correct   ❌ $incorrect',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  backgroundColor: Colors.black54,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
