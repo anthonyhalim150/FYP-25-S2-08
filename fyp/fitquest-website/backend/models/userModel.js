@@ -5,7 +5,7 @@ class UserModel {
   static async create(email, username, password = null, method = 'database') {
     let hashedPassword = null;
     if (method === 'database' && password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+      hashedPassword = await bcrypt.hash(username + password, 10);
     }
     const [result] = await db.execute(
       'INSERT INTO users (email, username, password, method) VALUES (?, ?, ?, ?)',
@@ -29,7 +29,7 @@ class UserModel {
     );
     const user = rows[0];
     if (!user || !user.password) return null;
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(user.username + password, user.password);
     return isMatch ? user : null;
   }
 }
