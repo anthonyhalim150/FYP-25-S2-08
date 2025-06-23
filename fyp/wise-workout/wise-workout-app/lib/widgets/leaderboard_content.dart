@@ -57,6 +57,7 @@ class ChallengeLeaderboardWidget extends StatelessWidget {
     required List<int> values,
   }) {
     final maxVal = values.reduce((a, b) => a > b ? a : b).toDouble();
+    final barMaxHeight = 120.0;
 
     return Container(
       decoration: BoxDecoration(
@@ -82,7 +83,7 @@ class ChallengeLeaderboardWidget extends StatelessWidget {
           Text('Duration: $duration', style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 16),
 
-          // Bars with background container
+          // Bars
           Container(
             decoration: BoxDecoration(
               color: const Color(0xFFF7F7F7),
@@ -92,28 +93,58 @@ class ChallengeLeaderboardWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(participants.length, (index) {
-                final barHeight = (values[index] / maxVal) * 100;
+                final barValue = values[index].toDouble();
+                final fillHeight = (barValue / maxVal) * barMaxHeight;
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Container(
-                      width: 32,
-                      height: barHeight + 20,
-                      decoration: BoxDecoration(
-                        color: _getColor(index),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          '${values[index]}',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold),
-                        ),
+                    SizedBox(
+                      height: barMaxHeight + 24,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          // Background track
+                          Container(
+                            width: 36,
+                            height: barMaxHeight,
+                            decoration: BoxDecoration(
+                              color: _getColor(index).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          // Filled portion
+                          Container(
+                            width: 36,
+                            height: fillHeight,
+                            decoration: BoxDecoration(
+                              color: _getColor(index),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '${values[index]}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '/${maxVal.toInt()}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -128,7 +159,6 @@ class ChallengeLeaderboardWidget extends StatelessWidget {
     );
   }
 
-  // Better colors for clarity and variety
   Color _getColor(int index) {
     const colors = [
       Color(0xFFD32F2F), // Red
@@ -140,7 +170,6 @@ class ChallengeLeaderboardWidget extends StatelessWidget {
     return colors[index % colors.length];
   }
 }
-
 // -------------------- TOURNAMENT LEADERBOARD --------------------
 class TournamentLeaderboardWidget extends StatefulWidget {
   const TournamentLeaderboardWidget({super.key});
@@ -154,9 +183,30 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
     {
       'title': '7 Minutes Sit-Up',
       'podium': [
-        {'rank': 2, 'username': '@mulanDIY', 'score': 87, 'color': Colors.lightBlue, 'height': 80.0},
-        {'rank': 1, 'username': '@jacobHealth', 'score': 98, 'color': Colors.amber, 'height': 110.0},
-        {'rank': 3, 'username': '@charlieangel', 'score': 79, 'color': Colors.orange, 'height': 60.0},
+        {
+          'rank': 2,
+          'username': '@mulanDIY',
+          'score': 87,
+          'color': Colors.lightBlue,
+          'height': 80.0,
+          'image': 'assets/avatars/free/free2.png',
+        },
+        {
+          'rank': 1,
+          'username': '@jacobHealth',
+          'score': 98,
+          'color': Colors.amber,
+          'height': 110.0,
+          'image': 'assets/avatars/premium/premium5.png',
+        },
+        {
+          'rank': 3,
+          'username': '@charlieangel',
+          'score': 79,
+          'color': Colors.orange,
+          'height': 60.0,
+          'image': 'assets/avatars/free/free1.png',
+        },
       ],
       'others': [
         {'rank': 4, 'username': '@jake_sim04', 'score': '75 Sit Ups'},
@@ -169,9 +219,30 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
     {
       'title': '5 Minute Push-Up',
       'podium': [
-        {'rank': 2, 'username': '@fitJane', 'score': 110, 'color': Colors.lightBlue, 'height': 100.0},
-        {'rank': 1, 'username': '@fitTom', 'score': 120, 'color': Colors.amber, 'height': 115.0},
-        {'rank': 3, 'username': '@jasonFit', 'score': 105, 'color': Colors.orange, 'height': 95.0},
+        {
+          'rank': 2,
+          'username': '@fitJane',
+          'score': 110,
+          'color': Colors.lightBlue,
+          'height': 100.0,
+          'image': 'assets/avatars/free/free3.png',
+        },
+        {
+          'rank': 1,
+          'username': '@fitTom',
+          'score': 120,
+          'color': Colors.amber,
+          'height': 115.0,
+          'image': 'assets/avatars/premium/premium2.png',
+        },
+        {
+          'rank': 3,
+          'username': '@jasonFit',
+          'score': 105,
+          'color': Colors.orange,
+          'height': 95.0,
+          'image': 'assets/avatars/free/free1.png',
+        },
       ],
       'others': [
         {'rank': 4, 'username': '@alphaZ', 'score': '95 Push Ups'},
@@ -251,6 +322,7 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
               podium[0]['score'],
               podium[0]['color'],
               podium[0]['height'],
+              podium[0]['image'],
             ),
             _buildPodium(
               podium[1]['rank'],
@@ -258,6 +330,7 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
               podium[1]['score'],
               podium[1]['color'],
               podium[1]['height'],
+              podium[1]['image'],
             ),
             _buildPodium(
               podium[2]['rank'],
@@ -265,6 +338,7 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
               podium[2]['score'],
               podium[2]['color'],
               podium[2]['height'],
+              podium[2]['image'],
             ),
           ],
         ),
@@ -294,10 +368,10 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListView(
               children: others.map<Widget>((entry) {
-                return _RankTile(
-                  rank: entry['rank'],
-                  username: entry['username'],
-                  score: entry['score'],
+                return ListTile(
+                  leading: Text('${entry['rank']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(entry['username']),
+                  trailing: Text(entry['score']),
                 );
               }).toList(),
             ),
@@ -307,14 +381,14 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
     );
   }
 
-  Widget _buildPodium(int rank, String username, int score, Color color, double height) {
+  Widget _buildPodium(int rank, String username, int score, Color color, double height, String image) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 24,
-          backgroundColor: Colors.white,
-          child: Icon(Icons.person, color: Colors.black),
+          backgroundImage: AssetImage(image),
+          backgroundColor: Colors.grey[200],
         ),
         const SizedBox(height: 6),
         Container(
@@ -342,6 +416,7 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
 }
 
 // -------------------- LEVELS LEADERBOARD --------------------
+// (Unchanged from your version)
 class LevelsLeaderboardWidget extends StatelessWidget {
   const LevelsLeaderboardWidget({super.key});
 
@@ -399,9 +474,9 @@ class LevelsLeaderboardWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            _buildTopUser(user: top3[1], size: 60), // Rank 2
-            _buildTopUser(user: top3[0], size: 72), // Rank 1 - biggest
-            _buildTopUser(user: top3[2], size: 60), // Rank 3
+            _buildTopUser(user: top3[1], size: 60),
+            _buildTopUser(user: top3[0], size: 72),
+            _buildTopUser(user: top3[2], size: 60),
           ],
         ),
         const SizedBox(height: 32),
@@ -484,5 +559,3 @@ class _RankTile extends StatelessWidget {
     );
   }
 }
-
-
