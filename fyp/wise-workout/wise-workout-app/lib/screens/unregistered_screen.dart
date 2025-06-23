@@ -8,9 +8,9 @@ import 'workout_sample_data.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
   final int currentSteps = 0;
-  final int maxSteps = 0;
-  final int caloriesBurned = 0;
-  final int xpEarned = 0;
+  final int maxSteps = 10000;
+  final int caloriesBurned = 250;
+  final int xpEarned = 300;
 
   const UnregisteredUserPage({super.key});
 
