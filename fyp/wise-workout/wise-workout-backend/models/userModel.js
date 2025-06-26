@@ -5,7 +5,7 @@ class UserModel {
   static async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '', skipHash = false) {
     let hashedPassword = null;
     if (method === 'database' && password) {
-        hashedPassword = skipHash ? password : await bcrypt.hash(username + password, 10);
+        hashedPassword = skipHash ? password : await bcrypt.hash(password, 10);
     }
     if (!username) {
         const randomSuffix = Math.floor(1000 + Math.random() * 9000);
@@ -51,7 +51,7 @@ class UserModel {
     const user = rows[0];
     if (!user || !user.password) return null;
 
-    const isMatch = await bcrypt.compare(user.username + password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
   }
 

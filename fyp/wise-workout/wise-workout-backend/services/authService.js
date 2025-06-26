@@ -23,7 +23,7 @@ class AuthService {
     const existingUsername = await UserModel.findByUsername(username);
     if (existingUsername) throw new Error('USERNAME_EXISTS');
 
-    const hashedPassword = await bcrypt.hash(username + password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
     const expiresAt = getExpiry();
 
