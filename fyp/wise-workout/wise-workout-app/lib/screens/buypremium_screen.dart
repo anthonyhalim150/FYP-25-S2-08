@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'payment_screen.dart';
 
 class BuyPremiumScreen extends StatefulWidget {
   const BuyPremiumScreen({Key? key}) : super(key: key);
@@ -15,19 +16,16 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
       'name': 'Monthly',
       'price': '\$2.99',
       'period': '/month',
-      'highlight': false,
     },
     {
       'name': 'Annual',
       'price': '\$19.99',
       'period': '/year',
-      'highlight': true,
     },
     {
       'name': 'Lifetime',
       'price': '\$49',
       'period': '',
-      'highlight': false,
     },
   ];
 
@@ -85,10 +83,17 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
               elevation: 2,
             ),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'Start 7-day FREE Trial for ${plans[selectedPlan]['name']} Plan'
-                  )));
+              String priceString = plans[selectedPlan]['price'];
+              double price = double.tryParse(priceString.replaceAll('\$', '')) ?? 0.0;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PaymentScreen(
+                    planName: plans[selectedPlan]['name'],
+                    price: price,
+                  ),
+                ),
+              );
             },
             child: const Text("Start 7-day FREE Trial"),
           ),
