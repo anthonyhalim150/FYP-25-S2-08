@@ -10,6 +10,7 @@ class ProfileEditService {
     String? firstName,
     String? lastName,
     String? dob,
+    String? email,
   }) async {
     final cookie = await storage.read(key: 'jwt_cookie');
     if (cookie == null) return false;
@@ -25,6 +26,7 @@ class ProfileEditService {
         if (firstName != null) 'firstName': firstName,
         if (lastName != null) 'lastName': lastName,
         if (dob != null) 'dob': dob,
+        if (email != null) 'email': email,
       }),
     );
 

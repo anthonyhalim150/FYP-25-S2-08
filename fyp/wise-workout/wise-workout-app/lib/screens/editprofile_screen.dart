@@ -32,7 +32,6 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isEditing = false;
-
   late String firstName;
   late String lastName;
   late String username;
@@ -47,6 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController lastNameController;
   late TextEditingController dobController;
   late TextEditingController usernameController;
+  late TextEditingController emailController;
 
   @override
   void initState() {
@@ -60,13 +60,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     accountType = widget.accountType;
     profileImage = widget.profileImage;
     backgroundImage = widget.backgroundImage;
-
     firstNameController = TextEditingController(text: firstName);
     lastNameController = TextEditingController(text: lastName);
     dobController = TextEditingController(
       text: _formatIncomingDOB(dateOfBirth),
     );
     usernameController = TextEditingController(text: username);
+    emailController = TextEditingController(text: email);
   }
 
   @override
@@ -75,6 +75,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     lastNameController.dispose();
     dobController.dispose();
     usernameController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 
@@ -88,18 +89,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       lastName = lastNameController.text.trim();
       username = usernameController.text.trim();
       dateOfBirth = dobController.text;
+      email = emailController.text.trim();
       isEditing = false;
     });
-
     final isoDOB = _parseToISODate(dateOfBirth);
-
     final success = await ProfileEditService().updateProfile(
       username: username,
       firstName: firstName,
       lastName: lastName,
       dob: isoDOB,
+      email: email,
     );
-
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update profile')),
@@ -112,18 +112,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       firstNameController.text = firstName;
       lastNameController.text = lastName;
       dobController.text = dateOfBirth;
+      usernameController.text = username;
+      emailController.text = email;
       isEditing = false;
     });
   }
+
   String _formatIncomingDOB(String dob) {
     try {
       final parsed = DateTime.parse(dob);
       return DateFormat('dd MMM yyyy').format(parsed);
     } catch (_) {
-      return dob; 
+      return dob;
     }
   }
-
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime initialDate =
@@ -150,9 +152,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return DateFormat('yyyy-MM-dd').format(DateTime.now());
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -281,7 +280,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName),
                               dataItem("Username", isEditing ? buildField(usernameController) : username),
                               dataItem("Date of Birth", isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth)),
-                              dataItem("Email", email, isGrey: true),
+                              dataItem("Email", isEditing ? buildField(emailController) : email),
                               const SizedBox(height: 20),
                               const Text(
                                 "Account Details",
@@ -311,7 +310,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               fit: BoxFit.cover,
                             ),
                           ),
-                           CircleAvatar(
+                          CircleAvatar(
                             radius: 54,
                             backgroundImage: profileImage.isNotEmpty
                                 ? AssetImage(profileImage)
@@ -381,12 +380,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Text(label),
           value is String
               ? Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                    color: isGrey ? Colors.grey : Colors.black,
-                  ),
-                )
+            value,
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: isGrey ? Colors.grey : Colors.black,
+            ),
+          )
               : SizedBox(width: 180, child: value),
         ],
       ),
