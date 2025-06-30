@@ -3,6 +3,7 @@ import 'create_avatar.dart';
 import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
 import 'editprofile_screen.dart';
+import 'privacypolicy_screen.dart';
 // Sub-widgets:
 import '../widgets/profile_avatar_section.dart';
 import '../widgets/profile_badge_collection.dart';
@@ -204,7 +205,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           handleTap = () => Navigator.pushNamed(context, '/language-settings');
           break;
         case "Privacy Policy":
-          handleTap = () => Navigator.pushNamed(context, '/privacy-policy');
+          handleTap = () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
+          );
           break;
         case "Appearance":
           handleTap = () => Navigator.pushNamed(context, '/appearance-settings');

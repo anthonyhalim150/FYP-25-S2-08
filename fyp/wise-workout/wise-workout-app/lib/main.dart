@@ -47,7 +47,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
         routes: {
           '/': (context) => LoginScreen(),
           '/home': (context) => HomeScreen(
-            userName: '', //Hardcoded btw
+            userName: '',
           ),
           '/profile': (context) => ProfileScreen(
             userName: '',
