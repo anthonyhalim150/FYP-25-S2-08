@@ -13,14 +13,45 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _cardNumController = TextEditingController();
   String cardNumber = '';
   String expiryDate = '';
   String cvv = '';
   String cardHolder = '';
   bool isProcessing = false;
+  String? cardType;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardNumController.addListener(_detectCardType);
+  }
+
+  void _detectCardType() {
+    String input = _cardNumController.text;
+    setState(() {
+      if (input.startsWith('4')) {
+        cardType = 'Visa';
+      } else if (input.startsWith('5')) {
+        cardType = 'Mastercard';
+      } else {
+        cardType = null;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _cardNumController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    String previewNumber = cardNumber.isEmpty
+        ? '**** **** **** ****'
+        : cardNumber.padRight(16, '*').replaceRange(4, 12, ' **** **** ');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Payment'),
@@ -31,6 +62,64 @@ class _PaymentScreenState extends State<PaymentScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              Card(
+                color: Colors.deepPurple[400],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                child: Container(
+                  width: double.infinity,
+                  height: 190,
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            cardType ?? "",
+                            style: const TextStyle(
+                                color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          const Spacer(),
+                          if (cardType == 'Visa')
+                            Image.network(
+                              'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png',
+                              height: 36,
+                              width: 56,
+                            )
+                          else if (cardType == 'Mastercard')
+                            Image.network(
+                              'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
+                              height: 36,
+                              width: 56,
+                            )
+                        ],
+                      ),
+                      const Spacer(),
+                      Text(
+                        previewNumber,
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600, fontSize: 22, letterSpacing: 2.0),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text(
+                            expiryDate.isEmpty ? 'MM/YY' : expiryDate,
+                            style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          ),
+                          const Spacer(),
+                          Text(
+                            cardHolder.isEmpty ? 'NAME' : cardHolder.toUpperCase(),
+                            style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
               Text(
                 'You\'re purchasing: ${widget.planName}',
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -43,17 +132,29 @@ class _PaymentScreenState extends State<PaymentScreen> {
               const SizedBox(height: 24),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Card Holder Name'),
+                onChanged: (value) => setState(() {
+                  cardHolder = value;
+                }),
                 validator: (value) =>
                 value == null || value.isEmpty ? 'Enter card holder name' : null,
                 onSaved: (value) => cardHolder = value!,
               ),
               const SizedBox(height: 16),
               TextFormField(
+                controller: _cardNumController,
                 decoration: const InputDecoration(labelText: 'Card Number'),
                 keyboardType: TextInputType.number,
                 maxLength: 16,
-                validator: (value) =>
-                value == null || value.length != 16 ? 'Enter valid card number' : null,
+                onChanged: (value) => setState(() {
+                  cardNumber = value;
+                }),
+                validator: (value) {
+                  if (value == null || value.length != 16) {
+                    return 'Enter 16-digit card number';
+                  }
+                  // No Luhn check -- demo mode!
+                  return null;
+                },
                 onSaved: (value) => cardNumber = value!,
               ),
               const SizedBox(height: 16),
@@ -63,9 +164,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     child: TextFormField(
                       decoration: const InputDecoration(labelText: 'Expiry Date (MM/YY)'),
                       maxLength: 5,
-                      validator: (value) => value == null || !RegExp(r'^\d{2}/\d{2}$').hasMatch(value)
-                          ? 'Invalid date'
-                          : null,
+                      onChanged: (value) => setState(() {
+                        expiryDate = value;
+                      }),
+                      validator: (value) {
+                        if (value == null || !RegExp(r'^\d{2}/\d{2}$').hasMatch(value)) {
+                          return 'Invalid date';
+                        }
+                        // Accepts any MM/YY for demo
+                        return null;
+                      },
                       onSaved: (value) => expiryDate = value!,
                     ),
                   ),
@@ -103,10 +211,35 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       });
                       showDialog(
                         context: context,
+                        barrierDismissible: false,
                         builder: (context) => AlertDialog(
                           icon: const Icon(Icons.check_circle, color: Colors.green, size: 40),
                           title: const Text('Payment Successful!'),
-                          content: Text('Thank you for purchasing the ${widget.planName} plan.'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Thank you for purchasing the ${widget.planName} plan.'),
+                              const SizedBox(height: 18),
+                              Row(
+                                children: [
+                                  Icon(Icons.verified, color: Colors.green[700], size: 25),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      "You're eligible for a 7-day money back guarantee.",
+                                      style: TextStyle(color: Colors.green[700], fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                "Cancel within 7 days for a full refund.",
+                                style: TextStyle(fontSize: 13),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                           actions: [
                             ElevatedButton(
                               onPressed: () {
