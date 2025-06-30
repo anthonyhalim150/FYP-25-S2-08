@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
+import '../widgets/all_friends.dart';
+import '../widgets/requests_friends.dart';
+import '../widgets/pending_friends.dart';
 import 'chat_screen.dart';
+import 'add_friend_screen.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
@@ -10,29 +14,14 @@ class MessageScreen extends StatefulWidget {
 }
 
 class _MessageScreenState extends State<MessageScreen> {
-  int selectedTab = 0; // 0: All Friends, 1: Requests, 2: Pending
+  int selectedTab = 0;
+  String search = '';
 
-  // Hardcoded list
   final List<Map<String, String>> friends = [
     {
       'name': 'Anthony Halim',
       'handle': '@pitbull101',
       'avatar': 'assets/avatars/free/free1.png',
-    },
-    {
-      'name': 'Matilda Yeo',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/free/free2.png',
-    },
-    {
-      'name': 'Jackson Wang',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/free/free3.png',
-    },
-    {
-      'name': 'Rose Herledya',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/premium/premium4.png',
     },
     {
       'name': 'Brendan Tanujaya',
@@ -56,12 +45,52 @@ class _MessageScreenState extends State<MessageScreen> {
     },
   ];
 
-  String search = '';
+  final List<Map<String, String>> requests = [
+    {
+      'name': 'Lee Lim',
+      'handle': '@jakesim1415',
+      'avatar': 'assets/avatars/free/free1.png',
+    }
+  ];
+
+  final List<Map<String, String>> pending = [
+    {
+      'name': 'Jake Sim',
+      'handle': '@jakesim1415',
+      'avatar': 'assets/avatars/free/free2.png',
+    },
+    {
+      'name': 'Astrid Lee',
+      'handle': '@leeAstrid829',
+      'avatar': 'assets/avatars/premium/premium4.png',
+    }
+  ];
+
+  void acceptRequest(int index) {
+    setState(() {
+      requests.removeAt(index);
+    });
+  }
+
+  void ignoreRequest(int index) {
+    setState(() {
+      requests.removeAt(index);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Filter friends by search query
     final filteredFriends = friends
+        .where((f) =>
+    f['name']!.toLowerCase().contains(search.toLowerCase()) ||
+        f['handle']!.toLowerCase().contains(search.toLowerCase()))
+        .toList();
+    final filteredRequests = requests
+        .where((f) =>
+    f['name']!.toLowerCase().contains(search.toLowerCase()) ||
+        f['handle']!.toLowerCase().contains(search.toLowerCase()))
+        .toList();
+    final filteredPending = pending
         .where((f) =>
     f['name']!.toLowerCase().contains(search.toLowerCase()) ||
         f['handle']!.toLowerCase().contains(search.toLowerCase()))
@@ -73,7 +102,6 @@ class _MessageScreenState extends State<MessageScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
@@ -114,6 +142,7 @@ class _MessageScreenState extends State<MessageScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            // Tabs row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: SingleChildScrollView(
@@ -127,6 +156,11 @@ class _MessageScreenState extends State<MessageScreen> {
                       padding: const EdgeInsets.only(right: 8.0, left: 6.0),
                       child: ElevatedButton.icon(
                         onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const AddFriendScreen()),
+                          );
                         },
                         icon: const Icon(Icons.add, color: Colors.white, size: 18),
                         label: const Text("Add New"),
@@ -148,55 +182,40 @@ class _MessageScreenState extends State<MessageScreen> {
               ),
             ),
             const Divider(height: 0, thickness: 1),
-            // Friends List
+            // Content changes depending on selectedTab
             Expanded(
               child: Container(
                 color: Colors.white,
-                child: ListView.separated(
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context, i) {
-                    final f = filteredFriends[i];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage(f['avatar']!),
-                        radius: 28,
-                      ),
-                      title: Text(
-                        f['name']!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 17,
-                        ),
-                      ),
-                      subtitle: Text(
-                        f['handle']!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      onTap: () {
+                child: Builder(builder: (context) {
+                  if (selectedTab == 0) {
+                    return AllFriendsTab(
+                      friends: filteredFriends,
+                      onFriendTap: (friend) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => ChatScreen(
-                              friendName: f['name']!,
-                              friendHandle: f['handle']!,
-                              friendAvatar: f['avatar']!,
-                              isPremium: true, // Hardcoded for now (this is to show challenge)
+                              friendName: friend['name']!,
+                              friendHandle: friend['handle']!,
+                              friendAvatar: friend['avatar']!,
+                              isPremium: true,
                             ),
                           ),
                         );
                       },
                     );
-                  },
-                  separatorBuilder: (_, __) => const Divider(
-                    thickness: 1,
-                    indent: 24,
-                    endIndent: 24,
-                  ),
-                  itemCount: filteredFriends.length,
-                ),
+                  } else if (selectedTab == 1) {
+                    return RequestsTab(
+                      requests: filteredRequests,
+                      acceptRequest: acceptRequest,
+                      ignoreRequest: ignoreRequest,
+                    );
+                  } else {
+                    return PendingTab(
+                      pending: filteredPending,
+                    );
+                  }
+                }),
               ),
             ),
           ],
