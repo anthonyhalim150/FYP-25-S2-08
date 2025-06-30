@@ -22,25 +22,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String? cardType;
 
   @override
-  void initState() {
-    super.initState();
-    _cardNumController.addListener(_detectCardType);
-  }
-
-  void _detectCardType() {
-    String input = _cardNumController.text;
-    setState(() {
-      if (input.startsWith('4')) {
-        cardType = 'Visa';
-      } else if (input.startsWith('5')) {
-        cardType = 'Mastercard';
-      } else {
-        cardType = null;
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _cardNumController.dispose();
     super.dispose();
@@ -80,18 +61,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           const Spacer(),
-                          if (cardType == 'Visa')
-                            Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png',
-                              height: 36,
-                              width: 56,
-                            )
-                          else if (cardType == 'Mastercard')
-                            Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
-                              height: 36,
-                              width: 56,
-                            )
                         ],
                       ),
                       const Spacer(),
@@ -152,7 +121,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   if (value == null || value.length != 16) {
                     return 'Enter 16-digit card number';
                   }
-                  // No Luhn check -- demo mode!
                   return null;
                 },
                 onSaved: (value) => cardNumber = value!,
@@ -169,9 +137,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       }),
                       validator: (value) {
                         if (value == null || !RegExp(r'^\d{2}/\d{2}$').hasMatch(value)) {
-                          return 'Invalid date';
+                          return 'Expiry format MM/YY';
                         }
-                        // Accepts any MM/YY for demo
+                        int month = int.tryParse(value.substring(0, 2)) ?? 0;
+                        int year = int.tryParse(value.substring(3, 5)) ?? 0;
+
+                        if (month < 1 || month > 12) return 'Month must be 01-12';
+
+                        // Check not expired
+                        final now = DateTime.now();
+                        int currentYear = now.year % 100;
+                        int currentMonth = now.month;
+                        if (year < currentYear || (year == currentYear && month < currentMonth)) {
+                          return 'Card expired';
+                        }
                         return null;
                       },
                       onSaved: (value) => expiryDate = value!,
