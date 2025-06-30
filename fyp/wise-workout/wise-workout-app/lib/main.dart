@@ -26,6 +26,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'services/exercise_service.dart';
   import 'screens/leaderboard_screen.dart';
   import 'screens/exercise_start.dart';
+  import 'screens/message_screen.dart';
 
 
 
@@ -63,6 +64,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           '/wearable-screen' : (context) => const WearableScreen(),
           '/workout-history': (context) => const HistoryScreen(),
           '/premium-plan': (context) => BuyPremiumScreen(),
+          '/messages': (context) => const MessageScreen(),
           '/workout-selection-screen': (ctx) => WorkoutScreen(
             workoutId: ModalRoute.of(ctx)!.settings.arguments as int,
           workoutName: '',categoryName: '', workoutKey: '',
