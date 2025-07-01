@@ -1,11 +1,12 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
+const PEPPER = require('../config/auth');
 
 class UserModel {
   static async create(email, username = null, password = null, method = 'database', firstName = '', lastName = '', skipHash = false) {
     let hashedPassword = null;
     if (method === 'database' && password) {
-        hashedPassword = skipHash ? password : await bcrypt.hash(password, 10);
+        hashedPassword = skipHash ? password : await bcrypt.hash(password, 12);
     }
     if (!username) {
         const randomSuffix = Math.floor(1000 + Math.random() * 9000);
@@ -51,7 +52,7 @@ class UserModel {
     const user = rows[0];
     if (!user || !user.password) return null;
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(PEPPER+password, user.password);
     return isMatch ? user : null;
   }
 

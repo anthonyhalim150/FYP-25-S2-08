@@ -2,6 +2,7 @@ const UserModel = require('../models/userModel');
 const PendingUserModel = require('../models/pendingUserModel');
 const bcrypt = require('bcryptjs');
 const { generateOTP, getExpiry } = require('../utils/otp');
+const PEPPER = require('../config/auth');
 
 class AuthService {
   static async loginWithCredentials(email, password) {
@@ -23,7 +24,7 @@ class AuthService {
     const existingUsername = await UserModel.findByUsername(username);
     if (existingUsername) throw new Error('USERNAME_EXISTS');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(PEPPER+password, 12);
     const otp = generateOTP();
     const expiresAt = getExpiry();
 

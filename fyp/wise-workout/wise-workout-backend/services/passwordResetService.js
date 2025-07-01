@@ -3,6 +3,7 @@ const { generateOTP, getExpiry } = require('../utils/otp');
 const { sendResetOTPToEmail } = require('../utils/otpService');
 const PasswordResetModel = require('../models/passwordResetModel');
 const UserModel = require('../models/userModel');
+const PEPPER = require('../config/auth');
 
 class PasswordResetService {
   static async requestReset(email) {
@@ -21,7 +22,7 @@ class PasswordResetService {
     const record = await PasswordResetModel.findValidToken(email, otp);
     if (!record) throw new Error('INVALID_OR_EXPIRED_OTP');
 
-    const hashed = await bcrypt.hash(newPassword, 10);
+    const hashed = await bcrypt.hash(PEPPER+newPassword, 12);
     await UserModel.updatePasswordByEmail(email, hashed);
     await PasswordResetModel.deleteByEmail(email);
   }
