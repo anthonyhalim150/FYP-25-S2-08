@@ -49,12 +49,6 @@ const ADashboard = () => {
 
  return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#fff' }}>
-    <header className="admin-header">
-      <img src="/white-logo.png" alt="FitQuest Logo" className="logo"/>
-      <NavigationBar />
-    </header>
-
-
       <section className="hero-section">
         <div className="hero-left">
           <h1 className="pixel-font">From Goals to Glory,</h1>

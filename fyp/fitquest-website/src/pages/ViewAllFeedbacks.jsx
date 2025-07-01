@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/Styles.css';
-import NavigationBar from '../components/NavigationBar';
+import './ViewAllFeedbacks.css';
 
 const dummyFeedbacks = [
   {
@@ -52,10 +51,6 @@ const ViewAllFeedbacks = () => {
 
   return (
     <div className="all-users-container">
-    <header className="admin-header">
-      <img src="/white-logo.png" alt="FitQuest Logo" className="logo"/>
-      <NavigationBar />
-    </header>
       <div className="page-title-with-search">
         <h2 className="pixel-font">All Feedbacks</h2>
         <div className="search-bar-container" style={{ maxWidth: '400px' }}>

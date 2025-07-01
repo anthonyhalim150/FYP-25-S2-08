@@ -4,6 +4,20 @@ body {
   background-color: #F7F4ED;
 }
 
+/* .admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9f6ef;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 2rem;z
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+ */
+
 .admin-dashboard {
   width: 100%;
   overflow-x: hidden;
@@ -19,12 +33,12 @@ header {
   align-items: center;
 }
 .admin-header {
-  background-color: #001f5f;
-  color: white;
+  /* background-color: #001f5f; */
+  color: rgb(0, 0, 0);
   padding: 1rem;
   display: flex;
   justify-content: space-between; /* pushes logo left, menu right */
-  align-items: center;
+  align-items:baseline;
   position: relative;
   z-index: 100;
 }
@@ -140,7 +154,7 @@ header nav a {
 
 .search-bar-container {
   flex:1;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   display: flex;
   align-items: center;
   border-radius: 999px;
@@ -150,6 +164,8 @@ header nav a {
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
+
 
 .search-bar {
   border: none;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import '../styles/Styles.css';
+import './ViewAllTournaments.css';
 import ViewATournament from '../components/ViewATournament';
-import NavigationBar from '../components/NavigationBar';
 
 const dummyTournaments = [
   {
@@ -71,11 +70,6 @@ const ViewAllTournaments = () => {
 
   return (
     <div className="all-users-container">
-      <header className="admin-header">
-        <img src="/white-logo.png" alt="FitQuest Logo" className="logo" />
-        <NavigationBar />
-      </header>
-
       <div className="page-title-with-search">
         <h2>All Tournaments</h2>
          <div className="search-bar-container">
