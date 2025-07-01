@@ -3,7 +3,6 @@ const PasswordResetService = require('../services/passwordResetService');
 exports.requestPasswordReset = async (req, res) => {
   const email = req.body.email?.trim();
   if (!email) return res.status(400).json({ message: 'Email is required' });
-
   try {
     await PasswordResetService.requestReset(email);
     res.json({ message: 'OTP sent to your email' });
@@ -23,7 +22,6 @@ exports.verifyPasswordReset = async (req, res) => {
   if (!email || !otp || !newPassword) {
     return res.status(400).json({ message: 'Missing email, OTP, or password' });
   }
-
   try {
     await PasswordResetService.verifyReset(email, otp, newPassword);
     res.json({ message: 'Password updated successfully' });

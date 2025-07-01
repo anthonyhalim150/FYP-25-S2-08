@@ -40,8 +40,11 @@ class Sanitize {
       return SanitizeResult.invalid("Password cannot be empty.");
     }
 
-    if (sanitized.length < 6) {
-      return SanitizeResult.invalid("Password must be at least 6 characters.");
+    final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$');
+    if (!regex.hasMatch(sanitized)) {
+      return SanitizeResult.invalid(
+        "Password must be at least 8 characters, include upper and lower case letters, and at least one number."
+      );
     }
 
     return SanitizeResult.valid(sanitized);

@@ -10,9 +10,10 @@ const isValidEmail = (email) => {
   };
   
 const isValidPassword = (password) => {
-    const sanitized = sanitizeInput(password);
-    return sanitized.length >= 6 ? sanitized : null;
-  };
+  if (typeof password !== 'string') return null;
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+  return regex.test(password) ? password : null;
+};
   
 module.exports = {
     sanitizeInput,

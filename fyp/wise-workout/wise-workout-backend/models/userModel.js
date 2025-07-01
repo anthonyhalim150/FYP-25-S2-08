@@ -100,6 +100,13 @@ class UserModel {
     const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
     await db.execute(sql, values);
   }
+  static async updatePasswordByEmail(email, hashedPassword) {
+    await db.execute(
+      'UPDATE users SET password = ? WHERE email = ? AND method = "database"',
+      [hashedPassword, email]
+    );
+  }
+
 }
 
 module.exports = UserModel;

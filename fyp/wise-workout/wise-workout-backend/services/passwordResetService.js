@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { generateOTP, getExpiry } = require('../utils/otp');
-const { sendResetOTPToEmail } = require('../utils/otpService');
+const { sendOTPToEmail } = require('../utils/otpService');
 const PasswordResetModel = require('../models/passwordResetModel');
 const UserModel = require('../models/userModel');
 const PEPPER = require('../config/auth');
@@ -15,7 +15,7 @@ class PasswordResetService {
 
     await PasswordResetModel.deleteByEmail(email);
     await PasswordResetModel.create(email, otp, expiresAt);
-    await sendResetOTPToEmail(email, otp);
+    await sendOTPToEmail(email, otp);
   }
 
   static async verifyReset(email, otp, newPassword) {
