@@ -13,8 +13,8 @@ class PendingUserModel {
     );
 
     const [result] = await db.execute(
-      `INSERT INTO pending_users (email, username, password, otp, expires_at, firstName, lastName)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO pending_users (email, username, password, otp, expires_at, failed_attempts, firstName, lastName)
+       VALUES (?, ?, ?, ?, ?, 0, ?, ?)`,
       [email, username, hashedPassword, otp, expiresAt, firstName, lastName]
     );
 
@@ -36,6 +36,20 @@ class PendingUserModel {
       [email, code]
     );
     return rows[0] || null;
+  }
+
+  static async incrementFailedAttempts(email) {
+    await db.execute(
+      'UPDATE pending_users SET failed_attempts = failed_attempts + 1 WHERE email = ?',
+      [email]
+    );
+  }
+
+  static async resetFailedAttempts(email) {
+    await db.execute(
+      'UPDATE pending_users SET failed_attempts = 0 WHERE email = ?',
+      [email]
+    );
   }
 
   static async deleteByEmail(email) {

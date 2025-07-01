@@ -29,6 +29,9 @@ exports.verifyPasswordReset = async (req, res) => {
     if (err.message === 'INVALID_OR_EXPIRED_OTP') {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
+    if (err.message === 'OTP_MAX_ATTEMPTS') {
+      return res.status(429).json({ message: 'Too many failed attempts. Please request a new OTP.' });
+    }
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

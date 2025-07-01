@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+const rateLimit = require('express-rate-limit');
 dotenv.config();
 
 const authRoutes = require('./routes/authRoutes'); 
@@ -15,6 +16,14 @@ const db = require('./config/db');
 
 const app = express();
 
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: { message: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(cors({
   origin: ['http://localhost:3000', 'http://10.0.2.2:3000'],
   credentials: true
@@ -22,11 +31,10 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Public routes
+app.use('/auth', authLimiter);
 app.use('/auth', authRoutes);
 app.use('/auth', pendingUserRoutes);
 
-// Authenticated routes
 app.use(authenticateUser);
 app.use('/user', userRoutes); 
 app.use('/lucky', spinRoutes);

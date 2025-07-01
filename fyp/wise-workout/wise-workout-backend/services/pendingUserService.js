@@ -1,10 +1,22 @@
 const UserModel = require('../models/userModel');
 const PendingUserModel = require('../models/pendingUserModel');
 
+const MAX_ATTEMPTS = 5;
+
 class PendingUserService {
   static async verifyOtpAndRegister(email, code) {
-    const pendingUser = await PendingUserModel.verifyOTP(email, code);
-    if (!pendingUser) throw new Error('INVALID_OTP');
+    const pendingUser = await PendingUserModel.findByEmail(email);
+    if (!pendingUser || pendingUser.failed_attempts >= MAX_ATTEMPTS) {
+      throw new Error('OTP_MAX_ATTEMPTS');
+    }
+
+    if (
+      pendingUser.otp !== code ||
+      new Date(pendingUser.expires_at) < new Date()
+    ) {
+      await PendingUserModel.incrementFailedAttempts(email);
+      throw new Error('INVALID_OTP');
+    }
 
     const existingUser = await UserModel.findByEmail(email);
     if (existingUser) {
@@ -22,6 +34,7 @@ class PendingUserService {
       true
     );
 
+    await PendingUserModel.resetFailedAttempts(email);
     await PendingUserModel.deleteByEmail(email);
   }
 }
