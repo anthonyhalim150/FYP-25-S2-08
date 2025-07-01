@@ -1,0 +1,28 @@
+.sidebar-container {
+  width: 220px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #eee;
+  padding-top: 6rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav a {
+    font-size: 14px;
+    display: block;
+    padding: 0.5rem 1.5rem;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background-color: #ffcb05;
+  color: #001f5f;
+}

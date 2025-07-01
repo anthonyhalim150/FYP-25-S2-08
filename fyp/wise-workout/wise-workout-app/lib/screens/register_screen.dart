@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
   bool showPassword = false;
   bool showConfirmPassword = false;
   bool agreeToTerms = false;
@@ -29,24 +30,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  bool isPasswordStrong(String password) {
+    final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$');
+    return regex.hasMatch(password);
+  }
+
   Future<void> handleRegister() async {
     if (!agreeToTerms) {
       showSnack("Please agree to the Terms & Conditions");
       return;
     }
-
     if (usernameController.text.trim().isEmpty) {
       showSnack("Username cannot be empty");
       return;
     }
-
+    if (!isPasswordStrong(passwordController.text)) {
+      showSnack("Password must be at least 8 characters and include upper, lower, digit, and special character.");
+      return;
+    }
     if (passwordController.text != confirmPasswordController.text) {
       showSnack("Passwords do not match");
       return;
     }
-
     setState(() => isLoading = true);
-
     final error = await registerUser(
       context,
       emailController.text,
@@ -55,9 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       firstNameController.text,
       lastNameController.text,
     );
-
     setState(() => isLoading = false);
-
     if (error != null) {
       showSnack(error);
     } else {
@@ -80,7 +84,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 150,
                 ),
                 const SizedBox(height: 32),
-
                 const Text("Email", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -91,7 +94,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 const Text("First Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -102,7 +104,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 const Text("Last Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -113,7 +114,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 const Text("Username", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -124,7 +124,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 const Text("Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -141,8 +140,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 3),
+                // helper text to show password requirements
+                const Text(
+                  "Min 8 chars, upper, lower, digit, special char",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
                 const SizedBox(height: 16),
-
                 const Text("Confirm Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -160,7 +164,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Row(
                   children: [
                     Checkbox(
@@ -183,7 +186,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -198,17 +200,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: isLoading
                         ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                         : const Text(
-                            "Create Account",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 1,
-                            ),
-                          ),
+                      "Create Account",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        letterSpacing: 1,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Center(
                   child: TextButton(
                     onPressed: () {
