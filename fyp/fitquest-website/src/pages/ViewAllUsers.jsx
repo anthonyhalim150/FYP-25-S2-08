@@ -1,87 +1,55 @@
 import React, { useState } from 'react';
 import '../styles/Styles.css';
-import ViewAUser from '../components/ViewAUser';
-import NavigationBar from '../components/NavigationBar';
+import './ViewAllUsers.css';
+import SideBar from '../components/SideBar.jsx';
+import PageLayout from '../components/PageLayout.jsx';
+import NavigationBar from '../components/NavigationBar.jsx';
 
 const ViewAllUsers = () => {
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [dummyUsers, setDummyUsers] = useState([
-    {
-      id: 1,
-      username: 'jacob123',
-      email: 'jacob123@gmail.com',
-      role: 'Free',
-      level: 'Lvl. 12',
-      isSuspended: false,
-      preferences: {
-        workout_frequency: '3x/week',
-        fitness_goal: 'Lose fat',
-        workout_time: 'Morning',
-        fitness_level: 'Intermediate',
-        injury: 'None'
-      }
-    },
-    {
-      id: 2,
-      username: 'matildaHealth',
-      email: 'matildaH@gmail.com',
-      role: 'Premium',
-      level: 'Lvl. 23',
-      isSuspended: false,
-      preferences: {
-        workout_frequency: '5x/week',
-        fitness_goal: 'Build muscle',
-        workout_time: 'Evening',
-        fitness_level: 'Beginner',
-        injury: 'None'
-      }
-    },
-    {
-      id: 3,
-      username: 'pitbull101',
-      email: 'pitbull101@gmail.com',
-      role: 'Premium',
-      level: 'Lvl. 41',
-      isSuspended: true,
-      preferences: {
-        workout_frequency: '2x/week',
-        fitness_goal: 'Tone body',
-        workout_time: 'Afternoon',
-        fitness_level: 'Advanced',
-        injury: 'Shoulder strain'
-      }
-    }
-    // Add more users as needed
-  ]);
+  const dummyUsers = [
+    { id: 1, username: 'jacob123', email: 'jacob123@gmail.com', role: 'Free', level: 'Lvl. 12', isSuspended: false },
+    { id: 2, username: 'matildaHealth', email: 'matildaH@gmail.com', role: 'Premium', level: 'Lvl. 23', isSuspended: false },
+    { id: 3, username: 'pitbull101', email: 'pitbull101@gmail.com', role: 'Premium', level: 'Lvl. 41', isSuspended: true },    
+    { id: 4, username: 'jacob123', email: 'jacob123@gmail.com', role: 'Free', level: 'Lvl. 12', isSuspended: false },
+    { id: 5, username: 'matildaHealth', email: 'matildaH@gmail.com', role: 'Premium', level: 'Lvl. 23', isSuspended: false },
+    { id: 6, username: 'pitbull101', email: 'pitbull101@gmail.com', role: 'Premium', level: 'Lvl. 41', isSuspended: true },
+  ];
 
-  const filteredUsers = dummyUsers.filter(
-    (u) =>
-      u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const toggleSuspend = (user) => {
-    const updated = { ...user, isSuspended: !user.isSuspended };
-    setDummyUsers((prev) =>
-      prev.map((u) => (u.id === updated.id ? updated : u))
-    );
-  };
+  const filteredUsers = dummyUsers.filter((user) => {
+    if (selectedTab === 'Suspended' && !user.isSuspended) return false;
+    if (selectedTab === 'Active' && user.isSuspended) return false;
+    return user.username.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
-    <div className="all-users-container">
-          <header className="admin-header">
-      <img src="/white-logo.png" alt="FitQuest Logo" className="logo"/>
-      <NavigationBar />
-    </header>
+    
+    <PageLayout>
 
-      <div className="page-title-with-search">
-        <h2 className="pixel-font">All Users</h2>
-        <div className="search-bar-container" style={{ maxWidth: '400px' }}>
+    <div className="admin-container">
+      <SideBar />
+      <div className="user-content">
+        <div className="user-header">
+          <h2>All Users</h2>
+          <div className="header-row">
+            <div className="user-tabs-container">
+              {['All', 'Active', 'Suspended'].map((tab) => (
+                <div
+                  key={tab}
+                  className={`user-tab ${selectedTab === tab ? 'active' : ''}`}
+                  onClick={() => setSelectedTab(tab)}
+                >
+                  {tab}
+                </div>
+              ))}
+            </div>
+
+          <div className="search-bar-container" style={{ maxWidth: '400px' }}>
           <input
             type="text"
-            placeholder="Search users by email or username..."
+            placeholder="Search feedback by email or words ..."
             className="search-bar"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -90,53 +58,43 @@ const ViewAllUsers = () => {
             <img src="/icon-search.png" alt="Search" />
           </button>
         </div>
-      </div>
+          </div>
+        </div>
 
-      <table className="users-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Account</th>
-            <th>Level</th>
-            <th>Manage</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id} style={{ cursor: 'pointer' }} onClick={() => setSelectedUser(user)}>
-              <td>{user.id}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
-              <td>{user.level}</td>
-              <td>
-                <div
-                  style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}
-                  onClick={(e) => e.stopPropagation()} // prevent triggering modal from button clicks
-                >
-                  <button className="view-btn" onClick={() => setSelectedUser(user)}>View</button>
-                  <button
-                    className={user.isSuspended ? 'unsuspend-btn' : 'suspend-btn'}
-                    onClick={() => toggleSuspend(user)}
-                  >
-                    {user.isSuspended ? 'Unsuspend' : 'Suspend'}
-                  </button>
-                </div>
-              </td>
+        <table className="users-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Level</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {selectedUser && (
-        <ViewAUser
-          user={selectedUser}
-          onClose={() => setSelectedUser(null)}
-        />
-      )}
+          </thead>
+          <tbody>
+            {filteredUsers.map((user) => (
+              <tr key={user.id}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.role}</td>
+                <td>{user.level}</td>
+                <td>
+                  <span className={`status-badge ${user.isSuspended ? 'suspended' : 'active'}`}>
+                    {user.isSuspended ? 'Suspended' : 'Active'}
+                  </span>
+                </td>
+                <td>
+                  <button className="view-btn">View</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
+
+    </PageLayout>
   );
 };
 
