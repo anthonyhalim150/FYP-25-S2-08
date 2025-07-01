@@ -17,17 +17,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _showCurrent = false;
   bool _showNew = false;
   bool _showConfirm = false;
-
   bool _isLoading = false;
   String? _error;
+
+  bool isPasswordStrong(String password) {
+    final regex =
+    RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$');
+    return regex.hasMatch(password);
+  }
 
   void changePassword() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
+
     await Future.delayed(const Duration(seconds: 1));
-    // this is hardcoded, need to implement backend
+    // Hardcoded, "old123" is correct current password ( need to implement backend)
     if (_currentController.text != 'old123') {
       setState(() {
         _error = 'Current password is incorrect.';
@@ -43,6 +49,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Password changed successfully!')),
     );
+
     // go to profile, clear stack
     Navigator.pushAndRemoveUntil(
       context,
@@ -62,7 +69,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
-
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
@@ -157,13 +163,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Enter a new password';
-                            } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                            } else if (!isPasswordStrong(value)) {
+                              return 'Min 8 chars, upper, lower, digit, special char';
                             } else if (value == _currentController.text) {
                               return 'New password must be different';
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: 3),
+                        // Helper text under new password
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Min 8 chars, upper, lower, digit, special char",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         _buildPasswordField(
@@ -171,8 +186,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           label: "Confirm New Password",
                           showPassword: _showConfirm,
                           onToggle: () => setState(() => _showConfirm = !_showConfirm),
-                          validator: (value) =>
-                          value != _newController.text ? 'Passwords do not match' : null,
+                          validator: (value) {
+                            if (value != _newController.text) {
+                              return 'Passwords do not match';
+                            }
+                            if (value == null || value.isEmpty) {
+                              return 'Required field';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 26),
                         SizedBox(
@@ -246,8 +268,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
       ),
       validator: validator ??
-              (value) =>
-          (value == null || value.isEmpty) ? 'Required field' : null,
+              (value) => (value == null || value.isEmpty) ? 'Required field' : null,
     );
   }
 }

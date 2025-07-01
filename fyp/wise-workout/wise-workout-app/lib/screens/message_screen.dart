@@ -198,7 +198,7 @@ class _MessageScreenState extends State<MessageScreen> {
                               friendName: friend['name']!,
                               friendHandle: friend['handle']!,
                               friendAvatar: friend['avatar']!,
-                              isPremium: true,
+                              isPremium: false, //need to add backend, sorry tony
                             ),
                           ),
                         );
