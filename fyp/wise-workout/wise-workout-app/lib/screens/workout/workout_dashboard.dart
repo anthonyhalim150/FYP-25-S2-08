@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wise_workout_app/screens/workout_selection_screen.dart';
+import 'package:wise_workout_app/screens/workout/workout_selection_screen.dart';
 import 'package:wise_workout_app/widgets/workout_card_dashboard.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/app_drawer.dart';
-import '../services/workout_category_service.dart';
+import '../../widgets/bottom_navigation.dart';
+import '../../widgets/app_drawer.dart';
+import '../../services/workout_category_service.dart';
 
 
 class WorkoutDashboard extends StatefulWidget {

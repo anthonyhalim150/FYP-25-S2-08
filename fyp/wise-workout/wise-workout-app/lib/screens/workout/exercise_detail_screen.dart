@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_workout_app/services/exercise_service.dart';
+import '../../widgets/workout_session_timer_overlay.dart';
 
 class ExerciseDetailScreen extends StatelessWidget {
   final Exercise exercise;
@@ -140,6 +141,25 @@ class ExerciseDetailScreen extends StatelessWidget {
               '/exercise-start-screen',
               arguments: exercise,
             );
+            final startTime = DateTime.now();
+            final overlay = Overlay.of(context);
+            late OverlayEntry timerEntry;
+
+            timerEntry = OverlayEntry(
+              builder: (context) => WorkoutSessionTimerOverlay(
+                startTime: startTime,
+                onEndSession: (duration) {
+                  timerEntry.remove(); // Remove popup
+                  Navigator.of(context).pushNamed('/workout-analysis', arguments: {
+                    'duration': duration,
+                    'startTime': startTime,
+                  });
+                },
+              ),
+            );
+
+            overlay.insert(timerEntry);
+
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.orange,

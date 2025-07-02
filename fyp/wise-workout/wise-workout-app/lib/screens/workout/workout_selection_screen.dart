@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wise_workout_app/screens/workout_exercises_screen.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/workout_tile.dart';
-import '../screens/exercise_detail_screen.dart';
-import '../services/workout_service.dart';
+import 'package:wise_workout_app/screens/workout/workout_exercises_screen.dart';
+import '../../widgets/bottom_navigation.dart';
+import '../../widgets/workout_tile.dart';
+import 'exercise_detail_screen.dart';
+import '../../services/workout_service.dart';
 
 // Main screen displaying a list of exercises for a workout
 class WorkoutScreen extends StatefulWidget {

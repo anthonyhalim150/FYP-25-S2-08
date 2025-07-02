@@ -1,7 +1,7 @@
   import 'package:flutter/material.dart';
-import 'package:wise_workout_app/screens/exercise_detail_screen.dart';
+import 'package:wise_workout_app/screens/workout/exercise_detail_screen.dart';
 import 'package:wise_workout_app/screens/workout_sample_data.dart';
-import 'package:wise_workout_app/screens/workout_selection_screen.dart';
+import 'package:wise_workout_app/screens/workout/workout_selection_screen.dart';
   import 'screens/login_screen.dart';
   import 'screens/home_screen.dart';
   import 'screens/profile_screen.dart';
@@ -16,18 +16,19 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
   import 'screens/questionnaires/questionnaire_screen_5.dart';
   import 'screens/forgot_password_screen.dart';
   import 'screens/verify_reset_screen.dart';
-  import 'screens/workout_dashboard.dart';
+  import 'screens/workout/workout_dashboard.dart';
   import 'screens/unregistered_screen.dart';
   import 'screens/badge_collection.dart';
   import 'screens/wearable_screen.dart';
   import 'screens/history_screen.dart';
   import 'screens/buypremium_screen.dart';
-  import 'screens/exercise_detail_screen.dart';
+  import 'screens/workout/exercise_detail_screen.dart';
   import 'services/exercise_service.dart';
   import 'screens/leaderboard_screen.dart';
-  import 'screens/exercise_start.dart';
+  import 'screens/workout/exercise_start.dart';
   import 'screens/message_screen.dart';
   import 'screens/change_password.dart';
+  import 'screens/workout/workout_analysis_page.dart';
 
 
 
@@ -74,6 +75,7 @@ import 'package:wise_workout_app/screens/workout_selection_screen.dart';
           '/exercise-detail': (context) => ExerciseDetailScreen(
             exercise: ModalRoute.of(context)!.settings.arguments as Exercise,
           ),
+          '/workout-analysis': (context) => const WorkoutAnalysisPage(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/exercise-start-screen') {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:wise_workout_app/services/exercise_service.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/exercise_timer.dart';
-import '../services/exercise_edit_controller.dart';
+import '../../widgets/bottom_navigation.dart';
+import '../../widgets/exercise_timer.dart';
+import '../../services/exercise_edit_controller.dart';
 import 'exercise_detail_screen.dart';
 
 class ExerciseStartScreen extends StatefulWidget {

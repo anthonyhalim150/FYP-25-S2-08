@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/exercise_service.dart';
+import '../../services/exercise_service.dart';
 import 'exercise_detail_screen.dart';
-import '../widgets/bottom_navigation.dart';
+import '../../widgets/bottom_navigation.dart';
 
 class WorkoutExercisesScreen extends StatefulWidget {
   final int workoutId;
