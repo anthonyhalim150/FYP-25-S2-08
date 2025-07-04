@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(context, '/leaderboard');
               break;
             case 2:
-              Navigator.pushNamed(context, '/workout-dashboard');
+              Navigator.pushNamed(context, '/workout-category-dashboard');
               break;
             case 3:
               Navigator.pushNamed(context, '/messages');

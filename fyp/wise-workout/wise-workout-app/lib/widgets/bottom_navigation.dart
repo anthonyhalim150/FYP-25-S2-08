@@ -74,7 +74,7 @@ class bottomNavigationBar extends StatelessWidget {
         Positioned(
           bottom: 40,
           child: GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/workout-dashboard'),
+            onTap: () => Navigator.pushNamed(context, '/workout-category-dashboard'),
             child: Container(
               height: 70,
               width: 70,

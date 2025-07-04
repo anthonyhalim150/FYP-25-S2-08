@@ -42,7 +42,7 @@ flutter:
     - assets/icons/facebook-icon.png
     - assets/images/questionnaire_bg.png
     - assets/icons/fitquest-icon.png
-    - assets/icons/dumbell.jpg
+    - assets/icons/dumbbell.jpg
     - assets/icons/Home.png
     - assets/icons/Leaderboard.png
     - assets/icons/Messages.png
@@ -105,7 +105,10 @@ flutter:
     - assets/workoutImages/upper_body_blast.jpg
     - assets/workoutImages/total_body_core_circuit.jpg
     - assets/workoutImages/calisthenics.jpg
-    - assets/workoutCategory/cardio_burn.jpg
+    - assets/workoutCategory/cardio.jpg
     - assets/workoutCategory/leg_workout.jpg
     - assets/workoutCategory/push.jpg
     - assets/workoutCategory/relaxing.jpg
+    - assets/workoutImages/chest_builder.jpg
+    - assets/workoutImages/triceps_shred.jpg
+    - assets/workoutImages/upper_body_power.jpg

@@ -29,7 +29,8 @@ import 'package:wise_workout_app/screens/workout/workout_selection_screen.dart';
   import 'screens/message_screen.dart';
   import 'screens/change_password.dart';
   import 'screens/workout/workout_analysis_page.dart';
-
+  import 'screens/workout/workout_category_dashboard.dart';
+  import 'screens/workout/workout_list_page.dart';
 
 
   void main() {
@@ -59,7 +60,7 @@ import 'package:wise_workout_app/screens/workout/workout_selection_screen.dart';
           '/competition': (context) => CompetitionScreen(),
           '/forgot-password': (context) => const ForgotPasswordScreen(),
           '/verify-reset': (context) => const VerifyResetScreen(),
-          '/workout-dashboard': (context) => WorkoutDashboard(),
+          // '/workout-dashboard': (context) => WorkoutDashboard(),
           '/unregistered': (context) => const UnregisteredUserPage(),
           '/leaderboard': (context) => const LeaderboardPage(),
           '/badge-collections': (context) => const BadgeCollectionScreen(),
@@ -68,10 +69,11 @@ import 'package:wise_workout_app/screens/workout/workout_selection_screen.dart';
           '/premium-plan': (context) => BuyPremiumScreen(),
           '/messages': (context) => const MessageScreen(),
           '/change-password': (context) => ChangePasswordScreen(),
-          '/workout-selection-screen': (ctx) => WorkoutScreen(
-            workoutId: ModalRoute.of(ctx)!.settings.arguments as int,
-          workoutName: '',categoryName: '', workoutKey: '',
-          ),
+          '/workout-category-dashboard': (context) => WorkoutCategoryDashboard(),
+          // '/workout-selection-screen': (ctx) => WorkoutScreen(
+          //   workoutId: ModalRoute.of(ctx)!.settings.arguments as int,
+          // workoutName: '',categoryName: '', workoutKey: '',
+          // ),
           '/exercise-detail': (context) => ExerciseDetailScreen(
             exercise: ModalRoute.of(context)!.settings.arguments as Exercise,
           ),
@@ -82,6 +84,18 @@ import 'package:wise_workout_app/screens/workout/workout_selection_screen.dart';
             final exercise = settings.arguments as Exercise;
             return MaterialPageRoute(
               builder: (_) => ExerciseStartScreen(exercise: exercise),
+            );
+          }
+          if (settings.name == '/workout-list-page') {
+            final args = settings.arguments as Map<String, dynamic>;
+            final categoryKey = args['categoryKey'];
+
+            // Return the route for WorkoutListPage with the arguments
+            return MaterialPageRoute(
+              builder: (_) =>
+                  WorkoutListPage(
+                    categoryKey: categoryKey,
+                  ),
             );
           }
 

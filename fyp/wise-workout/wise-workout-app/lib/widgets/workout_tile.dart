@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../services/workout_service.dart';
+import '../screens/model/workout_model.dart'; // <- adjust path as needed
 
 class WorkoutTile extends StatelessWidget {
   final Workout workout;
   final VoidCallback onTap;
 
-  const WorkoutTile({Key? key, required this.workout, required this.onTap}) : super(key: key);
+  const WorkoutTile({Key? key, required this.workout, required this.onTap})
+      : super(key: key);
 
   String sanitizeFilename(String title) {
     return title
@@ -16,7 +17,8 @@ class WorkoutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePath = 'assets/workoutImages/${sanitizeFilename(workout.title)}.jpg';
+    final imagePath =
+        'assets/workoutImages/${sanitizeFilename(workout.workoutName)}.jpg';
 
     return Column(
       children: [
@@ -29,7 +31,6 @@ class WorkoutTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-
         InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
@@ -42,7 +43,7 @@ class WorkoutTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: SizedBox(
-                    width: 190,
+                    width: 184,
                     height: 140,
                     child: Image.asset(
                       imagePath,
@@ -62,7 +63,7 @@ class WorkoutTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -70,16 +71,16 @@ class WorkoutTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          workout.title,
+                          workout.workoutName,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Colors.grey[800],
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          workout.description,
+                          workout.workoutDescription,
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.grey[700],
@@ -88,9 +89,9 @@ class WorkoutTile extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          '${workout.duration} Minutes | ${workout.level}',
+                          '22 Minutes | ${workout.workoutLevel}', // Optional: add real duration field later
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.orange,
