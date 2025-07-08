@@ -33,7 +33,7 @@ import 'screens/workout/exercise_start.dart';
 import 'screens/workout/workout_analysis_page.dart';
 import 'screens/workout/workout_category_dashboard.dart';
 import 'screens/workout/workout_list_page.dart';
-import 'screens/appearance.dart';
+import 'screens/appearance_screen.dart';
 import 'services/exercise_service.dart';
 
 void main() {
