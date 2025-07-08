@@ -103,7 +103,7 @@ class CompetitionScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 48.0),
                     child: Center(
                       child: Text(
-                        "No ongoing competitions yet.",
+                        "No ongoing challenge yet.",
                         style: TextStyle(color: Colors.white54, fontSize: 15),
                       ),
                     ),
@@ -135,7 +135,7 @@ class CompetitionScreen extends StatelessWidget {
                             Icon(Icons.person_add, color: Colors.black, size: 22),
                             SizedBox(width: 14),
                             Text(
-                              "Start New Competition",
+                              "Start New Challenge",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w700,
