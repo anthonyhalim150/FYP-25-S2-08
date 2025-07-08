@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'themes/app_theme.dart';
-import '../themes/theme_notifier.dart';
-
+import 'themes/app_theme.dart';      // Your "Normal" (default) theme
+import 'themes/christmas_theme.dart';
+import 'themes/theme_notifier.dart';
 
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -50,12 +50,24 @@ class WiseWorkoutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
+    // Select the theme based on appThemeMode
+    ThemeData usedTheme;
+    if (themeNotifier.appThemeMode == AppThemeMode.christmas) {
+      usedTheme = christmasTheme;
+    } else if (themeNotifier.appThemeMode == AppThemeMode.normal) {
+      usedTheme = AppTheme.lightTheme; // Your normal theme
+    } else {
+      // For dark and system, we use the base theme,
+      // but MaterialApp will apply the correct theme based on themeMode
+      usedTheme = AppTheme.lightTheme;
+    }
+
     return MaterialApp(
       title: 'Wise Workout',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: usedTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeNotifier.themeMode,
+      themeMode: themeNotifier.themeMode, // controls switching for dark/system
       initialRoute: '/unregistered',
       routes: {
         '/': (context) => LoginScreen(),
@@ -69,7 +81,7 @@ class WiseWorkoutApp extends StatelessWidget {
         '/unregistered': (context) => const UnregisteredUserPage(),
         '/leaderboard': (context) => const LeaderboardPage(),
         '/badge-collections': (context) => const BadgeCollectionScreen(),
-        '/wearable-screen' : (context) => const WearableScreen(),
+        '/wearable-screen': (context) => const WearableScreen(),
         '/workout-history': (context) => const HistoryScreen(),
         '/premium-plan': (context) => BuyPremiumScreen(),
         '/messages': (context) => const MessageScreen(),

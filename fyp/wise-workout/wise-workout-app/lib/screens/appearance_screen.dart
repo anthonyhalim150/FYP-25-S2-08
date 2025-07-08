@@ -6,9 +6,8 @@ class AppearanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final currentMode = themeNotifier.themeMode;
+    final currentMode = themeNotifier.appThemeMode;
     final theme = Theme.of(context);
-
     Color _labelColor() => theme.colorScheme.onBackground.withOpacity(0.78);
     Color _descColor() => theme.textTheme.bodySmall?.color?.withOpacity(0.78) ?? _labelColor();
 
@@ -47,18 +46,20 @@ class AppearanceScreen extends StatelessWidget {
               color: theme.colorScheme.surface,
               child: Column(
                 children: [
-                  RadioListTile<ThemeMode>(
-                    value: ThemeMode.light,
+                  // ---- Normal Theme ----
+                  RadioListTile<AppThemeMode>(
+                    value: AppThemeMode.normal,
                     groupValue: currentMode,
                     onChanged: (mode) => themeNotifier.setThemeMode(mode!),
                     title: Text(
-                      "Light",
+                      "Normal",
                       style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                     ),
-                    secondary: Icon(Icons.light_mode, color: theme.colorScheme.secondary),
+                    secondary: Icon(Icons.style, color: theme.colorScheme.primary),
                   ),
-                  RadioListTile<ThemeMode>(
-                    value: ThemeMode.dark,
+                  // ---- Dark Theme ----
+                  RadioListTile<AppThemeMode>(
+                    value: AppThemeMode.dark,
                     groupValue: currentMode,
                     onChanged: (mode) => themeNotifier.setThemeMode(mode!),
                     title: Text(
@@ -67,15 +68,30 @@ class AppearanceScreen extends StatelessWidget {
                     ),
                     secondary: Icon(Icons.dark_mode, color: theme.colorScheme.primary),
                   ),
-                  RadioListTile<ThemeMode>(
-                    value: ThemeMode.system,
+                  // ---- System Default ----
+                  RadioListTile<AppThemeMode>(
+                    value: AppThemeMode.system,
                     groupValue: currentMode,
                     onChanged: (mode) => themeNotifier.setThemeMode(mode!),
                     title: Text(
                       "System Default",
                       style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                     ),
-                    secondary: Icon(Icons.brightness_auto, color: theme.colorScheme.tertiary ?? theme.colorScheme.primary),
+                    secondary: Icon(Icons.brightness_auto, color: theme.colorScheme.primary),
+                  ),
+                  // ---- Christmas ----
+                  RadioListTile<AppThemeMode>(
+                    value: AppThemeMode.christmas,
+                    groupValue: currentMode,
+                    onChanged: (mode) => themeNotifier.setThemeMode(mode!),
+                    title: Text(
+                      "Christmas",
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFFB71C1C),
+                      ),
+                    ),
+                    secondary: Icon(Icons.celebration, color: Color(0xFF388E3C)),
                   ),
                 ],
               ),
@@ -83,13 +99,17 @@ class AppearanceScreen extends StatelessWidget {
             const SizedBox(height: 32),
             Center(
               child: Icon(
-                currentMode == ThemeMode.dark
+                currentMode == AppThemeMode.dark
                     ? Icons.dark_mode
-                    : currentMode == ThemeMode.light
-                    ? Icons.light_mode
+                    : currentMode == AppThemeMode.normal
+                    ? Icons.style
+                    : currentMode == AppThemeMode.christmas
+                    ? Icons.celebration
                     : Icons.brightness_auto,
                 size: 64,
-                color: theme.colorScheme.primary,
+                color: currentMode == AppThemeMode.christmas
+                    ? Color(0xFFB71C1C)
+                    : theme.colorScheme.primary,
               ),
             ),
           ],
