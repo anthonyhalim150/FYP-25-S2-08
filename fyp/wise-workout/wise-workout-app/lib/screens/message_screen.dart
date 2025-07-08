@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'chat_screen.dart';
+import 'add_friend_screen.dart';
+// Sub-widgets:
 import '../widgets/bottom_navigation.dart';
 import '../widgets/all_friends.dart';
 import '../widgets/requests_friends.dart';
 import '../widgets/pending_friends.dart';
-import 'chat_screen.dart';
-import 'add_friend_screen.dart';
+
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
