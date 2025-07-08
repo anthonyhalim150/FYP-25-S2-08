@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
+
   const HomeScreen({
     super.key,
     required this.userName,
@@ -33,11 +34,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HealthService _healthService = HealthService();
+
   int _currentSteps = 0;
   final int maxSteps = 10000;
   final int caloriesBurned = 420;
   final int xpEarned = 150;
+
   String? _displayName;
+  bool _isPremiumUser = false;
 
   // hardcoded, need to implement backend
   final List<String> unlockedBadges = [
@@ -73,18 +77,27 @@ class _HomeScreenState extends State<HomeScreen> {
     if (profile != null) {
       setState(() {
         _displayName = profile['username'];
+        _isPremiumUser = profile['role'] == 'premium';
       });
     }
   }
 
-  Widget buildStatItem(BuildContext context, IconData icon, String label, String value) {
+  Widget buildStatItem(
+      BuildContext context,
+      IconData icon,
+      String label,
+      String value,
+      ) {
     return Column(
       children: [
         Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
         const SizedBox(height: 2),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           label,
@@ -123,8 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const Text(
                       'Badge Collections',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
+                      style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -156,7 +169,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawer: appDrawer(userName: _displayName ?? widget.userName, parentContext: context),
+      drawer: appDrawer(
+        userName: _displayName ?? widget.userName,
+        parentContext: context,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -176,13 +192,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(width: 12),
+                    // only Premium can use camera feature
                     IconButton(
-                      icon: const Icon(Icons.camera_alt_outlined, color: Colors.black),
+                      icon: Icon(
+                        Icons.camera_alt_outlined,
+                        color: _isPremiumUser ? Colors.black : Colors.grey,
+                      ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
-                        );
+                        if (_isPremiumUser) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SquatPoseScreen()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Premium feature only!')),
+                          );
+                        }
                       },
                     ),
                     const Spacer(),
@@ -197,7 +225,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-
               // Search bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -233,7 +260,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 15),
-
               // Exercise Gauge
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
@@ -255,7 +281,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-
               // Workout Cards
               SizedBox(
                 height: 147,
