@@ -21,8 +21,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String? _error;
 
   bool isPasswordStrong(String password) {
-    final regex =
-    RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$');
+    final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$');
     return regex.hasMatch(password);
   }
 
@@ -31,9 +30,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _isLoading = true;
       _error = null;
     });
-
     await Future.delayed(const Duration(seconds: 1));
-    // Hardcoded, "old123" is correct current password ( need to implement backend)
     if (_currentController.text != 'old123') {
       setState(() {
         _error = 'Current password is incorrect.';
@@ -41,16 +38,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       });
       return;
     }
-
     setState(() {
       _isLoading = false;
     });
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Password changed successfully!')),
     );
-
-    // go to profile, clear stack
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => ProfileScreen(userName: '')),
@@ -68,19 +61,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final onBg = colorScheme.onBackground;
+    final surface = colorScheme.surface;
+    final onSurface = colorScheme.onSurface;
+    final errorColor = Theme.of(context).colorScheme.error;
+
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: bgColor,
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
+        iconTheme: IconThemeData(color: onBg),
+        title: Text(
           'Change Password',
-          style: TextStyle(
-            color: Colors.black,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: onBg,
             fontWeight: FontWeight.w700,
-            fontSize: 21,
           ),
         ),
         centerTitle: true,
@@ -93,14 +91,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.vpn_key_rounded, color: Color(0xFF7433FF), size: 48),
+                Icon(Icons.vpn_key_rounded,
+                    color: colorScheme.primary, size: 48),
                 const SizedBox(height: 7),
-                const Text(
+                Text(
                   "Change your password securely",
-                  style: TextStyle(
-                    color: Colors.black87,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: onBg.withOpacity(0.95),
                     fontWeight: FontWeight.w500,
-                    fontSize: 17,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -113,17 +111,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     padding: const EdgeInsets.all(10),
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: Colors.red[50],
+                      color: errorColor.withOpacity(0.13),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline, color: Colors.red, size: 19),
+                        Icon(Icons.error_outline, color: errorColor, size: 19),
                         const SizedBox(width: 7),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: const TextStyle(color: Colors.red, fontSize: 15),
+                            style: TextStyle(color: errorColor, fontSize: 15),
                           ),
                         ),
                       ],
@@ -134,7 +132,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: surface,
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
@@ -172,12 +170,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           },
                         ),
                         const SizedBox(height: 3),
-                        // Helper text under new password
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             "Min 8 chars, upper, lower, digit, special char",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: onSurface.withOpacity(0.55),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -208,7 +207,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF7433FF),
+                              backgroundColor: colorScheme.primary,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -224,9 +223,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 color: Colors.white,
                               ),
                             )
-                                : const Text(
+                                : Text(
                               'Change Password',
-                              style: TextStyle(fontSize: 17),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: colorScheme.onPrimary,
+                              ),
                             ),
                           ),
                         ),
@@ -250,20 +251,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     required VoidCallback onToggle,
     String? Function(String?)? validator,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final onSurface = colorScheme.onSurface;
+
     return TextFormField(
       controller: controller,
       obscureText: !showPassword,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurface),
         filled: true,
-        fillColor: const Color(0xFFF7F6FB),
+        fillColor: colorScheme.surfaceVariant,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         suffixIcon: IconButton(
-          icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off,
-              color: Colors.black45),
+          icon: Icon(
+            showPassword ? Icons.visibility : Icons.visibility_off,
+            color: colorScheme.onSurface.withOpacity(0.6),
+          ),
           onPressed: onToggle,
         ),
       ),

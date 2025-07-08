@@ -3,16 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:wise_workout_app/services/profile_edit_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  final String firstName;
-  final String lastName;
-  final String username;
-  final String dob;
-  final String email;
-  final String level;
-  final String accountType;
-  final String profileImage;
-  final String backgroundImage;
-
+  final String firstName, lastName, username, dob, email, level, accountType, profileImage, backgroundImage;
   const EditProfileScreen({
     super.key,
     required this.firstName,
@@ -41,12 +32,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late String accountType;
   late String profileImage;
   late String backgroundImage;
-
-  late TextEditingController firstNameController;
-  late TextEditingController lastNameController;
-  late TextEditingController dobController;
-  late TextEditingController usernameController;
-  late TextEditingController emailController;
+  late TextEditingController firstNameController, lastNameController, dobController, usernameController, emailController;
 
   @override
   void initState() {
@@ -62,9 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     backgroundImage = widget.backgroundImage;
     firstNameController = TextEditingController(text: firstName);
     lastNameController = TextEditingController(text: lastName);
-    dobController = TextEditingController(
-      text: _formatIncomingDOB(dateOfBirth),
-    );
+    dobController = TextEditingController(text: _formatIncomingDOB(dateOfBirth));
     usernameController = TextEditingController(text: username);
     emailController = TextEditingController(text: email);
   }
@@ -79,9 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  void startEditing() {
-    setState(() => isEditing = true);
-  }
+  void startEditing() => setState(() => isEditing = true);
 
   void saveEdits() async {
     setState(() {
@@ -128,8 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime initialDate =
-        DateTime.tryParse(_parseToISODate(dobController.text)) ?? DateTime(1990, 1, 1);
+    DateTime initialDate = DateTime.tryParse(_parseToISODate(dobController.text)) ?? DateTime(1990, 1, 1);
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -155,8 +136,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final surface = colorScheme.surface;
+    final surfaceVariant = colorScheme.surfaceVariant;
+    final onSurface = colorScheme.onSurface;
+    final secondary = colorScheme.secondary;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFCF2),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Container(
@@ -178,27 +165,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: Colors.amber,
+                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.85),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.black),
+                          icon: Icon(Icons.arrow_back, color: colorScheme.onSecondary),
                           onPressed: () => Navigator.pop(context, true),
                         ),
-                        const Expanded(
+                        Expanded(
                           child: Text(
                             'Profile',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.black,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSecondary,
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48),
+                        const SizedBox(width: 48), // spacer for balanced layout
                       ],
                     ),
                   ),
@@ -215,9 +201,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         elevation: 4,
+                        color: surface,
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 70, bottom: 30, left: 20, right: 20),
+                          padding: const EdgeInsets.only(top: 70, bottom: 30, left: 20, right: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -226,22 +212,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   children: [
                                     Text(
                                       username,
-                                      style: const TextStyle(
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                                        color: onSurface,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       accountType,
-                                      style: const TextStyle(
-                                        color: Colors.amber,
+                                      style: TextStyle(
+                                        color: secondary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
                                       'Lvl. $level',
-                                      style: const TextStyle(color: Colors.grey),
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -250,10 +238,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     "Personal Details",
-                                    style: TextStyle(
-                                      fontSize: 16,
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -263,10 +250,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       icon: const Icon(Icons.edit, size: 16),
                                       label: const Text("Edit"),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.amber,
-                                        foregroundColor: Colors.black,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 4, horizontal: 12),
+                                        backgroundColor: secondary,
+                                        foregroundColor: colorScheme.onSecondary,
+                                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                                         textStyle: const TextStyle(fontWeight: FontWeight.bold),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
@@ -276,22 +262,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              dataItem("First Name", isEditing ? buildField(firstNameController) : firstName),
-                              dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName),
-                              dataItem("Username", isEditing ? buildField(usernameController) : username),
-                              dataItem("Date of Birth", isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth)),
-                              dataItem("Email", isEditing ? buildField(emailController) : email),
+                              dataItem("First Name", isEditing ? buildField(firstNameController) : firstName, context),
+                              dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName, context),
+                              dataItem("Username", isEditing ? buildField(usernameController) : username, context),
+                              dataItem("Date of Birth", isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth), context),
+                              dataItem("Email", isEditing ? buildField(emailController) : email, context),
                               const SizedBox(height: 20),
-                              const Text(
+                              Text(
                                 "Account Details",
-                                style: TextStyle(
-                                  fontSize: 16,
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              dataItem("Level", level, isGrey: true),
-                              dataItem("Account", accountType, isGrey: true),
+                              dataItem("Level", level, context, isGrey: true),
+                              dataItem("Account", accountType, context, isGrey: true),
                             ],
                           ),
                         ),
@@ -312,12 +297,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           CircleAvatar(
                             radius: 54,
-                            backgroundImage: profileImage.isNotEmpty
-                                ? AssetImage(profileImage)
-                                : null,
-                            backgroundColor: profileImage.isNotEmpty
-                                ? Colors.transparent
-                                : Colors.black,
+                            backgroundImage: profileImage.isNotEmpty ? AssetImage(profileImage) : null,
+                            backgroundColor:
+                            profileImage.isNotEmpty ? Colors.transparent : colorScheme.primary,
                           ),
                         ],
                       ),
@@ -338,8 +320,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: ElevatedButton(
                       onPressed: saveEdits,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        foregroundColor: Colors.black,
+                        backgroundColor: secondary,
+                        foregroundColor: colorScheme.onSecondary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -353,8 +335,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: ElevatedButton(
                       onPressed: cancelEdits,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0C1A63),
-                        foregroundColor: Colors.white,
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -371,19 +353,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget dataItem(String label, dynamic value, {bool isGrey = false, bool isBold = false}) {
+  Widget dataItem(String label, dynamic value, BuildContext context, {bool isGrey = false, bool isBold = false}) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final variant = Theme.of(context).colorScheme.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label),
+          Text(label, style: Theme.of(context).textTheme.bodyMedium),
           value is String
               ? Text(
             value,
             style: TextStyle(
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: isGrey ? Colors.grey : Colors.black,
+              color: isGrey ? variant : onSurface,
             ),
           )
               : SizedBox(width: 180, child: value),
@@ -395,11 +379,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget buildField(TextEditingController controller) {
     return TextField(
       controller: controller,
-      style: const TextStyle(fontSize: 14),
-      decoration: const InputDecoration(
+      style: Theme.of(context).textTheme.bodyMedium,
+      decoration: InputDecoration(
         isDense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        border: OutlineInputBorder(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
       ),
@@ -407,20 +391,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget buildDOBField(BuildContext context, TextEditingController controller) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final variant = Theme.of(context).colorScheme.onSurfaceVariant;
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: AbsorbPointer(
         child: TextField(
           controller: controller,
           readOnly: true,
-          style: const TextStyle(fontSize: 14),
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
-            suffixIcon: Icon(Icons.calendar_today, size: 18, color: Colors.grey[700]),
+            suffixIcon: Icon(Icons.calendar_today, size: 18, color: variant),
           ),
         ),
       ),

@@ -4,8 +4,7 @@ import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
 import 'editprofile_screen.dart';
 import 'privacypolicy_screen.dart';
-
-//sub widgets
+// Sub-widgets
 import '../widgets/profile_avatar_section.dart';
 import '../widgets/profile_badge_collection.dart';
 import '../widgets/profile_info_row.dart';
@@ -242,7 +241,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -256,9 +254,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onAvatarTap: () => _showAvatarPopup(context),
             ),
             const SizedBox(height: 20),
-            ProfileBadgeCollection(unlockedBadges: unlockedBadges),
+            ProfileBadgeCollection(unlockedBadges: unlockedBadges), // update it to use theme!
             const SizedBox(height: 20),
-            ProfileInfoRow(xp: "${widget.xp} XP", level: "Beginner"),
+            ProfileInfoRow(xp: "${widget.xp} XP", level: "Beginner"), // update it to use theme!
             const SizedBox(height: 20),
             ProfileLuckySpinCard(
               tokens: _tokens,
