@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'new_challenge.dart';
 
 class CompetitionScreen extends StatelessWidget {
   final List<Map<String, String>> competitions = [
@@ -112,7 +113,12 @@ class CompetitionScreen extends StatelessWidget {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        // Navigate to challenge form
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NewChallengeScreen(isPremiumUser: true),
+                          ),
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
