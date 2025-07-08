@@ -4,14 +4,12 @@ import 'workout_sample_data.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
-
-//sub-widgets
+// sub-widgets
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/tournament_widget.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
-
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -20,6 +18,7 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
+
   const HomeScreen({
     super.key,
     required this.userName,
@@ -130,7 +129,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Badge Collections',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -139,7 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: CircleAvatar(
                             radius: 16,
-                            backgroundColor: Theme.of(context).colorScheme.surface,
+                            backgroundColor:
+                            Theme.of(context).colorScheme.surface,
                             backgroundImage: index < unlockedBadges.length
                                 ? AssetImage(unlockedBadges[index])
                                 : const AssetImage('assets/icons/lock.jpg'),
@@ -150,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
+              Icon(Icons.arrow_forward_ios,
+                  size: 16, color: Theme.of(context).iconTheme.color),
             ],
           ),
         ),
@@ -161,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: appDrawer(
@@ -213,7 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Spacer(),
                     Builder(
                       builder: (context) => IconButton(
-                        icon: Icon(Icons.menu, color: colorScheme.onBackground),
+                        icon: Icon(Icons.menu,
+                            color: colorScheme.onBackground),
                         onPressed: () {
                           Scaffold.of(context).openDrawer();
                         },
@@ -239,7 +243,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: InputDecoration(
                             hintText: 'Search on FitQuest',
                             border: InputBorder.none,
-                            hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
+                            hintStyle: TextStyle(
+                                color:
+                                colorScheme.onSurface.withOpacity(0.5)),
                           ),
                           style: TextStyle(color: colorScheme.onSurface),
                         ),
@@ -258,7 +264,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 15),
-
               // Exercise Gauge (delegated, be sure it supports theming)
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
@@ -274,7 +279,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Workout",
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style:
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
                     color: colorScheme.onBackground,
                   ),
@@ -297,14 +303,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const JourneyCard(),
+              // only show if premium user
+              if (_isPremiumUser) JourneyCard(),
               const SizedBox(height: 20),
               Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Tournaments",
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style:
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
                     color: colorScheme.onBackground,
                   ),
@@ -319,15 +327,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   children: [
                     const SizedBox(width: 5),
-                    ...sampleTournaments
-                        .map((tournament) => TournamentWidget(
+                    ...sampleTournaments.map((tournament) => TournamentWidget(
                       tournamentName: tournament.tournamentName,
                       prize: tournament.prize,
                       participants: tournament.participants,
                       daysLeft: tournament.daysLeft,
                       cardWidth: 280,
-                    ))
-                        .toList(),
+                    )),
                     const SizedBox(width: 5),
                   ],
                 ),

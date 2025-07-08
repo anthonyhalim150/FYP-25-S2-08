@@ -20,7 +20,7 @@ class JourneyCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Let's start a journey!",
+              "Let's start a competition!",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -30,7 +30,7 @@ class JourneyCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              "Smarter training. Stronger results. Your personalized fitness journey starts here.",
+              "Friendly rivalry fires up results. Invite a friend and crush your goals—one challenge at a time!",
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white70,
@@ -58,7 +58,7 @@ class JourneyCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Join a Challenge or Tournament!",
+                      "Challenge a friend now!",
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,

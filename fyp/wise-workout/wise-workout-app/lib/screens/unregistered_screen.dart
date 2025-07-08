@@ -198,7 +198,7 @@ class UnregisteredUserPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Let's start a journey!",
+                          "Let's start a competition!",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -207,7 +207,7 @@ class UnregisteredUserPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          "Join challenges or tournaments and reach your fitness goals.",
+                          "Friendly rivalry fires up results. Invite a friend and crush your goals—one challenge at a time!",
                           style: TextStyle(color: Colors.white70),
                         ),
                         const SizedBox(height: 15),
@@ -221,7 +221,7 @@ class UnregisteredUserPage extends StatelessWidget {
                             horizontal: 20,
                           ),
                           child: const Text(
-                            "Join a Challenge or Tournament!",
+                            "Challenge a friend now!",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
