@@ -4,12 +4,14 @@ import 'workout_sample_data.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
-// sub-widgets
+import 'buypremium_screen.dart';
+//sub-widgets
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/tournament_widget.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -59,9 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final connected = await _healthService.connect();
     if (connected) {
       final steps = await _healthService.getTodaySteps();
-      setState(() {
-        _currentSteps = steps;
-      });
+      setState(() => _currentSteps = steps);
     }
   }
 
@@ -190,13 +190,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Only Premium can use camera
                     IconButton(
                       icon: Icon(
                         Icons.camera_alt_outlined,
                         color: _isPremiumUser
                             ? colorScheme.onBackground
-                            : colorScheme.outline,
+                            : Colors.grey.withOpacity(0.35),
                       ),
                       onPressed: () {
                         if (_isPremiumUser) {
@@ -206,9 +205,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (_) => const SquatPoseScreen()),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Premium feature only!')),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => BuyPremiumScreen()),
                           );
                         }
                       },
@@ -216,8 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Spacer(),
                     Builder(
                       builder: (context) => IconButton(
-                        icon: Icon(Icons.menu,
-                            color: colorScheme.onBackground),
+                        icon: Icon(Icons.menu, color: colorScheme.onBackground),
                         onPressed: () {
                           Scaffold.of(context).openDrawer();
                         },
@@ -264,7 +263,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 15),
-              // Exercise Gauge (delegated, be sure it supports theming)
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
                 maxSteps: maxSteps,
@@ -279,15 +277,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Workout",
-                  style:
-                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
                     color: colorScheme.onBackground,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-              // Workout Cards
               SizedBox(
                 height: 147,
                 child: ListView(
@@ -303,7 +299,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // only show if premium user
               if (_isPremiumUser) JourneyCard(),
               const SizedBox(height: 20),
               Container(
@@ -311,8 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Tournaments",
-                  style:
-                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
                     color: colorScheme.onBackground,
                   ),
