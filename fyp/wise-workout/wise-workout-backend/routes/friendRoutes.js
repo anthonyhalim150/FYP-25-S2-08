@@ -8,5 +8,6 @@ router.post('/reject', friendController.rejectRequest);
 router.get('/list', friendController.getFriends);
 router.get('/pending', friendController.getPendingRequests);
 router.get('/sent', friendController.getSentRequests);
+router.get('/search', friendController.searchUsers);
 
 module.exports = router;

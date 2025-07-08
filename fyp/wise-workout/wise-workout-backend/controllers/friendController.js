@@ -41,3 +41,10 @@ exports.getSentRequests = async (req, res) => {
   const sent = await FriendService.getSentRequests(userId);
   res.json(sent);
 };
+exports.searchUsers = async (req, res) => {
+  const userId = req.user.id;
+  const query = req.query.query;
+  if (!query || !query.trim()) return res.json([]);
+  const results = await FriendService.searchUsers(userId, query.trim());
+  res.json(results);
+};
