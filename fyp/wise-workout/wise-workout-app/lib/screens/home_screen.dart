@@ -17,8 +17,6 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
-  final bool isPremiumUser;
-
   const HomeScreen({
     super.key,
     required this.userName,
@@ -27,7 +25,6 @@ class HomeScreen extends StatefulWidget {
     this.messagesIcon,
     this.profileIcon,
     this.workoutIcon,
-    this.isPremiumUser = false,
   });
 
   @override
@@ -159,10 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawer: appDrawer(
-        userName: _displayName ?? widget.userName,
-        parentContext: context,
-      ),
+      drawer: appDrawer(userName: _displayName ?? widget.userName, parentContext: context),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -182,35 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(width: 12),
-
-                    // only for premium user
                     IconButton(
-                      icon: Icon(
-                        Icons.camera_alt_outlined,
-                        color: widget.isPremiumUser ? Colors.black : Colors.grey[400],
-                      ),
-                      onPressed: widget.isPremiumUser
-                          ? () {
+                      icon: const Icon(Icons.camera_alt_outlined, color: Colors.black),
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
                         );
-                      }
-                          : () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                              'Upgrade to Premium to access AI Camera Workouts!',
-                            ),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
                       },
-                      tooltip: widget.isPremiumUser
-                          ? "AI Squat Camera"
-                          : "Premium feature – unlock to use",
                     ),
-
                     const Spacer(),
                     Builder(
                       builder: (context) => IconButton(
@@ -268,19 +242,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 xpEarned: xpEarned,
               ),
               const SizedBox(height: 20),
-
               buildBadgeCollection(context),
               const SizedBox(height: 20),
-
               Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Workout",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(fontWeight: FontWeight.normal),
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -292,34 +263,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: sampleWorkouts
-                      .map(
-                        (workout) => WorkoutCardHomeScreen(
-                      imagePath: workout.imagePath,
-                      workoutName: workout.workoutName,
-                      workoutLevel: workout.workoutLevel,
-                    ),
-                  )
+                      .map((workout) => WorkoutCardHomeScreen(
+                    imagePath: workout.imagePath,
+                    workoutName: workout.workoutName,
+                    workoutLevel: workout.workoutLevel,
+                  ))
                       .toList(),
                 ),
               ),
               const SizedBox(height: 20),
-
               const JourneyCard(),
               const SizedBox(height: 20),
-
               Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Tournaments",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(fontWeight: FontWeight.normal),
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
-
               SizedBox(
                 height: 220,
                 child: ListView(
@@ -329,15 +294,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const SizedBox(width: 5),
                     ...sampleTournaments
-                        .map(
-                          (tournament) => TournamentWidget(
-                        tournamentName: tournament.tournamentName,
-                        prize: tournament.prize,
-                        participants: tournament.participants,
-                        daysLeft: tournament.daysLeft,
-                        cardWidth: 280,
-                      ),
-                    )
+                        .map((tournament) => TournamentWidget(
+                      tournamentName: tournament.tournamentName,
+                      prize: tournament.prize,
+                      participants: tournament.participants,
+                      daysLeft: tournament.daysLeft,
+                      cardWidth: 280,
+                    ))
                         .toList(),
                     const SizedBox(width: 5),
                   ],
