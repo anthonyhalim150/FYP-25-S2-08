@@ -14,6 +14,7 @@ dependencies:
   flutter_local_notifications: ^19.2.1
   http: ^1.2.1
   flutter_secure_storage: ^9.2.4
+  provider: ^6.1.0
 
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2
