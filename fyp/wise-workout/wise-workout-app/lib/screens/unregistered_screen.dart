@@ -198,7 +198,7 @@ class UnregisteredUserPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Let's start a competition!",
+                          "Let's start a challenge!",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

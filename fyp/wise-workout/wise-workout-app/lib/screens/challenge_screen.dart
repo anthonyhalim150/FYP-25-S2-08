@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'new_challenge.dart';
+import 'new_challenge.dart'; //this is to send challenge
 
 class CompetitionScreen extends StatelessWidget {
   final List<Map<String, String>> competitions = [

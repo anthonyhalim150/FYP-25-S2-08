@@ -20,7 +20,7 @@ class JourneyCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Let's start a competition!",
+              "Let's start a challenge!",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
