@@ -35,19 +35,18 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
     { "label": "Wall Sit", "type": "duration", "enabled": false, "value": 20, "min": 0, "max": 600, "step": 5 },
   ];
 
-  // TODO: Replace this with your backend call to get the user's premium friend list.
+  // TODO: Replace this with your backend call to get the user's premium friend list
   List<String> allUsers = ['Alex', 'Jordan', 'Sam', 'Maria', 'Taylor'];
   List<String> selectedUsers = [];
 
-  // Example: Simulate backend fetch of premium friends
   @override
   void initState() {
     super.initState();
-    //_fetchPremiumFriends(); // Uncomment this when implementing backend call
+    //_fetchPremiumFriends(); // Uncomment and implement for backend integration
   }
 
   // Future<void> _fetchPremiumFriends() async {
-  //   // TODO: Replace with your backend API call or use a provider, bloc, etc.
+  //   // TODO: Replace with your backend API call!
   //   // Example:
   //   // var friends = await YourApi.getPremiumFriends();
   //   // setState(() {
@@ -269,6 +268,38 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
     );
   }
 
+  void _showWarningDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF232954),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange[300], size: 32),
+            const SizedBox(width: 12),
+            const Text('Incomplete', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.amber,
+              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            child: const Text("OK"),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _submitChallengeToBackend(
       List<Map<String, dynamic>> selected, List<String> selectedFriends) async {
     // TODO [BACKEND]: Replace this with your POST/PUT API call!
@@ -336,8 +367,16 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
                         })
                             .toList();
 
-                        // TODO [BACKEND]: Send 'selected' and 'selectedUsers' to your backend here!
-                        // Uncomment and implement your backend function:
+                        if (selected.isEmpty) {
+                          _showWarningDialog("Please select at least one challenge.");
+                          return;
+                        }
+                        if (widget.isPremiumUser && selectedUsers.isEmpty) {
+                          _showWarningDialog("Please select at least one person to challenge.");
+                          return;
+                        }
+
+                        // TODO [BACKEND]: Send selected and selectedUsers to your backend here!
                         // await _submitChallengeToBackend(selected, selectedUsers);
 
                         _showChallengeSentDialog();
