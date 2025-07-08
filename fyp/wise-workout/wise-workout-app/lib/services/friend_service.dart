@@ -1,0 +1,118 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+class FriendService {
+  final String baseUrl = 'http://10.0.2.2:3000';
+  final _storage = const FlutterSecureStorage();
+
+  Future<String?> _getJwtCookie() async {
+    return await _storage.read(key: 'jwt');
+  }
+
+  Future<void> sendRequest(String friendId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.post(
+      Uri.parse('$baseUrl/friends/send'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode({'friendId': friendId}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+  Future<List<dynamic>> searchUsers(String query) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/search?query=${Uri.encodeComponent(query)}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to search users');
+    }
+    return jsonDecode(response.body);
+  }
+
+
+  Future<void> acceptRequest(String friendId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.post(
+      Uri.parse('$baseUrl/friends/accept'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode({'friendId': friendId}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
+  Future<void> rejectRequest(String friendId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.post(
+      Uri.parse('$baseUrl/friends/reject'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode({'friendId': friendId}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
+  Future<List<dynamic>> getFriends() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/friends/list'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+    return jsonDecode(response.body);
+  }
+
+  Future<List<dynamic>> getPendingRequests() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/friends/pending'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+    return jsonDecode(response.body);
+  }
+
+  Future<List<dynamic>> getSentRequests() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/friends/sent'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+    return jsonDecode(response.body);
+  }
+  
+}
