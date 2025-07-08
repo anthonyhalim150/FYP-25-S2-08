@@ -4,14 +4,15 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
 dotenv.config();
-
-const authRoutes = require('./routes/authRoutes'); 
+const authenticateUser = require('./middlewares/authMiddleware');
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const pendingUserRoutes = require('./routes/pendingUserRoutes');
 const questionnaireRoutes = require('./routes/userPreferenceRoutes');
 const spinRoutes = require('./routes/spinRoutes');
 const prizeRoutes = require('./routes/prizeRoutes');
-const authenticateUser = require('./middlewares/authMiddleware');
+const messageRoutes = require('./routes/messageRoutes');
+const friendRoutes = require('./routes/friendRoutes');
 const db = require('./config/db');
 
 const app = express();
@@ -36,10 +37,13 @@ app.use('/auth', authRoutes);
 app.use('/auth', pendingUserRoutes);
 
 app.use(authenticateUser);
-app.use('/user', userRoutes); 
+app.use('/user', userRoutes);
 app.use('/lucky', spinRoutes);
 app.use('/questionnaire', questionnaireRoutes);
 app.use('/prizes', prizeRoutes);
+app.use('/messages', messageRoutes);
+app.use('/friends', friendRoutes);
+
 
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))
