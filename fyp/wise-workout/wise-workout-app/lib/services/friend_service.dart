@@ -7,7 +7,7 @@ class FriendService {
   final _storage = const FlutterSecureStorage();
 
   Future<String?> _getJwtCookie() async {
-    return await _storage.read(key: 'jwt');
+    return await _storage.read(key: 'jwt_cookie');
   }
 
   Future<void> sendRequest(String friendId) async {
@@ -27,7 +27,7 @@ class FriendService {
   Future<List<dynamic>> searchUsers(String query) async {
     final jwt = await _getJwtCookie();
     final response = await http.get(
-      Uri.parse('$baseUrl/user/search?query=${Uri.encodeComponent(query)}'),
+      Uri.parse('$baseUrl/friends/search?query=${Uri.encodeComponent(query)}'),
       headers: {
         'Content-Type': 'application/json',
         'Cookie': 'session=$jwt',

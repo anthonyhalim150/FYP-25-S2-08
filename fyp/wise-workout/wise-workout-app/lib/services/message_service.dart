@@ -7,7 +7,7 @@ class MessageService {
   final _storage = const FlutterSecureStorage();
 
   Future<String?> _getJwtCookie() async {
-    return await _storage.read(key: 'jwt');
+    return await _storage.read(key: 'jwt_cookie');
   }
 
   Future<void> sendMessage(int receiverId, String content) async {

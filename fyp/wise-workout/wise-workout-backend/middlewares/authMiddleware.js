@@ -3,13 +3,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const authenticateUser = (req, res, next) => {
   const skipPaths = ['/auth/login', '/auth/google', '/auth/facebook', '/auth/register']; // Add more if needed
-
   if (skipPaths.includes(req.path)) {
     return next();
   }
 
   const token = req.cookies.session;
-
   if (!token) return res.status(401).json({ message: 'No session token' });
 
   try {

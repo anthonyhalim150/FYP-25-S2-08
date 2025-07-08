@@ -106,6 +106,19 @@ class UserModel {
       [hashedPassword, email]
     );
   }
+  static async searchUsers(query, excludeIds) {
+    let sql = `
+      SELECT id, username, email, firstName, lastName, avatar_id
+      FROM users
+      WHERE (username LIKE ? OR email LIKE ?)
+        AND id NOT IN (${excludeIds.map(() => '?').join(',')})
+      LIMIT 20
+    `;
+    const values = [`%${query}%`, `%${query}%`, ...excludeIds];
+    const [rows] = await db.execute(sql, values);
+    return rows;
+  }
+
 
 }
 
