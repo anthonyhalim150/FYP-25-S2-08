@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'chat_screen.dart';
 import 'add_friend_screen.dart';
-// Sub-widgets:
 import '../widgets/bottom_navigation.dart';
 import '../widgets/all_friends.dart';
 import '../widgets/requests_friends.dart';
 import '../widgets/pending_friends.dart';
-
+import '../services/friend_service.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
@@ -18,55 +17,39 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   int selectedTab = 0;
   String search = '';
+  List<dynamic> friends = [];
+  List<dynamic> requests = [];
+  List<dynamic> pending = [];
+  bool loading = true;
+  final FriendService _friendService = FriendService();
 
-  final List<Map<String, String>> friends = [
-    {
-      'name': 'Anthony Halim',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/free/free1.png',
-    },
-    {
-      'name': 'Brendan Tanujaya',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/premium/premium5.png',
-    },
-    {
-      'name': 'Clarybel Sutanto',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/premium/premium6.png',
-    },
-    {
-      'name': 'Goh Wei Bin',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/premium/premium7.png',
-    },
-    {
-      'name': 'Javier Cheng',
-      'handle': '@pitbull101',
-      'avatar': 'assets/avatars/premium/premium2.png',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadFriendsData();
+  }
 
-  final List<Map<String, String>> requests = [
-    {
-      'name': 'Lee Lim',
-      'handle': '@jakesim1415',
-      'avatar': 'assets/avatars/free/free1.png',
+  Future<void> _loadFriendsData() async {
+    setState(() { loading = true; });
+    try {
+      final friendsList = await _friendService.getFriends();
+      final pendingList = await _friendService.getPendingRequests();
+      final sentList = await _friendService.getSentRequests();
+      setState(() {
+        friends = friendsList;
+        requests = pendingList;
+        pending = sentList;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        friends = [];
+        requests = [];
+        pending = [];
+        loading = false;
+      });
     }
-  ];
-
-  final List<Map<String, String>> pending = [
-    {
-      'name': 'Jake Sim',
-      'handle': '@jakesim1415',
-      'avatar': 'assets/avatars/free/free2.png',
-    },
-    {
-      'name': 'Astrid Lee',
-      'handle': '@leeAstrid829',
-      'avatar': 'assets/avatars/premium/premium4.png',
-    }
-  ];
+  }
 
   void acceptRequest(int index) {
     setState(() {
@@ -84,19 +67,22 @@ class _MessageScreenState extends State<MessageScreen> {
   Widget build(BuildContext context) {
     final filteredFriends = friends
         .where((f) =>
-    f['name']!.toLowerCase().contains(search.toLowerCase()) ||
-        f['handle']!.toLowerCase().contains(search.toLowerCase()))
-        .toList();
+            (f['name'] ?? f['username'] ?? '').toLowerCase().contains(search.toLowerCase()) ||
+            (f['handle'] ?? f['email'] ?? '').toLowerCase().contains(search.toLowerCase()))
+        .toList()
+        .cast<Map<String, dynamic>>();
     final filteredRequests = requests
         .where((f) =>
-    f['name']!.toLowerCase().contains(search.toLowerCase()) ||
-        f['handle']!.toLowerCase().contains(search.toLowerCase()))
-        .toList();
+            (f['name'] ?? f['username'] ?? '').toLowerCase().contains(search.toLowerCase()) ||
+            (f['handle'] ?? f['email'] ?? '').toLowerCase().contains(search.toLowerCase()))
+        .toList()
+        .cast<Map<String, dynamic>>();
     final filteredPending = pending
         .where((f) =>
-    f['name']!.toLowerCase().contains(search.toLowerCase()) ||
-        f['handle']!.toLowerCase().contains(search.toLowerCase()))
-        .toList();
+            (f['name'] ?? f['username'] ?? '').toLowerCase().contains(search.toLowerCase()) ||
+            (f['handle'] ?? f['email'] ?? '').toLowerCase().contains(search.toLowerCase()))
+        .toList()
+        .cast<Map<String, dynamic>>();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -125,7 +111,6 @@ class _MessageScreenState extends State<MessageScreen> {
                 ],
               ),
             ),
-            // Search Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
@@ -144,7 +129,6 @@ class _MessageScreenState extends State<MessageScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            // Tabs row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: SingleChildScrollView(
@@ -160,9 +144,8 @@ class _MessageScreenState extends State<MessageScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (_) => const AddFriendScreen()),
-                          );
+                            MaterialPageRoute(builder: (_) => const AddFriendScreen()),
+                          ).then((_) => _loadFriendsData());
                         },
                         icon: const Icon(Icons.add, color: Colors.white, size: 18),
                         label: const Text("Add New"),
@@ -184,47 +167,48 @@ class _MessageScreenState extends State<MessageScreen> {
               ),
             ),
             const Divider(height: 0, thickness: 1),
-            // Content changes depending on selectedTab
             Expanded(
-              child: Container(
-                color: Colors.white,
-                child: Builder(builder: (context) {
-                  if (selectedTab == 0) {
-                    return AllFriendsTab(
-                      friends: filteredFriends,
-                      onFriendTap: (friend) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChatScreen(
-                              friendName: friend['name']!,
-                              friendHandle: friend['handle']!,
-                              friendAvatar: friend['avatar']!,
-                              isPremium: false, //need to add backend, sorry tony
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else if (selectedTab == 1) {
-                    return RequestsTab(
-                      requests: filteredRequests,
-                      acceptRequest: acceptRequest,
-                      ignoreRequest: ignoreRequest,
-                    );
-                  } else {
-                    return PendingTab(
-                      pending: filteredPending,
-                    );
-                  }
-                }),
-              ),
+              child: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Container(
+                      color: Colors.white,
+                      child: Builder(builder: (context) {
+                        if (selectedTab == 0) {
+                          return AllFriendsTab(
+                            friends: filteredFriends,
+                            onFriendTap: (friend) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ChatScreen(
+                                    friendName: friend['name'] ?? friend['username'] ?? '',
+                                    friendHandle: friend['handle'] ?? friend['email'] ?? '',
+                                    friendAvatar: friend['avatar'] ?? 'assets/avatars/free/free1.png',
+                                    isPremium: false,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } else if (selectedTab == 1) {
+                          return RequestsTab(
+                            requests: filteredRequests,
+                            acceptRequest: acceptRequest,
+                            ignoreRequest: ignoreRequest,
+                          );
+                        } else {
+                          return PendingTab(
+                            pending: filteredPending,
+                          );
+                        }
+                      }),
+                    ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(
-        currentIndex: 3, // Messages tab index
+        currentIndex: 3,
         onTap: (int index) {
           switch (index) {
             case 0:
@@ -237,7 +221,6 @@ class _MessageScreenState extends State<MessageScreen> {
               Navigator.pushReplacementNamed(context, '/workout-dashboard');
               break;
             case 3:
-            // Already on messages
               break;
             case 4:
               Navigator.pushReplacementNamed(context, '/profile');

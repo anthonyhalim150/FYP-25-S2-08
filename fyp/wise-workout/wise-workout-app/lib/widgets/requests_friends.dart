@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RequestsTab extends StatelessWidget {
-  final List<Map<String, String>> requests;
+  final List<Map<String, dynamic>> requests;
   final Function(int) acceptRequest;
   final Function(int) ignoreRequest;
 
@@ -24,18 +24,18 @@ class RequestsTab extends StatelessWidget {
         final f = requests[i];
         return ListTile(
           leading: CircleAvatar(
-            backgroundImage: AssetImage(f['avatar']!),
+            backgroundImage: AssetImage(f['avatar'] ?? 'assets/avatars/free/free1.png'),
             radius: 28,
           ),
           title: Text(
-            f['name']!,
+            f['name'] ?? f['username'] ?? '',
             style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 17,
             ),
           ),
           subtitle: Text(
-            f['handle']!,
+            f['handle'] ?? f['email'] ?? '',
             style: TextStyle(
               fontSize: 13,
               color: Colors.grey[600],
@@ -49,8 +49,7 @@ class RequestsTab extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2176FF),
                   foregroundColor: Colors.white,
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                   minimumSize: const Size(0, 32),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -66,8 +65,7 @@ class RequestsTab extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[800],
                   foregroundColor: Colors.white,
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
                   minimumSize: const Size(0, 32),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
