@@ -4,13 +4,13 @@ import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
 import 'editprofile_screen.dart';
 import 'privacypolicy_screen.dart';
-// Sub-widgets:
+
+//sub widgets
 import '../widgets/profile_avatar_section.dart';
 import '../widgets/profile_badge_collection.dart';
 import '../widgets/profile_info_row.dart';
 import '../widgets/profile_lucky_spin_card.dart';
 import '../widgets/profile_menu_list.dart';
-
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -41,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int _tokens = 23;
   final ApiService apiService = ApiService();
   Map<String, dynamic> _profileData = {};
-
   final List<String> unlockedBadges = [
     'assets/badges/badge_4.png',
     'assets/badges/badge_5.png',
@@ -76,6 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showAvatarPopup(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -84,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -93,33 +93,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  ClipOval(
-                    child: _profileBgPath != null &&
-                        _profileBgPath!.startsWith('http')
-                        ? Image.network(_profileBgPath!,
-                        width: 220, height: 220, fit: BoxFit.cover)
-                        : Image.asset(_profileBgPath!,
-                        width: 220, height: 220, fit: BoxFit.cover),
-                  ),
-                  if (_profileImagePath != null &&
-                      _profileImagePath!.isNotEmpty)
+                  if (_profileBgPath != null)
+                    ClipOval(
+                      child: _profileBgPath!.startsWith('http')
+                          ? Image.network(_profileBgPath!,
+                          width: 220, height: 220, fit: BoxFit.cover)
+                          : Image.asset(_profileBgPath!,
+                          width: 220, height: 220, fit: BoxFit.cover),
+                    ),
+                  if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
                     CircleAvatar(
                       radius: 100,
                       backgroundImage: _profileImagePath!.startsWith('http')
                           ? NetworkImage(_profileImagePath!)
-                          : AssetImage(_profileImagePath!)
-                      as ImageProvider<Object>,
+                          : AssetImage(_profileImagePath!) as ImageProvider<Object>,
                       backgroundColor: Colors.transparent,
                     ),
                 ],
               ),
               const SizedBox(height: 20),
-              Text(_userName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              Text(_userName, style: Theme.of(context).textTheme.titleLarge),
               if (_isPremiumUser)
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0),
-                  child: Text('🌟 Premium User 🌟',
-                      style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16)),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    '🌟 Premium User 🌟',
+                    style: TextStyle(
+                      color: colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -136,7 +140,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _profileItem(IconData icon, String label,
       {String? subtitle, VoidCallback? onTap}) {
     VoidCallback? handleTap = onTap;
-
     if (handleTap == null) {
       switch (label) {
         case "Avatar":
@@ -221,18 +224,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
-      leading: Icon(icon, color: Colors.purple[300]),
-      title: Text(label),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+      title: Text(
+        label,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(subtitle, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
+          : null,
+      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
       onTap: handleTap,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF6EE),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -250,7 +262,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             ProfileLuckySpinCard(
               tokens: _tokens,
-              onSpinComplete: (newTokens) => setState(() { _tokens = newTokens; }),
+              onSpinComplete: (newTokens) => setState(() {
+                _tokens = newTokens;
+              }),
             ),
             const SizedBox(height: 20),
             ProfileMenuList(
@@ -263,7 +277,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _profileItem(Icons.history, "Workout History"),
                 _profileItem(Icons.bar_chart, "Body Metrics"),
                 _profileItem(Icons.notifications, "Notifications"),
-                if (!_isPremiumUser) _profileItem(Icons.workspace_premium, "Premium Plan"),
+                if (!_isPremiumUser)
+                  _profileItem(Icons.workspace_premium, "Premium Plan"),
                 _profileItem(Icons.language, "Language", subtitle: "English"),
                 _profileItem(Icons.privacy_tip, "Privacy Policy"),
                 _profileItem(Icons.palette, "Appearance", subtitle: "Default"),
@@ -276,11 +291,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         currentIndex: 4,
         onTap: (index) {
           switch (index) {
-            case 0: Navigator.pushNamed(context, '/home'); break;
-            case 1: Navigator.pushNamed(context, '/leaderboard'); break;
-            case 2: Navigator.pushNamed(context, '/workout-dashboard'); break;
-            case 3: Navigator.pushNamed(context, '/messages'); break;
-            case 4: Navigator.pushNamed(context, '/profile'); break;
+            case 0:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/leaderboard');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/workout-dashboard');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/messages');
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/profile');
+              break;
           }
         },
       ),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart'; // Import to call API
+import '../services/api_service.dart';
 
 class AvatarBackgroundPickerScreen extends StatefulWidget {
   final String selectedBgPath;
   final String selectedAvatarPath;
   final bool isPremiumUser;
-
   const AvatarBackgroundPickerScreen({
     Key? key,
     required this.selectedBgPath,
@@ -29,7 +28,6 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
     'assets/background/bg8.png',
     'assets/background/bg9.png',
   ];
-
 
   late String chosenBg;
 
@@ -63,21 +61,17 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
   Future<void> _confirmBackground() async {
     if (!widget.isPremiumUser) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upgrade to premium to set background!')),
+        SnackBar(content: Text('Upgrade to premium to set background!')),
       );
       return;
     }
-
     try {
       final backgroundId = _getBackgroundIdFromPath(chosenBg);
-
       final apiService = ApiService();
       await apiService.setBackground(backgroundId);
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Background updated successfully!')),
+        SnackBar(content: Text('Background updated successfully!')),
       );
-
       Navigator.pop(context, chosenBg);
     } catch (e) {
       print('Failed to update background: $e');
@@ -102,21 +96,25 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
     return bgMap[path] ?? 1;
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF6EE),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Background", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+        title: Text(
+          "Background",
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
       ),
       body: Column(
         children: [
@@ -126,9 +124,9 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
           Expanded(
             child: Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFDCB39),
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withOpacity(0.13),
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(28),
                   topRight: Radius.circular(28),
                 ),
@@ -136,16 +134,15 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const Text('Background',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      )),
+                  Text(
+                    'Background',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: colorScheme.surface,
                         borderRadius: BorderRadius.circular(28),
                       ),
                       padding: const EdgeInsets.all(18),
@@ -161,14 +158,16 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
                           final isChosen = chosenBg == path;
                           return GestureDetector(
                             onTap: widget.isPremiumUser
-                                ? () => setState(() { chosenBg = path; })
+                                ? () => setState(() {
+                              chosenBg = path;
+                            })
                                 : null,
                             child: Opacity(
                               opacity: widget.isPremiumUser ? 1.0 : 0.5,
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: isChosen
-                                      ? Border.all(color: Colors.amber, width: 3)
+                                      ? Border.all(color: colorScheme.secondary, width: 3)
                                       : null,
                                   borderRadius: BorderRadius.circular(18),
                                 ),
@@ -178,7 +177,7 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
                                     path,
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stack) =>
-                                        Container(color: Colors.grey[300]),
+                                        Container(color: colorScheme.surfaceVariant),
                                   ),
                                 ),
                               ),
@@ -191,7 +190,7 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: colorScheme.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
                       ),
@@ -199,9 +198,13 @@ class _AvatarBackgroundPickerScreenState extends State<AvatarBackgroundPickerScr
                         vertical: 14,
                         horizontal: 60,
                       ),
+                      textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 18),
                     ),
                     onPressed: _confirmBackground,
-                    child: const Text('Confirm', style: TextStyle(color: Colors.white, fontSize: 18)),
+                    child: Text(
+                      'Confirm',
+                      style: TextStyle(color: colorScheme.onPrimary, fontSize: 18),
+                    ),
                   ),
                 ],
               ),

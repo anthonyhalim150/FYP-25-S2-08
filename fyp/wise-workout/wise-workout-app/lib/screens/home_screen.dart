@@ -17,7 +17,6 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
-
   const HomeScreen({
     super.key,
     required this.userName,
@@ -34,16 +33,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HealthService _healthService = HealthService();
-
   int _currentSteps = 0;
   final int maxSteps = 10000;
   final int caloriesBurned = 420;
   final int xpEarned = 150;
-
   String? _displayName;
   bool _isPremiumUser = false;
 
-  // hardcoded, need to implement backend
   final List<String> unlockedBadges = [
     'assets/badges/badge_4.png',
     'assets/badges/badge_5.png',
@@ -58,17 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchTodaySteps() async {
-    print("Trying to connect to Health Connect...");
     final connected = await _healthService.connect();
-    print("Connected: $connected");
     if (connected) {
       final steps = await _healthService.getTodaySteps();
-      print("Fetched steps: $steps");
       setState(() {
         _currentSteps = steps;
       });
-    } else {
-      print("Not connected to Health Connect.");
     }
   }
 
@@ -118,11 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Theme.of(context).shadowColor.withOpacity(0.05),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -134,10 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Badge Collections',
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -146,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: CircleAvatar(
                             radius: 16,
-                            backgroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).colorScheme.surface,
                             backgroundImage: index < unlockedBadges.length
                                 ? AssetImage(unlockedBadges[index])
                                 : const AssetImage('assets/icons/lock.jpg'),
@@ -157,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, size: 16),
+              Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
             ],
           ),
         ),
@@ -167,6 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: appDrawer(
@@ -185,18 +177,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Hello, ${_displayName ?? widget.userName}!',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: colorScheme.onBackground,
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // only Premium can use camera feature
+                    // Only Premium can use camera
                     IconButton(
                       icon: Icon(
                         Icons.camera_alt_outlined,
-                        color: _isPremiumUser ? Colors.black : Colors.grey,
+                        color: _isPremiumUser
+                            ? colorScheme.onBackground
+                            : colorScheme.outline,
                       ),
                       onPressed: () {
                         if (_isPremiumUser) {
@@ -216,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Spacer(),
                     Builder(
                       builder: (context) => IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.black),
+                        icon: Icon(Icons.menu, color: colorScheme.onBackground),
                         onPressed: () {
                           Scaffold.of(context).openDrawer();
                         },
@@ -225,42 +219,44 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              // Search bar
+              // Search Bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Row(
                     children: [
                       const SizedBox(width: 15),
-                      const Expanded(
+                      Expanded(
                         child: TextField(
                           decoration: InputDecoration(
                             hintText: 'Search on FitQuest',
                             border: InputBorder.none,
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
                           ),
+                          style: TextStyle(color: colorScheme.onSurface),
                         ),
                       ),
                       Container(
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        child: const Icon(Icons.search, color: Colors.black),
+                        child: Icon(Icons.search, color: colorScheme.onSurface),
                       ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 15),
-              // Exercise Gauge
+
+              // Exercise Gauge (delegated, be sure it supports theming)
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
                 maxSteps: maxSteps,
@@ -275,8 +271,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Workout",
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
+                    color: colorScheme.onBackground,
                   ),
                 ),
               ),
@@ -304,8 +301,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Tournaments",
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
+                    color: colorScheme.onBackground,
                   ),
                 ),
               ),

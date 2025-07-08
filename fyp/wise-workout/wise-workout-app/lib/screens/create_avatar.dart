@@ -8,7 +8,6 @@ class CreateAvatarScreen extends StatefulWidget {
   final bool isPremiumUser;
   final String? currentAvatarPath;
   final String? currentBgPath;
-
   const CreateAvatarScreen({
     Key? key,
     required this.username,
@@ -90,7 +89,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
       final apiService = ApiService();
       await apiService.setAvatar(avatarId);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Avatar updated successfully!')),
+        SnackBar(content: Text('Avatar updated successfully!')),
       );
       Navigator.pop(context, {
         'avatar': selectedAvatarPath,
@@ -121,8 +120,12 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final bgHighlight = colorScheme.secondary.withOpacity(0.25);
+    final lockedOverlay = colorScheme.surface.withOpacity(0.7);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF6EE),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -131,13 +134,15 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Spacer(),
-                  const Text(
+                  Text(
                     'Avatar',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const Spacer(flex: 2),
                 ],
@@ -165,15 +170,18 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
             const SizedBox(height: 8),
             Text(
               '@${widget.username}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Expanded(
               child: Container(
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFDCB39),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withOpacity(0.13),
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(28),
                     topRight: Radius.circular(28),
                   ),
@@ -183,20 +191,22 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.arrow_back),
+                        Icon(Icons.arrow_back, color: colorScheme.onSurface),
                         const Spacer(),
-                        const Text(
+                        Text(
                           'Avatar',
-                          style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const Spacer(),
                         GestureDetector(
                           onTap: _editBackground,
                           child: Icon(
                             Icons.arrow_forward,
-                            color:
-                            widget.isPremiumUser ? Colors.black : Colors.grey,
+                            color: widget.isPremiumUser
+                                ? colorScheme.onSurface
+                                : colorScheme.outline,
                           ),
                         ),
                       ],
@@ -205,7 +215,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(28),
                         ),
                         padding: const EdgeInsets.all(18),
@@ -237,13 +247,12 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: isChosen
-                                      ? Colors.amber.withOpacity(0.3)
-                                      : Colors.transparent,
+                                  color: isChosen ? bgHighlight : Colors.transparent,
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
-                                    color:
-                                    isChosen ? Colors.amber : Colors.transparent,
+                                    color: isChosen
+                                        ? colorScheme.secondary
+                                        : Colors.transparent,
                                     width: 2,
                                   ),
                                 ),
@@ -258,17 +267,21 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                                           height: 65,
                                           fit: BoxFit.cover,
                                           errorBuilder: (ctx, _error, _stack) =>
-                                          const Icon(Icons.image_not_supported,
-                                              size: 30, color: Colors.grey),
+                                              Icon(Icons.image_not_supported,
+                                                  size: 30,
+                                                  color: colorScheme.onSurfaceVariant),
                                         ),
                                       ),
                                     ),
                                     if (locked)
                                       Container(
-                                        color: Colors.white.withOpacity(0.7),
+                                        color: lockedOverlay,
                                         alignment: Alignment.center,
-                                        child: const Icon(Icons.lock_outline,
-                                            color: Colors.amber, size: 30),
+                                        child: Icon(
+                                          Icons.lock_outline,
+                                          color: colorScheme.secondary,
+                                          size: 30,
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -281,16 +294,19 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                     const SizedBox(height: 24),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: colorScheme.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(22),
                         ),
                         padding: const EdgeInsets.symmetric(
                             vertical: 14, horizontal: 60),
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .labelLarge, // For consistent button text
                       ),
                       onPressed: _confirmAvatar,
-                      child: const Text('Confirm',
-                          style: TextStyle(color: Colors.white)),
+                      child: Text('Confirm',
+                          style: TextStyle(color: colorScheme.onPrimary)),
                     ),
                   ],
                 ),
