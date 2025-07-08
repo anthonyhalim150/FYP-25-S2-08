@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../widgets/register_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
-
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -69,6 +69,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void showTermsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Terms & Conditions'),
+        content: SingleChildScrollView(
+          child: Text(
+            '''
+Welcome to FitQuest!
+
+- Use of this service is at your own risk.
+- Respect community guidelines.
+- Your data is held confidentially.
+
+Thank you for using FitQuest!
+''',
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Close'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 150,
                 ),
                 const SizedBox(height: 32),
+
                 const Text("Email", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -94,6 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 const Text("First Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -104,6 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 const Text("Last Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -114,6 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 const Text("Username", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -124,6 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 const Text("Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -141,12 +174,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 3),
-                // helper text to show password requirements
                 const Text(
                   "Min 8 chars, upper, lower, digit, special char",
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
+
                 const Text("Confirm Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 6),
                 TextField(
@@ -164,20 +197,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 Row(
                   children: [
                     Checkbox(
                       value: agreeToTerms,
                       onChanged: (val) => setState(() => agreeToTerms = val ?? false),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text.rich(
                         TextSpan(
                           text: 'I agree to the ',
+                          style: const TextStyle(color: Colors.black),
                           children: [
                             TextSpan(
                               text: 'Terms & Conditions',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = showTermsDialog,
                             ),
                           ],
                         ),
@@ -186,6 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
+
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -210,6 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 Center(
                   child: TextButton(
                     onPressed: () {
