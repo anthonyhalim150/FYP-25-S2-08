@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'new_challenge.dart'; //this is to send challenge
 
+// this is hard coded. BEST is to be able to show like what ive hardcoded,
+// if cannot, i think can just show name and say challenged you.
 class CompetitionScreen extends StatelessWidget {
   final List<Map<String, String>> competitions = [
     {"opponent": "Alex", "status": "Challenged you"},
