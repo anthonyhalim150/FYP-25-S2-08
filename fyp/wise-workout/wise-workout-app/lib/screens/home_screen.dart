@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wise_workout_app/widgets/journey_card.dart';
 import 'workout_sample_data.dart';
+import '../services/health_service.dart';
+import '../services/api_service.dart';
+import '../screens/camera/SquatPoseScreen.dart';
 
 //sub-widgets
 import '../widgets/workout_card_home_screen.dart';
@@ -8,9 +11,7 @@ import '../widgets/tournament_widget.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
-import '../services/health_service.dart';
-import '../services/api_service.dart';
-import '../screens/camera/SquatPoseScreen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String userName;
