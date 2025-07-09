@@ -45,7 +45,7 @@ class RequestsTab extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton(
-                onPressed: () => acceptRequest(i),
+                onPressed: () => acceptRequest(f['id']),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2176FF),
                   foregroundColor: Colors.white,
@@ -61,7 +61,7 @@ class RequestsTab extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               ElevatedButton(
-                onPressed: () => ignoreRequest(i),
+                onPressed: () => ignoreRequest(f['id']),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[800],
                   foregroundColor: Colors.white,

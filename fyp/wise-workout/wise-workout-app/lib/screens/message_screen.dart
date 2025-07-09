@@ -50,17 +50,38 @@ class _MessageScreenState extends State<MessageScreen> {
       });
     }
   }
-
-  void acceptRequest(int index) {
-    setState(() {
-      requests.removeAt(index);
-    });
+  void acceptRequest(int friendId) async {
+    try {
+      await _friendService.acceptRequest(friendId.toString());
+      setState(() {
+        requests.removeWhere((f) => f['id'] == friendId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Friend request accepted')),
+      );
+      _loadFriendsData();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to accept request')),
+      );
+    }
   }
 
-  void ignoreRequest(int index) {
-    setState(() {
-      requests.removeAt(index);
-    });
+  void ignoreRequest(int friendId) async {
+    try {
+      await _friendService.rejectRequest(friendId.toString());
+      setState(() {
+        requests.removeWhere((f) => f['id'] == friendId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Request ignored')),
+      );
+      _loadFriendsData();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to ignore request')),
+      );
+    }
   }
 
   @override
