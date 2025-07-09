@@ -85,6 +85,27 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget _profileCircle({required String background, required String avatar, double size = 64, double avatarRadius = 28}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          image: AssetImage(background),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Center(
+        child: CircleAvatar(
+          backgroundImage: AssetImage(avatar),
+          radius: avatarRadius,
+          backgroundColor: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,9 +126,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                   const SizedBox(width: 6),
-                  CircleAvatar(
-                    backgroundImage: AssetImage(widget.friendAvatar),
-                    radius: 32,
+                  _profileCircle(
+                    background: widget.friendBackground,
+                    avatar: widget.friendAvatar,
+                    size: 64,
+                    avatarRadius: 28,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -173,6 +196,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         final avatarPath = isSelf
                             ? (myAvatarPath ?? "assets/avatars/premium/premium4.png")
                             : widget.friendAvatar;
+                        final backgroundPath = isSelf
+                            ? (myBackgroundPath ?? "assets/background/bg1.jpg")
+                            : widget.friendBackground;
                         return Align(
                           alignment: isSelf ? Alignment.centerRight : Alignment.centerLeft,
                           child: Row(
@@ -181,9 +207,11 @@ class _ChatScreenState extends State<ChatScreen> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               if (!isSelf)
-                                CircleAvatar(
-                                  backgroundImage: AssetImage(avatarPath),
-                                  radius: 20,
+                                _profileCircle(
+                                  background: backgroundPath,
+                                  avatar: avatarPath,
+                                  size: 40,
+                                  avatarRadius: 17,
                                 ),
                               if (!isSelf) const SizedBox(width: 8),
                               Flexible(
@@ -224,9 +252,11 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                               if (isSelf) const SizedBox(width: 8),
                               if (isSelf)
-                                CircleAvatar(
-                                  backgroundImage: AssetImage(avatarPath),
-                                  radius: 20,
+                                _profileCircle(
+                                  background: backgroundPath,
+                                  avatar: avatarPath,
+                                  size: 40,
+                                  avatarRadius: 17,
                                 ),
                             ],
                           ),
