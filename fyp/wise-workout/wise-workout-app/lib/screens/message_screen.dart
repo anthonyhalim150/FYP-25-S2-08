@@ -31,6 +31,7 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   Future<void> _loadFriendsData() async {
+    if (!mounted) return;
     setState(() { loading = true; });
     try {
       final friendsList = await _friendService.getFriends();
@@ -38,6 +39,7 @@ class _MessageScreenState extends State<MessageScreen> {
       final sentList = await _friendService.getSentRequests();
       final unreadCountsList = await MessageService().getUnreadCounts();
 
+      if (!mounted) return;
 
       final Map<int, int> unreadMap = {
         for (var item in unreadCountsList)
@@ -51,6 +53,7 @@ class _MessageScreenState extends State<MessageScreen> {
         };
       }).toList();
 
+      if (!mounted) return;
       setState(() {
         friends = List<Map<String, dynamic>>.from(mergedFriends);
         requests = List<Map<String, dynamic>>.from(pendingList);
@@ -58,6 +61,7 @@ class _MessageScreenState extends State<MessageScreen> {
         loading = false;
       });
     } catch (e, stack) {
+      if (!mounted) return;
       setState(() {
         friends = [];
         requests = [];
@@ -70,14 +74,17 @@ class _MessageScreenState extends State<MessageScreen> {
   void acceptRequest(int friendId) async {
     try {
       await _friendService.acceptRequest(friendId.toString());
+      if (!mounted) return;
       setState(() {
         requests.removeWhere((f) => f['id'] == friendId);
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Friend request accepted')),
       );
-      _loadFriendsData();
+      await _loadFriendsData();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to accept request')),
       );
@@ -87,14 +94,17 @@ class _MessageScreenState extends State<MessageScreen> {
   void ignoreRequest(int friendId) async {
     try {
       await _friendService.rejectRequest(friendId.toString());
+      if (!mounted) return;
       setState(() {
         requests.removeWhere((f) => f['id'] == friendId);
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Request ignored')),
       );
-      _loadFriendsData();
+      await _loadFriendsData();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to ignore request')),
       );
@@ -185,7 +195,10 @@ class _MessageScreenState extends State<MessageScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const AddFriendScreen()),
-                          ).then((_) => _loadFriendsData());
+                          ).then((_) async {
+                            if (!mounted) return;
+                            await _loadFriendsData();
+                          });
                         },
                         icon: const Icon(Icons.add, color: Colors.white, size: 18),
                         label: const Text("Add New"),
@@ -231,7 +244,8 @@ class _MessageScreenState extends State<MessageScreen> {
                                   ),
                                 ),
                               );
-                              _loadFriendsData(); 
+                              if (!mounted) return;
+                              await _loadFriendsData(); 
                             },
                           );
                         } else if (selectedTab == 1) {
