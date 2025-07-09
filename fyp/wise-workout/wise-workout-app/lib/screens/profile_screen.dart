@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'create_avatar.dart';
 import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
@@ -46,6 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'assets/badges/badge_6.png',
   ];
 
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  String _selectedLanguageCode = 'en';
+
   @override
   void initState() {
     super.initState();
@@ -54,11 +58,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _isPremiumUser = widget.isPremiumUser;
     _userName = widget.userName;
     _loadProfile();
+    _loadLanguagePreference();
   }
 
   Future<void> _loadProfile() async {
     try {
       final profile = await apiService.getCurrentProfile();
+      if (!mounted) return;
       setState(() {
         _profileData = profile;
         _isPremiumUser = profile['role'] == 'premium';
@@ -70,6 +76,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     } catch (e) {
       print('Failed to load profile: $e');
+    }
+  }
+
+  Future<void> _loadLanguagePreference() async {
+    final storedCode = await _secureStorage.read(key: 'language_code');
+    if (storedCode != null && mounted) {
+      setState(() {
+        _selectedLanguageCode = storedCode;
+      });
+    }
+  }
+
+  String _languageNameFromCode(String code) {
+    switch (code) {
+      case 'en':
+        return 'English';
+      case 'id':
+        return 'Bahasa Indonesia';
+      case 'zh':
+        return 'Chinese';
+      case 'ms':
+        return 'Malay';
+      default:
+        return 'English';
     }
   }
 
@@ -204,7 +234,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           handleTap = () => Navigator.pushNamed(context, '/premium-plan');
           break;
         case "Language":
-          handleTap = () => Navigator.pushNamed(context, '/language-settings');
+          handleTap = () async {
+            await Navigator.pushNamed(context, '/language-settings');
+            _loadLanguagePreference();
+          };
           break;
         case "Privacy Policy":
           handleTap = () => Navigator.push(
@@ -277,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _profileItem(Icons.notifications, "Notifications"),
                 if (!_isPremiumUser)
                   _profileItem(Icons.workspace_premium, "Premium Plan"),
-                _profileItem(Icons.language, "Language", subtitle: "English"),
+                _profileItem(Icons.language, "Language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
                 _profileItem(Icons.privacy_tip, "Privacy Policy"),
                 _profileItem(Icons.palette, "Appearance", subtitle: "Default"),
               ],
