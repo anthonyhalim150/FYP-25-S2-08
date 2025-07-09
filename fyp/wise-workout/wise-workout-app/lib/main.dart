@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'themes/app_theme.dart';      // Your "Normal" (default) theme
+import 'themes/app_theme.dart';
 import 'themes/christmas_theme.dart';
 import 'themes/theme_notifier.dart';
 
@@ -49,15 +49,13 @@ class WiseWorkoutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
-    // Select the theme based on appThemeMode
     ThemeData usedTheme;
+    // Use your custom themes based on appThemeMode
     if (themeNotifier.appThemeMode == AppThemeMode.christmas) {
       usedTheme = christmasTheme;
     } else if (themeNotifier.appThemeMode == AppThemeMode.normal) {
-      usedTheme = AppTheme.lightTheme; // Your normal theme
+      usedTheme = AppTheme.lightTheme;
     } else {
-      // For dark and system, we use the base theme,
-      // but MaterialApp will apply the correct theme based on themeMode
       usedTheme = AppTheme.lightTheme;
     }
 
@@ -66,7 +64,7 @@ class WiseWorkoutApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: usedTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeNotifier.themeMode, // controls switching for dark/system
+      themeMode: themeNotifier.themeMode,
       initialRoute: '/unregistered',
       routes: {
         '/': (context) => LoginScreen(),
@@ -74,7 +72,7 @@ class WiseWorkoutApp extends StatelessWidget {
         '/profile': (context) => ProfileScreen(userName: ''),
         '/register': (context) => const RegisterScreen(),
         '/workout': (context) => WorkoutTracker(),
-        '/competition': (context) => CompetitionScreen(),
+        '/competition': (context) => ChallengeScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/verify-reset': (context) => const VerifyResetScreen(),
         '/unregistered': (context) => const UnregisteredUserPage(),

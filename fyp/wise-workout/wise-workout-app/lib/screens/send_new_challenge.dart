@@ -23,16 +23,16 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
   };
 
   List<Map<String, dynamic>> challengeTypes = [
-    { "label": "Push Ups", "type": "reps", "enabled": false, "value": 10, "min": 0, "max": 500, "step": 1 },
-    { "label": "Plank", "type": "duration", "enabled": false, "value": 30, "min": 0, "max": 600, "step": 5 },
-    { "label": "Jumping Jacks", "type": "reps", "enabled": false, "value": 20, "min": 0, "max": 500, "step": 5 },
-    { "label": "Sit Ups", "type": "reps", "enabled": false, "value": 10, "min": 0, "max": 500, "step": 1 },
-    { "label": "Burpees", "type": "reps", "enabled": false, "value": 10, "min": 0, "max": 500, "step": 1 },
-    { "label": "Mountain Climbers", "type": "reps", "enabled": false, "value": 20, "min": 0, "max": 500, "step": 5 },
-    { "label": "High Knees", "type": "reps", "enabled": false, "value": 30, "min": 0, "max": 500, "step": 5 },
-    { "label": "Squats", "type": "reps", "enabled": false, "value": 15, "min": 0, "max": 500, "step": 1 },
-    { "label": "Lunges", "type": "reps", "enabled": false, "value": 14, "min": 0, "max": 500, "step": 2 },
-    { "label": "Wall Sit", "type": "duration", "enabled": false, "value": 20, "min": 0, "max": 600, "step": 5 },
+    {"label": "Push Ups", "type": "reps", "enabled": false, "value": 10, "min": 0, "max": 500, "step": 1},
+    {"label": "Plank", "type": "duration", "enabled": false, "value": 30, "min": 0, "max": 600, "step": 5},
+    {"label": "Jumping Jacks", "type": "reps", "enabled": false, "value": 20, "min": 0, "max": 500, "step": 5},
+    {"label": "Sit Ups", "type": "reps", "enabled": false, "value": 10, "min": 0, "max": 500, "step": 1},
+    {"label": "Burpees", "type": "reps", "enabled": false, "value": 10, "min": 0, "max": 500, "step": 1},
+    {"label": "Mountain Climbers", "type": "reps", "enabled": false, "value": 20, "min": 0, "max": 500, "step": 5},
+    {"label": "High Knees", "type": "reps", "enabled": false, "value": 30, "min": 0, "max": 500, "step": 5},
+    {"label": "Squats", "type": "reps", "enabled": false, "value": 15, "min": 0, "max": 500, "step": 1},
+    {"label": "Lunges", "type": "reps", "enabled": false, "value": 14, "min": 0, "max": 500, "step": 2},
+    {"label": "Wall Sit", "type": "duration", "enabled": false, "value": 20, "min": 0, "max": 600, "step": 5},
   ];
 
   // TODO: Replace this with your backend call to get the user's premium friend list
@@ -42,23 +42,14 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
   @override
   void initState() {
     super.initState();
-    //_fetchPremiumFriends(); // Uncomment and implement for backend integration
+    // _fetchPremiumFriends(); // Uncomment and implement for backend integration
   }
 
-  // Future<void> _fetchPremiumFriends() async {
-  //   // TODO: Replace with your backend API call!
-  //   // Example:
-  //   // var friends = await YourApi.getPremiumFriends();
-  //   // setState(() {
-  //   //   allUsers = friends;
-  //   // });
-  // }
-
+  // Widget builder for each challenge type
   Widget _buildChallengeCard(int idx) {
     final c = challengeTypes[idx];
     final bool isEnabled = c["enabled"];
     final color = isEnabled ? const Color(0xFFFFE066) : Colors.white10;
-
     return Card(
       elevation: isEnabled ? 6 : 2,
       color: color.withOpacity(isEnabled ? 0.24 : 0.13),
@@ -303,9 +294,7 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
   Future<void> _submitChallengeToBackend(
       List<Map<String, dynamic>> selected, List<String> selectedFriends) async {
     // TODO [BACKEND]: Replace this with your POST/PUT API call!
-    // Example:
     // await YourApi.sendChallenge(selected, selectedFriends);
-    // You might want to handle errors, loading state etc.
   }
 
   @override
@@ -366,7 +355,6 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
                           "value": c['value']
                         })
                             .toList();
-
                         if (selected.isEmpty) {
                           _showWarningDialog("Please select at least one challenge.");
                           return;
@@ -375,10 +363,8 @@ class _NewChallengeScreenState extends State<NewChallengeScreen> {
                           _showWarningDialog("Please select at least one person to challenge.");
                           return;
                         }
-
-                        // TODO [BACKEND]: Send selected and selectedUsers to your backend here!
+                        // Optionally send challenge to backend:
                         // await _submitChallengeToBackend(selected, selectedUsers);
-
                         _showChallengeSentDialog();
                       },
                       icon: const Icon(Icons.send, color: Color(0xFF071655)),

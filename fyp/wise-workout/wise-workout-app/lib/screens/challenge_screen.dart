@@ -1,17 +1,58 @@
 import 'package:flutter/material.dart';
-import 'new_challenge.dart'; //this is to send challenge
+import 'send_new_challenge.dart'; //this is to send challenges
+import 'challenge_detail_screen.dart'; //this is to accept challenge and do
 
-// this is hard coded. BEST is to be able to show like what ive hardcoded,
-// if cannot, i think can just show name and say challenged you.
-class CompetitionScreen extends StatelessWidget {
-  final List<Map<String, String>> competitions = [
-    {"opponent": "Alex", "status": "Challenged you"},
-    {"opponent": "Jordan", "status": "You’re winning"},
-    {"opponent": "Sam", "status": "Tie"},
+class ChallengeScreen extends StatefulWidget {
+  const ChallengeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ChallengeScreen> createState() => _ChallengeScreenState();
+}
+
+class _ChallengeScreenState extends State<ChallengeScreen> {
+  final List<Map<String, dynamic>> competitions = [
+    {
+      "opponent": "Alex",
+      "status": "Challenged you",
+      "details": [
+        {"label": "Push Ups", "type": "reps", "value": 20},
+        {"label": "Plank", "type": "duration", "value": 40},
+      ],
+      "accepted": false,
+      "completed": false,
+    },
+    {
+      "opponent": "Jordan",
+      "status": "You’re winning",
+      "details": [
+        {"label": "Sit Ups", "type": "reps", "value": 15},
+      ],
+      "accepted": true,
+      "completed": false,
+    },
+    {
+      "opponent": "Sam",
+      "status": "Tie",
+      "details": [
+        {"label": "Wall Sit", "type": "duration", "value": 45},
+      ],
+      "accepted": true,
+      "completed": true,
+    },
   ];
 
-  void handleChallenge() {
-    print("Challenge accepted!");
+  void handleChallenge(int index) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChallengeDetailScreen(challenge: competitions[index]),
+      ),
+    );
+    if (result != null) {
+      setState(() {
+        competitions[index] = result;
+      });
+    }
   }
 
   @override
@@ -83,7 +124,6 @@ class CompetitionScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Challenge list
                   competitions.isNotEmpty
                       ? Scrollbar(
                     thumbVisibility: true,
@@ -94,9 +134,9 @@ class CompetitionScreen extends StatelessWidget {
                       itemBuilder: (context, i) {
                         final item = competitions[i];
                         return _NiceCompetitionCard(
-                          opponent: item["opponent"]!,
-                          status: item["status"]!,
-                          onAction: handleChallenge,
+                          opponent: item["opponent"],
+                          status: item["status"],
+                          onAction: () => handleChallenge(i),
                         );
                       },
                       separatorBuilder: (_, __) => const SizedBox(height: 13),
@@ -179,55 +219,59 @@ class _NiceCompetitionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.09),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFFFC300).withOpacity(0.75),
-          width: 1,
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onAction,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.09),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFFFC300).withOpacity(0.75),
+            width: 1,
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 18),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: const Color(0xFFFFE066),
-            radius: 22,
-            child: Text(
-              opponent.characters.first,
-              style: const TextStyle(color: Color(0xFF071655), fontWeight: FontWeight.bold, fontSize: 22),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 18),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: const Color(0xFFFFE066),
+              radius: 22,
+              child: Text(
+                opponent.characters.first,
+                style: const TextStyle(
+                    color: Color(0xFF071655),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22),
+              ),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  opponent,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    fontSize: 16.5,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    opponent,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      fontSize: 16.5,
+                    ),
                   ),
-                ),
-                Text(
-                  status,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13.5,
+                  Text(
+                    status,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13.5,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.chevron_right, color: Color(0xFFFFE066), size: 28),
-            onPressed: onAction,
-          ),
-        ],
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: Color(0xFFFFE066), size: 28),
+          ],
+        ),
       ),
     );
   }

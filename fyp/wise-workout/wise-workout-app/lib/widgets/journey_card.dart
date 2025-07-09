@@ -42,7 +42,7 @@ class JourneyCard extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CompetitionScreen(),
+                    builder: (context) => ChallengeScreen(),
                   ),
                 );
               },
