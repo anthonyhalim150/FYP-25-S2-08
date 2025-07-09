@@ -202,6 +202,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => ChatScreen(
+                                    friendId: friend['id'],
                                     friendName: friend['name'] ?? friend['username'] ?? '',
                                     friendHandle: friend['handle'] ?? friend['email'] ?? '',
                                     friendAvatar: friend['avatar'] ?? 'assets/avatars/free/free1.png',

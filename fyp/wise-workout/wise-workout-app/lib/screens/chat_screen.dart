@@ -1,26 +1,17 @@
 import 'package:flutter/material.dart';
-
-// Hardcoded messages, username and avatar
-class ChatMessage {
-  final String text;
-  final bool isSelf;
-  final String time;
-  final String avatar;
-  ChatMessage({
-    required this.text,
-    required this.isSelf,
-    required this.time,
-    required this.avatar,
-  });
-}
+import '../services/message_service.dart'; // Adjust path if needed
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ChatScreen extends StatefulWidget {
+  final int friendId;
   final String friendName;
   final String friendHandle;
   final String friendAvatar;
   final bool isPremium;
+
   const ChatScreen({
     Key? key,
+    required this.friendId,
     required this.friendName,
     required this.friendHandle,
     required this.friendAvatar,
@@ -31,36 +22,61 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-// hardcoded
 class _ChatScreenState extends State<ChatScreen> {
+  final MessageService _messageService = MessageService();
   final TextEditingController _controller = TextEditingController();
+  final _storage = const FlutterSecureStorage();
+  List<dynamic> messages = [];
+  bool loading = true;
+  int? myUserId;
 
-  final List<ChatMessage> messages = [
-    ChatMessage(
-      text: "Hi",
-      isSelf: false,
-      time: "12:09",
-      avatar: "assets/avatars/free/free2.png",
-    ),
-    ChatMessage(
-      text: "Hi",
-      isSelf: true,
-      time: "12:09",
-      avatar: "assets/avatars/premium/premium4.png",
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _getMyUserId();
+    _loadMessages();
+  }
 
-  void _sendMessage() {
-    if (_controller.text.trim().isEmpty) return;
+  Future<void> _getMyUserId() async {
+    // You should have a way to get the current user id.
+    // If you save it in secure storage as 'user_id':
+    final id = await _storage.read(key: 'user_id');
     setState(() {
-      messages.add(ChatMessage(
-        text: _controller.text,
-        isSelf: true,
-        time: TimeOfDay.now().format(context),
-        avatar: "assets/avatars/premium/premium4.png", // hardcoded avatar
-      ));
-      _controller.clear();
+      myUserId = id != null ? int.tryParse(id) : null;
     });
+  }
+
+  Future<void> _loadMessages() async {
+    setState(() { loading = true; });
+    try {
+      final data = await _messageService.getConversation(widget.friendId);
+      setState(() {
+        messages = data;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        messages = [];
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load messages")),
+      );
+    }
+  }
+
+  Future<void> _sendMessage() async {
+    final content = _controller.text.trim();
+    if (content.isEmpty) return;
+    try {
+      await _messageService.sendMessage(widget.friendId, content);
+      _controller.clear();
+      _loadMessages();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to send message")),
+      );
+    }
   }
 
   @override
@@ -76,7 +92,6 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Back button
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
                     onPressed: () {
@@ -84,13 +99,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                   const SizedBox(width: 6),
-                  // Friend Avatar
                   CircleAvatar(
                     backgroundImage: AssetImage(widget.friendAvatar),
                     radius: 32,
                   ),
                   const SizedBox(width: 16),
-                  // Name and Handle
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,9 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   if (widget.isPremium)
                     ElevatedButton.icon(
-                      onPressed: () {
-                        // Need to add Challenge logic
-                      },
+                      onPressed: () {},
                       icon: const Icon(Icons.add, size: 15, color: Colors.white),
                       label: const Text(
                         "Challenge",
@@ -143,77 +154,82 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(height: 8),
-
-            // CHAT MESSAGES
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                itemCount: messages.length,
-                itemBuilder: (context, idx) {
-                  final m = messages[idx];
-                  return Align(
-                    alignment: m.isSelf ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: m.isSelf ? MainAxisAlignment.end : MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (!m.isSelf)
-                          CircleAvatar(
-                            backgroundImage: AssetImage(m.avatar),
-                            radius: 20,
-                          ),
-                        if (!m.isSelf) const SizedBox(width: 8),
-                        Flexible(
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              top: 10, bottom: 2,
-                              left: m.isSelf ? 48 : 0,
-                              right: m.isSelf ? 0 : 48,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: m.isSelf
-                                  ? const Color(0xFFFFF2C3)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(14),
-                                topRight: const Radius.circular(14),
-                                bottomLeft: Radius.circular(m.isSelf ? 14 : 2),
-                                bottomRight: Radius.circular(m.isSelf ? 2 : 14),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 2),
+              child: loading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                      itemCount: messages.length,
+                      reverse: false,
+                      itemBuilder: (context, idx) {
+                        final m = messages[idx];
+                        final isSelf = myUserId != null && m['sender_id'] == myUserId;
+                        return Align(
+                          alignment: isSelf ? Alignment.centerRight : Alignment.centerLeft,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: isSelf ? MainAxisAlignment.end : MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (!isSelf)
+                                CircleAvatar(
+                                  backgroundImage: AssetImage(widget.friendAvatar),
+                                  radius: 20,
                                 ),
-                              ],
-                            ),
-                            child: Text(
-                              m.text,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
+                              if (!isSelf) const SizedBox(width: 8),
+                              Flexible(
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                    top: 10, bottom: 2,
+                                    left: isSelf ? 48 : 0,
+                                    right: isSelf ? 0 : 48,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: isSelf
+                                        ? const Color(0xFFFFF2C3)
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: const Radius.circular(14),
+                                      topRight: const Radius.circular(14),
+                                      bottomLeft: Radius.circular(isSelf ? 14 : 2),
+                                      bottomRight: Radius.circular(isSelf ? 2 : 14),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 3,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    m['content'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              if (isSelf) const SizedBox(width: 8),
+                              if (isSelf)
+                                FutureBuilder<String?>(
+                                  future: _storage.read(key: 'avatar_path'),
+                                  builder: (context, snapshot) {
+                                    return CircleAvatar(
+                                      backgroundImage: AssetImage(snapshot.data ?? "assets/avatars/premium/premium4.png"),
+                                      radius: 20,
+                                    );
+                                  },
+                                ),
+                            ],
                           ),
-                        ),
-                        if (m.isSelf) const SizedBox(width: 8),
-                        if (m.isSelf)
-                          CircleAvatar(
-                            backgroundImage: AssetImage(m.avatar),
-                            radius: 20,
-                          ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
-
-            // MESSAGE INPUT FIELD
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
               child: Row(
