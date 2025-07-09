@@ -148,7 +148,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           const Divider(height: 0, thickness: 1),
           Expanded(
             child: loading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : (searchResults.isEmpty || search.isEmpty)
                     ? Center(
                         child: Text("No users found.",
@@ -164,10 +164,23 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                         itemBuilder: (context, i) {
                           final u = searchResults[i];
                           return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  u['avatar'] ?? 'assets/avatars/free/free1.png'),
-                              radius: 28,
+                            leading: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: AssetImage(u['background_url'] ?? 'assets/background/black.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Center(
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(u['avatar_url'] ?? ''),
+                                  radius: 22,
+                                  backgroundColor: Colors.transparent,
+                                ),
+                              ),
                             ),
                             title: Text(
                               u['name'] ?? u['username'] ?? '',

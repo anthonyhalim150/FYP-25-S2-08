@@ -108,7 +108,9 @@ class UserModel {
   }
   static async searchUsersWithStatus(query, userId) {
     let sql = `
-      SELECT u.id, u.username, u.email, u.firstName, u.lastName, u.avatar_id,
+      SELECT u.id, u.username, u.email, u.firstName, u.lastName,
+        a.image_url as avatar_url,
+        b.image_url as background_url,
         CASE
           WHEN f1.status = 'accepted' OR f2.status = 'accepted' THEN 'friends'
           WHEN f1.status = 'pending' THEN 'sent'        -- You sent them a request
@@ -120,6 +122,8 @@ class UserModel {
         ON f1.user_id = ? AND f1.friend_id = u.id
       LEFT JOIN friends f2
         ON f2.user_id = u.id AND f2.friend_id = ?
+      LEFT JOIN avatars a ON u.avatar_id = a.id
+      LEFT JOIN backgrounds b ON u.background_id = b.id
       WHERE (u.username LIKE ? OR u.email LIKE ?)
         AND u.id != ?
       LIMIT 20

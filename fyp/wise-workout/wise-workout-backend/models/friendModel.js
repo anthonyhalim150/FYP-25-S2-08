@@ -29,10 +29,13 @@ class FriendModel {
 
   static async getFriends(userId) {
     const [rows] = await db.execute(
-      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role, u.avatar_id, u.background_id
-       FROM friends f
-       JOIN users u ON u.id = f.friend_id
-       WHERE f.user_id = ? AND f.status = "accepted"`,
+      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role, 
+              a.image_url as avatar_url, b.image_url as background_url
+      FROM friends f
+      JOIN users u ON u.id = f.friend_id
+      LEFT JOIN avatars a ON u.avatar_id = a.id
+      LEFT JOIN backgrounds b ON u.background_id = b.id
+      WHERE f.user_id = ? AND f.status = "accepted"`,
       [userId]
     );
     return rows;
@@ -40,10 +43,13 @@ class FriendModel {
 
   static async getPendingRequests(userId) {
     const [rows] = await db.execute(
-      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role, u.avatar_id, u.background_id
-       FROM friends f
-       JOIN users u ON u.id = f.user_id
-       WHERE f.friend_id = ? AND f.status = "pending"`,
+      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role, 
+              a.image_url as avatar_url, b.image_url as background_url
+      FROM friends f
+      JOIN users u ON u.id = f.user_id
+      LEFT JOIN avatars a ON u.avatar_id = a.id
+      LEFT JOIN backgrounds b ON u.background_id = b.id
+      WHERE f.friend_id = ? AND f.status = "pending"`,
       [userId]
     );
     return rows;
@@ -51,14 +57,18 @@ class FriendModel {
 
   static async getSentRequests(userId) {
     const [rows] = await db.execute(
-      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role, u.avatar_id, u.background_id
-       FROM friends f
-       JOIN users u ON u.id = f.friend_id
-       WHERE f.user_id = ? AND f.status = "pending"`,
+      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role, 
+              a.image_url as avatar_url, b.image_url as background_url
+      FROM friends f
+      JOIN users u ON u.id = f.friend_id
+      LEFT JOIN avatars a ON u.avatar_id = a.id
+      LEFT JOIN backgrounds b ON u.background_id = b.id
+      WHERE f.user_id = ? AND f.status = "pending"`,
       [userId]
     );
     return rows;
   }
+
 }
 
 module.exports = FriendModel;

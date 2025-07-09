@@ -11,7 +11,7 @@ class PendingTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (pending.isEmpty) {
-      return Center(child: Text('No pending requests.'));
+      return const Center(child: Text('No pending requests.'));
     }
     return ListView.separated(
       padding: EdgeInsets.zero,
@@ -19,11 +19,23 @@ class PendingTab extends StatelessWidget {
       itemBuilder: (context, i) {
         final f = pending[i];
         return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage(
-              f['avatar'] ?? 'assets/avatars/free/free1.png'
+          leading: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: AssetImage(f['background_url'] ?? 'assets/background/black.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
-            radius: 28,
+            child: Center(
+              child: CircleAvatar(
+                backgroundImage: AssetImage(f['avatar_url'] ?? ''),
+                radius: 22,
+                backgroundColor: Colors.transparent,
+              ),
+            ),
           ),
           title: Text(
             f['name'] ?? f['username'] ?? '',

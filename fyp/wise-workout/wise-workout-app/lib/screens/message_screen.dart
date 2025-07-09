@@ -50,6 +50,7 @@ class _MessageScreenState extends State<MessageScreen> {
       });
     }
   }
+
   void acceptRequest(int friendId) async {
     try {
       await _friendService.acceptRequest(friendId.toString());
@@ -205,8 +206,9 @@ class _MessageScreenState extends State<MessageScreen> {
                                     friendId: friend['id'],
                                     friendName: friend['name'] ?? friend['username'] ?? '',
                                     friendHandle: friend['handle'] ?? friend['email'] ?? '',
-                                    friendAvatar: friend['avatar'] ?? 'assets/avatars/free/free1.png',
-                                    isPremium: false,
+                                    friendAvatar: friend['avatar_url'] ?? 'assets/avatars/free/free1.png',
+                                    friendBackground: friend['background_url'] ?? 'assets/background/bg2.jpg',
+                                    isPremium: (friend['role'] ?? '') == 'premium',
                                   ),
                                 ),
                               );

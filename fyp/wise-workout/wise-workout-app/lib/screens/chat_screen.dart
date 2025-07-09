@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/message_service.dart'; // Adjust path if needed
+import '../services/message_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -7,6 +7,7 @@ class ChatScreen extends StatefulWidget {
   final String friendName;
   final String friendHandle;
   final String friendAvatar;
+  final String friendBackground;
   final bool isPremium;
 
   const ChatScreen({
@@ -15,6 +16,7 @@ class ChatScreen extends StatefulWidget {
     required this.friendName,
     required this.friendHandle,
     required this.friendAvatar,
+    required this.friendBackground,
     this.isPremium = false,
   }) : super(key: key);
 
@@ -29,20 +31,24 @@ class _ChatScreenState extends State<ChatScreen> {
   List<dynamic> messages = [];
   bool loading = true;
   int? myUserId;
+  String? myAvatarPath;
+  String? myBackgroundPath;
 
   @override
   void initState() {
     super.initState();
-    _getMyUserId();
+    _initProfile();
     _loadMessages();
   }
 
-  Future<void> _getMyUserId() async {
-    // You should have a way to get the current user id.
-    // If you save it in secure storage as 'user_id':
+  Future<void> _initProfile() async {
     final id = await _storage.read(key: 'user_id');
+    final avatar = await _storage.read(key: 'avatar_path');
+    final background = await _storage.read(key: 'background_path');
     setState(() {
       myUserId = id != null ? int.tryParse(id) : null;
+      myAvatarPath = avatar;
+      myBackgroundPath = background;
     });
   }
 
@@ -164,6 +170,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       itemBuilder: (context, idx) {
                         final m = messages[idx];
                         final isSelf = myUserId != null && m['sender_id'] == myUserId;
+                        final avatarPath = isSelf
+                            ? (myAvatarPath ?? "assets/avatars/premium/premium4.png")
+                            : widget.friendAvatar;
                         return Align(
                           alignment: isSelf ? Alignment.centerRight : Alignment.centerLeft,
                           child: Row(
@@ -173,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             children: [
                               if (!isSelf)
                                 CircleAvatar(
-                                  backgroundImage: AssetImage(widget.friendAvatar),
+                                  backgroundImage: AssetImage(avatarPath),
                                   radius: 20,
                                 ),
                               if (!isSelf) const SizedBox(width: 8),
@@ -215,14 +224,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                               if (isSelf) const SizedBox(width: 8),
                               if (isSelf)
-                                FutureBuilder<String?>(
-                                  future: _storage.read(key: 'avatar_path'),
-                                  builder: (context, snapshot) {
-                                    return CircleAvatar(
-                                      backgroundImage: AssetImage(snapshot.data ?? "assets/avatars/premium/premium4.png"),
-                                      radius: 20,
-                                    );
-                                  },
+                                CircleAvatar(
+                                  backgroundImage: AssetImage(avatarPath),
+                                  radius: 20,
                                 ),
                             ],
                           ),
