@@ -1,45 +1,57 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
-class WorkoutSessionService extends ChangeNotifier {
+class WorkoutSessionService {
   static final WorkoutSessionService _instance = WorkoutSessionService._internal();
 
   factory WorkoutSessionService() => _instance;
 
   WorkoutSessionService._internal();
 
+  String? _workoutName;
   bool _isActive = false;
-  late Stopwatch _stopwatch;
+
+  Duration _elapsed = Duration.zero;
   Timer? _timer;
-  String activeWorkoutName = '';
+
+  final StreamController<Duration> _elapsedController = StreamController.broadcast();
+
+  Stream<Duration> get elapsedStream => _elapsedController.stream;
 
   bool get isActive => _isActive;
 
-  Duration get elapsed => _stopwatch.elapsed;
+  Duration get elapsed => _elapsed;
 
   void setWorkoutName(String name) {
-    activeWorkoutName = name;
+    _workoutName = name;
   }
+  String? get workoutName => _workoutName;
 
-  void start(void Function(Duration elapsed)? onTick) {
+  void start([void Function(Duration)? onElapsed]) {
     if (_isActive) return;
-
-    _stopwatch = Stopwatch()..start();
     _isActive = true;
-    notifyListeners();
+    _elapsed = Duration.zero;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (onTick != null) onTick(_stopwatch.elapsed);
-      notifyListeners();
+      _elapsed += const Duration(seconds: 1);
+      _elapsedController.add(_elapsed);
+      if (onElapsed != null) onElapsed(_elapsed);
     });
   }
 
-  void clearSession() {
-    _stopwatch.stop();
+  void stop() {
     _timer?.cancel();
+    _timer = null;
     _isActive = false;
-    activeWorkoutName = '';
-    notifyListeners();
+  }
+
+  void clearSession() {
+    stop();
+    _elapsed = Duration.zero;
+    _workoutName = null;
+  }
+
+  void dispose() {
+    _timer?.cancel();
+    _elapsedController.close();
   }
 }

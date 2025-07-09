@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+// import 'package:wise_workout_app/widgets/global_workout_timer_overlay.dart';
 
 import 'themes/app_theme.dart';      // Your "Normal" (default) theme
 import 'themes/christmas_theme.dart';
@@ -34,6 +35,7 @@ import 'screens/appearance_screen.dart';
 import 'screens/language_settings_screen.dart';
 import 'services/exercise_services.dart';
 import 'screens/model/exercise_model.dart';
+import 'screens/workout/exercise_list_page.dart';
 
 void main() {
   runApp(
@@ -101,6 +103,19 @@ class WiseWorkoutApp extends StatelessWidget {
             builder: (_) => WorkoutListPage(categoryKey: categoryKey),
           );
         }
+        if (settings.name == '/exercise-list-page') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final exerciseKey = args['exerciseKey'];
+          final workoutName = args['workoutName'];
+
+          return MaterialPageRoute(
+            builder: (_) => ExerciseListPage(
+              exerciseKey: exerciseKey,
+              workoutName: workoutName,
+            ),
+          );
+        }
+
         return null;
       },
     );

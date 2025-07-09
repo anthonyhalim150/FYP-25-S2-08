@@ -1,5 +1,4 @@
-
-// Place this in your screen file: exercise_list_page.dart
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
@@ -23,16 +22,35 @@ class ExerciseListPage extends StatefulWidget {
 
 class _ExerciseListPageState extends State<ExerciseListPage> {
   late Future<List<Exercise>> _exercisesFuture;
-  int _currentIndex = 2;
 
   final WorkoutSessionService _sessionService = WorkoutSessionService();
 
   String _formattedTime = "00:00:00";
+  late StreamSubscription<Duration> _elapsedSubscription;
 
   @override
   void initState() {
     super.initState();
+
     _exercisesFuture = ExerciseService().fetchExercisesByKey(widget.exerciseKey);
+
+    // Listen to the global elapsed time stream to update timer UI
+    _elapsedSubscription = _sessionService.elapsedStream.listen((elapsed) {
+      setState(() {
+        _formattedTime = _formatDuration(elapsed);
+      });
+    });
+
+    // Initialize _formattedTime if session already active
+    if (_sessionService.isActive) {
+      _formattedTime = _formatDuration(_sessionService.elapsed);
+    }
+  }
+
+  @override
+  void dispose() {
+    _elapsedSubscription.cancel();
+    super.dispose();
   }
 
   void _startWorkout() {
@@ -43,25 +61,17 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       );
       return;
     }
-
-    _sessionService.start((elapsed) {
-      setState(() {
-        _formattedTime = _formatDuration(elapsed);
-      });
-    });
-
+    _sessionService.start((_) {}); // actual UI updates come from stream listener
   }
 
   void _endWorkout() async {
     final duration = _sessionService.elapsed;
     _sessionService.clearSession();
 
-    // Trigger a UI rebuild to remove the stop button
     setState(() {
       _formattedTime = "00:00:00";
     });
 
-    // Navigate to analysis page after state update
     await Navigator.pushNamed(
       context,
       '/workout-analysis',
@@ -72,7 +82,6 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       },
     );
   }
-
 
   String _formatDuration(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
@@ -183,6 +192,8 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
               );
             },
           ),
+
+          // Show timer FloatingActionButton if workout is active
           if (_sessionService.isActive)
             Positioned(
               top: MediaQuery.of(context).padding.top + 16,
@@ -218,6 +229,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
             ),
         ],
       ),
+
       floatingActionButton: !_sessionService.isActive
           ? FloatingActionButton.extended(
         onPressed: _startWorkout,
