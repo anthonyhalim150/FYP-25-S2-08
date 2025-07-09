@@ -15,11 +15,14 @@ class AllFriendsTab extends StatelessWidget {
     if (friends.isEmpty) {
       return const Center(child: Text('No friends found.'));
     }
+
     return ListView.separated(
       padding: EdgeInsets.zero,
       itemCount: friends.length,
       itemBuilder: (context, i) {
         final f = friends[i];
+        final unread = f['unread_count'] ?? 0;
+
         return ListTile(
           leading: Container(
             width: 56,
@@ -27,7 +30,9 @@ class AllFriendsTab extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: AssetImage(f['background_url'] ?? 'assets/background/black.jpg'),
+                image: AssetImage(
+                  f['background_url'] ?? 'assets/background/black.jpg',
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -50,9 +55,26 @@ class AllFriendsTab extends StatelessWidget {
             f['handle'] ?? f['email'] ?? '',
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: Colors.grey,
             ),
           ),
+          trailing: unread > 0
+              ? Container(
+            padding: const EdgeInsets.all(6),
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              unread.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )
+              : null,
           onTap: () => onFriendTap(f),
         );
       },
