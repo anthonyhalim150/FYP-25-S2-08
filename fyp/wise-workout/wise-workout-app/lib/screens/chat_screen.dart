@@ -9,7 +9,6 @@ class ChatScreen extends StatefulWidget {
   final String friendAvatar;
   final String friendBackground;
   final bool isPremium;
-
   const ChatScreen({
     Key? key,
     required this.friendId,
@@ -27,6 +26,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final MessageService _messageService = MessageService();
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
   List<dynamic> messages = [];
   bool loading = true;
   int? myUserId;
@@ -36,17 +37,32 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _loadMessages();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) => _fetchNewMessages());
+    _pollingTimer =
+        Timer.periodic(const Duration(seconds: 3), (_) => _fetchNewMessages());
   }
 
   @override
   void dispose() {
     _pollingTimer?.cancel();
+    _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   Future<void> _loadMessages() async {
-    setState(() { loading = true; });
+    setState(() {
+      loading = true;
+    });
     try {
       final data = await _messageService.getConversation(widget.friendId);
       setState(() {
@@ -54,6 +70,8 @@ class _ChatScreenState extends State<ChatScreen> {
         myUserId = int.tryParse(data['myUserId'].toString());
         loading = false;
       });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     } catch (e) {
       setState(() {
         messages = [];
@@ -74,23 +92,28 @@ class _ChatScreenState extends State<ChatScreen> {
       // Remove optimistic (id: null) messages if a matching real one comes from backend
       for (final serverMsg in fetchedMessages) {
         messages.removeWhere(
-          (msg) =>
-            msg['id'] == null &&
-            msg['sender_id'] == serverMsg['sender_id'] &&
-            msg['content'] == serverMsg['content']
+              (msg) =>
+          msg['id'] == null &&
+              msg['sender_id'] == serverMsg['sender_id'] &&
+              msg['content'] == serverMsg['content'],
         );
       }
 
       // Only add new server messages not already in messages (by id)
-      final existingIds = messages.where((m) => m['id'] != null).map((m) => m['id']).toSet();
-      final trulyNewMessages = fetchedMessages.where((serverMsg) =>
-        serverMsg['id'] != null && !existingIds.contains(serverMsg['id'])
-      ).toList();
-
+      final existingIds =
+      messages.where((m) => m['id'] != null).map((m) => m['id']).toSet();
+      final trulyNewMessages = fetchedMessages
+          .where(
+            (serverMsg) =>
+        serverMsg['id'] != null &&
+            !existingIds.contains(serverMsg['id']),
+      )
+          .toList();
       if (trulyNewMessages.isNotEmpty) {
         setState(() {
           messages.addAll(trulyNewMessages);
         });
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
       }
     } catch (_) {}
   }
@@ -99,11 +122,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final content = _controller.text.trim();
     if (content.isEmpty || myUserId == null) return;
     try {
-      await _messageService.sendMessage(widget.friendId, content);
+      // Optimistically add the message
       final myLastMsg = messages.lastWhere(
-        (msg) => (msg['sender_id'] is int
-                  ? msg['sender_id']
-                  : int.tryParse(msg['sender_id'].toString())) == myUserId,
+            (msg) =>
+        (msg['sender_id'] is int
+            ? msg['sender_id']
+            : int.tryParse(msg['sender_id'].toString())) == myUserId,
         orElse: () => null,
       );
       final myAvatar = myLastMsg != null ? myLastMsg['sender_avatar'] ?? '' : '';
@@ -118,12 +142,14 @@ class _ChatScreenState extends State<ChatScreen> {
         'sender_avatar': myAvatar,
         'sender_background': myBackground,
       };
-
       setState(() {
         messages.add(newMessage);
       });
-
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
       _controller.clear();
+
+      await _messageService.sendMessage(widget.friendId, content);
+      // Server message will replace optimistic one in polling
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send message")),
@@ -171,7 +197,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                    icon: const Icon(Icons.arrow_back,
+                        color: Colors.white, size: 28),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -209,7 +236,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (widget.isPremium)
                     ElevatedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.add, size: 15, color: Colors.white),
+                      icon:
+                      const Icon(Icons.add, size: 15, color: Colors.white),
                       label: const Text(
                         "Challenge",
                         style: TextStyle(
@@ -221,7 +249,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.yellow,
                         backgroundColor: const Color(0xFFFFCB35),
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 8),
                         minimumSize: const Size(0, 30),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         shape: RoundedRectangleBorder(
@@ -236,84 +265,92 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(height: 8),
             Expanded(
               child: loading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                      itemCount: messages.length,
-                      reverse: false,
-                      itemBuilder: (context, idx) {
-                        final m = messages[idx];
-                        final senderId = m['sender_id'] is int
-                            ? m['sender_id']
-                            : int.tryParse(m['sender_id'].toString());
-                        final isSelf = myUserId != null && senderId == myUserId;
-                        final avatarPath = m['sender_avatar'] ?? '';
-                        final backgroundPath = m['sender_background'] ?? 'assets/background/black.jpg';
-
-                        return Align(
-                          alignment: isSelf ? Alignment.centerLeft : Alignment.centerRight,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: isSelf ? MainAxisAlignment.start : MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              if (isSelf)
-                                _profileCircle(
-                                  background: backgroundPath,
-                                  avatar: avatarPath,
-                                  size: 40,
-                                  avatarRadius: 17,
-                                ),
-                              if (isSelf) const SizedBox(width: 8),
-                              Flexible(
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                    top: 10, bottom: 2,
-                                    left: isSelf ? 0 : 48,
-                                    right: isSelf ? 48 : 0,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 16),
-                                  decoration: BoxDecoration(
-                                    color: isSelf
-                                        ? const Color(0xFFFFF2C3)
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: const Radius.circular(14),
-                                      topRight: const Radius.circular(14),
-                                      bottomLeft: Radius.circular(isSelf ? 2 : 14),
-                                      bottomRight: Radius.circular(isSelf ? 14 : 2),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 3,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    m['content'] ?? '',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              if (!isSelf) const SizedBox(width: 8),
-                              if (!isSelf)
-                                _profileCircle(
-                                  background: backgroundPath,
-                                  avatar: avatarPath,
-                                  size: 40,
-                                  avatarRadius: 17,
-                                ),
-                            ],
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 10),
+                itemCount: messages.length,
+                itemBuilder: (context, idx) {
+                  final m = messages[idx];
+                  final senderId = m['sender_id'] is int
+                      ? m['sender_id']
+                      : int.tryParse(m['sender_id'].toString());
+                  final isSelf =
+                      myUserId != null && senderId == myUserId;
+                  final avatarPath = m['sender_avatar'] ?? '';
+                  final backgroundPath = m['sender_background'] ??
+                      'assets/background/black.jpg';
+                  return Align(
+                    alignment: isSelf
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: isSelf
+                          ? MainAxisAlignment.start
+                          : MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (isSelf)
+                          _profileCircle(
+                            background: backgroundPath,
+                            avatar: avatarPath,
+                            size: 40,
+                            avatarRadius: 17,
                           ),
-                        );
-                      },
+                        if (isSelf) const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              top: 10,
+                              bottom: 2,
+                              left: isSelf ? 0 : 48,
+                              right: isSelf ? 48 : 0,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: isSelf
+                                  ? const Color(0xFFFFF2C3)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(14),
+                                topRight: const Radius.circular(14),
+                                bottomLeft: Radius.circular(isSelf ? 2 : 14),
+                                bottomRight:
+                                Radius.circular(isSelf ? 14 : 2),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              m['content'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (!isSelf) const SizedBox(width: 8),
+                        if (!isSelf)
+                          _profileCircle(
+                            background: backgroundPath,
+                            avatar: avatarPath,
+                            size: 40,
+                            avatarRadius: 17,
+                          ),
+                      ],
                     ),
+                  );
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
@@ -345,7 +382,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         shape: BoxShape.circle,
                       ),
                       padding: const EdgeInsets.all(8),
-                      child: const Icon(Icons.send, color: Colors.black, size: 22),
+                      child:
+                      const Icon(Icons.send, color: Colors.black, size: 22),
                     ),
                   )
                 ],
