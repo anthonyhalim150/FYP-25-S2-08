@@ -35,7 +35,8 @@ import 'screens/workout/workout_category_dashboard.dart';
 import 'screens/workout/workout_list_page.dart';
 import 'screens/appearance_screen.dart';
 import 'screens/language_settings_screen.dart';
-import 'services/exercise_service.dart';
+import 'services/exercise_services.dart';
+import 'screens/model/exercise_model.dart';
 
 void main() {
   runApp(
@@ -96,12 +97,6 @@ class WiseWorkoutApp extends StatelessWidget {
         '/language-settings': (context) => const LanguageSettingsScreen(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name == '/exercise-start-screen') {
-          final exercise = settings.arguments as Exercise;
-          return MaterialPageRoute(
-            builder: (_) => ExerciseStartScreen(exercise: exercise),
-          );
-        }
         if (settings.name == '/workout-list-page') {
           final args = settings.arguments as Map<String, dynamic>;
           final categoryKey = args['categoryKey'];

@@ -1,208 +1,157 @@
 import 'package:flutter/material.dart';
-import 'package:wise_workout_app/services/exercise_service.dart';
-import '../../widgets/workout_session_timer_overlay.dart';
+import '../model/exercise_model.dart';
 
 class ExerciseDetailScreen extends StatelessWidget {
   final Exercise exercise;
 
   const ExerciseDetailScreen({super.key, required this.exercise});
 
-  String _getExerciseGifPath(String exerciseTitle) {
-    final formattedName = exerciseTitle.toLowerCase().replaceAll(' ', '_');
-    return 'assets/exerciseGif/$formattedName.gif';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final gifPath = _getExerciseGifPath(exercise.title);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4ED),
+      backgroundColor: Colors.grey[200],
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 250.0,
             pinned: true,
-            flexibleSpace: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      gifPath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: const Color(0xFF688EA3),
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.error, color: Colors.white, size: 50),
-                                SizedBox(height: 10),
-                                Text(
-                                  'GIF not found',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+            expandedHeight: 280,
+            backgroundColor: Colors.grey[800],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    _getExerciseImagePath(exercise.exerciseName),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.fitness_center, size: 100,
+                              color: Colors.grey),
+                        ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 16,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Play tutorial action
                       },
-                    ),
-                    Positioned(
-                      left: 200,
-                      bottom: 16,
-                      child: ElevatedButton.icon(
-                        onPressed: null,
-                        icon: const Icon(Icons.play_arrow, color: Colors.white),
-                        label: const Text(
-                          'Play Tutorial Video',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.withOpacity(0.8),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
+                      icon: const Icon(Icons.play_arrow),
+                      label: const Text('Play Tutorial Video'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber[700],
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
                       ),
                     ),
-                  ],
-                );
-              },
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
             ),
           ),
-
-
-          // Content
-          SliverPadding(
-            padding: const EdgeInsets.all(16.0),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Exercise Title
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    exercise.title,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orangeAccent,
-                    ),
-                  ),
-                ),
-
-                // Divider
-                const Divider(
-                  color: Colors.black,
-                  thickness: 2,
-                  height: 10,
-                ),
-
-                // Overview Section
-                _buildSection("Overview", exercise.description),
-
-                const SizedBox(height: 24),
-
-                // Trainer Level
-                _buildSection("Trainer Level", exercise.level),
-
-                const SizedBox(height: 24),
-
-                // Equipment
-                _buildSection("Equipment", exercise.equipment),
-
-                const SizedBox(height: 24),
-
-                // Instructions
-                _buildSection("Instructions", exercise.instructions),
-
-                const SizedBox(height: 40),
-              ]),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: _buildDetailContent(context),
             ),
           ),
         ],
       ),
-
-      // Start Exercise Button
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: ElevatedButton.icon(
           onPressed: () {
-            Navigator.pushNamed(
-              context,
-              '/exercise-start-screen',
-              arguments: exercise,
-            );
-            final startTime = DateTime.now();
-            final overlay = Overlay.of(context);
-            late OverlayEntry timerEntry;
-
-            timerEntry = OverlayEntry(
-              builder: (context) => WorkoutSessionTimerOverlay(
-                startTime: startTime,
-                onEndSession: (duration) {
-                  timerEntry.remove(); // Remove popup
-                  Navigator.of(context).pushNamed('/workout-analysis', arguments: {
-                    'duration': duration,
-                    'startTime': startTime,
-                  });
-                },
-              ),
-            );
-
-            overlay.insert(timerEntry);
-
+            Text("HI");
           },
+          icon: const Icon(Icons.photo_camera),
+          label: const Text("Start Exercise!"),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: Colors.amber,
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text(
-            'Start Exercise',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+                borderRadius: BorderRadius.circular(30)),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSection(String title, String content) {
+  Widget _buildDetailContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.orangeAccent,
-          ),
+          exercise.exerciseName,
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
+
+        _buildSectionTitle('Overview'),
+        Text(exercise.exerciseDescription),
+
+        const SizedBox(height: 16),
+        _buildSectionTitle('What to expect'),
         Text(
-          content,
-          style: const TextStyle(
-            fontSize: 18,
-            height: 1.5,
-            color: Colors.black,
-          ),
+          '- Full-body warm-up\n'
+              '- Strength moves (e.g., push-ups, squats, planks)\n'
+              '- Balance, endurance & posture\n'
+              '- Cooldown with mobility work',
         ),
+
+        const SizedBox(height: 16),
+        if (exercise.exerciseLevel != null &&
+            exercise.exerciseLevel!.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Trainer Level'),
+              Text(exercise.exerciseLevel!),
+              const SizedBox(height: 16),
+            ],
+          ),
+
+        if (exercise.exerciseEquipment != null &&
+            exercise.exerciseEquipment!.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Equipment'),
+              Text(exercise.exerciseEquipment!),
+              const SizedBox(height: 16),
+            ],
+          ),
+
+        _buildSectionTitle('Instructions'),
+        ..._buildInstructionList(exercise.exerciseInstructions),
+
+        const SizedBox(height: 32),
       ],
     );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        decoration: TextDecoration.underline,
+      ),
+    );
+  }
+
+  List<Widget> _buildInstructionList(String instructions) {
+    final parts = instructions.split(RegExp(r'\n|\r'));
+    return List.generate(parts.length, (i) {
+      return Text('${i + 1}. ${parts[i]}');
+    });
+  }
+
+  String _getExerciseImagePath(String exerciseTitle) {
+    final formatted = exerciseTitle.toLowerCase().replaceAll(' ', '_');
+    return 'assets/exerciseGif/${formatted}.gif';
   }
 }

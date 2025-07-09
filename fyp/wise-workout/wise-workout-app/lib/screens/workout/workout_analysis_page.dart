@@ -1,4 +1,3 @@
-// lib/screens/workout_analysis_page.dart
 import 'package:flutter/material.dart';
 
 class WorkoutAnalysisPage extends StatelessWidget {
@@ -7,34 +6,31 @@ class WorkoutAnalysisPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
-    final Duration duration = args['duration'];
-    final int caloriesBurned = _calculateCalories(duration);
+    final duration = args['duration'] as Duration;
+    final calories = args['calories'] as double;
+    final workoutName = args['workoutName'] as String;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Workout Summary")),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Total Time: ${duration.inMinutes} min ${duration.inSeconds % 60} sec",
-                style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 20),
-            Text("Calories Burned: $caloriesBurned kcal", style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () => Navigator.popUntil(context, ModalRoute.withName('/workout-dashboard')),
-              child: const Text("Back to Dashboard"),
+            Text("Workout: $workoutName", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            Text("Duration: ${duration.inMinutes} minutes", style: const TextStyle(fontSize: 16)),
+            Text("Calories burned: ${calories.toStringAsFixed(1)} cal", style: const TextStyle(fontSize: 16)),
+            const Spacer(),
+            Center(
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Finish"),
+              ),
             )
           ],
         ),
       ),
     );
-  }
-
-  int _calculateCalories(Duration duration) {
-    const double met = 5.0; // Sample MET value
-    const double weightKg = 70.0;
-    final minutes = duration.inSeconds / 60.0;
-    return (met * 3.5 * weightKg / 200 * minutes).round();
   }
 }

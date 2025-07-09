@@ -23,7 +23,7 @@ dependencies:
   percent_indicator: ^4.2.3
   circular_countdown_timer: ^0.2.0
   web_socket_channel: ^2.4.0
-  camera: ^0.10.5+9 
+  camera: ^0.10.5+9
   image: ^4.1.3
   video_player: ^2.8.0
   chewie: ^1.11.3
@@ -55,7 +55,7 @@ flutter:
     - assets/workoutImages/strength_training.jpg
     - assets/workoutImages/yoga_training.jpg
     - assets/workoutImages/core_training.jpg
-    - assets/exerciseImages/push_ups_gif.jpg
+    - assets/exerciseImages/push_up_gif.jpg
     - assets/exerciseImages/sit_up_gif.jpg
     - assets/exerciseImages/squat_gif.jpg
     - assets/avatars/free/free1.png
@@ -90,7 +90,7 @@ flutter:
     - assets/badges/badge_11.png
     - assets/badges/badge_12.png
     - assets/icons/lock.jpg
-    - assets/exerciseGif/push_ups.gif
+    - assets/exerciseGif/push_up.gif
     - assets/exerciseGif/squat.gif
     - assets/workoutImages/dumbbell_strength.jpg
     - assets/workoutImages/evening_wind_down_yoga.jpg

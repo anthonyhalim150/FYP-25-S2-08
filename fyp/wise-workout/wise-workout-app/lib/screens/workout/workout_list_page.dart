@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../model/workout_model.dart';
 import '../../services/workout_service_try.dart';
 import '../../widgets/workout_tile.dart';
+import 'exercise_list_page.dart';
 
 class WorkoutListPage extends StatefulWidget {
   final String categoryKey;
@@ -25,8 +26,6 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      resizeToAvoidBottomInset: true,
       body: FutureBuilder<List<Workout>>(
         future: workoutList,
         builder: (context, snapshot) {
@@ -48,22 +47,13 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
               .contains(_searchController.text.toLowerCase()))
               .toList();
 
-          return CustomScrollView(
-            slivers: [
+          return NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
-                pinned: true,
-                expandedHeight: 280,
-                backgroundColor: Colors.white10,
+                automaticallyImplyLeading: false,
+                expandedHeight: 250,
+                pinned: false,
                 flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.only(left: 25, bottom: 16),
-                  title: Text(
-                    widget.categoryKey.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.orange, // 👈 Set your desired color here
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40,
-                    ),
-                  ),
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -71,12 +61,29 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                         'assets/workoutCategory/${widget.categoryKey}.jpg',
                         fit: BoxFit.cover,
                       ),
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.transparent, Colors.black54],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 10,
+                        left: 16,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white70,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back, color: Colors.black),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 20,
+                        left: 20,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            widget.categoryKey.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orangeAccent,
+                            ),
                           ),
                         ),
                       ),
@@ -84,70 +91,70 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                   ),
                 ),
               ),
+            ],
+            body: Stack(
+              children: [
+                Container(color: Colors.white),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          hintText: 'Search on FitQuest',
+                          prefixIcon: const Icon(Icons.search),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
 
-              // Curved container that wraps all content
-              SliverToBoxAdapter(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Search bar
-                        TextField(
-                          controller: _searchController,
-                          onChanged: (_) => setState(() {}),
-                          decoration: InputDecoration(
-                            hintText: 'Search on FitQuest',
-                            prefixIcon: const Icon(Icons.search),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                      Text(
+                        '${workouts.length} Workouts Found',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: workouts.length,
+                        itemBuilder: (context, index) {
+                          final workout = workouts[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: WorkoutTile(
+                              workout: workout,
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/exercise-list-page',
+                                  arguments: {
+                                    'exerciseKey': workout.exerciseKey,
+                                    'workoutName': workout.workoutName,
+                                  },
+                                );
+
+                              },
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Workout count
-                        Text(
-                          '${workouts.length} Workouts Found',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Workouts list inside the same container
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: workouts.length,
-                          itemBuilder: (context, index) {
-                            final workout = workouts[index];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: WorkoutTile(
-                                workout: workout,
-                                onTap: () {
-                                  print('Tapped on ${workout.workoutName}');
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
