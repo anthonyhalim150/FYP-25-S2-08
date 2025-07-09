@@ -35,11 +35,67 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Friend request sent to $name")),
       );
+      if (search.trim().isNotEmpty) {
+        _searchUsers(search.trim());
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send request")),
       );
     }
+  }
+
+  Widget _buildTrailing(dynamic u) {
+    final status = u['relationship_status'];
+    if (status == 'friends') {
+      return ElevatedButton(
+        onPressed: null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          minimumSize: const Size(60, 36),
+        ),
+        child: const Text('Friend', style: TextStyle(fontWeight: FontWeight.bold)),
+      );
+    } else if (status == 'sent') {
+      return ElevatedButton(
+        onPressed: null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[400],
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          minimumSize: const Size(60, 36),
+        ),
+        child: const Text('Sent', style: TextStyle(fontWeight: FontWeight.bold)),
+      );
+    } else if (status == 'pending') {
+      return ElevatedButton(
+        onPressed: null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[400],
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          minimumSize: const Size(60, 36),
+        ),
+        child: const Text('Pending', style: TextStyle(fontWeight: FontWeight.bold)),
+      );
+    }
+    return ElevatedButton(
+      onPressed: () => _sendFriendRequest(
+          u['id'].toString(), u['name'] ?? u['username'] ?? ''),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        minimumSize: const Size(60, 36),
+      ),
+      child: const Text('Add', style: TextStyle(fontWeight: FontWeight.bold)),
+    );
   }
 
   @override
@@ -124,25 +180,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                               u['handle'] ?? u['email'] ?? '',
                               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                             ),
-                            trailing: ElevatedButton(
-                              onPressed: () => _sendFriendRequest(
-                                  u['id'].toString(), u['name'] ?? u['username'] ?? ''),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                foregroundColor: Colors.white,
-                                minimumSize: const Size(60, 36),
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: const Text(
-                                'Add',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
+                            trailing: _buildTrailing(u),
                           );
                         },
                       ),

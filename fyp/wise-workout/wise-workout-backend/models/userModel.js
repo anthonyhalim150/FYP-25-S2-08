@@ -106,15 +106,25 @@ class UserModel {
       [hashedPassword, email]
     );
   }
-  static async searchUsers(query, excludeIds) {
+  static async searchUsersWithStatus(query, userId) {
     let sql = `
-      SELECT id, username, email, firstName, lastName, avatar_id
-      FROM users
-      WHERE (username LIKE ? OR email LIKE ?)
-        AND id NOT IN (${excludeIds.map(() => '?').join(',')})
+      SELECT u.id, u.username, u.email, u.firstName, u.lastName, u.avatar_id,
+        CASE
+          WHEN f1.status = 'accepted' OR f2.status = 'accepted' THEN 'friends'
+          WHEN f1.status = 'pending' THEN 'sent'        -- You sent them a request
+          WHEN f2.status = 'pending' THEN 'pending'     -- They sent you a request
+          ELSE 'none'
+        END as relationship_status
+      FROM users u
+      LEFT JOIN friends f1
+        ON f1.user_id = ? AND f1.friend_id = u.id
+      LEFT JOIN friends f2
+        ON f2.user_id = u.id AND f2.friend_id = ?
+      WHERE (u.username LIKE ? OR u.email LIKE ?)
+        AND u.id != ?
       LIMIT 20
     `;
-    const values = [`%${query}%`, `%${query}%`, ...excludeIds];
+    const values = [userId, userId, `%${query}%`, `%${query}%`, userId];
     const [rows] = await db.execute(sql, values);
     return rows;
   }

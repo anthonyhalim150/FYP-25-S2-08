@@ -21,16 +21,9 @@ class FriendService {
     return await FriendModel.getSentRequests(userId);
   }
   static async searchUsers(userId, query) {
-    const friends = await FriendModel.getFriends(userId);
-    const pending = await FriendModel.getPendingRequests(userId);
-    const sent = await FriendModel.getSentRequests(userId);
-    const excludeIds = [userId];
-    friends.forEach(f => excludeIds.push(f.id));
-    pending.forEach(f => excludeIds.push(f.id));
-    sent.forEach(f => excludeIds.push(f.id));
-    const uniqueIds = [...new Set(excludeIds)];
-    return await UserModel.searchUsers(query, uniqueIds);
+    return await UserModel.searchUsersWithStatus(query, userId);
   }
+
 
 }
 
