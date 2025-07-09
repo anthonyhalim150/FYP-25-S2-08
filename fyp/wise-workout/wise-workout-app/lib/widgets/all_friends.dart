@@ -53,27 +53,27 @@ class AllFriendsTab extends StatelessWidget {
           ),
           subtitle: Text(
             f['handle'] ?? f['email'] ?? '',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 13,
               color: Colors.grey,
             ),
           ),
           trailing: unread > 0
               ? Container(
-            padding: const EdgeInsets.all(6),
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              unread.toString(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    unread.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
               : null,
           onTap: () => onFriendTap(f),
         );

@@ -25,6 +25,25 @@ class MessageModel {
     );
     return rows;
   }
+
+  static async markAsRead(senderId, receiverId) {
+    await db.execute(
+      'UPDATE messages SET is_read = 1 WHERE sender_id = ? AND receiver_id = ? AND is_read = 0',
+      [senderId, receiverId]
+    );
+  }
+
+  static async getUnreadCounts(userId) {
+    const [rows] = await db.execute(
+      `SELECT sender_id, COUNT(*) as unread
+      FROM messages
+      WHERE receiver_id = ? AND is_read = 0
+      GROUP BY sender_id`,
+      [userId]
+    );
+    return rows;
+  }
+
 }
 
 module.exports = MessageModel;

@@ -6,6 +6,7 @@ import '../widgets/all_friends.dart';
 import '../widgets/requests_friends.dart';
 import '../widgets/pending_friends.dart';
 import '../services/friend_service.dart';
+import '../services/message_service.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
@@ -17,9 +18,9 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   int selectedTab = 0;
   String search = '';
-  List<dynamic> friends = [];
-  List<dynamic> requests = [];
-  List<dynamic> pending = [];
+  List<Map<String, dynamic>> friends = [];
+  List<Map<String, dynamic>> requests = [];
+  List<Map<String, dynamic>> pending = [];
   bool loading = true;
   final FriendService _friendService = FriendService();
 
@@ -35,13 +36,28 @@ class _MessageScreenState extends State<MessageScreen> {
       final friendsList = await _friendService.getFriends();
       final pendingList = await _friendService.getPendingRequests();
       final sentList = await _friendService.getSentRequests();
+      final unreadCountsList = await MessageService().getUnreadCounts();
+
+
+      final Map<int, int> unreadMap = {
+        for (var item in unreadCountsList)
+          item['sender_id'] as int: item['unread'] as int
+      };
+      final mergedFriends = friendsList.map<Map<String, dynamic>>((f) {
+        final int friendId = f['id'];
+        return {
+          ...f,
+          'unread_count': unreadMap[friendId] ?? 0,
+        };
+      }).toList();
+
       setState(() {
-        friends = friendsList;
-        requests = pendingList;
-        pending = sentList;
+        friends = List<Map<String, dynamic>>.from(mergedFriends);
+        requests = List<Map<String, dynamic>>.from(pendingList);
+        pending = List<Map<String, dynamic>>.from(sentList);
         loading = false;
       });
-    } catch (e) {
+    } catch (e, stack) {
       setState(() {
         friends = [];
         requests = [];
@@ -93,12 +109,14 @@ class _MessageScreenState extends State<MessageScreen> {
             (f['handle'] ?? f['email'] ?? '').toLowerCase().contains(search.toLowerCase()))
         .toList()
         .cast<Map<String, dynamic>>();
+
     final filteredRequests = requests
         .where((f) =>
             (f['name'] ?? f['username'] ?? '').toLowerCase().contains(search.toLowerCase()) ||
             (f['handle'] ?? f['email'] ?? '').toLowerCase().contains(search.toLowerCase()))
         .toList()
         .cast<Map<String, dynamic>>();
+
     final filteredPending = pending
         .where((f) =>
             (f['name'] ?? f['username'] ?? '').toLowerCase().contains(search.toLowerCase()) ||
@@ -198,8 +216,9 @@ class _MessageScreenState extends State<MessageScreen> {
                         if (selectedTab == 0) {
                           return AllFriendsTab(
                             friends: filteredFriends,
-                            onFriendTap: (friend) {
-                              Navigator.push(
+                            onFriendTap: (friend) async {
+                              await MessageService().markAsRead(friend['id']);
+                              await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => ChatScreen(
@@ -212,6 +231,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                   ),
                                 ),
                               );
+                              _loadFriendsData(); 
                             },
                           );
                         } else if (selectedTab == 1) {

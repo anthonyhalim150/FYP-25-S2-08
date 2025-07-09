@@ -22,3 +22,17 @@ exports.getConversation = async (req, res) => {
     messages: conversation
   });
 };
+exports.markAsRead = async (req, res) => {
+  const userId = req.user.id;
+  const { friendId } = req.body;
+  if (!friendId) return res.status(400).json({ message: 'Missing friendId' });
+  await MessageService.markAsRead(friendId, userId); 
+  res.json({ message: 'Messages marked as read' });
+};
+
+exports.getUnreadCounts = async (req, res) => {
+  const userId = req.user.id;
+  const counts = await MessageService.getUnreadCounts(userId);
+  res.json(counts);
+};
+

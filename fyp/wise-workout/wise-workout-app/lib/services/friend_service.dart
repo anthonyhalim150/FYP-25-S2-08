@@ -70,7 +70,7 @@ class FriendService {
     }
   }
 
-  Future<List<dynamic>> getFriends() async {
+  Future<List<Map<String, dynamic>>> getFriends() async {
     final jwt = await _getJwtCookie();
     final response = await http.get(
       Uri.parse('$baseUrl/friends/list'),
@@ -82,10 +82,11 @@ class FriendService {
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
-    return jsonDecode(response.body);
+    final data = jsonDecode(response.body);
+    return List<Map<String, dynamic>>.from(data);
   }
 
-  Future<List<dynamic>> getPendingRequests() async {
+  Future<List<Map<String, dynamic>>> getPendingRequests() async {
     final jwt = await _getJwtCookie();
     final response = await http.get(
       Uri.parse('$baseUrl/friends/pending'),
@@ -97,10 +98,11 @@ class FriendService {
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
-    return jsonDecode(response.body);
+    final data = jsonDecode(response.body);
+    return List<Map<String, dynamic>>.from(data);
   }
 
-  Future<List<dynamic>> getSentRequests() async {
+  Future<List<Map<String, dynamic>>> getSentRequests() async {
     final jwt = await _getJwtCookie();
     final response = await http.get(
       Uri.parse('$baseUrl/friends/sent'),
@@ -112,7 +114,8 @@ class FriendService {
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
-    return jsonDecode(response.body);
+    final data = jsonDecode(response.body);
+    return List<Map<String, dynamic>>.from(data);
   }
   
 }

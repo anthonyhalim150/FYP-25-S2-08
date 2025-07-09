@@ -42,4 +42,36 @@ class MessageService {
     }
     return jsonDecode(response.body); 
   }
+  Future<List<Map<String, dynamic>>> getUnreadCounts() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/messages/unread-counts'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+    final data = jsonDecode(response.body);
+    return List<Map<String, dynamic>>.from(data);
+  }
+
+
+  Future<void> markAsRead(int friendId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.post(
+      Uri.parse('$baseUrl/messages/mark-as-read'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode({'friendId': friendId}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
 }
