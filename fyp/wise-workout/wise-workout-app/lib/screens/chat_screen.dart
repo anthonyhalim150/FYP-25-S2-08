@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/message_service.dart';
 
@@ -29,11 +30,19 @@ class _ChatScreenState extends State<ChatScreen> {
   List<dynamic> messages = [];
   bool loading = true;
   int? myUserId;
+  Timer? _pollingTimer;
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) => _fetchNewMessages());
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadMessages() async {
@@ -56,13 +65,65 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _fetchNewMessages() async {
+    try {
+      final data = await _messageService.getConversation(widget.friendId);
+      final fetchedMessages = data['messages'] ?? [];
+      if (fetchedMessages.isEmpty) return;
+
+      // Remove optimistic (id: null) messages if a matching real one comes from backend
+      for (final serverMsg in fetchedMessages) {
+        messages.removeWhere(
+          (msg) =>
+            msg['id'] == null &&
+            msg['sender_id'] == serverMsg['sender_id'] &&
+            msg['content'] == serverMsg['content']
+        );
+      }
+
+      // Only add new server messages not already in messages (by id)
+      final existingIds = messages.where((m) => m['id'] != null).map((m) => m['id']).toSet();
+      final trulyNewMessages = fetchedMessages.where((serverMsg) =>
+        serverMsg['id'] != null && !existingIds.contains(serverMsg['id'])
+      ).toList();
+
+      if (trulyNewMessages.isNotEmpty) {
+        setState(() {
+          messages.addAll(trulyNewMessages);
+        });
+      }
+    } catch (_) {}
+  }
+
   Future<void> _sendMessage() async {
     final content = _controller.text.trim();
-    if (content.isEmpty) return;
+    if (content.isEmpty || myUserId == null) return;
     try {
       await _messageService.sendMessage(widget.friendId, content);
+      final myLastMsg = messages.lastWhere(
+        (msg) => (msg['sender_id'] is int
+                  ? msg['sender_id']
+                  : int.tryParse(msg['sender_id'].toString())) == myUserId,
+        orElse: () => null,
+      );
+      final myAvatar = myLastMsg != null ? myLastMsg['sender_avatar'] ?? '' : '';
+      final myBackground = myLastMsg != null
+          ? myLastMsg['sender_background'] ?? 'assets/background/black.jpg'
+          : 'assets/background/black.jpg';
+
+      final newMessage = {
+        'id': null, // Placeholder; server will assign actual id
+        'sender_id': myUserId,
+        'content': content,
+        'sender_avatar': myAvatar,
+        'sender_background': myBackground,
+      };
+
+      setState(() {
+        messages.add(newMessage);
+      });
+
       _controller.clear();
-      _loadMessages();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send message")),
@@ -70,7 +131,12 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Widget _profileCircle({required String background, required String avatar, double size = 64, double avatarRadius = 28}) {
+  Widget _profileCircle({
+    required String background,
+    required String avatar,
+    double size = 64,
+    double avatarRadius = 28,
+  }) {
     return Container(
       width: size,
       height: size,
