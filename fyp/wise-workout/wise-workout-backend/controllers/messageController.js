@@ -17,5 +17,8 @@ exports.getConversation = async (req, res) => {
   const userId2 = req.params.userId;
 
   const conversation = await MessageService.getConversation(userId1, userId2);
-  res.json(conversation);
+  res.json({
+    myUserId: userId1,
+    messages: conversation
+  });
 };

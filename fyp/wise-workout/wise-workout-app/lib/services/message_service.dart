@@ -28,7 +28,7 @@ class MessageService {
     }
   }
 
-  Future<List<dynamic>> getConversation(int otherUserId) async {
+  Future<Map<String, dynamic>> getConversation(int otherUserId) async {
     final jwt = await _getJwtCookie();
     final response = await http.get(
       Uri.parse('$baseUrl/messages/conversation/$otherUserId'),
@@ -40,6 +40,6 @@ class MessageService {
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
-    return jsonDecode(response.body);
+    return jsonDecode(response.body); 
   }
 }

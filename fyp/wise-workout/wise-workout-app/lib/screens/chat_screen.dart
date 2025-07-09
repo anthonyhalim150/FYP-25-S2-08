@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/message_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ChatScreen extends StatefulWidget {
   final int friendId;
@@ -27,29 +26,14 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final MessageService _messageService = MessageService();
   final TextEditingController _controller = TextEditingController();
-  final _storage = const FlutterSecureStorage();
   List<dynamic> messages = [];
   bool loading = true;
   int? myUserId;
-  String? myAvatarPath;
-  String? myBackgroundPath;
 
   @override
   void initState() {
     super.initState();
-    _initProfile();
     _loadMessages();
-  }
-
-  Future<void> _initProfile() async {
-    final id = await _storage.read(key: 'user_id');
-    final avatar = await _storage.read(key: 'avatar_path');
-    final background = await _storage.read(key: 'background_path');
-    setState(() {
-      myUserId = id != null ? int.tryParse(id) : null;
-      myAvatarPath = avatar;
-      myBackgroundPath = background;
-    });
   }
 
   Future<void> _loadMessages() async {
@@ -57,7 +41,8 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final data = await _messageService.getConversation(widget.friendId);
       setState(() {
-        messages = data;
+        messages = data['messages'] ?? [];
+        myUserId = int.tryParse(data['myUserId'].toString());
         loading = false;
       });
     } catch (e) {
@@ -192,34 +177,34 @@ class _ChatScreenState extends State<ChatScreen> {
                       reverse: false,
                       itemBuilder: (context, idx) {
                         final m = messages[idx];
-                        final isSelf = myUserId != null && m['sender_id'] == myUserId;
-                        final avatarPath = isSelf
-                            ? (myAvatarPath ?? "assets/avatars/premium/premium4.png")
-                            : widget.friendAvatar;
-                        final backgroundPath = isSelf
-                            ? (myBackgroundPath ?? "assets/background/bg1.jpg")
-                            : widget.friendBackground;
+                        final senderId = m['sender_id'] is int
+                            ? m['sender_id']
+                            : int.tryParse(m['sender_id'].toString());
+                        final isSelf = myUserId != null && senderId == myUserId;
+                        final avatarPath = m['sender_avatar'] ?? '';
+                        final backgroundPath = m['sender_background'] ?? 'assets/background/black.jpg';
+
                         return Align(
-                          alignment: isSelf ? Alignment.centerRight : Alignment.centerLeft,
+                          alignment: isSelf ? Alignment.centerLeft : Alignment.centerRight,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: isSelf ? MainAxisAlignment.end : MainAxisAlignment.start,
+                            mainAxisAlignment: isSelf ? MainAxisAlignment.start : MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              if (!isSelf)
+                              if (isSelf)
                                 _profileCircle(
                                   background: backgroundPath,
                                   avatar: avatarPath,
                                   size: 40,
                                   avatarRadius: 17,
                                 ),
-                              if (!isSelf) const SizedBox(width: 8),
+                              if (isSelf) const SizedBox(width: 8),
                               Flexible(
                                 child: Container(
                                   margin: EdgeInsets.only(
                                     top: 10, bottom: 2,
-                                    left: isSelf ? 48 : 0,
-                                    right: isSelf ? 0 : 48,
+                                    left: isSelf ? 0 : 48,
+                                    right: isSelf ? 48 : 0,
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 16),
@@ -230,8 +215,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     borderRadius: BorderRadius.only(
                                       topLeft: const Radius.circular(14),
                                       topRight: const Radius.circular(14),
-                                      bottomLeft: Radius.circular(isSelf ? 14 : 2),
-                                      bottomRight: Radius.circular(isSelf ? 2 : 14),
+                                      bottomLeft: Radius.circular(isSelf ? 2 : 14),
+                                      bottomRight: Radius.circular(isSelf ? 14 : 2),
                                     ),
                                     boxShadow: [
                                       BoxShadow(
@@ -250,8 +235,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ),
                                 ),
                               ),
-                              if (isSelf) const SizedBox(width: 8),
-                              if (isSelf)
+                              if (!isSelf) const SizedBox(width: 8),
+                              if (!isSelf)
                                 _profileCircle(
                                   background: backgroundPath,
                                   avatar: avatarPath,
