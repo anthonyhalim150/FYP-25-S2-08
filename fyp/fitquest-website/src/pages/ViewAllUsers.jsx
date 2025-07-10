@@ -1,22 +1,132 @@
 import React, { useState } from 'react';
 import '../styles/Styles.css';
 import './ViewAllUsers.css';
-import SideBar from '../components/SideBar.jsx';
 import PageLayout from '../components/PageLayout.jsx';
-import NavigationBar from '../components/NavigationBar.jsx';
+import ViewAUser from '../components/ViewAUser.jsx';
 
 const ViewAllUsers = () => {
   const [selectedTab, setSelectedTab] = useState('All');
+  const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const dummyUsers = [
-    { id: 1, username: 'jacob123', email: 'jacob123@gmail.com', role: 'Free', level: 'Lvl. 12', isSuspended: false },
-    { id: 2, username: 'matildaHealth', email: 'matildaH@gmail.com', role: 'Premium', level: 'Lvl. 23', isSuspended: false },
-    { id: 3, username: 'pitbull101', email: 'pitbull101@gmail.com', role: 'Premium', level: 'Lvl. 41', isSuspended: true },    
-    { id: 4, username: 'jacob123', email: 'jacob123@gmail.com', role: 'Free', level: 'Lvl. 12', isSuspended: false },
-    { id: 5, username: 'matildaHealth', email: 'matildaH@gmail.com', role: 'Premium', level: 'Lvl. 23', isSuspended: false },
-    { id: 6, username: 'pitbull101', email: 'pitbull101@gmail.com', role: 'Premium', level: 'Lvl. 41', isSuspended: true },
-  ];
+
+const dummyUsers = [
+  {
+    id: 1,
+    username: 'jacob123',
+    email: 'jacob123@gmail.com',
+    role: 'Free',
+    level: 'Lvl. 12',
+    isSuspended: false,
+    first_name: 'Jacob',
+    last_name: 'Smith',
+    dob: '1998-04-22',
+    account: 'Basic Plan',
+    preferences: {
+      workout_frequency: '3 times/week',
+      fitness_goal: 'Weight Loss',
+      workout_time: 'Morning',
+      fitness_level: 'Beginner',
+      injury: 'None'
+    }
+  },
+  {
+    id: 2,
+    username: 'matildaHealth',
+    email: 'matildaH@gmail.com',
+    role: 'Premium',
+    level: 'Lvl. 23',
+    isSuspended: false,
+    first_name: 'Matilda',
+    last_name: 'Grey',
+    dob: '1995-11-10',
+    account: 'Premium Plus',
+    preferences: {
+      workout_frequency: '5 times/week',
+      fitness_goal: 'Build Muscle',
+      workout_time: 'Evening',
+      fitness_level: 'Intermediate',
+      injury: 'Knee'
+    }
+  },
+  {
+    id: 3,
+    username: 'pitbull101',
+    email: 'pitbull101@gmail.com',
+    role: 'Premium',
+    level: 'Lvl. 41',
+    isSuspended: true,
+    first_name: 'Mike',
+    last_name: 'Johnson',
+    dob: '1989-02-05',
+    account: 'Premium Plan',
+    preferences: {
+      workout_frequency: 'Daily',
+      fitness_goal: 'Athletic Performance',
+      workout_time: 'Afternoon',
+      fitness_level: 'Advanced',
+      injury: 'Shoulder'
+    }
+  },
+  {
+    id: 4,
+    username: 'lucySky',
+    email: 'lucySky@gmail.com',
+    role: 'Free',
+    level: 'Lvl. 8',
+    isSuspended: false,
+    first_name: 'Lucy',
+    last_name: 'Williams',
+    dob: '2001-07-30',
+    account: 'Basic Plan',
+    preferences: {
+      workout_frequency: '2 times/week',
+      fitness_goal: 'Stay Active',
+      workout_time: 'Morning',
+      fitness_level: 'Beginner',
+      injury: 'None'
+    }
+  },
+  {
+    id: 5,
+    username: 'davidFit',
+    email: 'davidFit@gmail.com',
+    role: 'Premium',
+    level: 'Lvl. 19',
+    isSuspended: false,
+    first_name: 'David',
+    last_name: 'Lee',
+    dob: '1993-12-12',
+    account: 'Premium Plan',
+    preferences: {
+      workout_frequency: '4 times/week',
+      fitness_goal: 'Tone Body',
+      workout_time: 'Evening',
+      fitness_level: 'Intermediate',
+      injury: 'Ankle'
+    }
+  },
+  {
+    id: 6,
+    username: 'annaBoost',
+    email: 'annaBoost@gmail.com',
+    role: 'Premium',
+    level: 'Lvl. 37',
+    isSuspended: true,
+    first_name: 'Anna',
+    last_name: 'Brooks',
+    dob: '1990-05-18',
+    account: 'Premium Plus',
+    preferences: {
+      workout_frequency: 'Daily',
+      fitness_goal: 'Endurance',
+      workout_time: 'Night',
+      fitness_level: 'Advanced',
+      injury: 'None'
+    }
+  }
+];
+
 
   const filteredUsers = dummyUsers.filter((user) => {
     if (selectedTab === 'Suspended' && !user.isSuspended) return false;
@@ -25,9 +135,7 @@ const ViewAllUsers = () => {
   });
 
   return (
-    
     <PageLayout>
-
     <div className="admin-container">
       <div className="user-content">
         <div className="user-header">
@@ -73,7 +181,7 @@ const ViewAllUsers = () => {
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
-              <tr key={user.id}>
+              <tr key={user.id} onClick={() => setSelectedUser(user)} style ={{cursor: 'pointer'}}>
                 <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
@@ -90,6 +198,11 @@ const ViewAllUsers = () => {
             ))}
           </tbody>
         </table>
+
+        {selectedUser && (
+          <ViewAUser user={selectedUser} onClose={() => setSelectedUser(null)} />
+        )}
+
       </div>
     </div>
 
