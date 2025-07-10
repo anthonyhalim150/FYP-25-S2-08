@@ -19,7 +19,15 @@ exports.login = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Login error:', err);
     res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const stats = await UserService.getDashboardStats();
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch stats' });
   }
 };

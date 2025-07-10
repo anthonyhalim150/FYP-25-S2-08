@@ -6,7 +6,7 @@ class UserModel {
   static async create(email, username, password = null, method = 'database') {
     let hashedPassword = null;
     if (method === 'database' && password) {
-      hashedPassword = await bcrypt.hash(PEPPER+password, 12);
+      hashedPassword = await bcrypt.hash(PEPPER + password, 12);
     }
     const [result] = await db.execute(
       'INSERT INTO users (email, username, password, method) VALUES (?, ?, ?, ?)',
@@ -30,8 +30,23 @@ class UserModel {
     );
     const user = rows[0];
     if (!user || !user.password) return null;
-    const isMatch = await bcrypt.compare(PEPPER+password, user.password);
+    const isMatch = await bcrypt.compare(PEPPER + password, user.password);
     return isMatch ? user : null;
+  }
+
+  static async getTotalUserCount() {
+    const [rows] = await db.execute('SELECT COUNT(*) AS total FROM users');
+    return rows[0]?.total || 0;
+  }
+
+  static async getActiveUserCount() {
+    const [rows] = await db.execute('SELECT COUNT(*) AS active FROM users WHERE role != "suspended"');
+    return rows[0]?.active || 0;
+  }
+
+  static async getPremiumUserCount() {
+    const [rows] = await db.execute('SELECT COUNT(*) AS premium FROM users WHERE role = "premium"');
+    return rows[0]?.premium || 0;
   }
 }
 
