@@ -301,15 +301,31 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               if (_isPremiumUser) JourneyCard(),
               const SizedBox(height: 20),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(left: 25.0),
-                child: Text(
-                  "Tournaments",
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.normal,
-                    color: colorScheme.onBackground,
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Tournaments",
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: colorScheme.onBackground,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/challenge-list');
+                      },
+                      child: Text(
+                        "View all",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 10),

@@ -37,6 +37,7 @@ import 'screens/language_settings_screen.dart';
 import 'services/exercise_services.dart';
 import 'screens/model/exercise_model.dart';
 import 'screens/workout/exercise_list_page.dart';
+import 'screens/view_challenge_tournament_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -117,6 +118,7 @@ class WiseWorkoutApp extends StatelessWidget {
         ),
         '/workout-analysis': (context) => const WorkoutAnalysisPage(),
         '/language-settings': (context) => const LanguageSettingsScreen(),
+        '/challenge-list': (context) => const ViewChallengeTournamentScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/workout-list-page') {
