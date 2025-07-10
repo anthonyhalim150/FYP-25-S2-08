@@ -1,0 +1,35 @@
+{
+  "privacy_policy_title": "Kebijakan Privasi",
+  "privacy_policy_effective_date": "Tanggal berlaku: Juni 2024",
+  "privacy_policy_intro": "FitQuest (\"kami\") menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, membagikan, dan melindungi informasi pribadi Anda saat Anda menggunakan aplikasi olahraga kami.",
+
+  "privacy_policy_section1": "1. Informasi yang Kami Kumpulkan",
+  "privacy_policy_1a": "a) Informasi Pribadi:",
+  "privacy_policy_1a_bullets": "Nama, username, atau nama panggilan\nAlamat email\nInformasi pembayaran (dikelola melalui pihak ketiga yang aman)\nInfo profil (misalnya usia, jenis kelamin [opsional], pilihan avatar)",
+  "privacy_policy_1b": "b) Data Penggunaan:",
+  "privacy_policy_1b_bullets": "Aktivitas dan progres latihan\nPenggunaan fitur aplikasi dan frekuensinya\nInfo perangkat & log (jenis, alamat IP, OS, log crash)",
+  "privacy_policy_1c": "c) Cookies dan Analitik:",
+  "privacy_policy_1c_text": "Kami dapat menggunakan cookies atau teknologi serupa, serta layanan analitik untuk meningkatkan pengalaman Anda dan menganalisis tren penggunaan.",
+
+  "privacy_policy_section2": "2. Bagaimana Kami Menggunakan Informasi Anda",
+  "privacy_policy_2_bullets": "Mengoperasikan dan memelihara Aplikasi\nMemersonalisasi pengalaman dan rencana latihan Anda\nMemproses pembayaran langganan\nMerespon permintaan dukungan\nMeningkatkan fitur dan pengalaman pengguna\nMemberi tahu Anda tentang pembaruan, penawaran, dan perubahan (pemasaran opsional)",
+
+  "privacy_policy_section3": "3. Bagaimana Kami Membagikan Informasi Anda",
+  "privacy_policy_3_bullets": "Prosesor pembayaran (misal Stripe, Apple, Google)\nLayanan analitik yang membantu mengoperasikan dan menganalisis aplikasi\nOtoritas hukum jika diwajibkan oleh hukum atau untuk melindungi hak/keamanan",
+  "privacy_policy_3_text": "Kami tidak pernah menjual atau menyewakan informasi pribadi Anda.",
+
+  "privacy_policy_section4": "4. Keamanan Data",
+  "privacy_policy_4_text": "Kami melindungi data Anda menggunakan standar keamanan industri. Data sensitif (seperti pembayaran) dikelola oleh pihak ketiga yang tepercaya.",
+
+  "privacy_policy_section5": "5. Pilihan Anda",
+  "privacy_policy_5_bullets": "Anda dapat mengakses, memperbarui, atau menghapus info akun melalui aplikasi atau dengan menghubungi kami.\nAnda dapat berhenti menerima email pemasaran kapan saja.",
+
+  "privacy_policy_section6": "6. Privasi Anak-Anak",
+  "privacy_policy_6_text": "FitQuest tidak ditujukan untuk anak di bawah 13 tahun. Kami tidak sengaja mengumpulkan info dari anak di bawah 13 tahun. Hubungi kami jika Anda yakin seorang anak telah menggunakan aplikasi ini.",
+
+  "privacy_policy_section7": "7. Perubahan Kebijakan Privasi Ini",
+  "privacy_policy_7_text": "Kami dapat memperbarui Kebijakan ini. Kami akan memberi tahu pengguna tentang perubahan melalui aplikasi atau komunikasi lain.",
+
+  "privacy_policy_section8": "8. Hubungi Kami",
+  "privacy_policy_8_text": "Jika Anda memiliki pertanyaan, hubungi kami di:\ncyberguard150@gmail.com"
+}

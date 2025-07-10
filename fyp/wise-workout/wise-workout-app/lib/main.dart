@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:wise_workout_app/widgets/global_workout_timer_overlay.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'themes/app_theme.dart';
 import 'themes/christmas_theme.dart';
@@ -37,22 +38,43 @@ import 'services/exercise_services.dart';
 import 'screens/model/exercise_model.dart';
 import 'screens/workout/exercise_list_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  final storage = FlutterSecureStorage();
+  String? langCode = await storage.read(key: 'language_code');
+  Locale initialLocale = langCode != null
+      ? Locale(langCode)
+      : const Locale('en');
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
-      child: WiseWorkoutApp(),
+    EasyLocalization(
+      supportedLocales: [
+        Locale('en'),
+        Locale('id'),
+        Locale('zh'),
+        Locale('ms'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: Locale('en'),
+      startLocale: initialLocale,
+      child: ChangeNotifierProvider(
+        create: (_) => ThemeNotifier(),
+        child: const WiseWorkoutApp(),
+      ),
     ),
   );
 }
 
 class WiseWorkoutApp extends StatelessWidget {
+  const WiseWorkoutApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
     ThemeData usedTheme;
-    // Use your custom themes based on appThemeMode
     if (themeNotifier.appThemeMode == AppThemeMode.christmas) {
       usedTheme = christmasTheme;
     } else if (themeNotifier.appThemeMode == AppThemeMode.normal) {
@@ -67,6 +89,9 @@ class WiseWorkoutApp extends StatelessWidget {
       theme: usedTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeNotifier.themeMode,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       initialRoute: '/unregistered',
       routes: {
         '/': (context) => LoginScreen(),

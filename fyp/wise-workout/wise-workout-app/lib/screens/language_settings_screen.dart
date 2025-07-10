@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class LanguageSettingsScreen extends StatefulWidget {
   const LanguageSettingsScreen({super.key});
@@ -40,7 +42,8 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
     setState(() {
       _selectedLang = code;
     });
-    Navigator.pop(context); 
+    context.setLocale(Locale(code)); 
+    Navigator.pop(context);
   }
 
   @override

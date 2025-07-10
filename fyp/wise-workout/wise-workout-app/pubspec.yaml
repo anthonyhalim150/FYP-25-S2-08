@@ -15,6 +15,7 @@ dependencies:
   http: ^1.2.1
   flutter_secure_storage: ^9.2.4
   provider: ^6.1.0
+  easy_localization: ^3.0.1
 
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2
@@ -113,3 +114,4 @@ flutter:
     - assets/workoutImages/chest_builder.jpg
     - assets/workoutImages/triceps_shred.jpg
     - assets/workoutImages/upper_body_power.jpg
+    - assets/translations/
