@@ -38,6 +38,8 @@ import 'services/exercise_services.dart';
 import 'screens/model/exercise_model.dart';
 import 'screens/workout/exercise_list_page.dart';
 import 'screens/view_challenge_tournament_screen.dart';
+import 'screens/workout/exercise_log_page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -140,7 +142,12 @@ class WiseWorkoutApp extends StatelessWidget {
             ),
           );
         }
-
+        if (settings.name == '/exercise-log') {
+          final Exercise exercise = settings.arguments as Exercise;
+          return MaterialPageRoute(
+            builder: (context) => ExerciseLogPage(exercise: exercise),
+          );
+        }
         return null;
       },
     );

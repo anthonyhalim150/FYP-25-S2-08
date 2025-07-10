@@ -63,7 +63,11 @@ class ExerciseDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: ElevatedButton.icon(
           onPressed: () {
-            Text("HI");
+            Navigator.pushNamed(
+              context,
+              '/exercise-log',
+              arguments: exercise, // pass Exercise object
+            );
           },
           icon: const Icon(Icons.photo_camera),
           label: const Text("Start Exercise!"),
@@ -71,8 +75,7 @@ class ExerciseDetailScreen extends StatelessWidget {
             backgroundColor: Colors.amber,
             foregroundColor: Colors.black,
             padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           ),
         ),
       ),

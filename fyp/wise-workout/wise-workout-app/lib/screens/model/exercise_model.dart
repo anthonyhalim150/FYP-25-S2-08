@@ -9,6 +9,7 @@ class Exercise {
   final String? exerciseLevel;
   final String? exerciseEquipment;
   final int? exerciseDuration; // in seconds, can be null
+  final double? exerciseWeight; // optional for weighted exercises
 
   Exercise({
     required this.exerciseId,
@@ -21,6 +22,7 @@ class Exercise {
     this.exerciseLevel,
     this.exerciseEquipment,
     this.exerciseDuration,
+    this.exerciseWeight,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,9 @@ class Exercise {
       exerciseLevel: json['ExerciseLevel'],
       exerciseEquipment: json['ExerciseEquipment'],
       exerciseDuration: json['ExerciseDuration'],
+      exerciseWeight: (json['ExerciseWeight'] != null)
+          ? json['ExerciseWeight'].toDouble()
+          : null,
     );
   }
 
@@ -50,6 +55,7 @@ class Exercise {
       'ExerciseLevel': exerciseLevel,
       'ExerciseEquipment': exerciseEquipment,
       'ExerciseDuration': exerciseDuration,
+      'ExerciseWeight': exerciseWeight,
     };
   }
 }
