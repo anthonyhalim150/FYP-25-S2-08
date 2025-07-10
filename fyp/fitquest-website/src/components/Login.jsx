@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { login } from "../services/authService"; // adjust path as needed
 
 const Login = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -10,30 +11,11 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = formData;
-
     try {
-      const res = await fetch("http://localhost:8080/api/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-      // console.log("Login response status:", res.status);
-      if (!res.ok) {
-        const error = await res.json();
-        alert(error.message);
-        return;
-      }
-
-      const data = await res.json();
+      const data = await login(formData);
       if (onLoginSuccess) onLoginSuccess(data.email);
-      
-
-
     } catch (err) {
-      console.error(err);
+      alert(err.message);
     }
   };
 
