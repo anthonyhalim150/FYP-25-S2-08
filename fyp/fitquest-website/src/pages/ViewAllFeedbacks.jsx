@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ViewAllFeedbacks.css';
+import PageLayout from '../components/PageLayout';
 
 const dummyFeedbacks = [
   {
@@ -50,6 +51,7 @@ const ViewAllFeedbacks = () => {
       : dummyFeedbacks.filter(f => f.status === filter);
 
   return (
+    <PageLayout>
     <div className="all-users-container">
       <div className="page-title-with-search">
         <h2 className="pixel-font">All Feedbacks</h2>
@@ -137,6 +139,7 @@ const ViewAllFeedbacks = () => {
         </div>
       )}
     </div>
+    </PageLayout>
   );
 };
 

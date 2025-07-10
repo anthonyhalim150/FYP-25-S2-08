@@ -97,75 +97,17 @@ header nav a {
   text-decoration: none;
 }
 
-.hero-section {
-  background-color: #ffe135;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem;
-  border-radius: 20px;
-  margin: 3rem;
-  margin-top: 4rem;
-  position:relative;
-}
-
-.hero-left {
-  flex: 1;
-  margin: 1rem;
-}
-
-.hero-left h1{
-  font-size: 20px;
-  /* padding: 1rem; */
-  line-height: 1.8rem;
-}
-.hero-left h2{
-  font-size: 15px;
-  /* padding: 1rem; */
-  /* line-height: 1.8rem; */
-}
-
-
-/* .hero-trophy {
-  width: 35vw;
-  max-width: 350px;
-  height: auto;
-  position: absolute;
-  top: -15vh; Moves it upwards outside the container
-  z-index: 2;
-  right:0;
-  animation: trophyPop 1.5s ease-out forwards;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
-} */
-
-.hero-trophy {
-  height: 180%; /* slightly larger than the hero section */
-  max-height: none;
-  width: auto;
-  position: absolute;
-  top: -45%;
-  /* right: -0.1%; */
-  left: 60%;
-  z-index: 2;
-  animation: trophyPop 1.5s ease-out forwards;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
-}
-
 
 .search-bar-container {
-  flex:1;
-  /* margin-top: 1rem; */
   display: flex;
   align-items: center;
   border-radius: 999px;
-  background-color:  rgba(255, 255, 255, 0.55);;
-  padding: 0.25rem 0.25rem;
-  width: 100%;
-  max-width: 500px;
+  background-color: rgba(255, 255, 255, 0.55);
+  padding: 0.25rem;
+  max-width: 700px;
+  width:500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
-
 
 .search-bar {
   border: none;
@@ -183,12 +125,9 @@ header nav a {
 }
 
 .search-icon-btn img {
-    width: auto;
-    max-width: 25px;
-    height: auto;
-    max-height: 30px ;
+  max-width: 25px;
+  max-height: 30px;
 }
-
 
 /* Stats section */
 .user-stats {

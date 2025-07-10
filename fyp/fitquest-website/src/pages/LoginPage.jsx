@@ -1,7 +1,4 @@
-import { useState } from "react";
 import Login from "../components/Login";
-import googleLogo from "../assets/GoogleLogo.png";
-import facebookLogo from "../assets/FacebookLogo.png";
 import blackFitQuestLogo from "../assets/BlackLogo.png";
 import backgroundImage from "../assets/LoginBackground.png";
 import "../styles/Styles.css"; // Make sure to update this CSS file

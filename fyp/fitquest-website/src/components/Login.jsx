@@ -20,6 +20,7 @@ const Login = ({ onLoginSuccess }) => {
         body: JSON.stringify({ email, password })
       });
 
+      // console.log("Login response status:", res.status);
       if (!res.ok) {
         const error = await res.json();
         alert(error.message);
@@ -28,6 +29,8 @@ const Login = ({ onLoginSuccess }) => {
 
       const data = await res.json();
       if (onLoginSuccess) onLoginSuccess(data.email);
+      
+
 
     } catch (err) {
       console.error(err);

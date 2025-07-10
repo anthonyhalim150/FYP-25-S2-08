@@ -29,7 +29,6 @@ const ViewAllUsers = () => {
     <PageLayout>
 
     <div className="admin-container">
-      <SideBar />
       <div className="user-content">
         <div className="user-header">
           <h2>All Users</h2>
@@ -46,7 +45,7 @@ const ViewAllUsers = () => {
               ))}
             </div>
 
-          <div className="search-bar-container" style={{ maxWidth: '400px' }}>
+          <div className="search-bar-container">
           <input
             type="text"
             placeholder="Search feedback by email or words ..."

@@ -1,24 +1,24 @@
-import React, {useState} from 'react';
-import SideBar from '../components/SideBar'; // Assuming your SideBar is in components folder
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import SideBar from '../components/SideBar';
 import TopBar from './TopBar';
 import './PageLayout.css';
 import '../styles/Styles.css';
-import { useSearchParams } from 'react-router-dom';
 
-const PageLayout = ({ children }) => {
-    const [searchTerm, setSearchTerm] = useState('');
+const PageLayout = ({ children, hideSidebar = false }) => {
+  const [searchTerm, setSearchTerm] = useState('');
 
-    return (
-        <div className="admin-layout">
-        <TopBar searchTerm={searchTerm} onSearch={(setSearchTerm)}/>
-        <div className='layout-body'>
-        <SideBar />
+  return (
+    <div>
+      <TopBar searchTerm={searchTerm} onSearch={setSearchTerm} />
+      <div >
+        {!hideSidebar && <SideBar />}
         <main className="admin-main">
-            {children}
+          {children}
         </main>
-        </div>
-        </div>
-    );
-    };
+      </div>
+    </div>
+  );
+};
 
 export default PageLayout;

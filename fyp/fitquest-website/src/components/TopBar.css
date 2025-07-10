@@ -5,19 +5,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   height: 60px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10000;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .topbar-logo {
-  height: 30px;
-  padding-left:5px;
+  height: 25px;
+  padding-left:25px;
 }
 
 .topbar-search {

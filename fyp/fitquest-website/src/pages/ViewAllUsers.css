@@ -11,6 +11,15 @@
     background-color: #f9f6ef;
 }
 
+.user-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .user-header h2 {
     font-size: 20px;
     margin-bottom: 1rem;

@@ -1,110 +1,103 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Routes, Route, Link, useNavigate } from 'react-router-dom';
-import "../styles/Styles.css";
-import NavigationBar from '../components/NavigationBar';
+import React, { useEffect, useRef, useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import './ADashboard.css';
 
+import PageLayout from '../components/PageLayout.jsx';
 
 import AllUsersPage from './ViewAllUsers';
-import AllChallengesPage from './ViewAllChallenges';
 import AllTournamentsPage from './ViewAllTournaments';
-import AllWorkoutsPage from './ViewAllWorkoutCategories';
-import AllAvatarsPage from './ViewAllAvatars';
 import AllFeedbacksPage from './ViewAllFeedbacks';
 
 const ADashboard = () => {
+  const manageSectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
-    const manageSectionRef = useRef(null);
-    const [isVisible, setIsVisible] = useState(false);
-    const navigate = useNavigate();
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setIsVisible(true);
+    }, { threshold: 0.1 });
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                // console.log("🟡 Intersecting?", entry.isIntersecting);
-                if (entry.isIntersecting) setIsVisible(true);
-            },
+    if (manageSectionRef.current) {
+      observer.observe(manageSectionRef.current);
+    }
 
-            {threshold: 0.1}
-        );
+    return () => {
+      if (manageSectionRef.current) {
+        observer.unobserve(manageSectionRef.current);
+      }
+    };
+  }, []);
 
-        if (manageSectionRef.current) {
-            observer.observe(manageSectionRef.current);
-        }
-
-        return () => {
-            if (manageSectionRef.current) {
-                observer.unobserve(manageSectionRef.current);
-            }
-        };
-    }, []);
-
-     const cards = [
+  const cards = [
     { icon: "/icon-totalUsers.png", label: "All Users", color: "gradient-maroon", path: "/All-Users" },
-    // { icon: "/icon-challenge.png", label: "All Challenges", color: "gradient-yellow", path: "/All-Challenges" },
     { icon: "/icon-tournament.png", label: "All Tournaments", color: "gradient-red", path: "/All-Tournaments" },
-    // { icon: "/icon-workout.png", label: "All Workouts", color: "gradient-gray", path: "/All-Workouts" },
-    // { icon: "/icon-avatar.png", label: "All Avatars", color: "gradient-blue", path: "/All-Avatars" },
     { icon: "/icon-feedback.png", label: "All Feedbacks", color: "gradient-pink", path: "/All-Feedbacks" }
   ];
 
- return (
-    <div style={{ fontFamily: 'sans-serif', backgroundColor: '#fff' }}>
-      <section className="hero-section">
-        <div className="hero-left">
-          <h1 className="pixel-font">From Goals to Glory,</h1>
-          <h2 className="pixel-font">One Quest at a Time.</h2>
-          <div className="search-bar-container">
-            <input className="search-bar" type="text" placeholder="Search everything on FitQuest" />
-            <button className="search-icon-btn">
-              <img src="/icon-search.png" alt="Search" />
-            </button>
-          </div>
+  return (
+    <PageLayout>
+    <section className="hero-section">
+      <div className="hero-left-column">
+        <h1 className="pixel-font">From Goals to Glory,</h1>
+        <h2 className="pixel-font">One Quest at a Time.</h2>
+        <div className="search-bar-container">
+          <input className="search-bar" type="text" placeholder="Search everything on FitQuest" />
+          <button className="search-icon-btn">
+            <img src="/icon-search.png" alt="Search" />
+          </button>
         </div>
         <img src="/icon-trophy.png" alt="Trophy" className="hero-trophy" />
-      </section>
+      </div>
 
-      <section className="stat-container">
-        <h2>Your Space. Your Pace. Our Quest.</h2>
-        <div className="stat-cards-container">
-          <div className="stat-card">
-            <img src="/icon-totalUsers.png" alt="Users" className="stat-icon" />
-            <h3>300</h3>
-            <p>Total Users</p>
-          </div>
-          <div className="stat-card">
-            <img src="/icon-activeUsers.png" alt="Active Users" className="stat-icon" />
-            <h3>126</h3>
-            <p>Active Users</p>
-          </div>
-          <div className="stat-card">
-            <img src="/icon-premium.png" alt="Premium Users" className="stat-icon" />
-            <h3>9</h3>
-            <p>Premium Users</p>
-          </div>
+      <div className="hero-feature-column">
+        <div className="hero-feature-card" onClick={() => navigate("/All-Users")}>
+          <img src="/icon-totalUsers.png" alt="All Users" />
+          <span>All Users</span>
         </div>
-      </section>
+        <div className="hero-feature-card" onClick={() => navigate("/All-Feedbacks")}>
+          <img src="/icon-feedback.png" alt="All Feedbacks" />
+          <span>All Feedbacks</span>
+        </div>
+        <div className="hero-feature-card" onClick={() => navigate("/All-Tournaments")}>
+          <img src="/icon-tournament.png" alt="All Tournaments" />
+          <span>All Tournaments</span>
+        </div>
+      </div>
+    </section>
 
-      <section className="manage-section" ref={manageSectionRef}>
-        <div className={`manage-card-container ${isVisible ? 'slide-up' : ''}`}>
-          {cards.map((item, index) => {
-            const isSecondRowCenterFix = cards.length === 5 && (index === 3 || index === 4);
-            return (
-              <div
-                key={index}
-                className={`manage-card-wrapper ${isSecondRowCenterFix ? 'centered-last-row' : ''}`}
-                onClick={() => navigate(item.path)}
-                style={{ cursor: 'pointer' }}
-              >
-                <img className="manage-icon" src={item.icon} alt={item.label} />
-                <div className="manage-card">
-                  <p>{item.label}</p>
-                </div>
+
+
+        <div className="dashboard-content">
+        {/* Full-width Navy Background Section */}
+        <div className="stat-section-wrapper">
+          <h2 className="stat-section-title">Your Step, Your Journey</h2>
+          <section className="stat-overview-section">
+            <div className="mini-stat-card">
+              <img src="/icon-totalUsers.png" alt="Users" />
+              <div>
+                <h3>300</h3>
+                <p>Total Users</p>
               </div>
-            );
-          })}
+            </div>
+            <div className="mini-stat-card">
+              <img src="/icon-activeUsers.png" alt="Active Users" />
+              <div>
+                <h3>126</h3>
+                <p>Active Users</p>
+              </div>
+            </div>
+            <div className="mini-stat-card">
+              <img src="/icon-premium.png" alt="Premium Users" />
+              <div>
+                <h3>9</h3>
+                <p>Premium Users</p>
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
-    </div>
+        </div>
+    </PageLayout>
   );
 };
 
@@ -113,10 +106,7 @@ export default function AdminRoutes() {
     <Routes>
       <Route path="/" element={<ADashboard />} />
       <Route path="/All-Users" element={<AllUsersPage />} />
-      {/* <Route path="/All-Challenges" element={<AllChallengesPage />} /> */}
       <Route path="/All-Tournaments" element={<AllTournamentsPage />} />
-      {/* <Route path="/All-Workouts" element={<AllWorkoutsPage />} /> */}
-      {/* <Route path="/All-Avatars" element={<AllAvatarsPage />} /> */}
       <Route path="/All-Feedbacks" element={<AllFeedbacksPage />} />
     </Routes>
   );

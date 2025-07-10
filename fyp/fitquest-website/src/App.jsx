@@ -19,7 +19,7 @@ const App = () => {
         <Route path="/" element={<LoginPage />} />
 
         {/* Admin pages wrapped in shared layout */}
-        <Route path="/dashboard" element={<PageLayout><ADashboard /></PageLayout>} />
+        <Route path="/dashboard" element={<PageLayout> hideSidebar={true} <ADashboard /></PageLayout>} />
         <Route path="/All-Users" element={<PageLayout><AllUsersPage /></PageLayout>} />
         <Route path="/users/:id" element={<PageLayout><ViewAUser /></PageLayout>} />
         <Route path="/All-Workouts" element={<PageLayout><ViewAllWorkoutCategories /></PageLayout>} />

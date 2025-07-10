@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ViewAllTournaments.css';
 import ViewATournament from '../components/ViewATournament';
+import PageLayout from '../components/PageLayout';
 
 const dummyTournaments = [
   {
@@ -69,29 +70,33 @@ const ViewAllTournaments = () => {
   );
 
   return (
-    <div className="all-users-container">
-      <div className="page-title-with-search">
+<PageLayout>
+  <div className="admin-container">
+    <div className="user-content">
+      <div className="user-header-row">
         <h2>All Tournaments</h2>
-         <div className="search-bar-container">
-          <input
-            className="search-bar"
-            type="text"
-            placeholder="Search tournaments..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button className="search-icon-btn">
-            <img src="/icon-search.png" alt="Search" />
+        <div className="search-bar-container">
+            <input
+              className="search-bar"
+              type="text"
+              placeholder="Search tournaments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="search-icon-btn">
+              <img src="/icon-search.png" alt="Search" />
+            </button>
+          </div>
+        <div className="header-row">
+          <button
+            className="upload-btn"
+            onClick={() => window.location.href = '/create-tournament'}>
+            + Create Tournament
           </button>
         </div>
-        <button
-          className="upload-btn"
-          onClick={() => window.location.href = '/create-tournament'}>
-          + Create Tournament
-        </button>
       </div>
 
-      <table className="tournament-table">
+      <table className="users-table">
         <thead>
           <tr>
             <th>No.</th>
@@ -104,7 +109,7 @@ const ViewAllTournaments = () => {
           </tr>
         </thead>
         <tbody>
-          {dummyTournaments.map((tour) => (
+          {filteredTournaments.map((tour) => (
             <tr key={tour.id} onClick={() => setSelectedTournament(tour)}>
               <td>{tour.number}</td>
               <td>{tour.title}</td>
@@ -131,6 +136,9 @@ const ViewAllTournaments = () => {
         />
       )}
     </div>
+  </div>
+</PageLayout>
+
   );
 };
 
