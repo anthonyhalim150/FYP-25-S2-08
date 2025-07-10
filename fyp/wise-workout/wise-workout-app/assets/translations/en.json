@@ -31,5 +31,22 @@
   "privacy_policy_7_text": "We may update this Policy. We will notify users of changes through the app or by other communication.",
 
   "privacy_policy_section8": "8. Contact Us",
-  "privacy_policy_8_text": "If you have any questions, contact us at:\ncyberguard150@gmail.com"
+  "privacy_policy_8_text": "If you have any questions, contact us at:\ncyberguard150@gmail.com",
+
+  "profile_avatar": "Avatar",
+  "profile_profile": "Profile",
+  "profile_profile_subtitle": "Username, Phone, etc.",
+  "profile_password": "Password",
+  "profile_wearable": "Wearable",
+  "profile_wearable_subtitle": "Redmi Watch Active 3",
+  "profile_workout_history": "Workout History",
+  "profile_body_metrics": "Body Metrics",
+  "profile_notifications": "Notifications",
+  "profile_premium_plan": "Premium Plan",
+  "profile_language": "Language",
+  "profile_privacy_policy": "Privacy Policy",
+  "profile_appearance": "Appearance",
+  "profile_appearance_subtitle": "Default",
+  "profile_premium_user": "🌟 Premium User 🌟",
+  "profile_close": "Close"
 }

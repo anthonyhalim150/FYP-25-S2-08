@@ -31,5 +31,22 @@
   "privacy_policy_7_text": "Kami dapat memperbarui Kebijakan ini. Kami akan memberi tahu pengguna tentang perubahan melalui aplikasi atau komunikasi lain.",
 
   "privacy_policy_section8": "8. Hubungi Kami",
-  "privacy_policy_8_text": "Jika Anda memiliki pertanyaan, hubungi kami di:\ncyberguard150@gmail.com"
+  "privacy_policy_8_text": "Jika Anda memiliki pertanyaan, hubungi kami di:\ncyberguard150@gmail.com",
+  
+  "profile_avatar": "Avatar",
+  "profile_profile": "Profil",
+  "profile_profile_subtitle": "Nama pengguna, Telepon, dll.",
+  "profile_password": "Kata Sandi",
+  "profile_wearable": "Perangkat Wearable",
+  "profile_wearable_subtitle": "Redmi Watch Active 3",
+  "profile_workout_history": "Riwayat Latihan",
+  "profile_body_metrics": "Metode Tubuh",
+  "profile_notifications": "Notifikasi",
+  "profile_premium_plan": "Paket Premium",
+  "profile_language": "Bahasa",
+  "profile_privacy_policy": "Kebijakan Privasi",
+  "profile_appearance": "Tampilan",
+  "profile_appearance_subtitle": "Default",
+  "profile_premium_user": "🌟 Pengguna Premium 🌟",
+  "profile_close": "Tutup"
 }

@@ -31,5 +31,22 @@
   "privacy_policy_7_text": "我们可能会更新本政策。我们将通过应用或其他方式通知用户变更。",
 
   "privacy_policy_section8": "8. 联系我们",
-  "privacy_policy_8_text": "如有任何问题，请通过以下方式联系我们：\ncyberguard150@gmail.com"
+  "privacy_policy_8_text": "如有任何问题，请通过以下方式联系我们：\ncyberguard150@gmail.com",
+
+  "profile_avatar": "头像",
+  "profile_profile": "个人资料",
+  "profile_profile_subtitle": "用户名、电话等",
+  "profile_password": "密码",
+  "profile_wearable": "可穿戴设备",
+  "profile_wearable_subtitle": "Redmi Watch Active 3",
+  "profile_workout_history": "锻炼历史",
+  "profile_body_metrics": "身体指标",
+  "profile_notifications": "通知",
+  "profile_premium_plan": "高级计划",
+  "profile_language": "语言",
+  "profile_privacy_policy": "隐私政策",
+  "profile_appearance": "外观",
+  "profile_appearance_subtitle": "默认",
+  "profile_premium_user": "🌟 高级用户 🌟",
+  "profile_close": "关闭"
 }

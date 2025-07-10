@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'create_avatar.dart';
 import '../services/api_service.dart';
 import '../widgets/bottom_navigation.dart';
@@ -126,9 +127,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ClipOval(
                       child: _profileBgPath!.startsWith('http')
                           ? Image.network(_profileBgPath!,
-                          width: 220, height: 220, fit: BoxFit.cover)
+                              width: 220, height: 220, fit: BoxFit.cover)
                           : Image.asset(_profileBgPath!,
-                          width: 220, height: 220, fit: BoxFit.cover),
+                              width: 220, height: 220, fit: BoxFit.cover),
                     ),
                   if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
                     CircleAvatar(
@@ -166,12 +167,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _profileItem(IconData icon, String label,
-      {String? subtitle, VoidCallback? onTap}) {
+  Widget _profileItem(IconData icon, String actionId, {String? subtitle, VoidCallback? onTap}) {
     VoidCallback? handleTap = onTap;
     if (handleTap == null) {
-      switch (label) {
-        case "Avatar":
+      switch (actionId) {
+        case "avatar":
           handleTap = () async {
             final result = await Navigator.push<Map<String, String?>>(
               context,
@@ -192,7 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
           };
           break;
-        case "Profile":
+        case "profile":
           handleTap = () async {
             final result = await Navigator.push(
               context,
@@ -215,41 +215,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
           };
           break;
-        case "Password":
+        case "password":
           handleTap = () => Navigator.pushNamed(context, '/change-password');
           break;
-        case "Wearable":
+        case "wearable":
           handleTap = () => Navigator.pushNamed(context, '/wearable-screen');
           break;
-        case "Workout History":
+        case "workout_history":
           handleTap = () => Navigator.pushNamed(context, '/workout-history');
           break;
-        case "Body Metrics":
+        case "body_metrics":
           handleTap = () => Navigator.pushNamed(context, '/body-metrics');
           break;
-        case "Notifications":
+        case "notifications":
           handleTap = () => Navigator.pushNamed(context, '/notification-settings');
           break;
-        case "Premium Plan":
+        case "premium_plan":
           handleTap = () => Navigator.pushNamed(context, '/premium-plan');
           break;
-        case "Language":
+        case "language":
           handleTap = () async {
             await Navigator.pushNamed(context, '/language-settings');
             _loadLanguagePreference();
           };
           break;
-        case "Privacy Policy":
+        case "privacy_policy":
           handleTap = () => Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
           );
           break;
-        case "Appearance":
+        case "appearance":
           handleTap = () => Navigator.pushNamed(context, '/appearance-settings');
           break;
         default:
-          print('No route defined for $label');
+          print('No route defined for $actionId');
           break;
       }
     }
@@ -258,7 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(
-        label,
+        tr('profile_$actionId'),
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -287,9 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onAvatarTap: () => _showAvatarPopup(context),
             ),
             const SizedBox(height: 20),
-            ProfileBadgeCollection(unlockedBadges: unlockedBadges), // update it to use theme!
+            ProfileBadgeCollection(unlockedBadges: unlockedBadges),
             const SizedBox(height: 20),
-            ProfileInfoRow(xp: "${widget.xp} XP", level: "Beginner"), // update it to use theme!
+            ProfileInfoRow(xp: "${widget.xp} XP", level: "Beginner"),
             const SizedBox(height: 20),
             ProfileLuckySpinCard(
               tokens: _tokens,
@@ -301,18 +301,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileMenuList(
               isPremiumUser: _isPremiumUser,
               menuItems: [
-                _profileItem(Icons.person, "Avatar"),
-                _profileItem(Icons.settings, "Profile", subtitle: "Username, Phone, etc."),
-                _profileItem(Icons.lock, "Password"),
-                _profileItem(Icons.watch, "Wearable", subtitle: "Redmi Watch Active 3"),
-                _profileItem(Icons.history, "Workout History"),
-                _profileItem(Icons.bar_chart, "Body Metrics"),
-                _profileItem(Icons.notifications, "Notifications"),
+                _profileItem(Icons.person, "avatar"),
+                _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
+                _profileItem(Icons.lock, "password"),
+                _profileItem(Icons.watch, "wearable", subtitle: tr('profile_wearable_subtitle')),
+                _profileItem(Icons.history, "workout_history"),
+                _profileItem(Icons.bar_chart, "body_metrics"),
+                _profileItem(Icons.notifications, "notifications"),
                 if (!_isPremiumUser)
-                  _profileItem(Icons.workspace_premium, "Premium Plan"),
-                _profileItem(Icons.language, "Language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
-                _profileItem(Icons.privacy_tip, "Privacy Policy"),
-                _profileItem(Icons.palette, "Appearance", subtitle: "Default"),
+                  _profileItem(Icons.workspace_premium, "premium_plan"),
+                _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
+                _profileItem(Icons.privacy_tip, "privacy_policy"),
+                _profileItem(Icons.palette, "appearance", subtitle: tr('profile_appearance_subtitle')),
               ],
             ),
           ],
