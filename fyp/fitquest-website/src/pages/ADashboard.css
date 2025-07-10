@@ -46,9 +46,9 @@
 }
 
 .hero-trophy {
-  height: 250px;
+  height: 15rem;
   position: absolute;
-  top: -25px;
+  top: -1rem;
   left: 70%;
   z-index: 1;
 }
@@ -79,8 +79,8 @@
 }
 
 .hero-feature-card img {
-  width: 30px;
-  height: 30px;
+  width: 2rem;
+  height: 2rem;
 }
 
 .hero-feature-card span {

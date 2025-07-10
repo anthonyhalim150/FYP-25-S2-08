@@ -40,15 +40,20 @@ const ViewAllFeedbacks = () => {
   const [showConfirm, setShowConfirm] = useState(null);
   const [modalFeedback, setModalFeedback] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentTab, setCurrentTab] = useState()
 
-  const filteredFeedbacks =
-    filter === 'All'
-      ? dummyFeedbacks.filter(fb =>
-          fb.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fb.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fb.message.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : dummyFeedbacks.filter(f => f.status === filter);
+const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
+  const isSearchMatch =
+    fb.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    fb.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    fb.message.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const isStatusMatch =
+    filter === 'All' || fb.status.toLowerCase() === filter.toLowerCase();
+
+  return isSearchMatch && isStatusMatch;
+});
+
 
   return (
     <PageLayout>

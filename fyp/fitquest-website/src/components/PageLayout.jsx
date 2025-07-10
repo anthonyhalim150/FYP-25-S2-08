@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import SideBar from '../components/SideBar';
 import TopBar from './TopBar';
 import './PageLayout.css';
