@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'send_new_challenge.dart'; //this is to send challenges
-import 'challenge_detail_screen.dart'; //this is to accept challenge and do
+import 'send_new_challenge(wrong).dart'; //this is to send challenges
+import 'challenge_detail_screen(wrong).dart'; //this is to accept challenge and do
 
 class ChallengeScreen extends StatefulWidget {
   const ChallengeScreen({Key? key}) : super(key: key);
