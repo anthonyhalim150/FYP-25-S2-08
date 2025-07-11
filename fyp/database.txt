@@ -96,6 +96,23 @@ CREATE TABLE friends (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
 );
+CREATE TABLE badges (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description VARCHAR(255),
+  icon_url VARCHAR(255) NOT NULL,
+  is_premium BOOLEAN DEFAULT false
+);
+
+CREATE TABLE user_badges (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  badge_id INT NOT NULL,
+  earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_user_badge (user_id, badge_id)
+);
 
 
 INSERT INTO avatars (name, image_url, is_premium)
@@ -135,3 +152,14 @@ INSERT INTO prizes (label, type, value) VALUES
 ('150 Tokens', 'tokens', 150),
 ('5 Freezes', 'freeze', 5),
 ('1 Day Trial', 'trial', 1);
+
+INSERT INTO badges (name, description, icon_url, is_premium) VALUES
+('First Workout', 'Completed your first workout session', 'assets/badges/first_workout.png', false),
+('7-Day Streak', 'Worked out for 7 days in a row', 'assets/badges/7day_streak.png', false),
+('10 Workouts', 'Completed 10 workout sessions', 'assets/badges/10_workouts.png', false),
+('1000 Calories Burned', 'Burned a total of 1000 calories', 'assets/badges/1000_calories.png', false),
+('Early Bird', 'Worked out before 7AM 5 times', 'assets/badges/early_bird.png', false),
+('Friend Maker', 'Added your first friend', 'assets/badges/friend_maker.png', false),
+('Competition Winner', 'Won your first competition', 'assets/badges/competition_winner.png', false),
+('Premium Champion', 'Upgraded to premium membership', 'assets/badges/premium_champion.png', true),
+('Spin Winner', 'Won a prize from the Lucky Spin', 'assets/badges/spin_winner.png', false);

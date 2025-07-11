@@ -13,6 +13,7 @@ const spinRoutes = require('./routes/spinRoutes');
 const prizeRoutes = require('./routes/prizeRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const friendRoutes = require('./routes/friendRoutes');
+const badgeRoutes = require('./routes/badgeRoutes');
 const db = require('./config/db');
 
 const app = express();
@@ -43,6 +44,7 @@ app.use('/questionnaire', questionnaireRoutes);
 app.use('/prizes', prizeRoutes);
 app.use('/messages', messageRoutes);
 app.use('/friends', friendRoutes);
+app.use('/badges', badgeRoutes);
 
 
 db.query('SELECT 1')
