@@ -25,7 +25,7 @@ app.use(authenticateUser);
 
 
 
-app.use('/api', userRoutes);
+app.use(userRoutes);
 
 // Test DB connection
 db.query('SELECT DATABASE() AS db_name')

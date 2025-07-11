@@ -9,6 +9,9 @@ class UserService {
     ]);
     return { total, active, premium };
   }
+  static async getAllUsers() {
+    return await UserModel.findAllWithPreferences();
+  }
 }
 
 module.exports = UserService;

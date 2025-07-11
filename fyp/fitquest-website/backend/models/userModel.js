@@ -48,6 +48,38 @@ class UserModel {
     const [rows] = await db.execute('SELECT COUNT(*) AS premium FROM users WHERE role = "premium"');
     return rows[0]?.premium || 0;
   }
+  static async findAllWithPreferences() {
+    const [rows] = await db.execute(`
+      SELECT 
+        u.id, u.username, u.email, u.role, u.tokens, u.created_at, u.updated_at,
+        u.firstName, u.lastName, u.dob,
+        IF(u.role='premium', 'Premium', 'Free') AS account,
+        up.workout_frequency, up.fitness_goal, up.workout_time, up.fitness_level, up.injury
+      FROM users u
+      LEFT JOIN user_preferences up ON up.user_id = u.id
+    `);
+    console
+
+    return rows.map((row) => ({
+      id: row.id,
+      username: row.username,
+      email: row.email,
+      role: row.role === 'premium' ? 'Premium' : 'Free',
+      level: `Lvl. ${row.tokens || 1}`,
+      isSuspended: row.role === 'suspended',
+      first_name: row.firstName,
+      last_name: row.lastName,
+      dob: row.dob,
+      account: row.account,
+      preferences: {
+        workout_frequency: row.workout_frequency || 'N/A',
+        fitness_goal: row.fitness_goal || 'N/A',
+        workout_time: row.workout_time || 'N/A',
+        fitness_level: row.fitness_level || 'N/A',
+        injury: row.injury || 'N/A',
+      }
+    }));
+  }
 }
 
 module.exports = UserModel;

@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import './ADashboard.css';
 
 import PageLayout from '../components/PageLayout.jsx';
-import { fetchDashboardStats } from '../services/dashboardService';
+import { fetchDashboardStats } from '../services/userService';
 
 import AllUsersPage from './ViewAllUsers';
 import AllTournamentsPage from './ViewAllTournaments';

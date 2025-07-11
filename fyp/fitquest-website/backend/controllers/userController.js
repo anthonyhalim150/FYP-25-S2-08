@@ -8,3 +8,11 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch stats' });
   }
 };
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await UserService.getAllUsers();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
+};
