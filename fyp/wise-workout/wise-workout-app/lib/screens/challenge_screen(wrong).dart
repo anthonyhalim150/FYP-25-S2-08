@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'send_new_challenge(wrong).dart'; //this is to send challenges
-import 'challenge_detail_screen(wrong).dart'; //this is to accept challenge and do
 
 class ChallengeScreen extends StatefulWidget {
   const ChallengeScreen({Key? key}) : super(key: key);
@@ -41,18 +39,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     },
   ];
 
-  void handleChallenge(int index) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChallengeDetailScreen(challenge: competitions[index]),
-      ),
-    );
-    if (result != null) {
-      setState(() {
-        competitions[index] = result;
-      });
-    }
+  void handleChallenge(int index) {
   }
 
   @override
@@ -155,12 +142,6 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const NewChallengeScreen(isPremiumUser: true),
-                          ),
-                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
@@ -211,6 +192,7 @@ class _NiceCompetitionCard extends StatelessWidget {
   final String opponent;
   final String status;
   final VoidCallback onAction;
+
   const _NiceCompetitionCard({
     required this.opponent,
     required this.status,
