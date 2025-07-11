@@ -428,8 +428,6 @@ header nav a {
 
 .pixel-font {
   font-family: 'Press Start 2P', monospace;
-  /* text-transform: uppercase; */
-  /* letter-spacing: 0.em; */
   color: #2c2c2c;
 }
 
@@ -437,6 +435,9 @@ header nav a {
   font-size:medium
 }
 
+.pixel-font h2{
+  font-size: small;
+}
 
 
 /* Animation */
@@ -726,7 +727,7 @@ header nav a {
   cursor: pointer;
 }
 
-
+/* 
 .page-title-with-search {
   display: flex;
   justify-content: space-between;
@@ -739,16 +740,16 @@ header nav a {
 .page-title-with-search h2 {
   margin: 0;
   font-size: 1.5rem;
-}
+} */
 
 
 /* Title and search bar aligned */
-.page-title-with-search {
+/* .page-title-with-search {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-}
+} */
 
 .user-left-panel {
   flex: 1;

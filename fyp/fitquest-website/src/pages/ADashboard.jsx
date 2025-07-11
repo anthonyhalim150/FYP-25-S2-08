@@ -59,16 +59,17 @@ const ADashboard = () => {
           <div className="hero-feature-card" onClick={() => navigate("/All-Users")}>
             <img src="/icon-totalUsers.png" alt="All Users" />
             <span>All Users</span>
-          </div>
-          <div className="hero-feature-card" onClick={() => navigate("/All-Feedbacks")}>
-            <img src="/icon-feedback.png" alt="All Feedbacks" />
-            <span>All Feedbacks</span>
-          </div>
-          <div className="hero-feature-card" onClick={() => navigate("/All-Tournaments")}>
+        </div>
+        <div className="hero-feature-card" onClick={() => navigate("/All-Tournaments")}>
             <img src="/icon-tournament.png" alt="All Tournaments" />
             <span>All Tournaments</span>
-          </div>
         </div>
+        <div className="hero-feature-card" onClick={() => navigate("/All-Feedbacks")}>
+          <img src="/icon-feedback.png" alt="All Feedbacks" />
+          <span>All Feedbacks</span>
+        </div>
+        </div>
+        
       </section>
 
       <div className="dashboard-content">
