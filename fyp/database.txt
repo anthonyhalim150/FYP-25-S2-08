@@ -154,12 +154,15 @@ INSERT INTO prizes (label, type, value) VALUES
 ('1 Day Trial', 'trial', 1);
 
 INSERT INTO badges (name, description, icon_url, is_premium) VALUES
-('First Workout', 'Completed your first workout session', 'assets/badges/first_workout.png', false),
-('7-Day Streak', 'Worked out for 7 days in a row', 'assets/badges/7day_streak.png', false),
-('10 Workouts', 'Completed 10 workout sessions', 'assets/badges/10_workouts.png', false),
-('1000 Calories Burned', 'Burned a total of 1000 calories', 'assets/badges/1000_calories.png', false),
-('Early Bird', 'Worked out before 7AM 5 times', 'assets/badges/early_bird.png', false),
-('Friend Maker', 'Added your first friend', 'assets/badges/friend_maker.png', false),
-('Competition Winner', 'Won your first competition', 'assets/badges/competition_winner.png', false),
-('Premium Champion', 'Upgraded to premium membership', 'assets/badges/premium_champion.png', true),
-('Spin Winner', 'Won a prize from the Lucky Spin', 'assets/badges/spin_winner.png', false);
+('First Workout', 'Complete your first workout session to earn this badge.', 'assets/badges/badge_1.png', false),
+('7-Day Streak', 'Work out for 7 consecutive days to earn this badge.', 'assets/badges/badge_2.png', false),
+('10 Workouts', 'Complete 10 workout sessions to earn this badge.', 'assets/badges/badge_3.png', false),
+('1000 Calories Burned', 'Burn a total of 1000 calories to earn this badge.', 'assets/badges/badge_4.png', false),
+('Early Bird', 'Work out before 7AM five times to earn this badge.', 'assets/badges/badge_5.png', false),
+('Friend Maker', 'Add your first friend to earn this badge.', 'assets/badges/badge_6.png', false),
+('Competition Winner', 'Win your first competition to earn this badge.', 'assets/badges/badge_7.png', false),
+('Premium Champion', 'Upgrade to premium membership to earn this badge.', 'assets/badges/badge_8.png', true),
+('Spin Winner', 'Win a prize from the Lucky Spin to earn this badge.', 'assets/badges/badge_9.png', false),
+('50 Workouts', 'Complete 50 workout sessions to earn this badge.', 'assets/badges/badge_10.png', false),
+('Mindful Mover', 'Complete a mindful or recovery activity to earn this badge.', 'assets/badges/badge_11.png', false),
+('Workout Buddy', 'Complete a workout with a friend to earn this badge.', 'assets/badges/badge_12.png', false);

@@ -1,50 +1,63 @@
 import 'package:flutter/material.dart';
+import '../services/badge_service.dart';
 
-// Instructions to earn a badge
-const List<String> badgeUnlockInstructions = [
-  "Complete 100 workouts to earn this badge.",
-  "Maintain a workout streak for 30 consecutive days.",
-  "Burn more calories in a single session than ever before.",
-  "Achieve your personal best in any tracked category.",
-  "Record your longest workout session.",
-  "Maintain consistently high performance in your workouts.",
-  "Level up by gaining enough experience points.",
-  "Reach a new workout streak milestone.",
-  "Win a workout challenge.",
-  "Complete a workout with a friend.",
-  "Complete 50 workouts.",
-  "Complete a mindful or recovery activity.",
-];
-
-class BadgeCollectionScreen extends StatelessWidget {
+class BadgeCollectionScreen extends StatefulWidget {
   const BadgeCollectionScreen({Key? key}) : super(key: key);
+
+  @override
+  State<BadgeCollectionScreen> createState() => _BadgeCollectionScreenState();
+}
+
+class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
+  final BadgeService _badgeService = BadgeService();
+  List<Map<String, dynamic>> _badges = [];
+  Set<int> _unlockedBadgeIds = {};
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBadges();
+  }
+
+  Future<void> _fetchBadges() async {
+    try {
+      final allBadges = await _badgeService.getAllBadges();
+      final userBadges = await _badgeService.getUserBadges();
+      final userBadgeIds = Set<int>.from(userBadges.map((b) => b['id'] as int));
+      setState(() {
+        _badges = List<Map<String, dynamic>>.from(allBadges.map((b) => {
+          'id': b['id'],
+          'image': b['icon_url'],
+          'color': [
+            '#DCF0F7',
+            '#F0FDD7',
+            '#FFF3AD',
+            '#EAD8FF',
+            '#FFDEDE',
+            '#D6EDFF',
+            '#D0F0FF',
+            '#FFD6BD',
+            '#C5F9D7',
+            '#E5E5E5',
+            '#FFE6E6',
+            '#D9F0F4',
+          ][((b['id'] as int) - 1) % 12], // fixed parentheses here
+          'locked': !userBadgeIds.contains(b['id']),
+          'name': b['name'],
+          'description': b['description'],
+        }));
+        _unlockedBadgeIds = userBadgeIds;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    List<Map<String, dynamic>> badges = List.generate(12, (index) {
-      return {
-        'image': 'assets/badges/badge_${index + 1}.png',
-        // Keep the pastel for illustration, but you could harmonize with your theme if desired
-        'color': [
-          '#DCF0F7',
-          '#F0FDD7',
-          '#FFF3AD',
-          '#EAD8FF',
-          '#FFDEDE',
-          '#D6EDFF',
-          '#D0F0FF',
-          '#FFD6BD',
-          '#C5F9D7',
-          '#E5E5E5',
-          '#FFE6E6',
-          '#D9F0F4',
-        ][index % 12],
-        'locked': index >= 6,
-        'unlockInstruction': badgeUnlockInstructions[index],
-      };
-    });
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -63,104 +76,105 @@ class BadgeCollectionScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colorScheme.secondary.withOpacity(0.19),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Badges',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(24),
+      body: _loading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: colorScheme.secondary.withOpacity(0.19),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
                 ),
-                child: GridView.builder(
-                  itemCount: badges.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 1,
+              ),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Badges',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  itemBuilder: (context, index) {
-                    final badge = badges[index];
-                    final isLocked = badge['locked'] as bool;
-                    return InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => _BadgeDetailDialog(badge: badge),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: HexColor.fromHex(badge['color']),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            child: ColorFiltered(
-                              colorFilter: isLocked
-                                  ? ColorFilter.mode(
-                                Colors.grey.withOpacity(0.6),
-                                BlendMode.saturation,
-                              )
-                                  : const ColorFilter.mode(
-                                  Colors.transparent, BlendMode.multiply),
-                              child: Image.asset(
-                                badge['image'],
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Icon(Icons.error_outline, size: 32, color: colorScheme.error),
-                              ),
-                            ),
-                          ),
-                          if (isLocked)
-                            Container(
-                              decoration: BoxDecoration(
-                                color: colorScheme.background.withOpacity(0.44),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.lock,
-                                  color: colorScheme.onBackground.withOpacity(0.82),
-                                  size: 40,
-                                ),
-                              ),
-                            ),
-                        ],
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    );
-                  },
-                ),
+                      child: GridView.builder(
+                        itemCount: _badges.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                          childAspectRatio: 1,
+                        ),
+                        itemBuilder: (context, index) {
+                          final badge = _badges[index];
+                          final isLocked = badge['locked'] as bool;
+                          return InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => _BadgeDetailDialog(badge: badge),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: HexColor.fromHex(badge['color']),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: const EdgeInsets.all(8),
+                                  child: ColorFiltered(
+                                    colorFilter: isLocked
+                                        ? ColorFilter.mode(
+                                            Colors.grey.withOpacity(0.6),
+                                            BlendMode.saturation,
+                                          )
+                                        : const ColorFilter.mode(
+                                            Colors.transparent, BlendMode.multiply),
+                                    child: Image.asset(
+                                      badge['image'],
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Icon(Icons.error_outline, size: 32, color: colorScheme.error),
+                                    ),
+                                  ),
+                                ),
+                                if (isLocked)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.background.withOpacity(0.44),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.lock,
+                                        color: colorScheme.onBackground.withOpacity(0.82),
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
 
-// BIGGER BADGE DIALOG
 class _BadgeDetailDialog extends StatelessWidget {
   final Map<String, dynamic> badge;
   const _BadgeDetailDialog({required this.badge});
@@ -190,11 +204,11 @@ class _BadgeDetailDialog extends StatelessWidget {
                   child: ColorFiltered(
                     colorFilter: isLocked
                         ? ColorFilter.mode(
-                      Colors.grey.withOpacity(0.7),
-                      BlendMode.saturation,
-                    )
+                            Colors.grey.withOpacity(0.7),
+                            BlendMode.saturation,
+                          )
                         : const ColorFilter.mode(
-                        Colors.transparent, BlendMode.multiply),
+                            Colors.transparent, BlendMode.multiply),
                     child: Image.asset(
                       badge['image'],
                       height: 220,
@@ -224,7 +238,7 @@ class _BadgeDetailDialog extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                badge['unlockInstruction'],
+                badge['description'] ?? '',
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
@@ -258,7 +272,6 @@ class _BadgeDetailDialog extends StatelessWidget {
   }
 }
 
-/// Utility to convert hex color string to Color class
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     final colorStr = hexColor.toUpperCase().replaceAll("#", "");

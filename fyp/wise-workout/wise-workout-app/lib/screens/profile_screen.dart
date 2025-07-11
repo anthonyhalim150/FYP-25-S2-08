@@ -3,10 +3,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'create_avatar.dart';
 import '../services/api_service.dart';
+import '../services/badge_service.dart';
 import '../widgets/bottom_navigation.dart';
 import 'editprofile_screen.dart';
 import 'privacypolicy_screen.dart';
-// Sub-widgets
 import '../widgets/profile_avatar_section.dart';
 import '../widgets/profile_badge_collection.dart';
 import '../widgets/profile_info_row.dart';
@@ -41,13 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late bool _isPremiumUser;
   int _tokens = 23;
   final ApiService apiService = ApiService();
+  final BadgeService _badgeService = BadgeService();
   Map<String, dynamic> _profileData = {};
-  final List<String> unlockedBadges = [
-    'assets/badges/badge_4.png',
-    'assets/badges/badge_5.png',
-    'assets/badges/badge_6.png',
-  ];
-
+  List<String> _unlockedBadgeIcons = [];
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String _selectedLanguageCode = 'en';
 
@@ -59,6 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _isPremiumUser = widget.isPremiumUser;
     _userName = widget.userName;
     _loadProfile();
+    _loadUserBadges();
     _loadLanguagePreference();
   }
 
@@ -75,9 +72,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _dob = profile['dob'];
         _tokens = profile['tokens'] ?? 0;
       });
-    } catch (e) {
-      print('Failed to load profile: $e');
-    }
+    } catch (e) {}
+  }
+
+  Future<void> _loadUserBadges() async {
+    try {
+      final badges = await _badgeService.getUserBadges();
+      if (!mounted) return;
+      setState(() {
+        _unlockedBadgeIcons = badges.map<String>((b) => b['icon_url'] as String).toList();
+      });
+    } catch (e) {}
   }
 
   Future<void> _loadLanguagePreference() async {
@@ -249,7 +254,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           handleTap = () => Navigator.pushNamed(context, '/appearance-settings');
           break;
         default:
-          print('No route defined for $actionId');
           break;
       }
     }
@@ -287,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onAvatarTap: () => _showAvatarPopup(context),
             ),
             const SizedBox(height: 20),
-            ProfileBadgeCollection(unlockedBadges: unlockedBadges),
+            ProfileBadgeCollection(unlockedBadges: _unlockedBadgeIcons),
             const SizedBox(height: 20),
             ProfileInfoRow(xp: "${widget.xp} XP", level: "Beginner"),
             const SizedBox(height: 20),

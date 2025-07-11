@@ -3,6 +3,7 @@ import 'package:wise_workout_app/widgets/journey_card.dart';
 import 'workout_sample_data.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
+import '../services/badge_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
 import 'buypremium_screen.dart';
 //sub-widgets
@@ -11,7 +12,6 @@ import '../widgets/tournament_widget.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
-
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -44,17 +44,15 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _displayName;
   bool _isPremiumUser = false;
 
-  final List<String> unlockedBadges = [
-    'assets/badges/badge_4.png',
-    'assets/badges/badge_5.png',
-    'assets/badges/badge_6.png',
-  ];
+  final BadgeService _badgeService = BadgeService();
+  List<String> _unlockedBadges = [];
 
   @override
   void initState() {
     super.initState();
     fetchTodaySteps();
     _fetchProfile();
+    _fetchUnlockedBadges();
   }
 
   Future<void> fetchTodaySteps() async {
@@ -73,6 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
         _isPremiumUser = profile['role'] == 'premium';
       });
     }
+  }
+
+  Future<void> _fetchUnlockedBadges() async {
+    try {
+      final badges = await _badgeService.getUserBadges();
+      setState(() {
+        _unlockedBadges = badges.map<String>((b) => b['icon_url'] as String).toList();
+      });
+    } catch (e) {}
   }
 
   Widget buildStatItem(
@@ -143,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             radius: 16,
                             backgroundColor:
                             Theme.of(context).colorScheme.surface,
-                            backgroundImage: index < unlockedBadges.length
-                                ? AssetImage(unlockedBadges[index])
+                            backgroundImage: index < _unlockedBadges.length
+                                ? AssetImage(_unlockedBadges[index])
                                 : const AssetImage('assets/icons/lock.jpg'),
                           ),
                         );
