@@ -5,7 +5,8 @@ import '../services/health_service.dart';
 import '../services/api_service.dart';
 import '../services/badge_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
-import 'buypremium_screen.dart';
+import '../screens/buypremium_screen.dart';
+import '../screens/quest_screen.dart';
 //sub-widgets
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/tournament_widget.dart';
@@ -306,6 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 context: context,
                 text: "QUEST OF THE DAY!",
                 onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => QuestScreen()));
                 },
                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
               ),
