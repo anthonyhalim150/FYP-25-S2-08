@@ -41,9 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final int maxSteps = 10000;
   final int caloriesBurned = 420;
   final int xpEarned = 150;
+
   String? _displayName;
   bool _isPremiumUser = false;
-
   final BadgeService _badgeService = BadgeService();
   List<String> _unlockedBadges = [];
 
@@ -94,10 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 2),
         Text(
           value,
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall
-              ?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           label,
@@ -136,10 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Badge Collections',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -148,8 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: CircleAvatar(
                             radius: 16,
-                            backgroundColor:
-                            Theme.of(context).colorScheme.surface,
+                            backgroundColor: Theme.of(context).colorScheme.surface,
                             backgroundImage: index < _unlockedBadges.length
                                 ? AssetImage(_unlockedBadges[index])
                                 : const AssetImage('assets/icons/lock.jpg'),
@@ -160,8 +153,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios,
-                  size: 16, color: Theme.of(context).iconTheme.color),
+              Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildBlueButton({
+    required BuildContext context,
+    required String text,
+    Widget? trailing,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+          decoration: BoxDecoration(
+            color: const Color(0xFF111A43),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const Spacer(),
+              if (trailing != null) trailing,
             ],
           ),
         ),
@@ -208,14 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (_isPremiumUser) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (_) => const SquatPoseScreen()),
+                            MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
                           );
                         } else {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (_) => BuyPremiumScreen()),
+                            MaterialPageRoute(builder: (_) => BuyPremiumScreen()),
                           );
                         }
                       },
@@ -249,9 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: InputDecoration(
                             hintText: 'Search on FitQuest',
                             border: InputBorder.none,
-                            hintStyle: TextStyle(
-                                color:
-                                colorScheme.onSurface.withOpacity(0.5)),
+                            hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
                           ),
                           style: TextStyle(color: colorScheme.onSurface),
                         ),
@@ -278,6 +301,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
               buildBadgeCollection(context),
+              const SizedBox(height: 12),
+              buildBlueButton(
+                context: context,
+                text: "QUEST OF THE DAY!",
+                onTap: () {
+                },
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
+              ),
+              buildBlueButton(
+                context: context,
+                text: "Set Reminder",
+                onTap: () {
+                },
+                trailing: const Icon(Icons.notifications_none, color: Colors.white, size: 22),
+              ),
               const SizedBox(height: 20),
               Container(
                 alignment: Alignment.centerLeft,
