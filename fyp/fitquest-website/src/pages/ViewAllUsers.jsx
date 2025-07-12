@@ -37,49 +37,32 @@ const ViewAllUsers = () => {
     return user.username.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  const userTabCounts = {
+    All: users.length,
+    Active: users.filter( u => !u.isSuspended).length,
+    Suspended: users.filter( u => u.isSuspended).length,
+  };
+
    const handleSuspendToggle = async (user) => {
     const isCurrentlySuspended = user.isSuspended;
     const result = await Swal.fire({
-  title: isCurrentlySuspended ? 'Unsuspend this user?' : 'Suspend this user?',
-  text: isCurrentlySuspended
-    ? 'This will reactivate their account.'
-    : 'This will restrict their account access.',
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonText: isCurrentlySuspended ? 'Unsuspend' : 'Suspend',
-  cancelButtonText: 'Cancel',
-  buttonsStyling: false, // REQUIRED!
-  customClass: {
-    confirmButton: isCurrentlySuspended ? 'swal-btn-unsuspend' : 'swal-btn-suspend',
-    cancelButton: 'swal-btn-cancel',
-  }
-});
+    title: isCurrentlySuspended ? 'Unsuspend this user?' : 'Suspend this user?',
+    text: isCurrentlySuspended
+      ? 'This will reactivate their account.'
+      : 'This will restrict their account access.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: isCurrentlySuspended ? 'Unsuspend' : 'Suspend',
+    cancelButtonText: 'Cancel',
+    buttonsStyling: false,
+    customClass: {
+      confirmButton: isCurrentlySuspended ? 'unsuspend-btn' : 'suspend-btn',
+      cancelButton: 'cancel-btn',
+    }
+    });
 
-    
-  //   if (result.isConfirmed) {
-  //     try {
-  //       const endpoint = `http://localhost:8080/api/user/${user.user_id}/${isCurrentlySuspended ? 'unsuspend' : 'suspend'}`;
-  //       const res = await fetch(endpoint, {
-  //         method: 'PUT',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         credentials: 'include',
-  //       });
-
-  //       if (res.ok) {
-  //         Swal.fire('Success', `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`, 'success');
-          
-  //       } else {
-  //         const error = await res.json();
-  //         throw new Error(error.message);
-  //       }
-  //     } catch (err) {
-  //       Swal.fire('Error', err.message || 'Failed to update status.', 'error');
-  //     }
-  //   }
-  // };
 
       if (result.isConfirmed) {
-        // Simulate backend update
         setUsers((prevUsers) =>
           prevUsers.map((u) =>
             u.id === user.id ? { ...u, isSuspended: !u.isSuspended } : u
@@ -91,9 +74,9 @@ const ViewAllUsers = () => {
         text: `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`,
         icon: 'success',
         confirmButtonText: 'OK',
-        buttonsStyling: false, // <== very important
+        buttonsStyling: false, 
         customClass: {
-          confirmButton: 'swal-btn-confirm', // apply your green style
+          confirmButton: 'confirm-btn',
         },
       });
       }
@@ -114,7 +97,7 @@ const ViewAllUsers = () => {
                     className={`user-tab ${selectedTab === tab ? 'active' : ''}`}
                     onClick={() => setSelectedTab(tab)}
                   >
-                    {tab}
+                    {tab} <span className='tab-count'> ({userTabCounts[tab]}) </span>
                   </div>
                 ))}
               </div>
@@ -149,7 +132,18 @@ const ViewAllUsers = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="empty-message">
+                      {selectedTab === 'Suspended'
+                        ? 'No user is suspended.'
+                        : selectedTab === 'Active'
+                        ? 'No user is active.'
+                        : 'No users found.'}
+                    </td>
+                  </tr>
+                ) : (
+                filteredUsers.map((user) => (
                   <tr key={user.id} onClick={() => setSelectedUser(user)} style={{ cursor: 'pointer' }}>
                     <td>{user.username}</td>
                     <td>{user.email}</td>
@@ -166,18 +160,6 @@ const ViewAllUsers = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSuspendToggle(user);
-                      // const confirmAction = window.confirm(
-                      //   user.isSuspended
-                      //     ? `Unsuspend ${user.username}?`
-                      //     : `Suspend ${user.username}?`
-                      // );
-                      // if (confirmAction) {
-                      //   setUsers(prev =>
-                      //     prev.map(u =>
-                      //       u.id === user.id ? { ...u, isSuspended: !u.isSuspended } : u
-                      //     )
-                      //   );
-                      // }
                     }}
                   >
                     {user.isSuspended ? 'Unsuspend' : 'Suspend'}
@@ -194,13 +176,17 @@ const ViewAllUsers = () => {
                 </td>
 
                   </tr>
-                ))}
+                ))
+              )}
               </tbody>
             </table>
           )}
           {selectedUser && (
-            <ViewAUser user={selectedUser} onClose={() => setSelectedUser(null)} />
+            <div className="user-modal-overlay" onClick={() => setSelectedUser(null)}>
+                <ViewAUser className="user-modal-overlay" user={selectedUser} onClose={() => setSelectedUser(null)} />
+            </div>
           )}
+
         </div>
       </div>
     </PageLayout>

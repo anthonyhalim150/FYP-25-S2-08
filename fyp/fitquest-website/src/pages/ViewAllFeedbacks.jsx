@@ -41,6 +41,7 @@ const ViewAllFeedbacks = () => {
   const [modalFeedback, setModalFeedback] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentTab, setCurrentTab] = useState()
+  const [selectedTab, setSelectedTab] = useState('All');
 
 const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
   const isSearchMatch =
@@ -49,7 +50,7 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
     fb.message.toLowerCase().includes(searchTerm.toLowerCase());
 
   const isStatusMatch =
-    filter === 'All' || fb.status.toLowerCase() === filter.toLowerCase();
+    selectedTab === 'All' || fb.status.toLowerCase() === selectedTab.toLowerCase();
 
   return isSearchMatch && isStatusMatch;
 });
@@ -61,7 +62,19 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
       <div className="user-content">
       <div className= "user-header">
         <h2>All Feedbacks</h2>
-        <div className="search-bar-container" style={{ maxWidth: '400px' }}>
+        <div className="header-row">
+          <div className="user-tabs-container">
+            {['All', 'Pending', 'Accepted', 'Rejected'].map((tab) => (
+              <div
+                key={tab}
+                className={`user-tab ${selectedTab === tab ? 'active' : ''}`}
+                onClick={() => setSelectedTab(tab)}
+              >
+                {tab}
+              </div>
+            ))}
+          </div>
+        <div className="search-bar-container">
           <input
             type="text"
             placeholder="Search feedback by email or words ..."
@@ -72,6 +85,7 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
           <button className="search-icon-btn">
             <img src="/icon-search.png" alt="Search" />
           </button>
+        </div>
         </div>
       </div>
 
