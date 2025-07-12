@@ -13,6 +13,7 @@ import '../widgets/tournament_widget.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
+import '../widgets/reminder_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -314,7 +315,12 @@ class _HomeScreenState extends State<HomeScreen> {
               buildBlueButton(
                 context: context,
                 text: "Set Reminder",
-                onTap: () {
+                onTap: () async {
+                  final result = await ReminderWidget.show(context);
+                  if (result != null) {
+                    print(result['time']);
+                    print(result['repeat']);
+                  }
                 },
                 trailing: const Icon(Icons.notifications_none, color: Colors.white, size: 22),
               ),
