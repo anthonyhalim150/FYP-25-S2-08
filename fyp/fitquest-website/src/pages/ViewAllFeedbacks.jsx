@@ -129,8 +129,8 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
               Are you sure you want to {showConfirm.action === 'publish' ? 'publish' : 'reject'}?
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-              <button className="reject-btn" onClick={() => setShowConfirm(null)}>Cancel</button>
-              <button className="accept-btn" onClick={() => setShowConfirm(null)}>Confirm</button>
+              <button className="cancel-btn" onClick={() => setShowConfirm(null)}>Cancel</button>
+              <button className="confirm-btn" onClick={() => setShowConfirm(null)}>Confirm</button>
             </div>
           </div>
         </div>

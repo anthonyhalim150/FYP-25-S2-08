@@ -1,89 +1,45 @@
 @import './ViewAllUsers.css';
 
-.all-users-container {
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  background-color: #f9f6ef;
-  font-family: 'Poppins', sans-serif;
-}
-
-.page-title-with-search {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  /* margin-bottom: 1.5rem; */
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-/* .users-table {
-  width: 100%;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  border-collapse: collapse;
-}
-
-.users-table th,
-.users-table td {
-  padding: 0.85rem 1rem;
-  text-align: left;
-  font-size: 14px;
-}
-
-.users-table th {
-  background-color: #001f5f;
-  color: white;
-  font-weight: 600;
-} */
-
-.badge {
-  padding: 0.3rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.badge.Pending {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.badge.Accepted {
-  background-color: #d1f7d6;
-  color: #2e7d32;
-}
-
-.badge.Rejected {
-  background-color: #ffe0e0;
-  color: #d32f2f;
-}
-
-.accept-btn,
 .reject-btn,
-.view-btn {
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 0.85rem;
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
 .accept-btn {
-  background-color: #28a745;
-  color: white;
+  border: none;
+  padding: 0.4rem 2rem;
+  border-radius: 25px;
+  cursor: pointer; 
+  font-weight: 600;
+  white-space: nowrap;       
 }
 
 .reject-btn {
-  background-color: #dc3545;
-  color: white;
+  background-color: #e53935 !important;
+  color: #fff !important;
+  margin-left:1rem;
 }
 
-.view-btn {
-  background-color: #ffc107;
-  color: #000;
+.accept-btn{
+  background-color: #17c703 !important;
+  color: #ffffff !important;
+}
+
+
+.status-badge {
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.accepted {
+    background-color: #d1f7d6;
+    color: #2e7d32;
+}
+
+.status-badge.rejected {
+    background-color: #ffe0e0;
+    color: #d32f2f;
+}
+
+.status-badge.rejected {
+    background-color: #d4d4d4;
+    color: #4d4747;
 }
