@@ -3,17 +3,14 @@ import 'package:wise_workout_app/widgets/journey_card.dart';
 import 'workout_sample_data.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
-import '../services/badge_service.dart';
 import '../screens/camera/SquatPoseScreen.dart';
-import '../screens/buypremium_screen.dart';
-import '../screens/quest_screen.dart';
+import 'buypremium_screen.dart';
 //sub-widgets
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/tournament_widget.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
-import '../widgets/reminder_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -43,18 +40,20 @@ class _HomeScreenState extends State<HomeScreen> {
   final int maxSteps = 10000;
   final int caloriesBurned = 420;
   final int xpEarned = 150;
-
   String? _displayName;
   bool _isPremiumUser = false;
-  final BadgeService _badgeService = BadgeService();
-  List<String> _unlockedBadges = [];
+
+  final List<String> unlockedBadges = [
+    'assets/badges/badge_4.png',
+    'assets/badges/badge_5.png',
+    'assets/badges/badge_6.png',
+  ];
 
   @override
   void initState() {
     super.initState();
     fetchTodaySteps();
     _fetchProfile();
-    _fetchUnlockedBadges();
   }
 
   Future<void> fetchTodaySteps() async {
@@ -75,33 +74,36 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _fetchUnlockedBadges() async {
-    try {
-      final badges = await _badgeService.getUserBadges();
-      setState(() {
-        _unlockedBadges = badges.map<String>((b) => b['icon_url'] as String).toList();
-      });
-    } catch (e) {}
-  }
-
-  Widget buildStatItem(
-      BuildContext context,
+  Widget buildStatItem(BuildContext context,
       IconData icon,
       String label,
-      String value,
-      ) {
+      String value,) {
     return Column(
       children: [
-        Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
+        Icon(icon, size: 24, color: Theme
+            .of(context)
+            .colorScheme
+            .primary),
         const SizedBox(height: 2),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(
+            color: Theme
+                .of(context)
+                .colorScheme
+                .onSurfaceVariant,
             fontSize: 12,
           ),
         ),
@@ -117,11 +119,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme
+                .of(context)
+                .colorScheme
+                .surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).shadowColor.withOpacity(0.05),
+                color: Theme
+                    .of(context)
+                    .shadowColor
+                    .withOpacity(0.05),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -135,7 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Badge Collections',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -144,9 +156,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: CircleAvatar(
                             radius: 16,
-                            backgroundColor: Theme.of(context).colorScheme.surface,
-                            backgroundImage: index < _unlockedBadges.length
-                                ? AssetImage(_unlockedBadges[index])
+                            backgroundColor:
+                            Theme
+                                .of(context)
+                                .colorScheme
+                                .surface,
+                            backgroundImage: index < unlockedBadges.length
+                                ? AssetImage(unlockedBadges[index])
                                 : const AssetImage('assets/icons/lock.jpg'),
                           ),
                         );
@@ -155,42 +171,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildBlueButton({
-    required BuildContext context,
-    required String text,
-    Widget? trailing,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-          decoration: BoxDecoration(
-            color: const Color(0xFF111A43),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const Spacer(),
-              if (trailing != null) trailing,
+              Icon(Icons.arrow_forward_ios,
+                  size: 16, color: Theme
+                      .of(context)
+                      .iconTheme
+                      .color),
             ],
           ),
         ),
@@ -200,9 +185,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme
+        .of(context)
+        .colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       drawer: appDrawer(
         userName: _displayName ?? widget.userName,
         parentContext: context,
@@ -237,24 +226,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (_isPremiumUser) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const SquatPoseScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const SquatPoseScreen()),
                           );
                         } else {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => BuyPremiumScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => BuyPremiumScreen()),
                           );
                         }
                       },
                     ),
                     const Spacer(),
                     Builder(
-                      builder: (context) => IconButton(
-                        icon: Icon(Icons.menu, color: colorScheme.onBackground),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                      ),
+                      builder: (context) =>
+                          IconButton(
+                            icon: Icon(
+                                Icons.menu, color: colorScheme.onBackground),
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer();
+                            },
+                          ),
                     ),
                   ],
                 ),
@@ -276,7 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: InputDecoration(
                             hintText: 'Search on FitQuest',
                             border: InputBorder.none,
-                            hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
+                            hintStyle: TextStyle(
+                                color:
+                                colorScheme.onSurface.withOpacity(0.5)),
                           ),
                           style: TextStyle(color: colorScheme.onSurface),
                         ),
@@ -303,34 +298,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
               buildBadgeCollection(context),
-              const SizedBox(height: 12),
-              buildBlueButton(
-                context: context,
-                text: "QUEST OF THE DAY!",
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => QuestScreen()));
-                },
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
-              ),
-              buildBlueButton(
-                context: context,
-                text: "Set Reminder",
-                onTap: () async {
-                  final result = await ReminderWidget.show(context);
-                  if (result != null) {
-                    print(result['time']);
-                    print(result['repeat']);
-                  }
-                },
-                trailing: const Icon(Icons.notifications_none, color: Colors.white, size: 22),
-              ),
               const SizedBox(height: 20),
               Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   "Workout",
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(
                     fontWeight: FontWeight.normal,
                     color: colorScheme.onBackground,
                   ),
@@ -343,11 +321,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: sampleWorkouts
-                      .map((workout) => WorkoutCardHomeScreen(
-                    imagePath: workout.imagePath,
-                    workoutName: workout.workoutName,
-                    workoutLevel: workout.workoutLevel,
-                  ))
+                      .map((workout) =>
+                      WorkoutCardHomeScreen(
+                        imagePath: workout.imagePath,
+                        workoutName: workout.workoutName,
+                        workoutLevel: workout.workoutLevel,
+                      ))
                       .toList(),
                 ),
               ),
@@ -361,19 +340,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       "Tournaments",
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(
                         fontWeight: FontWeight.normal,
                         color: colorScheme.onBackground,
                       ),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/challenge-list');
+                        Navigator.pushNamed(
+                          context,
+                          '/challenge-list',
+                          arguments: {'isPremium': _isPremiumUser},
+                        );
                       },
                       child: Text(
                         "View all",
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -390,13 +380,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   children: [
                     const SizedBox(width: 5),
-                    ...sampleTournaments.map((tournament) => TournamentWidget(
-                      tournamentName: tournament.tournamentName,
-                      prize: tournament.prize,
-                      participants: tournament.participants,
-                      daysLeft: tournament.daysLeft,
-                      cardWidth: 280,
-                    )),
+                    ...sampleTournaments.map((tournament) =>
+                        TournamentWidget(
+                          tournamentName: tournament.tournamentName,
+                          prize: tournament.prize,
+                          participants: tournament.participants,
+                          daysLeft: tournament.daysLeft,
+                          cardWidth: 280,
+                        )),
                     const SizedBox(width: 5),
                   ],
                 ),

@@ -22,42 +22,64 @@ class ViewCTWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text('Target: $target'),
-          Text('Duration: $duration'),
-          const SizedBox(height: 12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              ElevatedButton(
-                onPressed: onInvite,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  '+ Challenge Friend',
-                  style: TextStyle(color: Colors.white),
                 ),
               ),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(60, 32),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text("Edit", style: TextStyle(fontSize: 13)),
+              ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Text("Target: $target", style: const TextStyle(fontSize: 14)),
+          Text("Duration: $duration", style: const TextStyle(fontSize: 14)),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onInvite,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow[700],
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                "+ Challenge Friend",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
         ],
       ),
