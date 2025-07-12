@@ -23,7 +23,7 @@ class ApiService {
     if (res.statusCode == 200) {
       return jsonDecode(res.body);
     } else {
-      throw Exception('Failed to load profile');
+       throw Exception('Failed to load profile');
     }
   }
 
