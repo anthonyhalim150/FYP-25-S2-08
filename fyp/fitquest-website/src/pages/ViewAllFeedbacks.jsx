@@ -58,8 +58,9 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
   return (
     <PageLayout>
     <div className="all-users-container">
-      <div className="page-title-with-search">
-        <h2 className="pixel-font">All Feedbacks</h2>
+      <div className="user-content">
+      <div className= "user-header">
+        <h2>All Feedbacks</h2>
         <div className="search-bar-container" style={{ maxWidth: '400px' }}>
           <input
             type="text"
@@ -143,6 +144,7 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
           </div>
         </div>
       )}
+      </div>
     </div>
     </PageLayout>
   );

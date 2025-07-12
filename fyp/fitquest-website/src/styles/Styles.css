@@ -3,21 +3,6 @@ body {
   font-family: 'Poppins', 'Alegreya';
   background-color: #F7F4ED;
 }
-
-/* .admin-layout {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f9f6ef;
-}
-
-.admin-main {
-  flex: 1;
-  padding: 2rem;z
-  box-sizing: border-box;
-  overflow-x: auto;
-}
- */
-
 .admin-dashboard {
   width: 100%;
   overflow-x: hidden;
@@ -128,6 +113,155 @@ header nav a {
   max-width: 25px;
   max-height: 30px;
 }
+
+/* Button */
+
+.edit-btn {
+  align-self: flex-start;
+  background-color: #ffe135;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 0.4rem 2rem;
+  font-size: 0.85rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-btn :hover {
+  background-color: #bfa200;
+  color: rgb(0, 0, 0);
+}
+
+.save-btn{
+  background-color: #ffd900;
+  color: rgb(0, 0, 0);
+  padding: 0.6rem 2.5rem;
+  font-size: 0.95rem;
+  border-radius: 30px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.view-btn {
+  background-color: #ffe135;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 25px;
+  color: #001f5f;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.view-btn:hover {
+  background-color: #ffdb4d;
+}
+
+.close-btn {
+  margin-top: 1rem;
+  background-color: #001f5f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+
+.accept-btn,
+.reject-btn {
+  margin-right: 0.5rem;
+  /* cursor: pointer; */
+  /* font-weight: 500; */
+  color: white;
+  /* padding: 0.6rem 2.5rem; */
+  font-size: 0.95rem;
+  border-radius: 30px;
+  /* font-weight: 600; */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  border: none;
+  padding: 0.4rem 2rem;
+  font-weight: bold;
+  border-radius: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.accept-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.reject-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.view-btn {
+  background-color: #ffe135;
+  border: none;
+  padding: 0.4rem 2rem;
+  font-weight: bold;
+  border-radius: 25px;
+  color: #001f5f;
+  cursor: pointer;
+  transition: 0.2s ease;
+  margin-left:1rem;
+}
+
+.action-btn{
+  border: none;
+  padding: 0.4rem 2rem;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.action-btn.suspend {
+  background-color: #e60012;
+  color: white;
+}
+
+.action-btn.unsuspend {
+  background-color: #000000;
+  color: white;
+}
+
+.swal-confirm-btn {
+  background-color: #000 !important;  /* black */
+  color: #fff !important;             /* white text */
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.swal-cancel-btn {
+  background-color: #ccc !important;
+  color: #333 !important;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+}
+
+
 
 /* Stats section */
 .user-stats {
@@ -501,20 +635,6 @@ header nav a {
   font-weight: 600;
 }
 
-.view-btn {
-  background-color: #ffe135;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-weight: bold;
-  border-radius: 25px;
-  color: #001f5f;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.view-btn:hover {
-  background-color: #ffdb4d;
-}
 
 .view-tournament-modal-overlay {
   position: fixed;
@@ -717,15 +837,6 @@ header nav a {
   cursor: pointer;
 }
 
-.close-btn {
-  margin-top: 1rem;
-  background-color: #001f5f;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-}
 
 /* 
 .page-title-with-search {
@@ -963,34 +1074,6 @@ header nav a {
   margin-bottom: 0.75rem;
 }
 
-.edit-btn {
-  align-self: flex-start;
-  background-color: #ffe135;
-  color: rgb(0, 0, 0);
-  border: none;
-  padding: 0.4rem 2rem;
-  font-size: 0.85rem;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.edit-btn :hover {
-  background-color: #bfa200;
-  color: rgb(0, 0, 0);
-}
-
-.save-btn{
-  background-color: #ffd900;
-  color: rgb(0, 0, 0);
-  padding: 0.6rem 2.5rem;
-  font-size: 0.95rem;
-  border-radius: 30px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
 /* === Avatar Grid & Background Grid === */
 .avatar-grid {
   display: grid;
@@ -1063,70 +1146,6 @@ header nav a {
   gap: 1rem;
   margin-top: 1.5rem;
 }
-
-.upload-btn-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.upload-btn-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 2rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.upload-btn {
-  background-color: #1261ff;
-  color: white;
-  padding: 0.6rem 2.5rem;
-  font-size: 0.95rem;
-  border-radius: 30px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.upload-btn:hover {
-  background-color: #003399;
-    color: white;
-}
-
-.delete-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.75rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.delete-btn-wrapper {
-  text-align: center;
-  margin-top: 1.2rem;
-}
-
-.delete-btn-below {
-  background-color: #d00000;
-  color: white;
-  border: none;
-  padding: 0.5rem 1.5rem;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.delete-btn-below:hover {
-  background-color: #a80000;
-}
-
 
 /* Slider Container */
 .slider-container {
@@ -1334,79 +1353,6 @@ header nav a {
 /* Optional: grey for pending */
 .badge.pending {
   color: #888;
-}
-
-.accept-btn,
-.reject-btn {
-  margin-right: 0.5rem;
-  /* cursor: pointer; */
-  /* font-weight: 500; */
-  color: white;
-  /* padding: 0.6rem 2.5rem; */
-  font-size: 0.95rem;
-  border-radius: 30px;
-  /* font-weight: 600; */
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  border: none;
-  padding: 0.4rem 2rem;
-  font-weight: bold;
-  border-radius: 25px;
-  color: #ffffff;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.accept-btn {
-  background-color: #4caf50;
-  color: white;
-}
-
-.reject-btn {
-  background-color: #f44336;
-  color: white;
-}
-
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-.view-btn {
-  background-color: #ffe135;
-  border: none;
-  padding: 0.4rem 2rem;
-  font-weight: bold;
-  border-radius: 25px;
-  color: #001f5f;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.suspend-btn {
-  background-color: #e60012;
-  color: white;
-  border: none;
-  padding: 0.4rem 2rem;
-  font-weight: bold;
-  border-radius: 25px;
-  cursor: pointer;
-}
-
-.unsuspend-btn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 0.4rem 1.5rem;
-  font-weight: bold;
-  border-radius: 25px;
-  cursor: pointer;
 }
 
 

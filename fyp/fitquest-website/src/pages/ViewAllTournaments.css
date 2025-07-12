@@ -4,15 +4,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.page-title-with-search {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
 .tournament-table {
   width: 100%;
   background: white;

@@ -38,40 +38,66 @@ const ViewAllUsers = () => {
   });
 
    const handleSuspendToggle = async (user) => {
-    const isCurrentlySuspended = user.status === 'Suspended';
+    const isCurrentlySuspended = user.isSuspended;
     const result = await Swal.fire({
-      title: isCurrentlySuspended ? 'Unsuspend this user?' : 'Suspend this user?',
-      text: isCurrentlySuspended
-        ? 'This will reactivate their account.'
-        : 'This will restrict their account access.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: isCurrentlySuspended ? 'Unsuspend' : 'Suspend',
-      cancelButtonText: 'Cancel',
-    });
+  title: isCurrentlySuspended ? 'Unsuspend this user?' : 'Suspend this user?',
+  text: isCurrentlySuspended
+    ? 'This will reactivate their account.'
+    : 'This will restrict their account access.',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: isCurrentlySuspended ? 'Unsuspend' : 'Suspend',
+  cancelButtonText: 'Cancel',
+  buttonsStyling: false, // REQUIRED!
+  customClass: {
+    confirmButton: isCurrentlySuspended ? 'swal-btn-unsuspend' : 'swal-btn-suspend',
+    cancelButton: 'swal-btn-cancel',
+  }
+});
 
     
-    if (result.isConfirmed) {
-      try {
-        const endpoint = `http://localhost:8080/api/user/${user.user_id}/${isCurrentlySuspended ? 'unsuspend' : 'suspend'}`;
-        const res = await fetch(endpoint, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        });
+  //   if (result.isConfirmed) {
+  //     try {
+  //       const endpoint = `http://localhost:8080/api/user/${user.user_id}/${isCurrentlySuspended ? 'unsuspend' : 'suspend'}`;
+  //       const res = await fetch(endpoint, {
+  //         method: 'PUT',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         credentials: 'include',
+  //       });
 
-        if (res.ok) {
-          Swal.fire('Success', `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`, 'success');
+  //       if (res.ok) {
+  //         Swal.fire('Success', `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`, 'success');
           
-        } else {
-          const error = await res.json();
-          throw new Error(error.message);
-        }
-      } catch (err) {
-        Swal.fire('Error', err.message || 'Failed to update status.', 'error');
+  //       } else {
+  //         const error = await res.json();
+  //         throw new Error(error.message);
+  //       }
+  //     } catch (err) {
+  //       Swal.fire('Error', err.message || 'Failed to update status.', 'error');
+  //     }
+  //   }
+  // };
+
+      if (result.isConfirmed) {
+        // Simulate backend update
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u.id === user.id ? { ...u, isSuspended: !u.isSuspended } : u
+          )
+        );
+
+      Swal.fire({
+        title: 'Success',
+        text: `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        buttonsStyling: false, // <== very important
+        customClass: {
+          confirmButton: 'swal-btn-confirm', // apply your green style
+        },
+      });
       }
-    }
-  };
+    };
 
 
   return (
@@ -134,9 +160,9 @@ const ViewAllUsers = () => {
                         {user.isSuspended ? 'Suspended' : 'Active'}
                       </span>
                     </td>
-                   <td style={{ display: 'flex', gap: '0.5rem' }}>
+                   <td>
                   <button
-                    className="suspend-btn"
+                    className={`action-btn ${user.isSuspended ? 'unsuspend' : 'suspend'}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSuspendToggle(user);
@@ -154,7 +180,7 @@ const ViewAllUsers = () => {
                       // }
                     }}
                   >
-                    {user.status === 'Suspended' ? 'Unsuspend' : 'Suspend'}
+                    {user.isSuspended ? 'Unsuspend' : 'Suspend'}
                   </button>
                   <button
                     className="view-btn"
