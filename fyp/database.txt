@@ -9,6 +9,7 @@ CREATE TABLE users (
   password VARCHAR(255), -- nullable for Google/Apple sign-ins
   method ENUM('database', 'google', 'apple') NOT NULL DEFAULT 'database',
   role ENUM('user', 'admin', 'premium') NOT NULL DEFAULT 'user',
+  isSuspended BOOLEAN NOT NULL DEFAULT false,
   tokens INT NOT NULL DEFAULT 0,
   avatar_id INT DEFAULT NULL,
   background_id INT DEFAULT NULL, 

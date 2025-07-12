@@ -52,13 +52,12 @@ class UserModel {
     const [rows] = await db.execute(`
       SELECT 
         u.id, u.username, u.email, u.role, u.tokens, u.created_at, u.updated_at,
-        u.firstName, u.lastName, u.dob,
+        u.firstName, u.lastName, u.dob, u.isSuspended,
         IF(u.role='premium', 'Premium', 'Free') AS account,
         up.workout_frequency, up.fitness_goal, up.workout_time, up.fitness_level, up.injury
       FROM users u
       LEFT JOIN user_preferences up ON up.user_id = u.id
     `);
-    console
 
     return rows.map((row) => ({
       id: row.id,
@@ -66,7 +65,7 @@ class UserModel {
       email: row.email,
       role: row.role === 'premium' ? 'Premium' : 'Free',
       level: `Lvl. ${row.tokens || 1}`,
-      isSuspended: row.role === 'suspended',
+      isSuspended: !!row.isSuspended,
       first_name: row.firstName,
       last_name: row.lastName,
       dob: row.dob,
@@ -79,6 +78,13 @@ class UserModel {
         injury: row.injury || 'N/A',
       }
     }));
+  }
+  static async suspendUser(userId) {
+    await db.execute('UPDATE users SET isSuspended = 1 WHERE id = ?', [userId]);
+  }
+
+  static async unsuspendUser(userId) {
+    await db.execute('UPDATE users SET isSuspended = 0 WHERE id = ?', [userId]);
   }
 }
 

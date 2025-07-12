@@ -12,6 +12,13 @@ class UserService {
   static async getAllUsers() {
     return await UserModel.findAllWithPreferences();
   }
+  static async suspendUser(userId) {
+    await UserModel.suspendUser(userId);
+  }
+
+  static async unsuspendUser(userId) {
+    await UserModel.unsuspendUser(userId);
+  }
 }
 
 module.exports = UserService;

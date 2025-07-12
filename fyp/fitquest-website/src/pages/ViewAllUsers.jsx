@@ -6,7 +6,7 @@ import './ViewAllUsers.css';
 
 import PageLayout from '../components/PageLayout.jsx';
 import ViewAUser from '../components/ViewAUser.jsx';
-import { fetchAllUsers } from '../services/userService';
+import { fetchAllUsers, suspendUser, unsuspendUser } from '../services/userService';
 
 const ViewAllUsers = () => {
   const [selectedTab, setSelectedTab] = useState('All');
@@ -61,24 +61,41 @@ const ViewAllUsers = () => {
     }
     });
 
-
       if (result.isConfirmed) {
-        setUsers((prevUsers) =>
-          prevUsers.map((u) =>
-            u.id === user.id ? { ...u, isSuspended: !u.isSuspended } : u
-          )
-        );
+        try {
+          if (isCurrentlySuspended) {
+            await unsuspendUser(user.id);
+          } else {
+            await suspendUser(user.id);
+          }
+          setUsers((prevUsers) =>
+            prevUsers.map((u) =>
+              u.id === user.id ? { ...u, isSuspended: !u.isSuspended } : u
+            )
+          );
 
-      Swal.fire({
-        title: 'Success',
-        text: `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`,
-        icon: 'success',
-        confirmButtonText: 'OK',
-        buttonsStyling: false, 
-        customClass: {
-          confirmButton: 'confirm-btn',
-        },
-      });
+          Swal.fire({
+            title: 'Success',
+            text: `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`,
+            icon: 'success',
+            confirmButtonText: 'OK',
+            buttonsStyling: false, 
+            customClass: {
+              confirmButton: 'confirm-btn',
+            },
+          });
+        } catch {
+          Swal.fire({
+            title: 'Error',
+            text: 'Action failed. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            buttonsStyling: false, 
+            customClass: {
+              confirmButton: 'confirm-btn',
+            },
+          });
+        }
       }
     };
 

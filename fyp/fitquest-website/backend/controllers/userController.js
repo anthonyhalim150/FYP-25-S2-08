@@ -16,3 +16,21 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch users' });
   }
 };
+exports.suspendUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    await UserService.suspendUser(userId);
+    res.status(200).json({ message: 'User suspended' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to suspend user' });
+  }
+};
+exports.unsuspendUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    await UserService.unsuspendUser(userId);
+    res.status(200).json({ message: 'User unsuspended' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to unsuspend user' });
+  }
+};

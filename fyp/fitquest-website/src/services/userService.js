@@ -5,6 +5,7 @@ export async function fetchDashboardStats() {
   if (!res.ok) throw new Error('Failed to fetch stats');
   return res.json();
 }
+
 export async function fetchAllUsers() {
   const res = await fetch('http://localhost:8080/admin/users', {
     credentials: 'include'
@@ -13,3 +14,18 @@ export async function fetchAllUsers() {
   return res.json();
 }
 
+export async function suspendUser(userId) {
+  const res = await fetch(`http://localhost:8080/admin/users/${userId}/suspend`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  if (!res.ok) throw new Error('Failed to suspend user');
+}
+
+export async function unsuspendUser(userId) {
+  const res = await fetch(`http://localhost:8080/admin/users/${userId}/unsuspend`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  if (!res.ok) throw new Error('Failed to unsuspend user');
+}
