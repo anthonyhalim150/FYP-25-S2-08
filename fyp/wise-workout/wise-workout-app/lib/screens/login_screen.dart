@@ -57,7 +57,11 @@ class _LoginScreenState extends State<LoginScreen> {
       showSuccess('Login successful');
       await navigateAfterLogin(jwt);
     } else {
-      showError('Invalid email or password');
+      String msg = 'Invalid email or password';
+      try {
+        msg = jsonDecode(response.body)['message'] ?? msg;
+      } catch (_) {}
+      showError(msg);
     }
   }
 
@@ -88,7 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
       showSuccess('Google login successful');
       await navigateAfterLogin(jwt);
     } else {
-      showError('Google login failed');
+      String msg = 'Google login failed';
+      try {
+        msg = jsonDecode(response.body)['message'] ?? msg;
+      } catch (_) {}
+      showError(msg);
     }
   }
 
@@ -119,8 +127,12 @@ class _LoginScreenState extends State<LoginScreen> {
       showSuccess('Facebook login successful');
       await navigateAfterLogin(jwt);
     } else {
-      showError('Facebook login failed');
-      }
+      String msg = 'Facebook login failed';
+      try {
+        msg = jsonDecode(response.body)['message'] ?? msg;
+      } catch (_) {}
+      showError(msg);
+    }
   }
 
   Future<void> navigateAfterLogin(String jwt) async {
