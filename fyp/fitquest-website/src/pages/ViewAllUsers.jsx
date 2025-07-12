@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
+
 import '../styles/Styles.css';
 import './ViewAllUsers.css';
+
 import PageLayout from '../components/PageLayout.jsx';
 import ViewAUser from '../components/ViewAUser.jsx';
 import { fetchAllUsers } from '../services/userService';
@@ -33,6 +36,43 @@ const ViewAllUsers = () => {
     if (selectedTab === 'Active' && user.isSuspended) return false;
     return user.username.toLowerCase().includes(searchTerm.toLowerCase());
   });
+
+   const handleSuspendToggle = async (user) => {
+    const isCurrentlySuspended = user.status === 'Suspended';
+    const result = await Swal.fire({
+      title: isCurrentlySuspended ? 'Unsuspend this user?' : 'Suspend this user?',
+      text: isCurrentlySuspended
+        ? 'This will reactivate their account.'
+        : 'This will restrict their account access.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: isCurrentlySuspended ? 'Unsuspend' : 'Suspend',
+      cancelButtonText: 'Cancel',
+    });
+
+    
+    if (result.isConfirmed) {
+      try {
+        const endpoint = `http://localhost:8080/api/user/${user.user_id}/${isCurrentlySuspended ? 'unsuspend' : 'suspend'}`;
+        const res = await fetch(endpoint, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          Swal.fire('Success', `User has been ${isCurrentlySuspended ? 'unsuspended' : 'suspended'}.`, 'success');
+          
+        } else {
+          const error = await res.json();
+          throw new Error(error.message);
+        }
+      } catch (err) {
+        Swal.fire('Error', err.message || 'Failed to update status.', 'error');
+      }
+    }
+  };
+
 
   return (
     <PageLayout>
@@ -94,9 +134,39 @@ const ViewAllUsers = () => {
                         {user.isSuspended ? 'Suspended' : 'Active'}
                       </span>
                     </td>
-                    <td>
-                      <button className="view-btn">View</button>
-                    </td>
+                   <td style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    className="suspend-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSuspendToggle(user);
+                      // const confirmAction = window.confirm(
+                      //   user.isSuspended
+                      //     ? `Unsuspend ${user.username}?`
+                      //     : `Suspend ${user.username}?`
+                      // );
+                      // if (confirmAction) {
+                      //   setUsers(prev =>
+                      //     prev.map(u =>
+                      //       u.id === user.id ? { ...u, isSuspended: !u.isSuspended } : u
+                      //     )
+                      //   );
+                      // }
+                    }}
+                  >
+                    {user.status === 'Suspended' ? 'Unsuspend' : 'Suspend'}
+                  </button>
+                  <button
+                    className="view-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedUser(user);
+                    }}
+                  >
+                    View
+                  </button>
+                </td>
+
                   </tr>
                 ))}
               </tbody>
