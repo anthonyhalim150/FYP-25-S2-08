@@ -120,7 +120,6 @@ class WiseWorkoutApp extends StatelessWidget {
         ),
         '/workout-analysis': (context) => const WorkoutAnalysisPage(),
         '/language-settings': (context) => const LanguageSettingsScreen(),
-        '/challenge-list': (context) => const ViewChallengeTournamentScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/workout-list-page') {
@@ -146,6 +145,15 @@ class WiseWorkoutApp extends StatelessWidget {
           final Exercise exercise = settings.arguments as Exercise;
           return MaterialPageRoute(
             builder: (context) => ExerciseLogPage(exercise: exercise),
+          );
+        }
+
+        if (settings.name == '/challenge-list') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final bool isPremium = args['isPremium'] ?? false;
+
+          return MaterialPageRoute(
+            builder: (_) => ViewChallengeTournamentScreen(isPremium: isPremium),
           );
         }
         return null;

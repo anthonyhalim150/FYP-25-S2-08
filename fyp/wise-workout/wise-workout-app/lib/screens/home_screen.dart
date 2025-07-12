@@ -368,7 +368,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/challenge-list');
+                        Navigator.pushNamed(
+                          context,
+                          '/challenge-list',
+                          arguments: {'isPremium': _isPremiumUser},
+                        );
                       },
                       child: Text(
                         "View all",
