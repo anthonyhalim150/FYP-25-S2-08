@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import '../model/exercise_model.dart';
-import '../../widgets/rest_timer_dialog.dart';
+import '../../widgets/exercise_timer.dart';
 
 class ExerciseLogPage extends StatefulWidget {
   final Exercise exercise;
@@ -13,6 +14,7 @@ class ExerciseLogPage extends StatefulWidget {
 
 class _ExerciseLogPageState extends State<ExerciseLogPage> {
   late List<Map<String, dynamic>> sets;
+  final CountDownController _restTimerController = CountDownController();
 
   @override
   void initState() {
@@ -44,114 +46,6 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F1),
-      body: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            height: 280,
-            child: Image.asset(
-              'assets/exerciseGif/push_up.gif',
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Expanded(child: Text('Set', style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text('Weight', style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text('Reps', style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
-                  ],
-                ),
-                const Divider(thickness: 1.5, color: Colors.grey),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4),
-          Expanded(
-            child: ListView.builder(
-              itemCount: sets.length,
-              itemBuilder: (context, index) {
-                final set = sets[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 32),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text('Set ${set['set']}')),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final result = await _showEditDialog(set['weight'].toString(), 'Weight');
-                            if (result != null) _editValue(index, 'weight', double.tryParse(result) ?? 0.0);
-                          },
-                          child: Text('${set['weight']} kg', style: const TextStyle(color: Colors.blue)),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final result = await _showEditDialog(set['reps'].toString(), 'Reps');
-                            if (result != null) _editValue(index, 'reps', int.tryParse(result) ?? 1);
-                          },
-                          child: Text('${set['reps']}', style: const TextStyle(color: Colors.blue)),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (set['finished'] != true) {
-                              setState(() => sets[index]['finished'] = true);
-                              showRestTimerDialog(context);
-                            }
-                          },
-                          child: Icon(
-                            set['finished'] == true
-                                ? Icons.check_circle
-                                : Icons.check_circle_outline,
-                            color: set['finished'] == true ? Colors.green : Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade900),
-              onPressed: _addSet,
-              child: const Text('+ Add Set'),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-              onPressed: () => showRestTimerDialog(context),
-              child: const Text('Rest Timer'),
-            ),
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
-
   Future<String?> _showEditDialog(String initial, String label) async {
     final controller = TextEditingController(text: initial);
     return showDialog<String>(
@@ -168,6 +62,167 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
             onPressed: () => Navigator.pop(context, controller.text),
             child: const Text('Save'),
           ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAF7F1),
+      body: Column(
+        children: [
+          // Header Image + Back Button
+          Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 280,
+                child: Image.asset(
+                  'assets/exerciseGif/${widget.exercise.exerciseName.replaceAll(' ', '_').toLowerCase()}.gif',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 8,
+                left: 12,
+                child: CircleAvatar(
+                  backgroundColor: Colors.white.withOpacity(0.85),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Table Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(1.2),
+                1: FlexColumnWidth(2),
+                2: FlexColumnWidth(2),
+                3: FlexColumnWidth(1.5),
+              },
+              children: const [
+                TableRow(
+                  children: [
+                    Center(child: Text('Set', style: TextStyle(fontWeight: FontWeight.bold))),
+                    Center(child: Text('Weight', style: TextStyle(fontWeight: FontWeight.bold))),
+                    Center(child: Text('Reps', style: TextStyle(fontWeight: FontWeight.bold))),
+                    Center(child: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const Divider(thickness: 1.5, color: Colors.grey),
+
+          // Table Body
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1.2),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                  3: FlexColumnWidth(1.5),
+                },
+                children: [
+                  for (int index = 0; index < sets.length; index++)
+                    TableRow(
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Text(
+                              'Set ${sets[index]['set']}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final result = await _showEditDialog(sets[index]['weight'].toString(), 'Weight');
+                              if (result != null) _editValue(index, 'weight', double.tryParse(result) ?? 0.0);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Text(
+                                '${sets[index]['weight']} kg',
+                                style: const TextStyle(color: Colors.blue, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final result = await _showEditDialog(sets[index]['reps'].toString(), 'Reps');
+                              if (result != null) _editValue(index, 'reps', int.tryParse(result) ?? 1);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Text(
+                                '${sets[index]['reps']}',
+                                style: const TextStyle(color: Colors.blue, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (sets[index]['finished'] != true) {
+                                setState(() => sets[index]['finished'] = true);
+                                ExerciseTimer.showRestTimer(context, _restTimerController);
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Icon(
+                                sets[index]['finished'] == true
+                                    ? Icons.check_circle
+                                    : Icons.check_circle_outline,
+                                color: sets[index]['finished'] == true ? Colors.green : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ),
+
+          // Buttons
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade900),
+              onPressed: _addSet,
+              child: const Text('+ Add Set'),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              onPressed: () => ExerciseTimer.showRestTimer(context, _restTimerController),
+              child: const Text('Rest Timer'),
+            ),
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );

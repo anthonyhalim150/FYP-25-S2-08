@@ -81,22 +81,20 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context);  // Go back to the previous screen
-                  },
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
                 ),
-                Text(
-                  'Workout Categories',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'Workout Categories',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-                // Display the logo (Image.asset) once you have the image
+                const SizedBox(width: 48), // reserve space to match IconButton width
               ],
             ),
           ),
