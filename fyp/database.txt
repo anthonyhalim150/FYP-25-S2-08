@@ -11,6 +11,7 @@ CREATE TABLE users (
   role ENUM('user', 'admin', 'premium') NOT NULL DEFAULT 'user',
   isSuspended BOOLEAN NOT NULL DEFAULT false,
   tokens INT NOT NULL DEFAULT 0,
+  xp INT NOT NULL DEFAULT 0,
   avatar_id INT DEFAULT NULL,
   background_id INT DEFAULT NULL, 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -115,6 +116,26 @@ CREATE TABLE user_badges (
   UNIQUE KEY unique_user_badge (user_id, badge_id)
 );
 
+CREATE TABLE quests (
+  code VARCHAR(100) PRIMARY KEY,
+  text VARCHAR(255) NOT NULL,
+  xp_reward INT NOT NULL DEFAULT 10
+);
+
+CREATE TABLE user_daily_quests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  quest_code VARCHAR(100) NOT NULL,
+  quest_date DATE NOT NULL,
+  done BOOLEAN NOT NULL DEFAULT false,
+  claimed BOOLEAN NOT NULL DEFAULT false,
+  completed_at TIMESTAMP DEFAULT NULL,
+  claimed_at TIMESTAMP DEFAULT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (quest_code) REFERENCES quests(code) ON DELETE CASCADE,
+  UNIQUE KEY uq_user_quest_day (user_id, quest_code, quest_date)
+);
+
 
 INSERT INTO avatars (name, image_url, is_premium)
 VALUES 
@@ -167,3 +188,9 @@ INSERT INTO badges (name, description, icon_url, is_premium) VALUES
 ('50 Workouts', 'Complete 50 workout sessions to earn this badge.', 'assets/badges/badge_10.png', false),
 ('Mindful Mover', 'Complete a mindful or recovery activity to earn this badge.', 'assets/badges/badge_11.png', false),
 ('Workout Buddy', 'Complete a workout with a friend to earn this badge.', 'assets/badges/badge_12.png', false);
+
+INSERT INTO quests (code, text, xp_reward) VALUES
+('ANY_WORKOUT', 'Finish any workout', 15),
+('SPIN_LUCKY', 'Spin the Lucky Spin', 10),
+('MESSAGE_FRIEND', 'Message a friend', 10),
+('FINISH_ALL_DAILY', 'Finish all daily quests', 25);

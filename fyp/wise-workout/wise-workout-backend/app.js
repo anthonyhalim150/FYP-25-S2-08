@@ -14,6 +14,7 @@ const prizeRoutes = require('./routes/prizeRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const friendRoutes = require('./routes/friendRoutes');
 const badgeRoutes = require('./routes/badgeRoutes');
+const dailyQuestRoutes = require('./routes/dailyQuestRoutes');
 const db = require('./config/db');
 
 const app = express();
@@ -39,13 +40,13 @@ app.use('/auth', pendingUserRoutes);
 
 app.use(authenticateUser);
 app.use('/user', userRoutes);
+app.use('/user', dailyQuestRoutes);
 app.use('/lucky', spinRoutes);
 app.use('/questionnaire', questionnaireRoutes);
 app.use('/prizes', prizeRoutes);
 app.use('/messages', messageRoutes);
 app.use('/friends', friendRoutes);
 app.use('/badges', badgeRoutes);
-
 
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))

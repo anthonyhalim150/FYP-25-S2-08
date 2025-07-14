@@ -133,6 +133,9 @@ class UserModel {
     return rows;
   }
 
+  static async addXP(userId, amount) {
+    await db.execute('UPDATE users SET xp = xp + ? WHERE id = ?', [amount, userId]);
+  }
 
 }
 
