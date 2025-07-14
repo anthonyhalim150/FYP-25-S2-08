@@ -9,7 +9,7 @@ class SpinService {
 
     if (hasSpun && !forceSpin) throw new Error('ALREADY_SPUN');
     if (hasSpun && forceSpin) {
-      const success = await SpinModel.deductTokens(userId, 50);
+      const success = await UserModel.deductTokens(userId, 50);
       if (!success) throw new Error('NOT_ENOUGH_TOKENS');
     }
 
@@ -18,7 +18,7 @@ class SpinService {
 
     const prize = prizes[Math.floor(Math.random() * prizes.length)];
     await SpinModel.logSpin(userId, prize);
-    await SpinModel.applyPrize(userId, prize);
+    await UserModel.applyPrize(userId, prize);
     const today = new Date().toISOString().slice(0,10);
     await DailyQuestModel.markQuestDone(userId, 'SPIN_LUCKY', today);
 

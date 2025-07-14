@@ -54,7 +54,6 @@ class DailyQuestModel {
     return rows;
   }
   static async markQuestDone(userId, questCode, dateStr) {
-    console.log('tes')
     await db.execute(
       `UPDATE user_daily_quests SET done = 1, completed_at = NOW()
       WHERE user_id = ? AND quest_code = ? AND quest_date = ? AND done = 0`,

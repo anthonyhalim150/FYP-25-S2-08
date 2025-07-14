@@ -132,6 +132,27 @@ class UserModel {
     const [rows] = await db.execute(sql, values);
     return rows;
   }
+  static async applyPrize(userId, prize) {
+    if (prize.type === 'tokens') {
+      await db.execute(
+        'UPDATE users SET tokens = tokens + ? WHERE id = ?',
+        [prize.value, userId]
+      );
+    } else if (prize.type === 'premium') {
+      await db.execute(
+        'UPDATE users SET isPremium = true WHERE id = ?',
+        [userId]
+      );
+    }
+  }
+  static async deductTokens(userId, amount) {
+    const [result] = await db.execute(
+      'UPDATE users SET tokens = tokens - ? WHERE id = ? AND tokens >= ?',
+      [amount, userId, amount]
+    );
+    return result.affectedRows > 0;
+  }
+
 
   static async addXP(userId, amount) {
     await db.execute('UPDATE users SET xp = xp + ? WHERE id = ?', [amount, userId]);
