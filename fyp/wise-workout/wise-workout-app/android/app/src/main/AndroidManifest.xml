@@ -62,7 +62,6 @@
             </intent-filter>
         </activity-alias>
 
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -77,6 +76,13 @@
             android:authorities="com.facebook.app.FacebookContentProvider1707909883492321"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true" />
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="true" />
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+
     </application>
 
     <queries>

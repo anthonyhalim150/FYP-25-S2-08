@@ -15,8 +15,8 @@ import '../widgets/exercise_stats_card.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/reminder_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -58,6 +58,17 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchTodaySteps();
     _fetchProfile();
     _fetchUnlockedBadges();
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    final plugin = FlutterLocalNotificationsPlugin();
+    await plugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+    await plugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
   Future<void> fetchTodaySteps() async {
