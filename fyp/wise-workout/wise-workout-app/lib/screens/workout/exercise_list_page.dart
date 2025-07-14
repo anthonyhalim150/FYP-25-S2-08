@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
+import '../model/workout_model.dart';
 import '../../services/exercise_service.dart';
 import '../../services/workout_session_service.dart';
 import '../../widgets/exercise_tile.dart';
+import 'congratulation_screen.dart';
 
 class ExerciseListPage extends StatefulWidget {
   final String exerciseKey;
@@ -72,15 +74,34 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       _formattedTime = "00:00:00";
     });
 
-    await Navigator.pushNamed(
+    final exercises = await _exercisesFuture;
+
+
+    final workoutResult = {
+      'workout': Workout.sampleWorkouts().firstWhere(
+            (w) => w.exerciseKey == widget.exerciseKey && w.workoutName == widget.workoutName,
+        orElse: () => Workout(
+          workoutId: '',
+          categoryKey: '',
+          exerciseKey: widget.exerciseKey,
+          workoutName: widget.workoutName,
+          workoutLevel: '',
+          workoutDescription: '',
+        ),
+      ),
+      'exercises': exercises,
+      'duration': duration,
+      'calories': _calculateCalories(duration),
+    };
+
+    await Navigator.pushReplacement(
       context,
-      '/workout-analysis',
-      arguments: {
-        'duration': duration,
-        'calories': _calculateCalories(duration),
-        'workoutName': widget.workoutName,
-      },
+      MaterialPageRoute(
+        builder: (context) => CongratulationScreen(workoutResult: workoutResult),
+      ),
     );
+
+
   }
 
   String _formatDuration(Duration d) {

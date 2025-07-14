@@ -17,11 +17,9 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   provider: ^6.1.0
   easy_localization: ^3.0.1
-<<<<<<< Updated upstream
   shared_preferences: ^2.2.3
-=======
   youtube_player_iframe: ^5.2.1
->>>>>>> Stashed changes
+  confetti: ^0.7.0
 
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2

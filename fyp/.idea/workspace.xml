@@ -5,15 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="242b8e5f-8189-490e-8bb9-51f10c7788f0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/exercise_video_tutorial.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/congratulation_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/model/exercise_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/model/exercise_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/exercise_detail_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/exercise_detail_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/exercise_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/exercise_list_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/exercise_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/exercise_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/exercise_services.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/workout_analysis_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/workout_analysis_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/pubspec.yaml" afterDir="false" />
