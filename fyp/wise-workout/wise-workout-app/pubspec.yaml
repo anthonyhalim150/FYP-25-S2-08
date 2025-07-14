@@ -12,10 +12,12 @@ dependencies:
   google_sign_in: ^6.1.4
   sign_in_with_apple: ^7.0.1
   flutter_local_notifications: ^19.2.1
+  timezone: ^0.10.0 
   http: ^1.2.1
   flutter_secure_storage: ^9.2.4
   provider: ^6.1.0
   easy_localization: ^3.0.1
+  shared_preferences: ^2.2.3
 
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2

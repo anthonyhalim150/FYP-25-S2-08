@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'services/notification_service.dart';
 
 import 'themes/app_theme.dart';
 import 'themes/christmas_theme.dart';
@@ -40,10 +41,10 @@ import 'screens/workout/exercise_list_page.dart';
 import 'screens/view_challenge_tournament_screen.dart';
 import 'screens/workout/exercise_log_page.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await NotificationService.init();
 
   final storage = FlutterSecureStorage();
   String? langCode = await storage.read(key: 'language_code');
@@ -147,7 +148,6 @@ class WiseWorkoutApp extends StatelessWidget {
             builder: (context) => ExerciseLogPage(exercise: exercise),
           );
         }
-
         if (settings.name == '/challenge-list') {
           final args = settings.arguments as Map<String, dynamic>;
           final bool isPremium = args['isPremium'] ?? false;

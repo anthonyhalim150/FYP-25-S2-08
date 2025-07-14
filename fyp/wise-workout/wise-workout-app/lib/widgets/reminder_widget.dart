@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 
 class ReminderWidget extends StatefulWidget {
-  const ReminderWidget({Key? key}) : super(key: key);
+  final String? initialTime;
+  final List<String>? initialDays;
 
-  static Future<Map<String, dynamic>?> show(BuildContext context) {
+  const ReminderWidget({Key? key, this.initialTime, this.initialDays}) : super(key: key);
+
+  static Future<Map<String, dynamic>?> show(
+    BuildContext context, {
+    String? initialTime,
+    List<String>? initialDays,
+  }) {
     return showDialog<Map<String, dynamic>>(
       context: context,
       barrierDismissible: true,
-      builder: (context) => const ReminderWidget(),
+      builder: (context) => ReminderWidget(
+        initialTime: initialTime,
+        initialDays: initialDays,
+      ),
     );
   }
 
@@ -23,6 +33,20 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
   ];
   List<bool> _selected = List.generate(7, (index) => false);
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialTime != null) {
+      _timeController.text = widget.initialTime!;
+    }
+    if (widget.initialDays != null) {
+      for (int i = 0; i < 7; i++) {
+        _selected[i] = widget.initialDays!.contains(_longNames[i]);
+      }
+    }
+  }
 
   bool get isEveryday => _selected.every((v) => v);
   bool get isWeekdays =>
@@ -50,11 +74,39 @@ class _ReminderWidgetState extends State<ReminderWidget> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Set Reminder',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                Stack(
+                  children: [
+                    const Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Set Reminder',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        splashRadius: 20,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 2.0),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                const SizedBox(height: 8),
                 TextField(
                   controller: _timeController,
                   readOnly: true,
@@ -69,9 +121,22 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                     ),
                   ),
                   onTap: () async {
+                    TimeOfDay initial = TimeOfDay.now();
+                    if (_timeController.text.isNotEmpty) {
+                      final timeStr = _timeController.text.toLowerCase().replaceAll(' ', '');
+                      final match = RegExp(r'(\d+):(\d+)(am|pm)?').firstMatch(timeStr);
+                      if (match != null) {
+                        int hour = int.parse(match.group(1)!);
+                        int minute = int.parse(match.group(2)!);
+                        final ampm = match.group(3);
+                        if (ampm == 'pm' && hour < 12) hour += 12;
+                        if (ampm == 'am' && hour == 12) hour = 0;
+                        initial = TimeOfDay(hour: hour, minute: minute);
+                      }
+                    }
                     TimeOfDay? picked = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.now(),
+                      initialTime: initial,
                     );
                     if (picked != null) {
                       _timeController.text = picked.format(context);
@@ -143,16 +208,18 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                       padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
                     onPressed: () {
-                      if (_timeController.text.isEmpty ||
-                          !_selected.contains(true)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                "Please select time and at least one repeat day."),
-                          ),
-                        );
-                        return;
-                      }
+                      setState(() {
+                        _errorMessage = null;
+                        if (_timeController.text.isEmpty && !_selected.contains(true)) {
+                          _errorMessage = "Please select time and at least one repeat day.";
+                        } else if (_timeController.text.isEmpty) {
+                          _errorMessage = "Please select a time.";
+                        } else if (!_selected.contains(true)) {
+                          _errorMessage = "Please select at least one repeat day.";
+                        }
+                      });
+                      if (_errorMessage != null) return;
+
                       final selectedDays = List.generate(7, (i) => _selected[i] ? _longNames[i] : null)
                           .whereType<String>()
                           .toList();
@@ -162,8 +229,25 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                         'repeat': selectedDays,
                       });
                     },
-                    child: const Text('Save',
-                        style: TextStyle(fontSize: 17, color: Colors.white)),
+                    child: const Text('Save', style: TextStyle(fontSize: 17, color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF2150FF),
+                      side: const BorderSide(color: Color(0xFF2150FF)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop({'clear': true});
+                    },
+                    child: const Text('Clear All Reminders', style: TextStyle(fontSize: 17)),
                   ),
                 ),
               ],
