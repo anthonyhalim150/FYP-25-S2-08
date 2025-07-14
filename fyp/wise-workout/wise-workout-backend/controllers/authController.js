@@ -1,5 +1,6 @@
 const AuthService = require('../services/authService');
 const UserModel = require('../models/userModel');
+const DailyQuestModel = require('../models/dailyQuestModel'); 
 const { setCookie } = require('../utils/cookieAuth');
 const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanitize');
 const { sendOTPToEmail } = require('../utils/otpService');
@@ -19,6 +20,9 @@ exports.login = async (req, res) => {
   const user = await AuthService.loginWithCredentials(email, password);
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
+  const today = new Date().toISOString().slice(0,10);
+  await DailyQuestModel.markQuestDone(userObj.id, 'DAILY_LOGIN', today);
+
   await setCookie(res, email);
   res.json({ message: 'Login successful' });
 };
@@ -35,6 +39,11 @@ exports.loginGoogle = async (req, res) => {
 
   await AuthService.loginWithOAuth(email, firstName, lastName, 'google');
   await setCookie(res, email);
+
+  const userForQuest = await UserModel.findByEmail(email);
+  const today = new Date().toISOString().slice(0,10);
+  await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
+
   res.json({ message: 'Google login successful' });
 };
 
@@ -50,6 +59,11 @@ exports.loginApple = async (req, res) => {
 
   await AuthService.loginWithOAuth(email, firstName, lastName, 'apple');
   await setCookie(res, email);
+
+  const userForQuest = await UserModel.findByEmail(email);
+  const today = new Date().toISOString().slice(0,10);
+  await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
+
   res.json({ message: 'Apple login successful' });
 };
 
@@ -65,6 +79,11 @@ exports.loginFacebook = async (req, res) => {
 
   await AuthService.loginWithOAuth(email, firstName, lastName, 'facebook');
   await setCookie(res, email);
+
+  const userForQuest = await UserModel.findByEmail(email);
+  const today = new Date().toISOString().slice(0,10);
+  await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
+
   res.json({ message: 'Facebook login successful' });
 };
 

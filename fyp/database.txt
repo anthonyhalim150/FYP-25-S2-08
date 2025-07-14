@@ -193,4 +193,4 @@ INSERT INTO quests (code, text, xp_reward) VALUES
 ('ANY_WORKOUT', 'Finish any workout', 15),
 ('SPIN_LUCKY', 'Spin the Lucky Spin', 10),
 ('MESSAGE_FRIEND', 'Message a friend', 10),
-('FINISH_ALL_DAILY', 'Finish all daily quests', 25);
+('DAILY_LOGIN', 'Login today', 7);

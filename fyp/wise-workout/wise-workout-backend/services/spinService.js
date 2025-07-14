@@ -1,6 +1,7 @@
 const SpinModel = require('../models/spinModel');
 const PrizeModel = require('../models/prizeModel');
 const UserModel = require('../models/userModel');
+const DailyQuestModel = require('../models/dailyQuestModel');
 
 class SpinService {
   static async performSpin(userId, forceSpin = false) {
@@ -18,6 +19,8 @@ class SpinService {
     const prize = prizes[Math.floor(Math.random() * prizes.length)];
     await SpinModel.logSpin(userId, prize);
     await SpinModel.applyPrize(userId, prize);
+    const today = new Date().toISOString().slice(0,10);
+    await DailyQuestModel.markQuestDone(userId, 'SPIN_LUCKY', today);
 
     const updatedTokens = await UserModel.getTokenCount(userId);
 
