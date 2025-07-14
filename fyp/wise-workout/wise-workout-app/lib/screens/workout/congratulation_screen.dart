@@ -50,7 +50,7 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
             shouldLoop: false,
             numberOfParticles: 40,
             emissionFrequency: 0.05,
-            gravity: -2,
+            gravity: 0.2,
             colors: const [Colors.red, Colors.blue, Colors.orange, Colors.green],
           ),
 
