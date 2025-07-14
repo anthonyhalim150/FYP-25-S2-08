@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
+import 'exercise_video_tutorial.dart';
 
 class ExerciseDetailScreen extends StatelessWidget {
   final Exercise exercise;
@@ -35,7 +36,13 @@ class ExerciseDetailScreen extends StatelessWidget {
                     right: 16,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Play tutorial action
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExerciseVideoTutorial(exercise: exercise),
+                          ),
+                        );
+
                       },
                       icon: const Icon(Icons.play_arrow),
                       label: const Text('Play Tutorial Video'),

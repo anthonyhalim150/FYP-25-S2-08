@@ -8,8 +8,9 @@ class Exercise {
   final String exerciseInstructions;
   final String? exerciseLevel;
   final String? exerciseEquipment;
-  final int? exerciseDuration; // in seconds, can be null
-  final double? exerciseWeight; // optional for weighted exercises
+  final int? exerciseDuration; // in seconds
+  final double? exerciseWeight;
+  final String? youtubeUrl; // 🔥 NEW FIELD
 
   Exercise({
     required this.exerciseId,
@@ -23,6 +24,7 @@ class Exercise {
     this.exerciseEquipment,
     this.exerciseDuration,
     this.exerciseWeight,
+    this.youtubeUrl, // ✅ Add this to constructor
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class Exercise {
       exerciseWeight: (json['ExerciseWeight'] != null)
           ? json['ExerciseWeight'].toDouble()
           : null,
+      youtubeUrl: json['YoutubeUrl'], // ✅ Read from Firestore
     );
   }
 
@@ -56,6 +59,7 @@ class Exercise {
       'ExerciseEquipment': exerciseEquipment,
       'ExerciseDuration': exerciseDuration,
       'ExerciseWeight': exerciseWeight,
+      'YoutubeUrl': youtubeUrl, // ✅ Save to Firestore
     };
   }
 }

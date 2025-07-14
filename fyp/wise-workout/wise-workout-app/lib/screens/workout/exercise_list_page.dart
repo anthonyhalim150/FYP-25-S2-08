@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
-import '../../services/exercise_services.dart';
+import '../../services/exercise_service.dart';
 import '../../services/workout_session_service.dart';
 import '../../widgets/exercise_tile.dart';
 

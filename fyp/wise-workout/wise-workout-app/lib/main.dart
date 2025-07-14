@@ -35,7 +35,7 @@ import 'screens/workout/workout_category_dashboard.dart';
 import 'screens/workout/workout_list_page.dart';
 import 'screens/appearance_screen.dart';
 import 'screens/language_settings_screen.dart';
-import 'services/exercise_services.dart';
+import 'services/exercise_service.dart';
 import 'screens/model/exercise_model.dart';
 import 'screens/workout/exercise_list_page.dart';
 import 'screens/view_challenge_tournament_screen.dart';
