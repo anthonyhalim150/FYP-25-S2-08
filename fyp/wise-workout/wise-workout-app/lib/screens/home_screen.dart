@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentSteps = 0;
   final int maxSteps = 10000;
   final int caloriesBurned = 420;
-  final int xpEarned = 150;
+  int xpEarned = 150;
 
   String? _displayName;
   bool _isPremiumUser = false;
@@ -85,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _displayName = profile['username'];
         _isPremiumUser = profile['role'] == 'premium';
+        xpEarned = profile['progressInLevel'] ?? 100;
       });
     }
   }
