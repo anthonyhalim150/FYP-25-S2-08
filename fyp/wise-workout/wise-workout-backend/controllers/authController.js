@@ -1,6 +1,7 @@
 const AuthService = require('../services/authService');
 const UserModel = require('../models/userModel');
-const DailyQuestModel = require('../models/dailyQuestModel'); 
+const DailyQuestModel = require('../models/dailyQuestModel');
+const DailyQuestService = require('../services/dailyQuestService');
 const { setCookie } = require('../utils/cookieAuth');
 const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanitize');
 const { sendOTPToEmail } = require('../utils/otpService');
@@ -20,6 +21,7 @@ exports.login = async (req, res) => {
   const user = await AuthService.loginWithCredentials(email, password);
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
+  await DailyQuestService.ensureTodayQuests(userObj.id);
   const today = new Date().toISOString().slice(0,10);
   await DailyQuestModel.markQuestDone(userObj.id, 'DAILY_LOGIN', today);
 
@@ -41,6 +43,7 @@ exports.loginGoogle = async (req, res) => {
   await setCookie(res, email);
 
   const userForQuest = await UserModel.findByEmail(email);
+  await DailyQuestService.ensureTodayQuests(userForQuest.id);
   const today = new Date().toISOString().slice(0,10);
   await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
 
@@ -61,6 +64,7 @@ exports.loginApple = async (req, res) => {
   await setCookie(res, email);
 
   const userForQuest = await UserModel.findByEmail(email);
+  await DailyQuestService.ensureTodayQuests(userForQuest.id);
   const today = new Date().toISOString().slice(0,10);
   await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
 
@@ -81,6 +85,7 @@ exports.loginFacebook = async (req, res) => {
   await setCookie(res, email);
 
   const userForQuest = await UserModel.findByEmail(email);
+  await DailyQuestService.ensureTodayQuests(userForQuest.id);
   const today = new Date().toISOString().slice(0,10);
   await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
 

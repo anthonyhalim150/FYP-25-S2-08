@@ -1,5 +1,5 @@
 const DailyQuestModel = require('../models/dailyQuestModel');
-const UserModel = require('../models/userModel');
+const UserService = require('./userService');
 
 class DailyQuestService {
   static async ensureTodayQuests(userId) {
@@ -12,7 +12,6 @@ class DailyQuestService {
 
   static async getTodayQuests(userId) {
     const today = new Date().toISOString().slice(0,10);
-    await this.ensureTodayQuests(userId);
     return await DailyQuestModel.getUserDailyQuests(userId, today);
   }
 
@@ -24,7 +23,7 @@ class DailyQuestService {
     if (quest.claimed) throw new Error('QUEST_ALREADY_CLAIMED');
 
     await DailyQuestModel.markQuestClaimed(userId, questCode, today);
-    await UserModel.addXP(userId, quest.xp_reward);
+    await UserService.addXPAndCheckLevel(userId, quest.xp_reward);
   }
 
   static async claimAllQuests(userId) {
@@ -33,7 +32,7 @@ class DailyQuestService {
     let total = 0;
     for (const quest of quests) {
       await DailyQuestModel.markQuestClaimed(userId, quest.quest_code, today);
-      await UserModel.addXP(userId, quest.xp_reward);
+      await UserService.addXPAndCheckLevel(userId, quest.xp_reward);
       total += quest.xp_reward;
     }
     return total;
