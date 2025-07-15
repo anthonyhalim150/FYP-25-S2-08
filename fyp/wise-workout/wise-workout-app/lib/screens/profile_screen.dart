@@ -47,6 +47,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String _selectedLanguageCode = 'en';
 
+  int _level = 1;
+  int _progressInLevel = 0;
+  int _xpForThisLevel = 100;
+  int _totalXP = 0;
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +76,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _userName = profile['username'] ?? widget.userName;
         _dob = profile['dob'];
         _tokens = profile['tokens'] ?? 0;
+        _level = profile['level'] ?? 1;
+        _progressInLevel = profile['progressInLevel'] ?? 0;
+        _xpForThisLevel = profile['xpForThisLevel'] ?? 100;
+        _totalXP = profile['totalXP'] ?? 0;
       });
     } catch (e) {}
   }
@@ -293,7 +302,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             ProfileBadgeCollection(unlockedBadges: _unlockedBadgeIcons),
             const SizedBox(height: 20),
-            ProfileInfoRow(xp: "${widget.xp} XP", level: "Beginner"),
+            ProfileInfoRow(
+              xp: "$_totalXP XP",
+              level: "Level $_level",
+              progressInLevel: _progressInLevel,
+              xpForThisLevel: _xpForThisLevel,
+            ),
             const SizedBox(height: 20),
             ProfileLuckySpinCard(
               tokens: _tokens,
