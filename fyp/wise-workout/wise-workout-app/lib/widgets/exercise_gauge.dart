@@ -5,23 +5,28 @@ class ExerciseGauge extends StatelessWidget {
   final double progress; // From 0.0 to 1.0
   final Color backgroundColor;
   final Color progressColor;
+  final VoidCallback? onTap; // Add this for navigation
 
   const ExerciseGauge({
     super.key,
     required this.progress,
     this.backgroundColor = Colors.grey,
     this.progressColor = Colors.amber,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _SemiCirclePainter(
-        progress: progress.clamp(0.0, 1.0),
-        backgroundColor: backgroundColor,
-        progressColor: progressColor,
+    return GestureDetector(
+      onTap: onTap, // 👈 Handles press
+      child: CustomPaint(
+        painter: _SemiCirclePainter(
+          progress: progress.clamp(0.0, 1.0),
+          backgroundColor: backgroundColor,
+          progressColor: progressColor,
+        ),
+        size: const Size(200, 100),
       ),
-      size: const Size(200, 100), // Width and height for semi-circle
     );
   }
 }
@@ -46,7 +51,7 @@ class _SemiCirclePainter extends CustomPainter {
       ..color = backgroundColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 40
-    ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round;
 
     final progressPaint = Paint()
       ..color = progressColor
@@ -54,20 +59,18 @@ class _SemiCirclePainter extends CustomPainter {
       ..strokeWidth = 41
       ..strokeCap = StrokeCap.round;
 
-    // Draw background arc (semi-circle)
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      pi, // Start from left
-      pi, // Sweep half circle
+      pi,
+      pi,
       false,
       backgroundPaint,
     );
 
-    // Draw progress arc
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       pi,
-      pi * progress, // Sweep based on progress
+      pi * progress,
       false,
       progressPaint,
     );

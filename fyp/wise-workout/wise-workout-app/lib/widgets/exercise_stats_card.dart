@@ -63,11 +63,15 @@ class ExerciseStatsCard extends StatelessWidget {
     SizedBox(
     width: 300,
     height: 210,
-    child: ExerciseGauge(  // This should now be recognized
-    progress: currentSteps / maxSteps,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    progressColor: Theme.of(context).colorScheme.primaryContainer,
-    ),
+      child: ExerciseGauge(
+        progress: currentSteps / maxSteps,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        progressColor: Theme.of(context).colorScheme.primaryContainer,
+        onTap: () {
+          Navigator.pushNamed(context, '/dailySummary'); // Adjust the route if needed
+        },
+      ),
+
     ),
     Positioned(
     top: 98,

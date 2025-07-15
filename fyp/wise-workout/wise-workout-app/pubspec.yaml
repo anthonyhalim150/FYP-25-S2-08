@@ -21,6 +21,7 @@ dependencies:
   shared_preferences: ^2.2.3
   youtube_player_iframe: ^5.2.1
   confetti: ^0.7.0
+  fl_chart: ^0.64.0
 
   flutter_fortune_wheel: ^1.2.0
   blur: ^4.0.2

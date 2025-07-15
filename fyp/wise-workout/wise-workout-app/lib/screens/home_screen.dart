@@ -103,7 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
       IconData icon,
       String label,
       String value,
-      ) {
+      )
+  {
     return Column(
       children: [
         Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
