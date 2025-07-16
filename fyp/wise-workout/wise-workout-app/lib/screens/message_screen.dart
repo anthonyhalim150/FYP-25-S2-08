@@ -24,6 +24,14 @@ class _MessageScreenState extends State<MessageScreen> {
   bool loading = true;
   final FriendService _friendService = FriendService();
 
+  String safeAvatar(String? path) {
+    return (path == null || path.isEmpty) ? 'assets/avatars/free/free1.png' : path;
+  }
+
+  String safeBackground(String? path) {
+    return (path == null || path.isEmpty) ? 'assets/background/black.jpg' : path;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -238,8 +246,8 @@ class _MessageScreenState extends State<MessageScreen> {
                                     friendId: friend['id'],
                                     friendName: friend['name'] ?? friend['username'] ?? '',
                                     friendHandle: friend['handle'] ?? friend['email'] ?? '',
-                                    friendAvatar: friend['avatar_url'] ?? '',
-                                    friendBackground: friend['background_url'] ?? 'assets/background/black.jpg',
+                                    friendAvatar: safeAvatar(friend['avatar_url']),
+                                    friendBackground: safeBackground(friend['background_url']),
                                     isPremium: (friend['role'] ?? '') == 'premium',
                                   ),
                                 ),

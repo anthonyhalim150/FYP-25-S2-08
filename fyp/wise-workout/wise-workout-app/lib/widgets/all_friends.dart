@@ -10,6 +10,14 @@ class AllFriendsTab extends StatelessWidget {
     required this.onFriendTap,
   }) : super(key: key);
 
+  String safeAvatar(String? path) {
+    return (path == null || path.isEmpty) ? 'assets/background/black.jpg' : path;
+  }
+
+  String safeBackground(String? path) {
+    return (path == null || path.isEmpty) ? 'assets/background/black.jpg' : path;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (friends.isEmpty) {
@@ -31,14 +39,14 @@ class AllFriendsTab extends StatelessWidget {
               shape: BoxShape.circle,
               image: DecorationImage(
                 image: AssetImage(
-                  f['background_url'] ?? 'assets/background/black.jpg',
+                  safeBackground(f['background_url']),
                 ),
                 fit: BoxFit.cover,
               ),
             ),
             child: Center(
               child: CircleAvatar(
-                backgroundImage: AssetImage(f['avatar_url'] ?? ''),
+                backgroundImage: AssetImage(safeAvatar(f['avatar_url'])),
                 radius: 22,
                 backgroundColor: Colors.transparent,
               ),

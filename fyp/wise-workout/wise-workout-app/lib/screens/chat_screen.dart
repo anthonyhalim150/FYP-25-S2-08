@@ -33,6 +33,10 @@ class _ChatScreenState extends State<ChatScreen> {
   int? myUserId;
   Timer? _pollingTimer;
 
+  String safeAsset(String? path) {
+    return (path == null || path.isEmpty) ? 'assets/background/black.jpg' : path;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -89,7 +93,6 @@ class _ChatScreenState extends State<ChatScreen> {
       final fetchedMessages = data['messages'] ?? [];
       if (fetchedMessages.isEmpty) return;
 
-      // Remove optimistic (id: null) messages if a matching real one comes from backend
       for (final serverMsg in fetchedMessages) {
         messages.removeWhere(
               (msg) =>
@@ -99,7 +102,6 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
 
-      // Only add new server messages not already in messages (by id)
       final existingIds =
       messages.where((m) => m['id'] != null).map((m) => m['id']).toSet();
       final trulyNewMessages = fetchedMessages
@@ -122,7 +124,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final content = _controller.text.trim();
     if (content.isEmpty || myUserId == null) return;
     try {
-      // Optimistically add the message
       final myLastMsg = messages.lastWhere(
             (msg) =>
         (msg['sender_id'] is int
@@ -130,13 +131,13 @@ class _ChatScreenState extends State<ChatScreen> {
             : int.tryParse(msg['sender_id'].toString())) == myUserId,
         orElse: () => null,
       );
-      final myAvatar = myLastMsg != null ? myLastMsg['sender_avatar'] ?? '' : '';
+      final myAvatar = myLastMsg != null ? safeAsset(myLastMsg['sender_avatar']) : 'assets/background/black.jpg';
       final myBackground = myLastMsg != null
-          ? myLastMsg['sender_background'] ?? 'assets/background/black.jpg'
+          ? safeAsset(myLastMsg['sender_background'])
           : 'assets/background/black.jpg';
 
       final newMessage = {
-        'id': null, // Placeholder; server will assign actual id
+        'id': null,
         'sender_id': myUserId,
         'content': content,
         'sender_avatar': myAvatar,
@@ -149,7 +150,6 @@ class _ChatScreenState extends State<ChatScreen> {
       _controller.clear();
 
       await _messageService.sendMessage(widget.friendId, content);
-      // Server message will replace optimistic one in polling
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send message")),
@@ -169,13 +169,13 @@ class _ChatScreenState extends State<ChatScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
-          image: AssetImage(background),
+          image: AssetImage(safeAsset(background)),
           fit: BoxFit.cover,
         ),
       ),
       child: Center(
         child: CircleAvatar(
-          backgroundImage: AssetImage(avatar),
+          backgroundImage: AssetImage(safeAsset(avatar)),
           radius: avatarRadius,
           backgroundColor: Colors.transparent,
         ),
@@ -205,8 +205,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 6),
                   _profileCircle(
-                    background: widget.friendBackground,
-                    avatar: widget.friendAvatar,
+                    background: safeAsset(widget.friendBackground),
+                    avatar: safeAsset(widget.friendAvatar),
                     size: 64,
                     avatarRadius: 28,
                   ),
@@ -278,9 +278,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       : int.tryParse(m['sender_id'].toString());
                   final isSelf =
                       myUserId != null && senderId == myUserId;
-                  final avatarPath = m['sender_avatar'] ?? '';
-                  final backgroundPath = m['sender_background'] ??
-                      'assets/background/black.jpg';
+                  final avatarPath = safeAsset(m['sender_avatar']);
+                  final backgroundPath = safeAsset(m['sender_background']);
                   return Align(
                     alignment: isSelf
                         ? Alignment.centerLeft
