@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/leaderboard_content.dart';
+import '/widgets/challenge_leaderboard.dart';
+import '/widgets/tournament_leaderboard.dart';
+import '/widgets/levels_leaderboard.dart';
 import '../widgets/bottom_navigation.dart';
 
 class LeaderboardPage extends StatefulWidget {
@@ -91,9 +94,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 setState(() => _selectedPage = index);
               },
               children: const [
-                LeaderboardContent(isChallengeSelected: true),
-                LeaderboardContent(isChallengeSelected: false),
-                LevelsLeaderboardWidget(), // <--- NEW TAB CONTENT
+                LeaderboardContent(isChallengeSelected: true, isTournamentSelected: false),
+                LeaderboardContent(isChallengeSelected: false, isTournamentSelected: true),
+                LeaderboardContent(isChallengeSelected: false, isTournamentSelected: false),
               ],
             ),
           ),
