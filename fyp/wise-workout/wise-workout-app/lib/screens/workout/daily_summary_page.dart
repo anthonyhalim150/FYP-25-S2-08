@@ -1,9 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wise_workout_app/widgets/exercise_stats_card.dart';
+import '../../services/health_service.dart';
 
-class DailySummaryPage extends StatelessWidget {
+class DailySummaryPage extends StatefulWidget {
   const DailySummaryPage({super.key});
+
+  @override
+  State<DailySummaryPage> createState() => _DailySummaryPageState();
+}
+
+class _DailySummaryPageState extends State<DailySummaryPage> {
+  final HealthService _healthService = HealthService();
+
+  bool _isLoading = true;
+  List<int> _hourlySteps = List.filled(24, 0);
+  List<int> _hourlyCalories = List.filled(24, 0);
+  int _currentSteps = 0;
+  int _caloriesBurned = 0;
+  int _xpEarned = 0; // Example XP calculation
+
+  @override
+  void initState() {
+    super.initState();
+    _initHealthData();
+  }
+
+  Future<void> _initHealthData() async {
+    final connected = await _healthService.connect();
+    if (!connected) {
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    final steps = await _healthService.getTodaySteps();
+    final hourlySteps = await _healthService.getHourlyStepsForToday();
+    final hourlyCalories = await _healthService.getHourlyCaloriesForToday();
+
+    setState(() {
+      _currentSteps = steps;
+      _hourlySteps = hourlySteps;
+      _hourlyCalories = hourlyCalories;
+      _caloriesBurned = hourlyCalories.fold(0, (prev, c) => prev + c);
+      _xpEarned = (_currentSteps / 100).round();
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +61,9 @@ class DailySummaryPage extends StatelessWidget {
         centerTitle: true,
         actions: const [Icon(Icons.calendar_today, color: Colors.black)],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -31,41 +75,37 @@ class DailySummaryPage extends StatelessWidget {
               const SizedBox(height: 20),
 
               /// Exercise Stats
-              const ExerciseStatsCard(
-                currentSteps: 4300,
+              ExerciseStatsCard(
+                currentSteps: _currentSteps,
                 maxSteps: 10000,
-                caloriesBurned: 234,
-                xpEarned: 98,
+                caloriesBurned: _caloriesBurned,
+                xpEarned: _xpEarned,
               ),
 
               const SizedBox(height: 20),
 
               /// Steps Chart
-              const _TimeBasedChart(
+              _TimeBasedChart(
                 icon: Icons.directions_walk,
                 title: "Steps",
-                currentValue: "4,300",
-                avgValue: "9,121",
+                currentValue: _currentSteps.toString(),
+                avgValue: "9,121", // Optionally compute weekly average
                 barColor: Colors.blue,
                 maxY: 10000,
-                data: [
-                  0, 0, 0, 0, 0, 1000, 2300, 0, 0, 0, 500, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200
-                ],
+                data: _hourlySteps,
               ),
 
               const SizedBox(height: 20),
 
               /// Calories Chart
-              const _TimeBasedChart(
+              _TimeBasedChart(
                 icon: Icons.local_fire_department,
                 title: "Calories",
-                currentValue: "321",
-                avgValue: "234",
+                currentValue: _caloriesBurned.toString(),
+                avgValue: "234", // Optionally compute weekly average
                 barColor: Colors.red,
                 maxY: 300,
-                data: [
-                  0, 0, 0, 0, 0, 50, 120, 0, 0, 0, 30, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40
-                ],
+                data: _hourlyCalories,
               ),
 
               const SizedBox(height: 40),
@@ -78,8 +118,18 @@ class DailySummaryPage extends StatelessWidget {
 
   String _monthName(int month) {
     const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     return months[month - 1];
   }

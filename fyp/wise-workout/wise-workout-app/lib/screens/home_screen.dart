@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final HealthService _healthService = HealthService();
   int _currentSteps = 0;
   final int maxSteps = 10000;
-  final int caloriesBurned = 420;
+  int caloriesBurned = 420;
   int xpEarned = 150;
 
   String? _displayName;
@@ -85,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _displayName = profile['username'];
         _isPremiumUser = profile['role'] == 'premium';
-        xpEarned = profile['progressInLevel'] ?? 100;
       });
     }
   }
