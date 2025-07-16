@@ -1,10 +1,12 @@
 const db = require('../config/db');
+const { encrypt, decrypt } = require('../utils/encryption');
 
 class MessageModel {
   static async sendMessage(senderId, receiverId, content) {
+    const encryptedContent = encrypt(content);
     const [result] = await db.execute(
       'INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)',
-      [senderId, receiverId, content]
+      [senderId, receiverId, encryptedContent]
     );
     return result;
   }
@@ -23,6 +25,9 @@ class MessageModel {
       ORDER BY sent_at ASC`,
       [userId1, userId2, userId2, userId1]
     );
+    rows.forEach(row => {
+      row.content = decrypt(row.content);
+    });
     return rows;
   }
 
@@ -43,7 +48,6 @@ class MessageModel {
     );
     return rows;
   }
-
 }
 
 module.exports = MessageModel;
