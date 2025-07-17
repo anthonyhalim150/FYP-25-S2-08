@@ -11,7 +11,6 @@ class QuestionnaireScreen6 extends StatefulWidget {
     this.totalSteps = 9,
     required this.responses,
   });
-
   @override
   State<QuestionnaireScreen6> createState() => _QuestionnaireScreen6State();
 }
@@ -19,16 +18,16 @@ class QuestionnaireScreen6 extends StatefulWidget {
 class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
   int selectedIndex = -1;
   final List<String> options = [
-    'Body Weight',
-    'With Equipment',
-    'Both',
+    'Beginner',
+    'Intermediate',
+    'Advanced',
   ];
 
   void handleNext() {
     if (selectedIndex != -1) {
       final updatedResponses = {
         ...widget.responses,
-        'exercise_type': options[selectedIndex],
+        'fitness_level': options[selectedIndex],
       };
       Navigator.push(
         context,
@@ -79,7 +78,7 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                     children: [
                       const SizedBox(height: 38),
                       const Text(
-                        "Question 4 out of 9",
+                        "Question 6 out of 9",
                         style: TextStyle(
                           color: Color(0xFFB7B8B8),
                           fontWeight: FontWeight.w500,
@@ -92,7 +91,7 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
-                          "Do you prefer body weight\nexercises, equipment, or both?",
+                          "What is your current\nfitness level?",
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 21,
@@ -107,16 +106,16 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                       ...List.generate(options.length, (i) {
                         final selected = selectedIndex == i;
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+                          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 0),
                           child: GestureDetector(
                             onTap: () => setState(() => selectedIndex = i),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 120),
-                              width: MediaQuery.of(context).size.width * 0.82,
-                              height: 40,
+                              width: MediaQuery.of(context).size.width * 0.94,
+                              height: 54,
                               decoration: BoxDecoration(
                                 color: selected ? yellow : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(27),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.03),
@@ -127,7 +126,7 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                               ),
                               alignment: Alignment.centerLeft,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
                                 child: Text(
                                   options[i],
                                   style: TextStyle(
