@@ -107,12 +107,12 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                       ...List.generate(options.length, (i) {
                         final selected = selectedIndex == i;
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 4),
+                          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 0),
                           child: GestureDetector(
                             onTap: () => setState(() => selectedIndex = i),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 120),
-                              width: 280,
+                              width: MediaQuery.of(context).size.width * 0.94,
                               height: 54,
                               decoration: BoxDecoration(
                                 color: selected ? yellow : Colors.white,
@@ -127,7 +127,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                               ),
                               alignment: Alignment.centerLeft,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
                                 child: Text(
                                   options[i],
                                   style: TextStyle(

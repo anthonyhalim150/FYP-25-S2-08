@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../services/questionnaire_service.dart';
+import 'questionnaire_screen_6.dart';
 
 class QuestionnaireScreen5 extends StatefulWidget {
   final int step;
   final int totalSteps;
   final Map<String, dynamic> responses;
-
   const QuestionnaireScreen5({
     super.key,
     required this.step,
-    this.totalSteps = 5,
+    this.totalSteps = 9,
     required this.responses,
   });
 
@@ -19,162 +18,163 @@ class QuestionnaireScreen5 extends StatefulWidget {
 
 class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
   int selectedIndex = -1;
-  bool isSubmitting = false;
-  final questionnaireService = QuestionnaireService();
-
   final List<String> options = [
-    'No',
-    'Yes, Minor (e.g., sore knee)',
-    'Yes, Major (e.g., heart condition)',
-    'Prefer Not to Say',
+    'Lose Weight',
+    'Build Muscle',
+    'Improve Endurance',
+    'Tone Up',
+    'Improve Flexibility',
   ];
 
-  Future<void> handleNext() async {
-    if (selectedIndex == -1) return;
-
-    final fullResponses = {
-      ...widget.responses,
-      'injury': options[selectedIndex],
-    };
-
-    setState(() => isSubmitting = true);
-
-    try {
-      final success = await questionnaireService.submitPreferences(fullResponses);
-
-      if (success) {
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Submission failed'), backgroundColor: Colors.red),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+  void handleNext() {
+    if (selectedIndex != -1) {
+      final updatedResponses = {
+        ...widget.responses,
+        'fitness_goal': options[selectedIndex],
+      };
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuestionnaireScreen6(
+            step: widget.step + 1,
+            responses: updatedResponses,
+          ),
+        ),
       );
-    } finally {
-      setState(() => isSubmitting = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool buttonEnabled = selectedIndex != -1;
+    const background = Color(0xFFF9F7F2);
+    const yellow = Color(0xFFFFC832);
+    const darkBlue = Color(0xFF0D1850);
+    const gray = Color(0xFFD6D6D8);
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/questionnaire_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+      backgroundColor: background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 32),
-                          child: LinearProgressIndicator(
-                            value: widget.step / widget.totalSteps,
-                            color: Colors.purpleAccent,
-                            backgroundColor: Colors.white24,
-                          ),
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 22),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  const SizedBox(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.health_and_safety, color: Colors.amber),
-                      SizedBox(width: 8),
-                      Text(
-                        'DO YOU HAVE ANY\nINJURIES OR CONDITIONS?',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.4,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.health_and_safety, color: Colors.amber),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  ...List.generate(options.length, (index) {
-                    final isSelected = selectedIndex == index;
-                    return GestureDetector(
-                      onTap: () => setState(() => selectedIndex = index),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          color: Colors.white10,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected ? Colors.purpleAccent : Colors.white24,
-                            width: 2,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                options[index],
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            Icon(
-                              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                              color: isSelected ? Colors.purpleAccent : Colors.white38,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                  const Spacer(),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isSubmitting ? null : handleNext,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: isSubmitting
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("FINISH →", style: TextStyle(fontSize: 16)),
-                    ),
-                  ),
+                  const Icon(Icons.fitness_center, color: yellow, size: 28),
                 ],
               ),
             ),
-          ),
-        ],
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 38),
+                      const Text(
+                        "Question 5 out of 9",
+                        style: TextStyle(
+                          color: Color(0xFFB7B8B8),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 14),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 22),
+                        child: Text(
+                          "What is your primary\nfitness goal?",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 21,
+                            color: Colors.black,
+                            height: 1.19,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 23),
+                      // Options
+                      ...List.generate(options.length, (i) {
+                        final selected = selectedIndex == i;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 0),
+                          child: GestureDetector(
+                            onTap: () => setState(() => selectedIndex = i),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 120),
+                              width: MediaQuery.of(context).size.width * 0.94,
+                              height: 54,
+                              decoration: BoxDecoration(
+                                color: selected ? yellow : Colors.white,
+                                borderRadius: BorderRadius.circular(27),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.03),
+                                    blurRadius: 2,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                                child: Text(
+                                  options[i],
+                                  style: TextStyle(
+                                    fontSize: 15.5,
+                                    color: Colors.black,
+                                    fontWeight: selected ? FontWeight.bold : FontWeight.w600,
+                                    letterSpacing: 0.08,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 42),
+                      // Next button
+                      SizedBox(
+                        width: 140,
+                        height: 43,
+                        child: ElevatedButton(
+                          onPressed: buttonEnabled ? handleNext : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: buttonEnabled ? darkBlue : gray,
+                            foregroundColor: buttonEnabled ? Colors.white : Colors.black,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.1,
+                            ),
+                          ),
+                          child: const Text("Next"),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
