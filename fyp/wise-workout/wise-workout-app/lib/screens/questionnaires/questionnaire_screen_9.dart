@@ -115,7 +115,7 @@ class QuestionnaireScreen9 extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             const Text(
-                              "Click to learn more!",
+                              "",
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.black87,

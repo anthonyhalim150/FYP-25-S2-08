@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'questionnaire_screen.dart';
 import 'package:intl/intl.dart';
+import 'questionnaire_screen.dart';
 
 class QuestionnaireDobScreen extends StatefulWidget {
   final int step;
   final Map<String, dynamic> responses;
-
   const QuestionnaireDobScreen({
     super.key,
     required this.step,
     required this.responses,
   });
-
   @override
   State<QuestionnaireDobScreen> createState() => _QuestionnaireDobScreenState();
 }
@@ -57,82 +55,122 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
     final dobText = selectedDate != null
         ? DateFormat('MMMM d, yyyy').format(selectedDate!)
         : 'Tap to select your date of birth';
+    const background = Color(0xFFF9F7F2);
+    const yellow = Color(0xFFFFC832);
+    const darkBlue = Color(0xFF0D1850);
 
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/questionnaire_bg.png'), // make sure path matches your assets
-                fit: BoxFit.cover,
+      backgroundColor: background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Top bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.black, size: 22),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Icon(Icons.fitness_center, color: yellow, size: 28),
+                ],
               ),
             ),
-          ),
-          SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.cake, size: 60, color: Colors.indigo),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "What's your date of birth?",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      onPressed: _pickDate,
-                      icon: const Icon(Icons.calendar_month, color: Colors.white),
-                      label: Text(
-                        dobText,
-                        style: const TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                        side: const BorderSide(color: Colors.white),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        backgroundColor: Colors.white.withOpacity(0.1),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    SizedBox(
-                      width: 300,
-                      child: ElevatedButton(
-                        onPressed: _handleNext,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.indigo,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                        ),
-                        child: const Text(
-                          'Next',
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 38),
+                      // Headline
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 22),
+                        child: Text(
+                          "What's your date of birth?",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 25,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 28),
+                      // Date input
+                      GestureDetector(
+                        onTap: _pickDate,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.94,
+                          height: 54,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(27),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 2,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_month, color: Colors.black54),
+                                const SizedBox(width: 15),
+                                Expanded(
+                                  child: Text(
+                                    dobText,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: selectedDate == null ? Colors.black38 : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 47),
+                      // NEXT BUTTON
+                      SizedBox(
+                        width: 140,
+                        height: 43,
+                        child: ElevatedButton(
+                          onPressed: selectedDate != null ? _handleNext : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: selectedDate != null ? darkBlue : const Color(0xFFD6D6D8),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.1,
+                            ),
+                          ),
+                          child: const Text("Next"),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
