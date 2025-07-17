@@ -81,7 +81,7 @@ class _QuestionnaireScreen5State extends State<QuestionnaireScreen5> {
                     children: [
                       const SizedBox(height: 38),
                       const Text(
-                        "Question 5 out of 9",
+                        "Question 5 out of 8",
                         style: TextStyle(
                           color: Color(0xFFB7B8B8),
                           fontWeight: FontWeight.w500,
