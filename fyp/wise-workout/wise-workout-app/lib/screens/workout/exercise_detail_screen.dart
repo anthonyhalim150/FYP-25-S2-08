@@ -36,13 +36,14 @@ class ExerciseDetailScreen extends StatelessWidget {
                     right: 16,
                     child: ElevatedButton.icon(
                       onPressed: () {
+                        print('📦 Exercise object being passed: ${exercise.exerciseName}');
+                        print('🎥 YouTube URL: ${exercise.youtubeUrl}');
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ExerciseVideoTutorial(exercise: exercise),
                           ),
                         );
-
                       },
                       icon: const Icon(Icons.play_arrow),
                       label: const Text('Play Tutorial Video'),
