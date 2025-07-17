@@ -50,7 +50,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = const Color(0xFFF9F7F2);
-    final buttonEnabled = heightController.text.isNotEmpty && weightController.text.isNotEmpty;
+    final bool buttonEnabled = heightController.text.isNotEmpty && weightController.text.isNotEmpty;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -90,7 +90,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
-
                       const Text(
                         "What's your height?",
                         style: TextStyle(
@@ -102,7 +101,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
-
                       SizedBox(
                         width: 250,
                         child: Row(
@@ -147,9 +145,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 36),
-
                       const Text(
                         "What's your weight?",
                         style: TextStyle(
@@ -161,7 +157,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
-
                       SizedBox(
                         width: 250,
                         child: Row(
@@ -206,17 +201,17 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 38),
-
                       SizedBox(
                         width: 160,
                         height: 48,
                         child: ElevatedButton(
                           onPressed: buttonEnabled ? handleNext : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFDBDBDB),
-                            foregroundColor: Colors.black,
+                            backgroundColor: buttonEnabled
+                                ? const Color(0xFF0D1850)
+                                : const Color(0xFFDBDBDB),
+                            foregroundColor: Colors.white,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 0),
                             shape: RoundedRectangleBorder(
