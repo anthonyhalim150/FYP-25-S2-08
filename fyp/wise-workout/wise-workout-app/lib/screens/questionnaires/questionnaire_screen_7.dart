@@ -19,36 +19,54 @@ class QuestionnaireScreen7 extends StatefulWidget {
 class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
   int selectedIndex = -1;
   final List<String> options = [
-    'Body Weight',
-    'With Equipment',
-    'Both',
+    'Abs/Core',
+    'Elbow',
+    'Wrist',
+    'Knees',
+    'Shoulder',
+    'Others (Type here)',
   ];
+  final TextEditingController othersController = TextEditingController();
+
+  @override
+  void dispose() {
+    othersController.dispose();
+    super.dispose();
+  }
 
   void handleNext() {
-    if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'exercise_type': options[selectedIndex],
-      };
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => QuestionnaireScreen8(
-            step: widget.step + 1,
-            responses: updatedResponses,
-          ),
-        ),
-      );
+    String selectedValue;
+    if (selectedIndex == options.length - 1) {
+      // Others selected
+      selectedValue = othersController.text;
+    } else {
+      selectedValue = options[selectedIndex];
     }
+    final updatedResponses = {
+      ...widget.responses,
+      'injury_limitation': selectedValue,
+    };
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuestionnaireScreen8(
+          step: widget.step + 1,
+          responses: updatedResponses,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool buttonEnabled = selectedIndex != -1;
-    const background = Color(0xFFF9F7F2);
+    final background = Color(0xFFF9F7F2);
     const yellow = Color(0xFFFFC832);
     const darkBlue = Color(0xFF0D1850);
     const gray = Color(0xFFD6D6D8);
+
+    // Button is enabled if one non-Others option is selected, or if Others is selected and not empty
+    bool othersSelected = selectedIndex == options.length - 1;
+    bool buttonEnabled = (selectedIndex != -1 && (!othersSelected || othersController.text.trim().isNotEmpty));
 
     return Scaffold(
       backgroundColor: background,
@@ -75,11 +93,10 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                   padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 38),
                       const Text(
-                        "Question 4 out of 9",
+                        "Question 7 out of 9",
                         style: TextStyle(
                           color: Color(0xFFB7B8B8),
                           fontWeight: FontWeight.w500,
@@ -92,7 +109,7 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
-                          "Do you prefer body weight\nexercises, equipment, or both?",
+                          "Do you have any injuries\nor limitations we should consider?",
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 21,
@@ -106,17 +123,20 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                       // Options
                       ...List.generate(options.length, (i) {
                         final selected = selectedIndex == i;
+                        final isOthers = i == options.length - 1;
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+                          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 0),
                           child: GestureDetector(
-                            onTap: () => setState(() => selectedIndex = i),
+                            onTap: () {
+                              setState(() => selectedIndex = i);
+                            },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 120),
-                              width: MediaQuery.of(context).size.width * 0.82,
-                              height: 40,
+                              width: MediaQuery.of(context).size.width * 0.94,
+                              height: 54,
                               decoration: BoxDecoration(
                                 color: selected ? yellow : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(27),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.03),
@@ -126,8 +146,36 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                                 ],
                               ),
                               alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                              child: isOthers
+                                  ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                                child: TextField(
+                                  enabled: selected,
+                                  controller: othersController,
+                                  onChanged: (_) => setState(() {}),
+                                  style: TextStyle(
+                                    fontSize: 15.5,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.08,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    hintText: "Others (Type here)",
+                                    hintStyle: TextStyle(
+                                      color: Colors.black45,
+                                      fontSize: 15.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black45, width: 1),
+                                    ),
+                                  ),
+                                ),
+                              )
+                                  : Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
                                 child: Text(
                                   options[i],
                                   style: TextStyle(
@@ -143,7 +191,6 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                         );
                       }),
                       const SizedBox(height: 42),
-                      // Next button
                       SizedBox(
                         width: 140,
                         height: 43,
