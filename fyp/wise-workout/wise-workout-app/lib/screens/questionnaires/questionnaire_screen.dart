@@ -3,165 +3,242 @@ import 'questionnaire_screen_2.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
   final int step;
-  final int totalSteps;
   final Map<String, dynamic> responses;
-
-  const QuestionnaireScreen({
-    super.key,
-    required this.step,
-    this.totalSteps = 5,
-    required this.responses,
-  });
+  const QuestionnaireScreen({super.key, required this.step, required this.responses});
 
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
 }
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
-  int selectedIndex = -1;
+  final TextEditingController heightController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
 
-  final List<String> options = [
-    'Never',
-    'Once To Twice A Week',
-    'Three To Four times A Week',
-    'Five To Six times A Week',
-    'Every Day',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    heightController.addListener(_onTextChange);
+    weightController.addListener(_onTextChange);
+  }
+
+  void _onTextChange() => setState(() {});
+
+  @override
+  void dispose() {
+    heightController.dispose();
+    weightController.dispose();
+    super.dispose();
+  }
 
   void handleNext() {
-    if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'workout_frequency': options[selectedIndex],
-      };
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => QuestionnaireScreen2(
-            step: widget.step + 1,
-            responses: updatedResponses,
-          ),
+    final updatedResponses = {
+      ...widget.responses,
+      'height_cm': heightController.text,
+      'weight_kg': weightController.text,
+    };
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuestionnaireScreen2(
+          step: widget.step + 1,
+          responses: updatedResponses,
         ),
-      );
-    }
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final backgroundColor = const Color(0xFFF9F7F2);
+    final buttonEnabled = heightController.text.isNotEmpty && weightController.text.isNotEmpty;
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/questionnaire_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Icon(Icons.fitness_center, color: Color(0xFFFFC700), size: 34),
+                ],
+              ),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 32),
-                          child: LinearProgressIndicator(
-                            value: widget.step / widget.totalSteps,
-                            color: Colors.purpleAccent,
-                            backgroundColor: Colors.white24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.fitness_center, color: Colors.amber),
-                      SizedBox(width: 8),
-                      Text(
-                        'HOW OFTEN DO YOU\nWORKOUT?',
-                        textAlign: TextAlign.center,
+                      const SizedBox(height: 32),
+                      const Text(
+                        "Question 1 out of 9",
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.4,
+                          color: Color(0xFFB7B8B8),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          fontStyle: FontStyle.italic,
+                          letterSpacing: 0.2,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.fitness_center, color: Colors.amber),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  ...List.generate(options.length, (index) {
-                    final isSelected = selectedIndex == index;
-                    return GestureDetector(
-                      onTap: () => setState(() => selectedIndex = index),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          color: Colors.white10,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected ? Colors.purpleAccent : Colors.white24,
-                            width: 2,
-                          ),
+                      const SizedBox(height: 32),
+
+                      const Text(
+                        "What's your height?",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                          color: Colors.black,
+                          letterSpacing: 0.1,
                         ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: 250,
                         child: Row(
                           children: [
                             Expanded(
-                              child: Text(
-                                options[index],
-                                style: const TextStyle(
-                                  fontSize: 16,
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w500,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ],
+                                ),
+                                alignment: Alignment.center,
+                                child: TextField(
+                                  controller: heightController,
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                                  ),
                                 ),
                               ),
                             ),
-                            Icon(
-                              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                              color: isSelected ? Colors.purpleAccent : Colors.white38,
+                            const SizedBox(width: 10),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 2.0),
+                              child: Text(
+                                "cm",
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black87),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }),
-                  const Spacer(),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: handleNext,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+
+                      const SizedBox(height: 36),
+
+                      const Text(
+                        "What's your weight?",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                          color: Colors.black,
+                          letterSpacing: 0.1,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: 250,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ],
+                                ),
+                                alignment: Alignment.center,
+                                child: TextField(
+                                  controller: weightController,
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 2.0),
+                              child: Text(
+                                "kg",
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black87),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      child: const Text("NEXT →", style: TextStyle(fontSize: 16)),
-                    ),
+
+                      const SizedBox(height: 38),
+
+                      SizedBox(
+                        width: 160,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: buttonEnabled ? handleNext : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFDBDBDB),
+                            foregroundColor: Colors.black,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          child: const Text("Next"),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
