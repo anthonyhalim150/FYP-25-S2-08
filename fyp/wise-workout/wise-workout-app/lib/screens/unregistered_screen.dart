@@ -135,13 +135,13 @@ class UnregisteredUserPage extends StatelessWidget {
                 Theme(
                   data: Theme.of(context).copyWith(
                     colorScheme: Theme.of(context).colorScheme.copyWith(
-                      surface: Colors.white.withOpacity(1), // Background arc
-                      primaryContainer: Colors.white, // Foreground arc
+                      surface: Colors.white.withOpacity(1),
+                      primaryContainer: Colors.white,
                     ),
                   ),
                   child: ExerciseStatsCard(
                     currentSteps: currentSteps,
-                    maxSteps: maxSteps, // avoid div by zero
+                    maxSteps: maxSteps,
                     caloriesBurned: caloriesBurned,
                     xpEarned: xpEarned,
                   ),
@@ -270,33 +270,7 @@ class UnregisteredUserPage extends StatelessWidget {
         ),
       ),
 
-      // Floating action and bottom nav
-      floatingActionButton: GestureDetector(
-        onTap: () => _showRegistrationPrompt(context),
-        child: Container(
-          height: 70,
-          width: 70,
-          decoration: const BoxDecoration(
-            color: Colors.amber,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: const Center(
-            child: Icon(Icons.fitness_center, size: 38, color: Colors.white),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: CustomFloatingActionButtonLocation(
-        FloatingActionButtonLocation.centerDocked,
-        offsetY: 9,
-      ),
-
+      // Bottom navigation only
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
@@ -304,19 +278,5 @@ class UnregisteredUserPage extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-/// Custom FAB location class to move FAB upwards slightly
-class CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
-  final FloatingActionButtonLocation baseLocation;
-  final double offsetY;
-
-  CustomFloatingActionButtonLocation(this.baseLocation, {this.offsetY = 0});
-
-  @override
-  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
-    final baseOffset = baseLocation.getOffset(scaffoldGeometry);
-    return Offset(baseOffset.dx, baseOffset.dy + offsetY);
   }
 }
