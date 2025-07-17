@@ -13,7 +13,7 @@ import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/workout_tracker.dart';
-import 'screens/challenge_screen(wrong).dart';
+import 'screens/challenge_screen(removed).dart';
 import 'screens/questionnaires/questionnaire_screen.dart';
 import 'screens/questionnaires/questionnaire_screen_2.dart';
 import 'screens/questionnaires/questionnaire_screen_3.dart';

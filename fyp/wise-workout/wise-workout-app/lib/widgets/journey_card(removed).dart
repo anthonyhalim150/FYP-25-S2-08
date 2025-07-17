@@ -1,6 +1,6 @@
-// widgets/journey_card.dart
+// widgets/journey_card(removed).dart
 import 'package:flutter/material.dart';
-import '../screens/challenge_screen(wrong).dart';
+import '../screens/challenge_screen(removed).dart';
 
 class JourneyCard extends StatelessWidget {
   const JourneyCard({super.key});

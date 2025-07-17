@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_workout_app/widgets/journey_card.dart';
+import 'package:wise_workout_app/widgets/journey_card(removed).dart';
 import 'workout_sample_data.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
@@ -417,7 +417,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              if (_isPremiumUser) JourneyCard(),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
