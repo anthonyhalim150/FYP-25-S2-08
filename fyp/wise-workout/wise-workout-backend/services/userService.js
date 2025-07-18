@@ -109,6 +109,14 @@ class UserService {
     }
     await UserModel.updateProfile(userId, updates);
   }
+  static async getLeaderboard(type = 'levels', limit = 20) {
+    if (type === '') {
+      // for future use, not implemented yet
+      throw new Error('');
+    } else {
+      return await UserModel.getLevelsLeaderboard(limit);
+    }
+  }
 }
 
 module.exports = UserService;

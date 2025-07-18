@@ -1,66 +1,65 @@
-// levels_leaderboard_widget.dart
 import 'package:flutter/material.dart';
+import '../services/leaderboard_service.dart';
 
-class LevelsLeaderboardWidget extends StatelessWidget {
+class LevelsLeaderboardWidget extends StatefulWidget {
   const LevelsLeaderboardWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> users = [
-      {
-        'rank': 1,
-        'username': '@dragonSlayer',
-        'level': 28,
-        'image': 'assets/avatars/premium/premium2.png',
-      },
-      {
-        'rank': 2,
-        'username': '@fitMaster',
-        'level': 26,
-        'image': 'assets/avatars/premium/premium3.png',
-      },
-      {
-        'rank': 3,
-        'username': '@zenDude',
-        'level': 25,
-        'image': 'assets/avatars/premium/premium4.png',
-      },
-      {
-        'rank': 4,
-        'username': '@aquaStorm',
-        'level': 23,
-        'image': 'assets/avatars/free/free1.png',
-      },
-      {
-        'rank': 5,
-        'username': '@lightSpeed',
-        'level': 21,
-        'image': 'assets/avatars/free/free2.png',
-      },
-    ];
+  State<LevelsLeaderboardWidget> createState() => _LevelsLeaderboardWidgetState();
+}
 
+class _LevelsLeaderboardWidgetState extends State<LevelsLeaderboardWidget> {
+  List<Map<String, dynamic>> users = [];
+  bool loading = true;
+  String error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLeaderboard();
+  }
+
+  Future<void> _loadLeaderboard() async {
+    setState(() {
+      loading = true;
+      error = '';
+    });
+    try {
+      final data = await LeaderboardService().fetchLeaderboard(type: 'levels', limit: 20);
+      setState(() {
+        users = data;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        loading = false;
+        error = e.toString();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (loading) return const Center(child: CircularProgressIndicator());
+    if (error.isNotEmpty) return Center(child: Text(error));
+    if (users.isEmpty) return const Center(child: Text('No leaderboard data'));
     final top3 = users.take(3).toList();
     final others = users.skip(3).toList();
-
     return Column(
       children: [
         const SizedBox(height: 24),
         const Text(
           'Top Levels',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            _buildTopUser(user: top3[1], size: 60),
-            _buildTopUser(user: top3[0], size: 72),
-            _buildTopUser(user: top3[2], size: 60),
+            if (top3.length > 1) _buildTopUser(user: top3[1], size: 60),
+            if (top3.isNotEmpty) _buildTopUser(user: top3[0], size: 72),
+            if (top3.length > 2) _buildTopUser(user: top3[2], size: 60),
           ],
         ),
         const SizedBox(height: 32),
@@ -77,10 +76,8 @@ class LevelsLeaderboardWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 final user = others[index];
                 return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage(user['image']),
-                  ),
-                  title: Text(user['username'], style: const TextStyle(fontWeight: FontWeight.w600)),
+                  leading: _buildAvatarWithBackground(user, 32),
+                  title: Text(user['username'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
                   trailing: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -88,7 +85,7 @@ class LevelsLeaderboardWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      'Lv. ${user['level']}',
+                      'Lv. ${user['level'] ?? ''}',
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -105,20 +102,52 @@ class LevelsLeaderboardWidget extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        CircleAvatar(
-          radius: size,
-          backgroundImage: AssetImage(user['image']),
-        ),
+        _buildAvatarWithBackground(user, size),
         const SizedBox(height: 6),
-        Text(
-          user['username'],
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        Text(
-          'Lv. ${user['level']}',
-          style: const TextStyle(fontSize: 12, color: Colors.white70),
-        ),
+        Text(user['username'] ?? '', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text('Lv. ${user['level'] ?? ''}', style: const TextStyle(fontSize: 12, color: Colors.white70)),
       ],
     );
+  }
+
+  Widget _buildAvatarWithBackground(Map<String, dynamic> user, double size) {
+    final avatarUrl = (user['avatar_url'] == null || user['avatar_url'].toString().isEmpty)
+        ? 'assets/background/black.jpg'
+        : user['avatar_url'];
+    final backgroundUrl = (user['background_url'] == null || user['background_url'].toString().isEmpty)
+        ? 'assets/background/black.jpg'
+        : user['background_url'];
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          ClipOval(
+            child: Image(
+              image: _getImageProvider(backgroundUrl),
+              fit: BoxFit.cover,
+              width: size,
+              height: size,
+            ),
+          ),
+          CircleAvatar(
+            radius: size * 0.5,
+            backgroundImage: _getImageProvider(avatarUrl),
+            backgroundColor: Colors.transparent,
+          ),
+        ],
+      ),
+    );
+  }
+
+  ImageProvider _getImageProvider(dynamic url) {
+    if (url == null || url.toString().isEmpty) {
+      return const AssetImage('assets/background/black.jpg');
+    }
+    if (url.toString().startsWith('http')) {
+      return NetworkImage(url.toString());
+    }
+    return AssetImage(url.toString());
   }
 }

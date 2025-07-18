@@ -89,3 +89,12 @@ exports.updateProfile = async (req, res) => {
     res.status(map[err.message] || 500).json({ message: err.message });
   }
 };
+exports.getLeaderboard = async (req, res) => {
+  try {
+    const { type, limit } = req.query;
+    const data = await UserService.getLeaderboard(type, parseInt(limit) || 20);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

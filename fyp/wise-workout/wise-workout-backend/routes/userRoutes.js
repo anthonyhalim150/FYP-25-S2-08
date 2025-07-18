@@ -6,7 +6,8 @@ const {
   getCurrentAvatar,
   getCurrentBackground, 
   getCurrentProfile,
-  updateProfile
+  updateProfile,
+  getLeaderboard
 } = require('../controllers/userController');
 
 router.post('/set-avatar', setAvatar);
@@ -15,5 +16,6 @@ router.get('/current-avatar', getCurrentAvatar);
 router.get('/current-background', getCurrentBackground); 
 router.get('/current-profile', getCurrentProfile);
 router.post('/update-profile', updateProfile);
+router.get('/leaderboard', getLeaderboard);
 
 module.exports = router;
