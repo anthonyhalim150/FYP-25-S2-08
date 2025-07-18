@@ -25,8 +25,6 @@ class HealthService {
     }
   }
 
-
-
   Future<int> getTodaySteps() async {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
@@ -51,19 +49,10 @@ class HealthService {
         types: [HealthDataType.ACTIVE_ENERGY_BURNED],
         startTime: startOfDay,
         endTime: now,
-        // REMOVE filters for now
-        // recordingMethodsToFilter: [],
       );
 
-      print('🧠 CALORIE RECORD COUNT: ${data.length}');
-      for (final point in data) {
-        print('🔥 ${point.value} kcal | ${point.sourceName} | ${point.dateFrom} → ${point.dateTo}');
-      }
-
       final total = data.fold<double>(0.0, (prev, point) {
-        return prev + (point.value is double
-            ? point.value as double
-            : (point.value as int).toDouble());
+        return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
       });
 
       return total.round();
@@ -92,34 +81,17 @@ class HealthService {
     }
   }
 
-
-
-
-
-
   Future<List<int>> getHourlyStepsForToday() async {
     final now = DateTime.now();
     List<int> hourlySteps = List.filled(24, 0);
-    print("Fetching hourly steps...");
 
     try {
       for (int hour = 0; hour < 24; hour++) {
         final start = DateTime(now.year, now.month, now.day, hour);
         final end = start.add(const Duration(hours: 1));
-
-        final data = await _health.getHealthDataFromTypes(
-          types: [HealthDataType.STEPS],
-          startTime: start,
-          endTime: end,
-        );
-
-        final sum = data.fold<int>(0, (prev, point) {
-          return prev + (point.value is int ? point.value as int : (point.value as double).round());
-        });
-
-        hourlySteps[hour] = sum;
+        final steps = await _health.getTotalStepsInInterval(start, end);
+        hourlySteps[hour] = steps ?? 0;
       }
-
       return hourlySteps;
     } catch (e) {
       print('Error fetching hourly steps: $e');
@@ -129,24 +101,20 @@ class HealthService {
 
   Future<List<int>> getHourlyCaloriesForToday() async {
     final now = DateTime.now();
-    print("Fetching hourly calories...");
     List<int> hourlyCalories = List.filled(24, 0);
 
     try {
       for (int hour = 0; hour < 24; hour++) {
         final start = DateTime(now.year, now.month, now.day, hour);
         final end = start.add(const Duration(hours: 1));
-
         final data = await _health.getHealthDataFromTypes(
           types: [HealthDataType.ACTIVE_ENERGY_BURNED],
           startTime: start,
           endTime: end,
         );
-
-       final sum = data.fold<double>(0.0, (prev, point) {
+        final sum = data.fold<double>(0.0, (prev, point) {
           return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
         });
-
         hourlyCalories[hour] = sum.round();
       }
       return hourlyCalories;
@@ -154,5 +122,69 @@ class HealthService {
       print('Error fetching hourly calories: $e');
       return List.filled(24, 0);
     }
+  }
+
+  Future<int> getStepsInRange(DateTime start, DateTime end) async {
+    try {
+      final steps = await _health.getTotalStepsInInterval(start, end);
+      return steps ?? 0;
+    } catch (e) {
+      print('Error getting steps in range: $e');
+      return 0;
+    }
+  }
+
+  Future<int> getCaloriesInRange(DateTime start, DateTime end) async {
+    try {
+      final data = await _health.getHealthDataFromTypes(
+        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        startTime: start,
+        endTime: end,
+      );
+
+      final total = data.fold<double>(0.0, (prev, point) {
+        return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
+      });
+
+      return total.round();
+    } catch (e) {
+      print('Error getting calories in range: $e');
+      return 0;
+    }
+  }
+
+  Future<List<int>> getDailyStepsInRange(DateTime start, DateTime end) async {
+    final days = end.difference(start).inDays + 1;
+    List<int> stepsPerDay = [];
+
+    for (int i = 0; i < days; i++) {
+      final dayStart = DateTime(start.year, start.month, start.day + i);
+      final dayEnd = dayStart.add(const Duration(days: 1));
+      final steps = await _health.getTotalStepsInInterval(dayStart, dayEnd);
+      stepsPerDay.add(steps ?? 0);
+    }
+    return stepsPerDay;
+  }
+
+  Future<List<int>> getDailyCaloriesInRange(DateTime start, DateTime end) async {
+    final days = end.difference(start).inDays + 1;
+    List<int> caloriesPerDay = [];
+
+    for (int i = 0; i < days; i++) {
+      final dayStart = DateTime(start.year, start.month, start.day + i);
+      final dayEnd = dayStart.add(const Duration(days: 1));
+      final data = await _health.getHealthDataFromTypes(
+        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        startTime: dayStart,
+        endTime: dayEnd,
+      );
+
+      final total = data.fold<double>(0.0, (prev, point) {
+        return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
+      });
+
+      caloriesPerDay.add(total.round());
+    }
+    return caloriesPerDay;
   }
 }

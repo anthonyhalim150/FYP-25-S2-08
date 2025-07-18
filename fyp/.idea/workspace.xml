@@ -5,25 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="242b8e5f-8189-490e-8bb9-51f10c7788f0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/weekly_monthly_summary.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/widgets/time_based_chart.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/widgets/week_picker_dialog.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/forgot_password_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/forgot_password_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/otp_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/otp_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/verify_reset_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/verify_reset_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/daily_summary_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/daily_summary_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/api_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/api_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/badge_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/badge_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/daily_quest_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/daily_quest_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/friend_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/friend_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/health_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/health_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/lucky_spin_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/lucky_spin_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/message_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/message_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/profile_edit_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/profile_edit_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/questionnaire_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/questionnaire_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/workout_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/workout_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/widgets/register_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/widgets/register_button.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +53,7 @@
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Brendan School/Mini-FYP-Test/fyp",
-    "settings.editor.selected.configurable": "device.mirroring",
+    "settings.editor.selected.configurable": "preferences.editor.code.editing",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>

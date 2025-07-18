@@ -59,7 +59,15 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
         leading: const BackButton(color: Colors.black),
         title: const Text("Daily Activity", style: TextStyle(color: Colors.black)),
         centerTitle: true,
-        actions: const [Icon(Icons.calendar_today, color: Colors.black)],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.black),
+            onPressed: () {
+              Navigator.pushNamed(context, '/weekly-monthly-summary');
+            },
+          ),
+        ],
+
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
