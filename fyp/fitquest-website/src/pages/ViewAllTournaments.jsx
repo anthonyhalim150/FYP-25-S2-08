@@ -130,11 +130,16 @@ const ViewAllTournaments = () => {
       </table>
 
       {selectedTournament && (
-        <ViewATournament
-          tournament={selectedTournament}
-          onClose={() => setSelectedTournament(null)}
-        />
+        <div className="tournament-modal-overlay" onClick={() => setSelectedTournament(null)}>
+          <div className="tournament-modal-content" onClick={(e) => e.stopPropagation()}>
+            <ViewATournament
+              tournament={selectedTournament}
+              onClose={() => setSelectedTournament(null)}
+            />
+          </div>
+        </div>
       )}
+
     </div>
   </div>
 </PageLayout>

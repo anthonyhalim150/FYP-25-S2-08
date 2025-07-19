@@ -21,12 +21,9 @@
   color: #ffffff !important;
 }
 
-
-.status-badge {
-    padding: 0.3rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
+.status-badge.pending {
+    background-color: #dbdbdb;
+    color: #6f6f6f;
 }
 
 .status-badge.accepted {
@@ -37,9 +34,4 @@
 .status-badge.rejected {
     background-color: #ffe0e0;
     color: #d32f2f;
-}
-
-.status-badge.rejected {
-    background-color: #d4d4d4;
-    color: #4d4747;
 }

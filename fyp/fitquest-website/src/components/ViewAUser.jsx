@@ -114,19 +114,23 @@ const ViewAUser = ({ user, onClose }) => {
 
         {isEditing ? (
           <div className="button-row">
-            <button className="confirm-btn" onClick={handleSave}>Save</button>
+            <button 
+            className="confirm-btn" 
+            onClick={handleSave}>Save</button>
             <button
               className="cancel-btn"
               onClick={() => {
                 setEditedUser({ ...user });
                 setIsEditing(false);
-              }}
-            >
-              Cancel
-            </button>
+              }}>Cancel</button>
           </div>
         ) : (
+          <div className='button-row center'>
           <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit</button>
+           <button className={user.isSuspended ? 'unsuspend-btn' : 'suspend-btn'}>
+              {user.isSuspended ? 'Unsuspend' : 'Suspend'}
+            </button>
+          </div>
         )}
 
         </div>

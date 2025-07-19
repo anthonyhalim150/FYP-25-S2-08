@@ -200,8 +200,9 @@ const ViewAllUsers = () => {
           )}
           {selectedUser && (
             <div className="user-modal-overlay" onClick={() => setSelectedUser(null)}>
-                <ViewAUser className="user-modal-overlay" user={selectedUser} onClose={() => setSelectedUser(null)} />
+                <ViewAUser user={selectedUser} onClose={() => setSelectedUser(null)} />
             </div>
+            
           )}
 
         </div>

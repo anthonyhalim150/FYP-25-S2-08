@@ -104,8 +104,13 @@ const filteredFeedbacks = dummyFeedbacks.filter((fb) => {
             <tr key={fb.id} onClick={() => setModalFeedback(fb)}>
               <td>{fb.user}</td>
               <td>{fb.email}</td>
-              <td>{new Date(fb.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ (\d{4})$/, ',$1')}</td>
-              <td className={`badge ${fb.status.toLowerCase()}`}>{fb.status}</td>
+              <td>{new Date(fb.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short',  year: 'numeric' }).replace(/ (\d{4})$/,  ', $1')}</td>
+              <td>
+                <span className={`status-badge ${fb.status.toLowerCase()}`}>
+                  {fb.status}
+                </span>
+               {/* className={`badge ${fb.status.toLowerCase()}`}>{fb.status}</td> */}
+              </td>
               <td>
                 {fb.status === 'Pending' ? (
                   <>
