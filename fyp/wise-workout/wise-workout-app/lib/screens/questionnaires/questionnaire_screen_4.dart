@@ -24,18 +24,25 @@ class _QuestionnaireScreen4State extends State<QuestionnaireScreen4> {
     'Both',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    final previous = widget.responses['exercise_type'];
+    if (previous != null) {
+      final idx = options.indexOf(previous);
+      if (idx != -1) selectedIndex = idx;
+    }
+  }
+
   void handleNext() {
     if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'exercise_type': options[selectedIndex],
-      };
+      widget.responses['exercise_type'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen5(
             step: widget.step + 1,
-            responses: updatedResponses,
+            responses: widget.responses,
           ),
         ),
       );

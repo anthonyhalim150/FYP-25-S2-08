@@ -11,12 +11,18 @@ class QuestionnaireScreen extends StatefulWidget {
 }
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
-  final TextEditingController heightController = TextEditingController();
-  final TextEditingController weightController = TextEditingController();
+  late final TextEditingController heightController;
+  late final TextEditingController weightController;
 
   @override
   void initState() {
     super.initState();
+    heightController = TextEditingController(
+      text: widget.responses['height_cm'] ?? '',
+    );
+    weightController = TextEditingController(
+      text: widget.responses['weight_kg'] ?? '',
+    );
     heightController.addListener(_onTextChange);
     weightController.addListener(_onTextChange);
   }
@@ -31,17 +37,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   }
 
   void handleNext() {
-    final updatedResponses = {
-      ...widget.responses,
-      'height_cm': heightController.text,
-      'weight_kg': weightController.text,
-    };
+    widget.responses['height_cm'] = heightController.text;
+    widget.responses['weight_kg'] = weightController.text;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => QuestionnaireScreen2(
           step: widget.step + 1,
-          responses: updatedResponses,
+          responses: widget.responses,
         ),
       ),
     );

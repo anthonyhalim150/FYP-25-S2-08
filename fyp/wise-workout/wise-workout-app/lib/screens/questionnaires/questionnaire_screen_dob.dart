@@ -17,11 +17,19 @@ class QuestionnaireDobScreen extends StatefulWidget {
 class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
   DateTime? selectedDate;
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.responses['dob'] != null) {
+      selectedDate = DateTime.tryParse(widget.responses['dob']);
+    }
+  }
+
   void _pickDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime(now.year - 18),
+      initialDate: selectedDate ?? DateTime(now.year - 18),
       firstDate: DateTime(1900),
       lastDate: now,
     );
@@ -34,16 +42,13 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
 
   void _handleNext() {
     if (selectedDate != null) {
-      final updatedResponses = {
-        ...widget.responses,
-        'dob': DateFormat('yyyy-MM-dd').format(selectedDate!)
-      };
+      widget.responses['dob'] = DateFormat('yyyy-MM-dd').format(selectedDate!);
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen(
             step: widget.step + 1,
-            responses: updatedResponses,
+            responses: widget.responses,
           ),
         ),
       );
@@ -64,7 +69,6 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Top bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
@@ -87,7 +91,6 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 38),
-                      // Headline
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
@@ -101,7 +104,6 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                         ),
                       ),
                       const SizedBox(height: 28),
-                      // Date input
                       GestureDetector(
                         onTap: _pickDate,
                         child: Container(
@@ -141,7 +143,6 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                         ),
                       ),
                       const SizedBox(height: 47),
-                      // NEXT BUTTON
                       SizedBox(
                         width: 140,
                         height: 43,

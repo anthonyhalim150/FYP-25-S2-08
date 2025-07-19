@@ -23,18 +23,25 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
     'Advanced',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    final previous = widget.responses['fitness_level'];
+    if (previous != null) {
+      final idx = options.indexOf(previous);
+      if (idx != -1) selectedIndex = idx;
+    }
+  }
+
   void handleNext() {
     if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'fitness_level': options[selectedIndex],
-      };
+      widget.responses['fitness_level'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen7(
             step: widget.step + 1,
-            responses: updatedResponses,
+            responses: widget.responses,
           ),
         ),
       );

@@ -22,23 +22,32 @@ class _QuestionnaireScreen8State extends State<QuestionnaireScreen8> {
     'Strength Training',
     'Cardio Training',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final prevValue = widget.responses['workout_type'];
+    if (prevValue != null) {
+      final idx = options.indexOf(prevValue);
+      if (idx != -1) selectedIndex = idx;
+    }
+  }
+
   void handleNext() {
     if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'workout_type': options[selectedIndex],
-      };
+      widget.responses['workout_type'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen9(
             step: widget.step + 1,
-            responses: updatedResponses,
+            responses: widget.responses,
           ),
         ),
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final bool buttonEnabled = selectedIndex != -1;

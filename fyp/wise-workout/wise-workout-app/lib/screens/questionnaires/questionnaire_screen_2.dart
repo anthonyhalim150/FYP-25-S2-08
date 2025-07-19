@@ -26,18 +26,25 @@ class _QuestionnaireScreen2State extends State<QuestionnaireScreen2> {
     'Daily',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    final previous = widget.responses['workout_days'];
+    if (previous != null) {
+      final idx = options.indexOf(previous);
+      if (idx != -1) selectedIndex = idx;
+    }
+  }
+
   void handleNext() {
     if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'workout_days': options[selectedIndex],
-      };
+      widget.responses['workout_days'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen3(
             step: widget.step + 1,
-            responses: updatedResponses,
+            responses: widget.responses,
           ),
         ),
       );

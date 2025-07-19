@@ -29,6 +29,23 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
   final TextEditingController othersController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Restore selection and text if returning to this screen
+    final previous = widget.responses['injury_limitation'];
+    if (previous != null) {
+      final idx = options.indexOf(previous);
+      if (idx != -1) {
+        selectedIndex = idx;
+      } else {
+        // Not in options, must be 'Others'
+        selectedIndex = options.length - 1;
+        othersController.text = previous;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     othersController.dispose();
     super.dispose();
@@ -42,16 +59,13 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
     } else {
       selectedValue = options[selectedIndex];
     }
-    final updatedResponses = {
-      ...widget.responses,
-      'injury_limitation': selectedValue,
-    };
+    widget.responses['injury_limitation'] = selectedValue;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => QuestionnaireScreen8(
           step: widget.step + 1,
-          responses: updatedResponses,
+          responses: widget.responses,
         ),
       ),
     );
@@ -128,7 +142,12 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                           padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 0),
                           child: GestureDetector(
                             onTap: () {
-                              setState(() => selectedIndex = i);
+                              setState(() {
+                                selectedIndex = i;
+                                if (!isOthers) {
+                                  othersController.clear();
+                                }
+                              });
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 120),

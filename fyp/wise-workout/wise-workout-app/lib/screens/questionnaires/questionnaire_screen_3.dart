@@ -25,18 +25,25 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
     'Long (1 Hour or more)',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    final previous = widget.responses['workout_length'];
+    if (previous != null) {
+      final idx = options.indexOf(previous);
+      if (idx != -1) selectedIndex = idx;
+    }
+  }
+
   void handleNext() {
     if (selectedIndex != -1) {
-      final updatedResponses = {
-        ...widget.responses,
-        'workout_length': options[selectedIndex],
-      };
+      widget.responses['workout_length'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => QuestionnaireScreen4(
             step: widget.step + 1,
-            responses: updatedResponses,
+            responses: widget.responses,
           ),
         ),
       );
