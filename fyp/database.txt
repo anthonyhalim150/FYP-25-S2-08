@@ -102,8 +102,7 @@ CREATE TABLE badges (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   description VARCHAR(255),
-  icon_url VARCHAR(255) NOT NULL,
-  is_premium BOOLEAN DEFAULT false
+  icon_url VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE user_badges (
@@ -182,19 +181,19 @@ INSERT INTO prizes (label, type, value) VALUES
 ('5 Freezes', 'freeze', 5),
 ('1 Day Trial', 'trial', 1);
 
-INSERT INTO badges (name, description, icon_url, is_premium) VALUES
-('First Workout', 'Complete your first workout session to earn this badge.', 'assets/badges/badge_1.png', false),
-('7-Day Streak', 'Work out for 7 consecutive days to earn this badge.', 'assets/badges/badge_2.png', false),
-('10 Workouts', 'Complete 10 workout sessions to earn this badge.', 'assets/badges/badge_3.png', false),
-('1000 Calories Burned', 'Burn a total of 1000 calories to earn this badge.', 'assets/badges/badge_4.png', false),
-('Early Bird', 'Work out before 7AM five times to earn this badge.', 'assets/badges/badge_5.png', false),
-('Friend Maker', 'Add your first friend to earn this badge.', 'assets/badges/badge_6.png', false),
-('Competition Winner', 'Win your first competition to earn this badge.', 'assets/badges/badge_7.png', false),
-('Premium Champion', 'Upgrade to premium membership to earn this badge.', 'assets/badges/badge_8.png', true),
-('Spin Winner', 'Win a prize from the Lucky Spin to earn this badge.', 'assets/badges/badge_9.png', false),
-('50 Workouts', 'Complete 50 workout sessions to earn this badge.', 'assets/badges/badge_10.png', false),
-('Mindful Mover', 'Complete a mindful or recovery activity to earn this badge.', 'assets/badges/badge_11.png', false),
-('Workout Buddy', 'Complete a workout with a friend to earn this badge.', 'assets/badges/badge_12.png', false);
+INSERT INTO badges (name, description, icon_url) VALUES
+('First Workout', 'Complete your first workout session to earn this badge.', 'assets/badges/badge_1.png'),
+('7-Day Streak', 'Work out for 7 consecutive days to earn this badge.', 'assets/badges/badge_2.png'),
+('10 Workouts', 'Complete 10 workout sessions to earn this badge.', 'assets/badges/badge_3.png'),
+('1000 Calories Burned', 'Burn a total of 1000 calories to earn this badge.', 'assets/badges/badge_4.png'),
+('Lucky Starter', 'Complete your first spin to unlock this badge.', 'assets/badges/badge_5.png'),
+('Friend Maker', 'Add your first friend to earn this badge.', 'assets/badges/badge_6.png'),
+('Tournament Winner', 'Win your first tournament to earn this badge.', 'assets/badges/badge_7.png'),
+('Premium Champion', 'Upgrade to premium membership to earn this badge.', 'assets/badges/badge_8.png'),
+('Spin Winner', 'Win a prize from the Lucky Spin to earn this badge.', 'assets/badges/badge_9.png'),
+('50 Workouts', 'Complete 50 workout sessions to earn this badge.', 'assets/badges/badge_10.png'),
+('Mindful Mover', 'Complete a mindful or recovery activity to earn this badge.', 'assets/badges/badge_11.png'),
+('Workout Buddy', 'Complete a workout with a friend to earn this badge.', 'assets/badges/badge_12.png');
 
 INSERT INTO quests (code, text, xp_reward) VALUES
 ('ANY_WORKOUT', 'Finish any workout', 15),
