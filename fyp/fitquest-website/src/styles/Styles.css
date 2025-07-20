@@ -93,6 +93,7 @@ header nav a {
   max-width: 700px;
   width:500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
 }
 
 .search-bar {
@@ -357,14 +358,16 @@ header nav a {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+  width: 100vw;         /* force the image to be wider than viewport */
+  max-width: none;      /* disables limiting width */
   height: auto;
-  width: auto;
-  max-height: 100%;
-  max-width: 100%;
+  max-height: none;
   object-fit: contain;
-  pointer-events: none; /* lets you click through the image if needed */
-  z-index: 0; /* stays behind the UI panels */
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
 }
+
 
 .fitquest-left-panel {
   flex: 1;
@@ -746,30 +749,6 @@ header nav a {
 }
 
 
-/* 
-.page-title-with-search {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 90%;
-  margin: 2rem auto;
-  gap: 1rem;
-}
-
-.page-title-with-search h2 {
-  margin: 0;
-  font-size: 1.5rem;
-} */
-
-
-/* Title and search bar aligned */
-/* .page-title-with-search {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-} */
-
 .user-left-panel {
   flex: 1;
   background-color: #ffe135;
@@ -946,31 +925,6 @@ header nav a {
   background-color: #fceabb;
 }
 
-.sidebar-logout {
-  margin-top: auto;
-  padding-top: 2rem;
-}
-
-.sidebar-logout button {
-  background: none;
-  border: none;
-  color: black;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-align: left;
-  padding: 0.5rem 0.8rem;
-  border-radius: 4px;
-  width: 100%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.2s ease;
-  margin-bottom: 5rem;
-}
-
-.sidebar-logout button:hover {
-  background-color: #fceabb;
-}
 
 
 /* Updated ViewAUser Modal (Two-Panel Split) */
