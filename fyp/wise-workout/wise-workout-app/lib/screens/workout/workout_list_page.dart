@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/workout_model.dart';
-import '../../services/workout_service_try.dart';
+import '../../services/workout_service.dart';
 import '../../widgets/workout_tile.dart';
 import 'exercise_list_page.dart';
 

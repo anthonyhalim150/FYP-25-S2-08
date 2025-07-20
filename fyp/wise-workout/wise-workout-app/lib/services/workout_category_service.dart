@@ -1,62 +1,80 @@
-// workout_category_service.dart
-import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// Model representing a workout category
 class WorkoutCategory {
-  final int categoryId;
+  final String categoryId;
   final String categoryName;
-  final String categoryTitle;
+  final String categoryKey;
   final String categoryDescription;
+  final String imageUrl;
 
   WorkoutCategory({
     required this.categoryId,
-    required this.categoryTitle,
     required this.categoryName,
+    required this.categoryKey,
     required this.categoryDescription,
-  });
-}
+  }) : imageUrl = _generateImageUrl(categoryKey);
 
-// Service that fetches all workout categories
-class WorkoutCategoryService {
-  Future<List<WorkoutCategory>> fetchCategories() async {
-    await Future.delayed(Duration(milliseconds: 300)); // simulate delay
-
-    return [
-      WorkoutCategory(
-        categoryId: 1,
-        categoryTitle: 'Push',
-        categoryName: 'strength',
-        categoryDescription: 'Workouts focused on building muscle strength using resistance training.',
-      ),
-      WorkoutCategory(
-        categoryId: 2,
-        categoryTitle: 'Relaxing',
-        categoryName: 'yoga',
-        categoryDescription: 'Workouts aimed at improving flexibility, balance, and mindfulness.',
-      ),
-      WorkoutCategory(
-        categoryId: 3,
-        categoryTitle: 'Leg Workout',
-        categoryName: 'leg',
-        categoryDescription: 'Workouts focused on back and biceps',
-      ),
-      WorkoutCategory(
-        categoryId: 4,
-        categoryTitle: 'Cardio Burn',
-        categoryName: 'cardio',
-        categoryDescription: 'Steady-state and interval cardio exercises.',
-      ),
-      // You can add more categories here
-    ];
+  static String _generateImageUrl(String categoryKey) {
+    return 'assets/workoutCategory/${categoryKey.replaceAll(' ', '_').toLowerCase()}.jpg';
   }
 
-  // Get a category by name
-  Future<WorkoutCategory?> getCategoryByName(String name) async {
-    final categories = await fetchCategories();
-    try {
-      return categories.firstWhere((cat) => cat.categoryName == name);
-    } catch (e) {
-      return null;
+  factory WorkoutCategory.fromJson(Map<String, dynamic> json) {
+    return WorkoutCategory(
+      categoryId: json['categoryId'].toString(),
+      categoryName: json['categoryName'],
+      categoryKey: json['categoryKey'],
+      categoryDescription: json['categoryDescription'],
+    );
+  }
+}
+
+class WorkoutCategoryService {
+  final String baseUrl = 'http://10.0.2.2:3000';
+  final _storage = const FlutterSecureStorage();
+
+  Future<String?> _getJwtCookie() async {
+    return await _storage.read(key: 'jwt_cookie');
+  }
+
+  /// Fetch all workout categories from backend
+  Future<List<WorkoutCategory>> fetchCategories() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/workout-categories'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout categories');
     }
+
+    final data = jsonDecode(response.body);
+    return List<WorkoutCategory>.from(data.map((item) => WorkoutCategory.fromJson(item)));
+  }
+
+  /// Fetch a single category by key
+  Future<WorkoutCategory?> getCategoryByKey(String categoryKey) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/workout-categories/$categoryKey'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    if (response.statusCode == 404) return null;
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch category');
+    }
+
+    final item = jsonDecode(response.body);
+    return WorkoutCategory.fromJson(item);
   }
 }
