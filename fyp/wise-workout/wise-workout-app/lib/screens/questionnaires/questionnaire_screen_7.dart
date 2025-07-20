@@ -65,6 +65,7 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
       MaterialPageRoute(
         builder: (_) => QuestionnaireScreen8(
           step: widget.step + 1,
+          totalSteps: widget.totalSteps,
           responses: widget.responses,
         ),
       ),
@@ -109,13 +110,14 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 38),
-                      const Text(
-                        "Question 7 out of 8",
-                        style: TextStyle(
+                      Text(
+                        "Question ${widget.step} out of ${widget.totalSteps}",
+                        style: const TextStyle(
                           color: Color(0xFFB7B8B8),
                           fontWeight: FontWeight.w500,
-                          fontSize: 17,
+                          fontSize: 18,
                           fontStyle: FontStyle.italic,
+                          letterSpacing: 0.2,
                         ),
                         textAlign: TextAlign.center,
                       ),

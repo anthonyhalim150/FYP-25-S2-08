@@ -24,11 +24,26 @@ class QuestionnaireScreen9 extends StatelessWidget {
 
   String get bmiCategory {
     final bmi = bmiValue;
+    final gender = (responses['gender'] ?? '').toString().toLowerCase();
     if (bmi == 0) return '';
-    if (bmi < 18.5) return "Underweight";
-    if (bmi < 25) return "Normal";
-    if (bmi < 30) return "Overweight";
-    return "Obese";
+
+    if (gender == 'female') {
+      if (bmi < 18.0) return "Underweight (Female)";
+      if (bmi < 24.0) return "Normal (Female)";
+      if (bmi < 29.0) return "Overweight (Female)";
+      return "Obese (Female)";
+    } else if (gender == 'male') {
+      if (bmi < 18.5) return "Underweight (Male)";
+      if (bmi < 25.0) return "Normal (Male)";
+      if (bmi < 30.0) return "Overweight (Male)";
+      return "Obese (Male)";
+    } else {
+      // If gender is missing or other, use the universal standard without a label
+      if (bmi < 18.5) return "Underweight";
+      if (bmi < 25.0) return "Normal";
+      if (bmi < 30.0) return "Overweight";
+      return "Obese";
+    }
   }
 
   @override
@@ -42,7 +57,6 @@ class QuestionnaireScreen9 extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // HEADER
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
@@ -85,8 +99,6 @@ class QuestionnaireScreen9 extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
-
-                      // BMI BOX
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 36),
@@ -97,7 +109,7 @@ class QuestionnaireScreen9 extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              bmiValue == 0 ? '-' : bmiValue.toStringAsFixed(0),
+                              bmiValue == 0 ? '-' : bmiValue.toStringAsFixed(1),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 44,
@@ -113,22 +125,10 @@ class QuestionnaireScreen9 extends StatelessWidget {
                                 color: Colors.black,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              "",
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black87,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 54),
-
-                      // DONE BUTTON
                       SizedBox(
                         width: 140,
                         height: 43,

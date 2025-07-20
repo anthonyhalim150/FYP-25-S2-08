@@ -1,45 +1,42 @@
 import 'package:flutter/material.dart';
-import 'questionnaire_screen_7.dart';
+import 'questionnaire_screen.dart';
 
-class QuestionnaireScreen6 extends StatefulWidget {
+class QuestionnaireScreenGender extends StatefulWidget {
   final int step;
   final int totalSteps;
   final Map<String, dynamic> responses;
-  const QuestionnaireScreen6({
+  const QuestionnaireScreenGender({
     super.key,
     required this.step,
     this.totalSteps = 9,
     required this.responses,
   });
+
   @override
-  State<QuestionnaireScreen6> createState() => _QuestionnaireScreen6State();
+  State<QuestionnaireScreenGender> createState() => _QuestionnaireScreenGenderState();
 }
 
-class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
+class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
   int selectedIndex = -1;
-  final List<String> options = [
-    'Beginner',
-    'Intermediate',
-    'Advanced',
-  ];
+  final List<String> options = ['Male', 'Female'];
 
   @override
   void initState() {
     super.initState();
-    final previous = widget.responses['fitness_level'];
+    final previous = widget.responses['gender'];
     if (previous != null) {
-      final idx = options.indexOf(previous);
+      final idx = options.indexWhere((opt) => opt.toLowerCase() == previous.toString().toLowerCase());
       if (idx != -1) selectedIndex = idx;
     }
   }
 
   void handleNext() {
     if (selectedIndex != -1) {
-      widget.responses['fitness_level'] = options[selectedIndex];
+      widget.responses['gender'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QuestionnaireScreen7(
+          builder: (_) => QuestionnaireScreen(
             step: widget.step + 1,
             totalSteps: widget.totalSteps,
             responses: widget.responses,
@@ -62,7 +59,6 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
@@ -100,7 +96,7 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
-                          "What is your current\nfitness level?",
+                          "What is your gender?",
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 21,
@@ -111,7 +107,6 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                         ),
                       ),
                       const SizedBox(height: 23),
-                      // Options
                       ...List.generate(options.length, (i) {
                         final selected = selectedIndex == i;
                         return Padding(
@@ -151,7 +146,6 @@ class _QuestionnaireScreen6State extends State<QuestionnaireScreen6> {
                         );
                       }),
                       const SizedBox(height: 42),
-                      // Next button
                       SizedBox(
                         width: 140,
                         height: 43,

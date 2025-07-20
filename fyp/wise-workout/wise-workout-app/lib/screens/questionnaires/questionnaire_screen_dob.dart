@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'questionnaire_screen.dart';
+import 'questionnaire_screen_gender.dart';
 
 class QuestionnaireDobScreen extends StatefulWidget {
   final int step;
+  final int totalSteps;
   final Map<String, dynamic> responses;
   const QuestionnaireDobScreen({
     super.key,
     required this.step,
+    this.totalSteps = 9,
     required this.responses,
   });
   @override
@@ -46,8 +48,9 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QuestionnaireScreen(
-            step: widget.step + 1,
+          builder: (_) => QuestionnaireScreenGender(
+            step: widget.step,
+            totalSteps: widget.totalSteps,
             responses: widget.responses,
           ),
         ),

@@ -3,8 +3,14 @@ import 'questionnaire_screen_2.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
   final int step;
+  final int totalSteps;
   final Map<String, dynamic> responses;
-  const QuestionnaireScreen({super.key, required this.step, required this.responses});
+  const QuestionnaireScreen({
+    super.key,
+    required this.step,
+    required this.totalSteps,
+    required this.responses,
+  });
 
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
@@ -44,6 +50,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       MaterialPageRoute(
         builder: (_) => QuestionnaireScreen2(
           step: widget.step + 1,
+          totalSteps: widget.totalSteps,
           responses: widget.responses,
         ),
       ),
@@ -81,9 +88,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: 32),
-                      const Text(
-                        "Question 1 out of 8",
-                        style: TextStyle(
+                      Text(
+                        "Question ${widget.step} out of ${widget.totalSteps}",
+                        style: const TextStyle(
                           color: Color(0xFFB7B8B8),
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
