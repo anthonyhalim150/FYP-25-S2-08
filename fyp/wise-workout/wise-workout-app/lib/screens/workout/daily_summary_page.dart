@@ -18,26 +18,31 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
   List<int> _hourlyCalories = List.filled(24, 0);
   int _currentSteps = 0;
   int _caloriesBurned = 0;
-  int _xpEarned = 0; // Example XP calculation
+  int _xpEarned = 0;
+
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _initHealthData();
+    _initHealthData(_selectedDate);
   }
 
-  Future<void> _initHealthData() async {
+  Future<void> _initHealthData(DateTime date) async {
+    setState(() => _isLoading = true);
+
     final connected = await _healthService.connect();
     if (!connected) {
       setState(() => _isLoading = false);
       return;
     }
-
     final steps = await _healthService.getTodaySteps();
     final hourlySteps = await _healthService.getHourlyStepsForToday();
     final hourlyCalories = await _healthService.getHourlyCaloriesForToday();
+    final calories = await _healthService.getTodayCalories();
 
     setState(() {
+      _selectedDate = date;
       _currentSteps = steps;
       _hourlySteps = hourlySteps;
       _hourlyCalories = hourlyCalories;
@@ -47,9 +52,22 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     });
   }
 
+  void _changeDate(int offsetDays) {
+    final newDate = _selectedDate.add(Duration(days: offsetDays));
+    if (!newDate.isAfter(DateTime.now())) {
+      _initHealthData(newDate);
+    }
+  }
+
+  String _formattedDate(DateTime date) {
+    return "${date.day} ${_monthName(date.month)} ${date.year}";
+  }
+
   @override
   Widget build(BuildContext context) {
-    final currentDate = DateTime.now();
+    final isToday = _selectedDate.year == DateTime.now().year &&
+        _selectedDate.month == DateTime.now().month &&
+        _selectedDate.day == DateTime.now().day;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F0EB),
@@ -67,7 +85,6 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
             },
           ),
         ],
-
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -76,10 +93,28 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Text(
-                "${currentDate.day} ${_monthName(currentDate.month)} ${currentDate.year}",
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              /// Date Selector with Arrows
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () => _changeDate(-1),
+                  ),
+                  Text(
+                    _formattedDate(_selectedDate),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.chevron_right,
+                      color: isToday ? Colors.transparent : Colors.black,
+                    ),
+                    onPressed: isToday ? null : () => _changeDate(1),
+                  ),
+                ],
               ),
+
               const SizedBox(height: 20),
 
               /// Exercise Stats
@@ -92,12 +127,11 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
               const SizedBox(height: 20),
 
-              /// Steps Chart
               _TimeBasedChart(
                 icon: Icons.directions_walk,
                 title: "Steps",
                 currentValue: _currentSteps.toString(),
-                avgValue: "9,121", // Optionally compute weekly average
+                avgValue: "9,121",
                 barColor: Colors.blue,
                 maxY: 10000,
                 data: _hourlySteps,
@@ -105,12 +139,11 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
               const SizedBox(height: 20),
 
-              /// Calories Chart
               _TimeBasedChart(
                 icon: Icons.local_fire_department,
                 title: "Calories",
                 currentValue: _caloriesBurned.toString(),
-                avgValue: "234", // Optionally compute weekly average
+                avgValue: "234",
                 barColor: Colors.red,
                 maxY: 300,
                 data: _hourlyCalories,
@@ -147,7 +180,7 @@ class _TimeBasedChart extends StatelessWidget {
   final IconData icon;
   final String title;
   final String currentValue;
-  final String avgValue;
+  final String avgValue; // still kept for compatibility, not shown
   final Color barColor;
   final double maxY;
   final List<int> data;
@@ -182,22 +215,13 @@ class _TimeBasedChart extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  Text(currentValue, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text("Current", style: TextStyle(color: Colors.grey[600])),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(avgValue, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text("Daily avg last week", style: TextStyle(color: Colors.grey[600])),
-                ],
-              ),
-            ],
+          Center(
+            child: Column(
+              children: [
+                Text(currentValue, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text("Current", style: TextStyle(color: Colors.grey[600])),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
