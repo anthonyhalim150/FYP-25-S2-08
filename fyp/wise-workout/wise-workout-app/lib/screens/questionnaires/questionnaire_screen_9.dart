@@ -32,18 +32,12 @@ class QuestionnaireScreen9 extends StatelessWidget {
       if (bmi < 24.0) return "Normal (Female)";
       if (bmi < 29.0) return "Overweight (Female)";
       return "Obese (Female)";
-    } else if (gender == 'male') {
+    } else {
       if (bmi < 18.5) return "Underweight (Male)";
       if (bmi < 25.0) return "Normal (Male)";
       if (bmi < 30.0) return "Overweight (Male)";
       return "Obese (Male)";
-    } else {
-      // If gender is missing or other, use the universal standard without a label
-      if (bmi < 18.5) return "Underweight";
-      if (bmi < 25.0) return "Normal";
-      if (bmi < 30.0) return "Overweight";
-      return "Obese";
-    }
+    } 
   }
 
   @override
