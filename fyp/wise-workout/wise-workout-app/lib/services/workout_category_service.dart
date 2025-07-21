@@ -40,22 +40,32 @@ class WorkoutCategoryService {
 
   /// Fetch all workout categories from backend
   Future<List<WorkoutCategory>> fetchCategories() async {
-    final jwt = await _getJwtCookie();
-    final response = await http.get(
-      Uri.parse('$baseUrl/workout-categories'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-    );
+    try {
+      final jwt = await _getJwtCookie();
+      final response = await http.get(
+        Uri.parse('$baseUrl/workout-categories'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'session=$jwt',
+        },
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout categories');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout categories');
+      }
+
+      final data = jsonDecode(response.body);
+      return List<WorkoutCategory>.from(data.map((item) => WorkoutCategory.fromJson(item)));
+    } catch (e, stackTrace) {
+      print('❌ Error fetching categories: $e');
+      print('🧱 Stack trace:\n$stackTrace');
+      rethrow; // Optional: Rethrow to show error in UI
     }
-
-    final data = jsonDecode(response.body);
-    return List<WorkoutCategory>.from(data.map((item) => WorkoutCategory.fromJson(item)));
   }
+
 
   /// Fetch a single category by key
   Future<WorkoutCategory?> getCategoryByKey(String categoryKey) async {

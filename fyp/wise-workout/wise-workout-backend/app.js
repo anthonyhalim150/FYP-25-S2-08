@@ -15,6 +15,7 @@ const messageRoutes = require('./routes/messageRoutes');
 const friendRoutes = require('./routes/friendRoutes');
 const badgeRoutes = require('./routes/badgeRoutes');
 const dailyQuestRoutes = require('./routes/dailyQuestRoutes');
+const workoutCategoryRoutes = require('./routes/workoutCategoryRoutes');
 const db = require('./config/db');
 
 const app = express();
@@ -47,6 +48,7 @@ app.use('/prizes', prizeRoutes);
 app.use('/messages', messageRoutes);
 app.use('/friends', friendRoutes);
 app.use('/badges', badgeRoutes);
+app.use('/workout-categories', workoutCategoryRoutes);
 
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))

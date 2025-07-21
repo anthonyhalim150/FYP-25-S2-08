@@ -1,20 +1,18 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
-import '../model/workout_model.dart';
 import '../../services/exercise_service.dart';
 import '../../services/workout_session_service.dart';
 import '../../widgets/exercise_tile.dart';
 import 'congratulation_screen.dart';
 
 class ExerciseListPage extends StatefulWidget {
-  final String exerciseKey;
+  final int workoutId;  // Use workoutId instead of exerciseKey
   final String workoutName;
 
   const ExerciseListPage({
     super.key,
-    required this.exerciseKey,
+    required this.workoutId,
     required this.workoutName,
   });
 
@@ -34,7 +32,8 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
   void initState() {
     super.initState();
 
-    _exercisesFuture = ExerciseService().fetchExercisesByKey(widget.exerciseKey);
+    // Fetch exercises based on workoutId
+    _exercisesFuture = ExerciseService().fetchExercisesByWorkoutId(widget.workoutId);
 
     // Listen to the global elapsed time stream to update timer UI
     _elapsedSubscription = _sessionService.elapsedStream.listen((elapsed) {
@@ -76,19 +75,11 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
     final exercises = await _exercisesFuture;
 
-
     final workoutResult = {
-      'workout': Workout.sampleWorkouts().firstWhere(
-            (w) => w.exerciseKey == widget.exerciseKey && w.workoutName == widget.workoutName,
-        orElse: () => Workout(
-          workoutId: '',
-          categoryKey: '',
-          exerciseKey: widget.exerciseKey,
-          workoutName: widget.workoutName,
-          workoutLevel: '',
-          workoutDescription: '',
-        ),
-      ),
+      'workout': {
+        'workoutId': widget.workoutId,
+        'workoutName': widget.workoutName,
+      },
       'exercises': exercises,
       'duration': duration,
       'calories': _calculateCalories(duration),
@@ -100,8 +91,6 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
         builder: (context) => CongratulationScreen(workoutResult: workoutResult),
       ),
     );
-
-
   }
 
   String _formatDuration(Duration d) {
@@ -111,7 +100,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
   double _calculateCalories(Duration duration) {
     final minutes = duration.inMinutes;
-    return 6.5 * minutes; // Simplified formula
+    return 6.5 * minutes; // Simplified formula for calories
   }
 
   @override
@@ -213,8 +202,6 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
               );
             },
           ),
-
-          // Show timer FloatingActionButton if workout is active
           if (_sessionService.isActive)
             Positioned(
               top: MediaQuery.of(context).padding.top + 16,
@@ -250,7 +237,6 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
             ),
         ],
       ),
-
       floatingActionButton: !_sessionService.isActive
           ? FloatingActionButton.extended(
         onPressed: _startWorkout,

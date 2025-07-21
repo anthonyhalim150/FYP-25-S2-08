@@ -1,51 +1,70 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../screens/model/exercise_model.dart';
 
 class ExerciseService {
-  Future<List<Exercise>> fetchExercisesByKey(String exerciseKey) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
+  final String baseUrl = 'http://10.0.2.2:3000'; // Update with the actual backend URL
+  final _storage = const FlutterSecureStorage();
 
-    // Dummy data for testing with YouTube URLs added
-    return [
-      Exercise(
-        exerciseId: 'EX01',
-        exerciseKey: exerciseKey,
-        exerciseName: 'Push Up',
-        exerciseDescription: 'A basic bodyweight pushing exercise.',
-        exerciseSets: 3,
-        exerciseReps: 12,
-        exerciseInstructions: 'Keep your back straight,\n lower until chest nearly touches the floor,\n then push up.',
-        exerciseLevel: 'Beginner',
-        exerciseEquipment: 'None',
-        exerciseDuration: null,
-        youtubeUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4', // ✅ Push Up
-      ),
-      Exercise(
-        exerciseId: 'EX02',
-        exerciseKey: exerciseKey,
-        exerciseName: 'Plank',
-        exerciseDescription: 'A core stabilization exercise.',
-        exerciseSets: 3,
-        exerciseReps: 1,
-        exerciseInstructions: 'Hold your body straight in a plank position.',
-        exerciseLevel: 'Intermediate',
-        exerciseEquipment: 'Mat',
-        exerciseDuration: 45,
-        youtubeUrl: 'https://www.youtube.com/watch?v=pSHjTRCQxIw', // ✅ Plank
-      ),
-      Exercise(
-        exerciseId: 'EX03',
-        exerciseKey: exerciseKey,
-        exerciseName: 'Dumbbell Shoulder Press',
-        exerciseDescription: 'Targets shoulders with dumbbells.',
-        exerciseSets: 3,
-        exerciseReps: 10,
-        exerciseInstructions: 'Push dumbbells upward until arms are straight, then lower.',
-        exerciseLevel: 'Advanced',
-        exerciseEquipment: 'Dumbbells',
-        exerciseDuration: null,
-        youtubeUrl: 'https://www.youtube.com/watch?v=B-aVuyhvLHU', // ✅ Dumbbell Shoulder Press
-      ),
-    ];
+  Future<String?> _getJwtCookie() async {
+    return await _storage.read(key: 'jwt_cookie');
+  }
+
+  /// Fetch all exercises from the server
+  Future<List<Exercise>> fetchAllExercises() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/exercises'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch exercises');
+    }
+
+    final data = jsonDecode(response.body);
+    return List<Exercise>.from(data.map((item) => Exercise.fromJson(item)));
+  }
+
+  /// Fetch exercises by workoutId
+  Future<List<Exercise>> fetchExercisesByWorkoutId(int workoutId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/exercises/workout/$workoutId'), // Fetch exercises by workoutId
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch exercises for this workout');
+    }
+
+    final data = jsonDecode(response.body);
+    return List<Exercise>.from(data.map((item) => Exercise.fromJson(item)));
+  }
+
+  /// Fetch a single exercise by exerciseId
+  Future<Exercise> fetchExerciseById(int exerciseId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/exercises/$exerciseId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch exercise');
+    }
+
+    final item = jsonDecode(response.body);
+    return Exercise.fromJson(item);
   }
 }

@@ -1,26 +1,7 @@
 import 'package:flutter/material.dart';
-import '../model/workout_model.dart';  // Import the shared Workout model
+import '../../services/workout_category_service.dart'; // Make sure this contains both model and service
 import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
-
-class WorkoutCategory {
-  final String categoryId;
-  final String categoryName;
-  final String categoryKey;
-  final String categoryDescription;
-  final String imageUrl;
-
-  WorkoutCategory({
-    required this.categoryId,
-    required this.categoryName,
-    required this.categoryKey,
-    required this.categoryDescription,
-  }) : imageUrl = _generateImageUrl(categoryName);
-
-  static String _generateImageUrl(String categoryName) {
-    return 'assets/workoutCategory/${categoryName.replaceAll(' ', '_').toLowerCase()}.jpg';
-  }
-}
 
 class WorkoutCategoryDashboard extends StatefulWidget {
   @override
@@ -29,37 +10,17 @@ class WorkoutCategoryDashboard extends StatefulWidget {
 }
 
 class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
-  int _currentIndex = 0;
+  int _currentIndex = 2;
   String? _selectedCategory;
+  late Future<List<WorkoutCategory>> _categoryFuture;
+  List<WorkoutCategory> _allCategories = [];
 
-  final List<WorkoutCategory> categories = [
-    WorkoutCategory(
-      categoryId: '1',
-      categoryName: 'Push',
-      categoryKey: 'push',
-      categoryDescription: 'Workouts focusing on pushing movements.',
-    ),
-    WorkoutCategory(
-      categoryId: '2',
-      categoryName: 'Cardio',
-      categoryKey: 'cardio',
-      categoryDescription: 'Workouts focusing on cardio and fat burning.',
-    ),
-    WorkoutCategory(
-      categoryId: '3',
-      categoryName: 'Leg Workout',
-      categoryKey: 'leg',
-      categoryDescription: 'Workouts focusing on legs.',
-    ),
-    WorkoutCategory(
-      categoryId: '4',
-      categoryName: 'Relaxing',
-      categoryKey: 'relaxing',
-      categoryDescription: 'Yoga and relaxation.',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _categoryFuture = WorkoutCategoryService().fetchCategories();
+  }
 
-  // Function to handle category filter
   void _filterByCategory(String? categoryKey) {
     setState(() {
       _selectedCategory = categoryKey;
@@ -68,16 +29,11 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter categories if a category is selected
-    final filteredCategories = _selectedCategory == null
-        ? categories
-        : categories.where((category) => category.categoryKey == _selectedCategory).toList();
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          // Custom AppBar with back arrow, title, and logo
+          // App Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -94,108 +50,133 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 48), // reserve space to match IconButton width
+                const SizedBox(width: 48),
               ],
             ),
           ),
-          // Filter buttons row below the AppBar
+
+          // Filter Buttons
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  // "All" button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _filterByCategory(null); // Show all categories when "All" is pressed
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20), // Make the button rounder
-                        ),
-                        backgroundColor: _selectedCategory == null
-                            ? Colors.lightBlueAccent
-                            : Colors.white10, // Highlight "All" when selected
-                      ),
-                      child: Text(
-                        'All',
-                        style: TextStyle(
-                          color: _selectedCategory == null
-                              ? Colors.white // White text for selected category
-                              : Colors.black, // Black text for unselected categories
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Category buttons
-                  ...categories.map((category) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _filterByCategory(category.categoryKey);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), // Make the button rounder
-                          ),
-                          backgroundColor: _selectedCategory == category.categoryKey
-                              ? Colors.lightBlueAccent
-                              : Colors.white10, // Highlight selected category
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              category.categoryName,
-                              style: TextStyle(
-                                color: _selectedCategory == category.categoryKey
-                                    ? Colors.white // White text for selected category
-                                    : Colors.black, // Black text for unselected categories
-                              ),
+            child: FutureBuilder<List<WorkoutCategory>>(
+              future: _categoryFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No categories available'));
+                }
+
+                _allCategories = snapshot.data!;
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      // "All" button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _filterByCategory(null);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            // Add checkmark if selected
-                            if (_selectedCategory == category.categoryKey)
-                              Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                          ],
+                            backgroundColor: _selectedCategory == null
+                                ? Colors.lightBlueAccent
+                                : Colors.white10,
+                          ),
+                          child: Text(
+                            'All',
+                            style: TextStyle(
+                              color: _selectedCategory == null
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
                         ),
                       ),
-                    );
-                  }).toList(),
-                ],
-              ),
+                      // Dynamic category buttons
+                      ..._allCategories.map((category) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _filterByCategory(category.categoryKey);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              backgroundColor: _selectedCategory == category.categoryKey
+                                  ? Colors.lightBlueAccent
+                                  : Colors.white10,
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  category.categoryName,
+                                  style: TextStyle(
+                                    color: _selectedCategory == category.categoryKey
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                if (_selectedCategory == category.categoryKey)
+                                  const Icon(Icons.check, color: Colors.white, size: 18),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
-          // ListView of filtered categories
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredCategories.length,
-              itemBuilder: (context, index) {
-                final category = filteredCategories[index];
-                return WorkoutCardDashboard(
-                  title: category.categoryName,
-                  subtitle: category.categoryDescription,
-                  isFavorite: false,
-                  onPressed: () {
-                    // Navigate to the workout list page when a category is tapped
-                    Navigator.pushNamed(
-                      context,
-                      '/workout-list-page',
-                      arguments: {
-                        'categoryKey': category.categoryKey, // Only pass categoryKey
-                      },
-                    );
 
-                  },
-                  onToggleFavorite: () {
-                    // Handle favorite toggle logic here (optional)
+          // Category List
+          Expanded(
+            child: FutureBuilder<List<WorkoutCategory>>(
+              future: _categoryFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No categories found.'));
+                }
+
+                final filteredCategories = _selectedCategory == null
+                    ? snapshot.data!
+                    : snapshot.data!
+                    .where((c) => c.categoryKey == _selectedCategory)
+                    .toList();
+
+                return ListView.builder(
+                  itemCount: filteredCategories.length,
+                  itemBuilder: (context, index) {
+                    final category = filteredCategories[index];
+                    return WorkoutCardDashboard(
+                      title: category.categoryName,
+                      subtitle: category.categoryDescription,
+                      isFavorite: false,
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/workout-list-page',
+                          arguments: {
+                            'categoryKey': category.categoryKey,
+                          },
+                        );
+                      },
+                      onToggleFavorite: () {},
+                    );
                   },
                 );
               },

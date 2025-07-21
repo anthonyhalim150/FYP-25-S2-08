@@ -114,7 +114,7 @@ flutter:
     - assets/workoutImages/total_body_core_circuit.jpg
     - assets/workoutImages/calisthenics.jpg
     - assets/workoutCategory/cardio.jpg
-    - assets/workoutCategory/leg_workout.jpg
+    - assets/workoutCategory/leg.jpg
     - assets/workoutCategory/push.jpg
     - assets/workoutCategory/relaxing.jpg
     - assets/workoutImages/chest_builder.jpg

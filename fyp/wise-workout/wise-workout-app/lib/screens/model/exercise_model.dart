@@ -1,6 +1,5 @@
 class Exercise {
-  final String exerciseId;
-  final String exerciseKey;
+  final int exerciseId;  // Integer ID for Exercise
   final String exerciseName;
   final String exerciseDescription;
   final int exerciseSets;
@@ -8,13 +7,13 @@ class Exercise {
   final String exerciseInstructions;
   final String? exerciseLevel;
   final String? exerciseEquipment;
-  final int? exerciseDuration; // in seconds
-  final double? exerciseWeight;
-  final String? youtubeUrl; // 🔥 NEW FIELD
+  final int? exerciseDuration;  // Duration in seconds
+  final double? exerciseWeight;  // Weight in kg (optional)
+  final String? youtubeUrl;  // Optional YouTube link for exercise tutorial
+  final int workoutId;  // Foreign Key linking the exercise to a workout
 
   Exercise({
     required this.exerciseId,
-    required this.exerciseKey,
     required this.exerciseName,
     required this.exerciseDescription,
     this.exerciseSets = 3,
@@ -24,42 +23,43 @@ class Exercise {
     this.exerciseEquipment,
     this.exerciseDuration,
     this.exerciseWeight,
-    this.youtubeUrl, // ✅ Add this to constructor
+    this.youtubeUrl,
+    required this.workoutId,  // Foreign Key linking to the workout
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
-      exerciseId: json['ExerciseId'] ?? '',
-      exerciseKey: json['ExerciseKey'] ?? '',
-      exerciseName: json['ExerciseName'] ?? '',
-      exerciseDescription: json['ExerciseDescription'] ?? '',
-      exerciseSets: json['ExerciseSets'] ?? 3,
-      exerciseReps: json['ExerciseReps'] ?? 0,
-      exerciseInstructions: json['ExerciseInstructions'] ?? '',
-      exerciseLevel: json['ExerciseLevel'],
-      exerciseEquipment: json['ExerciseEquipment'],
-      exerciseDuration: json['ExerciseDuration'],
-      exerciseWeight: (json['ExerciseWeight'] != null)
-          ? json['ExerciseWeight'].toDouble()
+      exerciseId: json['exercise_id'] ?? 0,
+      exerciseName: json['exercise_name'] ?? '',
+      exerciseDescription: json['exercise_description'] ?? '',
+      exerciseSets: json['exercise_sets'] ?? 3,
+      exerciseReps: json['exercise_reps'] ?? 0,
+      exerciseInstructions: json['exercise_instructions'] ?? '',
+      exerciseLevel: json['exercise_level'],
+      exerciseEquipment: json['exercise_equipment'],
+      exerciseDuration: json['exercise_duration'],
+      exerciseWeight: json['exercise_weight'] != null
+          ? json['exercise_weight'].toDouble()
           : null,
-      youtubeUrl: json['YoutubeUrl'], // ✅ Read from Firestore
+      youtubeUrl: json['youtube_url'],
+      workoutId: json['workout_id'] ?? 0,  // Foreign Key reference to workout
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'ExerciseId': exerciseId,
-      'ExerciseKey': exerciseKey,
-      'ExerciseName': exerciseName,
-      'ExerciseDescription': exerciseDescription,
-      'ExerciseSets': exerciseSets,
-      'ExerciseReps': exerciseReps,
-      'ExerciseInstructions': exerciseInstructions,
-      'ExerciseLevel': exerciseLevel,
-      'ExerciseEquipment': exerciseEquipment,
-      'ExerciseDuration': exerciseDuration,
-      'ExerciseWeight': exerciseWeight,
-      'YoutubeUrl': youtubeUrl, // ✅ Save to Firestore
+      'exercise_id': exerciseId,
+      'exercise_name': exerciseName,
+      'exercise_description': exerciseDescription,
+      'exercise_sets': exerciseSets,
+      'exercise_reps': exerciseReps,
+      'exercise_instructions': exerciseInstructions,
+      'exercise_level': exerciseLevel,
+      'exercise_equipment': exerciseEquipment,
+      'exercise_duration': exerciseDuration,
+      'exercise_weight': exerciseWeight,
+      'youtube_url': youtubeUrl,
+      'workout_id': workoutId,  // Linking this exercise to the workout
     };
   }
 }

@@ -131,26 +131,29 @@ class WiseWorkoutApp extends StatelessWidget {
         '/weekly-monthly-summary': (context) => const WeeklyMonthlySummaryPage(),
 
       },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/workout-list-page') {
-          final args = settings.arguments as Map<String, dynamic>;
-          final categoryKey = args['categoryKey'];
-          return MaterialPageRoute(
-            builder: (_) => WorkoutListPage(categoryKey: categoryKey),
-          );
-        }
-        if (settings.name == '/exercise-list-page') {
-          final args = settings.arguments as Map<String, dynamic>;
-          final exerciseKey = args['exerciseKey'];
-          final workoutName = args['workoutName'];
+        onGenerateRoute: (settings) {
+          if (settings.name == '/workout-list-page') {
+            final args = settings.arguments as Map<String, dynamic>;
+            final categoryKey = args['categoryKey'];  // Extract categoryKey
+            return MaterialPageRoute(
+              builder: (_) => WorkoutListPage(categoryKey: categoryKey),
+            );
+          }
 
-          return MaterialPageRoute(
-            builder: (_) => ExerciseListPage(
-              exerciseKey: exerciseKey,
-              workoutName: workoutName,
-            ),
-          );
-        }
+          if (settings.name == '/exercise-list-page') {
+            final args = settings.arguments as Map<String, dynamic>;
+            final workoutId = args['workoutId'];  // Extract workoutId
+            final workoutName = args['workoutName'];  // Extract workoutName
+
+            return MaterialPageRoute(
+              builder: (_) => ExerciseListPage(
+                workoutId: workoutId,  // Pass workoutId
+                workoutName: workoutName,
+              ),
+            );
+          }// Fallback for unknown routes
+
+
         if (settings.name == '/exercise-log') {
           final Exercise exercise = settings.arguments as Exercise;
           return MaterialPageRoute(

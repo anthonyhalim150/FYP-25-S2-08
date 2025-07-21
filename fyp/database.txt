@@ -142,6 +142,42 @@ CREATE TABLE levels (
   badge_id INT DEFAULT NULL
 );
 
+CREATE TABLE workout_categories (
+  category_id INT AUTO_INCREMENT PRIMARY KEY,
+  category_name VARCHAR(255) NOT NULL,
+  category_key VARCHAR(255) NOT NULL UNIQUE,  -- Unique identifier for each category (e.g., 'push', 'cardio')
+  category_description TEXT NOT NULL,
+  image_url VARCHAR(255) DEFAULT NULL  -- Optional image URL for the category
+);
+
+
+CREATE TABLE workouts (
+  workout_id INT AUTO_INCREMENT PRIMARY KEY,
+  workout_name VARCHAR(255) NOT NULL,  -- Name of the workout
+  category_key VARCHAR(255) NOT NULL,  -- The category to which this workout belongs (foreign key)
+  workout_level VARCHAR(50) NOT NULL,  -- Difficulty level (e.g., 'Beginner', 'Intermediate', 'Advanced')
+  workout_description TEXT NOT NULL,  -- Description of the workout
+  FOREIGN KEY (category_key) REFERENCES workout_categories(category_key)  -- Link to category
+);
+
+
+CREATE TABLE exercises (
+  exercise_id INT AUTO_INCREMENT PRIMARY KEY,
+  exercise_key VARCHAR(255) NOT NULL UNIQUE,
+  exercise_name VARCHAR(255) NOT NULL,
+  exercise_description TEXT NOT NULL,
+  exercise_sets INT DEFAULT 3,
+  exercise_reps INT NOT NULL,
+  exercise_instructions TEXT NOT NULL,
+  exercise_level VARCHAR(50) DEFAULT NULL,
+  exercise_equipment VARCHAR(100) DEFAULT NULL,
+  exercise_duration INT DEFAULT NULL,  -- Duration in seconds
+  exercise_weight DOUBLE DEFAULT NULL, -- Weight in kg (optional)
+  youtube_url VARCHAR(255) DEFAULT NULL, -- Optional YouTube video link
+  workout_id INT, -- Foreign Key linking to the workouts table
+  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id)
+);
+
 
 INSERT INTO avatars (name, image_url, is_premium)
 VALUES 
@@ -207,3 +243,36 @@ INSERT INTO levels (level, xp_required, reward_tokens, badge_id) VALUES
 (3, 300, 20, 2),
 (4, 600, 30, NULL),
 (5, 1000, 50, 3);
+
+INSERT INTO workout_categories (category_name, category_key, category_description, image_url)
+VALUES
+  ('Push', 'push', 'Workouts focusing on upper body pushing movements like chest and shoulders.', 'assets/workoutCategory/push.jpg'),
+  ('Cardio', 'cardio', 'Workouts that focus on cardiovascular fitness and fat burning.', 'assets/workoutCategory/cardio.jpg'),
+  ('Leg', 'leg', 'Workouts focusing on lower body strength, particularly legs and glutes.', 'assets/workoutCategory/leg.jpg'),
+  ('Relaxing', 'relaxing', 'Gentle workouts focusing on flexibility, relaxation, and stretching.', 'assets/workoutCategory/relaxing.jpg');
+
+INSERT INTO workouts (workout_name, category_key, workout_level, workout_description)
+VALUES
+  ('Chest Builder', 'push', 'Intermediate', 'Focus on upper body pushing strength with this chest-centric workout.'),
+  ('Triceps Shred', 'push', 'Advanced', 'Blast your triceps with explosive push movements and dips.'),
+  ('Upper Body Power', 'push', 'Beginner', 'A beginner-friendly push workout to build foundational strength.'),
+  ('HIIT Fat Burner', 'cardio', 'Advanced', 'High-intensity intervals to torch calories and boost endurance.'),
+  ('Quick Cardio Blast', 'cardio', 'Beginner', 'Short and effective cardio session to get your heart rate up.'),
+  ('Endurance Circuit', 'cardio', 'Intermediate', 'Push your limits with a 30-minute endurance-based cardio circuit.'),
+  ('Leg Day Burn', 'leg', 'Advanced', 'A powerful lower-body session focused on strength and hypertrophy.'),
+  ('Beginner Leg Routine', 'leg', 'Beginner', 'Foundational leg workout for mobility, strength, and balance.'),
+  ('Morning Flow Yoga', 'relaxing', 'Beginner', 'Gentle yoga sequence to energize your day and improve flexibility.'),
+  ('Evening Unwind', 'relaxing', 'Intermediate', 'Wind down with stretches and breathwork to calm your body and mind.');
+
+INSERT INTO exercises (exercise_key, exercise_name, exercise_description, exercise_sets, exercise_reps, exercise_instructions, exercise_level, exercise_equipment, exercise_duration, youtube_url, workout_id)
+VALUES
+  ('pushexercises_1', 'Push Up', 'A basic bodyweight pushing exercise.', 3, 12, 'Keep your back straight, lower until chest nearly touches the floor, then push up.', 'Beginner', 'None', NULL, 'https://www.youtube.com/watch?v=IODxDxX7oi4', 1),
+  ('pushexercises_2', 'Tricep Dips', 'Bodyweight exercise focusing on the triceps.', 3, 15, 'Lower your body by bending your elbows, then push back up.', 'Intermediate', 'None', NULL, 'https://www.youtube.com/watch?v=6kALZikXxLc', 2),
+  ('pushexercises_3', 'Bench Press', 'Weight-lifting exercise focusing on the chest and shoulders.', 3, 10, 'Lower the bar to your chest and push it back up.', 'Advanced', 'Barbell', NULL, 'https://www.youtube.com/watch?v=gRVjAtPip0Y', 3),
+  ('cardioexercises_1', 'HIIT', 'High-intensity interval training for fat loss.', 1, 20, 'Perform each exercise for 20 seconds followed by 10 seconds of rest, repeat.', 'Advanced', 'None', 20, 'https://www.youtube.com/watch?v=ml6cT4AZdqI', 4),
+  ('cardioexercises_2', 'Jogging', 'A light running exercise for cardiovascular endurance.', 3, 30, 'Jog at a steady pace, keeping your form upright.', 'Beginner', 'None', 1800, 'https://www.youtube.com/watch?v=9Jv3hZ2K5lo', 5),
+  ('cardioexercises_3', 'Cycling', 'Steady-state cycling exercise for endurance.', 3, 20, 'Cycle at a consistent pace for 20 minutes.', 'Intermediate', 'Cycling Bike', 1200, 'https://www.youtube.com/watch?v=VJGGXnGlYjA', 6),
+  ('legexercises_1', 'Squats', 'A fundamental lower body exercise that targets quads, hamstrings, and glutes.', 3, 15, 'Keep your back straight, lower to parallel, and return to standing position.', 'Advanced', 'None', NULL, 'https://www.youtube.com/watch?v=UXJrBgI2RxA', 7),
+  ('legexercises_2', 'Leg Press', 'Leg exercise focusing on quads, hamstrings, and glutes.', 3, 12, 'Sit and push the weight upwards using your legs.', 'Beginner', 'Leg Press Machine', NULL, 'https://www.youtube.com/watch?v=izzzZ9q7Fms', 8),
+  ('relaxexercises_1', 'Yoga', 'Gentle yoga focusing on flexibility and mindfulness.', 1, 10, 'Hold each pose for 30 seconds, focusing on your breath.', 'Beginner', 'Yoga Mat', 600, 'https://www.youtube.com/watch?v=v7AYKMP6rOE', 9),
+  ('relaxexercises_2', 'Stretching', 'Simple stretching routine to improve flexibility and release tension.', 1, 15, 'Hold each stretch for 30 seconds, focusing on deep breathing.', 'Intermediate', 'None', 600, 'https://www.youtube.com/watch?v=6Ib4Un4WnHI', 10);
