@@ -2,36 +2,47 @@ const db = require('../config/db');
 
 class UserPreferencesModel {
   static async savePreferences(userId, preferences) {
-    const {
-      workout_frequency,
-      fitness_goal,
-      workout_time,
-      fitness_level,
-      injury
-    } = preferences;
+  const {
+    height_cm,
+    weight_kg,
+    gender,
+    workout_days,
+    workout_time,
+    equipment_pref,
+    fitness_goal,
+    fitness_level,
+    injury,
+    enjoyed_workouts,
+    bmi_value
+  } = preferences;
 
-    const sql = `
-      INSERT INTO user_preferences (
-        user_id,
-        workout_frequency,
-        fitness_goal,
-        workout_time,
-        fitness_level,
-        injury
-      ) VALUES (?, ?, ?, ?, ?, ?)
-    `;
+  const sql = `
+    INSERT INTO user_preferences (
+      user_id, height_cm, weight_kg, gender, workout_days, workout_time,
+      equipment_pref, fitness_goal, fitness_level, injury, enjoyed_workouts, bmi_value
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
-    const [result] = await db.execute(sql, [
-      userId,
-      workout_frequency,
-      fitness_goal,
-      workout_time,
-      fitness_level,
-      injury
-    ]);
+  const values = [
+    userId,
+    height_cm,
+    weight_kg,
+    gender,
+    workout_days,
+    workout_time,
+    equipment_pref,
+    fitness_goal,
+    fitness_level,
+    injury,
+    enjoyed_workouts,
+    bmi_value
+  ];
 
-    return result;
-  }
+
+  const [result] = await db.execute(sql, values);
+  return result;
+}
+
 
   static async hasPreferences(userId) {
     const [rows] = await db.execute(

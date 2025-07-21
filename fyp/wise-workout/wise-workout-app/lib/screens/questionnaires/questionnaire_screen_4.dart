@@ -27,7 +27,7 @@ class _QuestionnaireScreen4State extends State<QuestionnaireScreen4> {
   @override
   void initState() {
     super.initState();
-    final previous = widget.responses['exercise_type'];
+    final previous = widget.responses['equipment_pref'];
     if (previous != null) {
       final idx = options.indexOf(previous);
       if (idx != -1) selectedIndex = idx;
@@ -36,7 +36,7 @@ class _QuestionnaireScreen4State extends State<QuestionnaireScreen4> {
 
   void handleNext() {
     if (selectedIndex != -1) {
-      widget.responses['exercise_type'] = options[selectedIndex];
+      widget.responses['equipment_pref'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(

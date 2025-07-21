@@ -41,11 +41,22 @@ CREATE TABLE password_resets (
 CREATE TABLE user_preferences (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  workout_frequency VARCHAR(50),
-  fitness_goal VARCHAR(50),
-  workout_time VARCHAR(50),
-  fitness_level VARCHAR(50),
-  injury VARCHAR(100),
+  height_cm DECIMAL(5,2) NOT NULL,
+  weight_kg DECIMAL(5,2) NOT NULL,
+  gender ENUM('male', 'female') NOT NULL,
+  workout_days VARCHAR(50) DEFAULT NULL,
+  workout_time ENUM(
+    'Quick (e.g. 5 Minutes during Lunch Break)',
+    'Short (10-15 Minutes)',
+    'Medium (15-20 Minutes)',
+    'Long (1 Hour or more)'
+  ) NOT NULL,
+  equipment_pref ENUM('Body Weight', 'With Equipment', 'Both') NOT NULL,
+  fitness_goal ENUM('Lose Weight', 'Build Muscle', 'Improve Endurance', 'Tone Up', 'Improve Flexibility') NOT NULL,
+  fitness_level ENUM('Beginner', 'Intermediate', 'Advanced') NOT NULL,
+  injury VARCHAR(100) DEFAULT NULL,
+  enjoyed_workouts ENUM('Yoga Training', 'Strength Training', 'Cardio Training') DEFAULT NULL,
+  bmi_value DECIMAL(5,2) NOT NULL,
   submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

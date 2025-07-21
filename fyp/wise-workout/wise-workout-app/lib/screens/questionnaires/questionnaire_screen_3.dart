@@ -28,7 +28,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
   @override
   void initState() {
     super.initState();
-    final previous = widget.responses['workout_length'];
+    final previous = widget.responses['workout_time'];
     if (previous != null) {
       final idx = options.indexOf(previous);
       if (idx != -1) selectedIndex = idx;
@@ -37,7 +37,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
 
   void handleNext() {
     if (selectedIndex != -1) {
-      widget.responses['workout_length'] = options[selectedIndex];
+      widget.responses['workout_time'] = options[selectedIndex];
       Navigator.push(
         context,
         MaterialPageRoute(

@@ -32,7 +32,7 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
   void initState() {
     super.initState();
     // Restore selection and text if returning to this screen
-    final previous = widget.responses['injury_limitation'];
+    final previous = widget.responses['injury'];
     if (previous != null) {
       final idx = options.indexOf(previous);
       if (idx != -1) {
@@ -59,7 +59,7 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
     } else {
       selectedValue = options[selectedIndex];
     }
-    widget.responses['injury_limitation'] = selectedValue;
+    widget.responses['injury'] = selectedValue;
     Navigator.push(
       context,
       MaterialPageRoute(

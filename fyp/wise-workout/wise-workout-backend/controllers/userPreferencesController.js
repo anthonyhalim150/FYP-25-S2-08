@@ -6,31 +6,54 @@ const submitUserPreferences = async (req, res) => {
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
     const {
-      workout_frequency,
-      fitness_goal,
+      dob,
+      height_cm,
+      weight_kg,
+      gender,
+      workout_days,
       workout_time,
+      equipment_pref,
+      fitness_goal,
       fitness_level,
       injury,
-      dob
+      enjoyed_workouts,
+      bmi_value
     } = req.body;
 
-    if (
-      !workout_frequency ||
-      !fitness_goal ||
-      !workout_time ||
-      !fitness_level ||
-      !injury ||
-      !dob
-    ) {
-      return res.status(400).json({ message: 'Missing required fields' });
+    const requiredFields = {
+      dob,
+      height_cm,
+      weight_kg,
+      gender,
+      workout_time,
+      equipment_pref,
+      fitness_goal,
+      fitness_level,
+      bmi_value
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key, value]) => value === undefined || value === null || value === '')
+      .map(([key]) => key);
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message: `Missing required fields: ${missingFields.join(', ')}`
+      });
     }
 
     const preferences = {
-      workout_frequency,
-      fitness_goal,
+      height_cm,
+      weight_kg,
+      gender,
+      workout_days,
       workout_time,
+      equipment_pref,
+      fitness_goal,
       fitness_level,
-      injury
+      injury,
+      enjoyed_workouts, 
+      bmi_value
     };
 
     await UserPreferencesService.submit(userId, preferences, dob);
@@ -44,7 +67,6 @@ const checkPreferences = async (req, res) => {
   try {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
-
     const hasPreferences = await UserPreferencesService.check(userId);
     res.status(200).json({ hasPreferences });
   } catch (err) {

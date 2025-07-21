@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/questionnaire_service.dart'; 
 
 class QuestionnaireScreen9 extends StatelessWidget {
   final int step;
@@ -26,7 +27,6 @@ class QuestionnaireScreen9 extends StatelessWidget {
     final bmi = bmiValue;
     final gender = (responses['gender'] ?? '').toString().toLowerCase();
     if (bmi == 0) return '';
-
     if (gender == 'female') {
       if (bmi < 18.0) return "Underweight (Female)";
       if (bmi < 24.0) return "Normal (Female)";
@@ -37,7 +37,15 @@ class QuestionnaireScreen9 extends StatelessWidget {
       if (bmi < 25.0) return "Normal (Male)";
       if (bmi < 30.0) return "Overweight (Male)";
       return "Obese (Male)";
-    } 
+    }
+  }
+
+  void handleSubmit(BuildContext context) async {
+    final Map<String, dynamic> payload = Map.from(responses);
+    payload['bmi_value'] = bmiValue;
+    print('Questionnaire Submit Payload: $payload');
+    await QuestionnaireService.submitPreferences(payload); 
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
@@ -127,9 +135,7 @@ class QuestionnaireScreen9 extends StatelessWidget {
                         width: 140,
                         height: 43,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/home');
-                          },
+                          onPressed: () => handleSubmit(context),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: darkBlue,
                             foregroundColor: Colors.white,
