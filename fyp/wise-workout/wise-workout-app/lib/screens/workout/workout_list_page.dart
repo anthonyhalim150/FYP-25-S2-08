@@ -140,11 +140,10 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                                   context,
                                   '/exercise-list-page',
                                   arguments: {
-                                    'exerciseKey': workout.exerciseKey,
+                                    'workoutId': workout.workoutId,     // ✅ USE workoutId
                                     'workoutName': workout.workoutName,
                                   },
                                 );
-
                               },
                             ),
                           );
