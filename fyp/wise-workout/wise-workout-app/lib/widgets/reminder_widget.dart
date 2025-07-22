@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 class ReminderWidget extends StatefulWidget {
   final String? initialTime;
   final List<String>? initialDays;
-
   const ReminderWidget({Key? key, this.initialTime, this.initialDays}) : super(key: key);
 
   static Future<Map<String, dynamic>?> show(
-    BuildContext context, {
-    String? initialTime,
-    List<String>? initialDays,
-  }) {
+      BuildContext context, {
+        String? initialTime,
+        List<String>? initialDays,
+      }) {
     return showDialog<Map<String, dynamic>>(
       context: context,
       barrierDismissible: true,
@@ -27,7 +26,6 @@ class ReminderWidget extends StatefulWidget {
 
 class _ReminderWidgetState extends State<ReminderWidget> {
   final TextEditingController _timeController = TextEditingController();
-
   final List<String> _dayShortNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   final List<String> _longNames = [
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
@@ -61,6 +59,16 @@ class _ReminderWidgetState extends State<ReminderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    final primaryColor = cs.primary;
+    final onPrimary = cs.onPrimary;
+    final surfaceColor = cs.surface;
+    final inputBg = theme.inputDecorationTheme.fillColor ?? cs.surfaceVariant;
+    final errorColor = theme.colorScheme.error;
+    final hintColor = theme.hintColor;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: ConstrainedBox(
@@ -76,17 +84,17 @@ class _ReminderWidgetState extends State<ReminderWidget> {
               children: [
                 Stack(
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.center,
                       child: Text(
                         'Set Reminder',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleLarge?.copyWith(fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                        icon: const Icon(Icons.close),
+                        icon: Icon(Icons.close, color: cs.onSurface),
                         splashRadius: 20,
                         onPressed: () => Navigator.of(context).pop(),
                       ),
@@ -98,8 +106,8 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 2.0),
                     child: Text(
                       _errorMessage!,
-                      style: const TextStyle(
-                        color: Colors.red,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: errorColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -112,14 +120,15 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: 'Time',
-                    prefixIcon: const Icon(Icons.access_time),
-                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.access_time, color: cs.primary),
+                    fillColor: inputBg,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
                     ),
                   ),
+                  style: theme.textTheme.bodyLarge,
                   onTap: () async {
                     TimeOfDay initial = TimeOfDay.now();
                     if (_timeController.text.isNotEmpty) {
@@ -148,8 +157,8 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Repeat",
-                    style: TextStyle(
-                      color: Colors.grey[700],
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: hintColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -160,9 +169,9 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                   alignment: WrapAlignment.center,
                   spacing: 10,
                   children: [
-                    _buildQuickOption("Everyday", isEveryday, selectEveryday),
-                    _buildQuickOption("Weekdays", isWeekdays, selectWeekdays),
-                    _buildQuickOption("Clear", !_selected.contains(true), selectNone),
+                    _buildQuickOption(context, "Everyday", isEveryday, selectEveryday),
+                    _buildQuickOption(context, "Weekdays", isWeekdays, selectWeekdays),
+                    _buildQuickOption(context, "Clear", !_selected.contains(true), selectNone),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -181,12 +190,12 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                         child: CircleAvatar(
                           radius: 16,
                           backgroundColor: isSelected
-                              ? const Color(0xFF2150FF)
-                              : Colors.grey[200],
+                              ? primaryColor
+                              : inputBg,
                           child: Text(
                             _dayShortNames[index],
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black87,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: isSelected ? onPrimary : cs.onSurface,
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                             ),
@@ -201,7 +210,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2150FF),
+                      backgroundColor: cs.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -229,7 +238,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                         'repeat': selectedDays,
                       });
                     },
-                    child: const Text('Save', style: TextStyle(fontSize: 17, color: Colors.white)),
+                    child: Text('Save', style: theme.textTheme.labelLarge?.copyWith(fontSize: 17, color: onPrimary)),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -237,8 +246,8 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                   width: double.infinity,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF2150FF),
-                      side: const BorderSide(color: Color(0xFF2150FF)),
+                      foregroundColor: primaryColor,
+                      side: BorderSide(color: primaryColor),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -247,7 +256,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                     onPressed: () {
                       Navigator.of(context).pop({'clear': true});
                     },
-                    child: const Text('Clear All Reminders', style: TextStyle(fontSize: 17)),
+                    child: Text('Clear All Reminders', style: theme.textTheme.labelLarge?.copyWith(fontSize: 17, color: primaryColor)),
                   ),
                 ),
               ],
@@ -258,23 +267,23 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     );
   }
 
-  Widget _buildQuickOption(
-      String label,
-      bool selected,
-      VoidCallback onTap,
-      ) {
+  Widget _buildQuickOption(BuildContext context, String label, bool selected, VoidCallback onTap) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final inputBg = theme.inputDecorationTheme.fillColor ?? cs.surfaceVariant;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2150FF) : Colors.grey[200],
+          color: selected ? cs.primary : inputBg,
           borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black87,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: selected ? cs.onPrimary : cs.onSurface,
             fontWeight: FontWeight.w500,
             fontSize: 15,
           ),
