@@ -18,7 +18,6 @@ class ChatScreen extends StatefulWidget {
     required this.friendBackground,
     this.isPremium = false,
   }) : super(key: key);
-
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -27,7 +26,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final MessageService _messageService = MessageService();
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
   List<dynamic> messages = [];
   bool loading = true;
   int? myUserId;
@@ -74,7 +72,6 @@ class _ChatScreenState extends State<ChatScreen> {
         myUserId = int.tryParse(data['myUserId'].toString());
         loading = false;
       });
-
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     } catch (e) {
       setState(() {
@@ -92,7 +89,6 @@ class _ChatScreenState extends State<ChatScreen> {
       final data = await _messageService.getConversation(widget.friendId);
       final fetchedMessages = data['messages'] ?? [];
       if (fetchedMessages.isEmpty) return;
-
       for (final serverMsg in fetchedMessages) {
         messages.removeWhere(
               (msg) =>
@@ -101,7 +97,6 @@ class _ChatScreenState extends State<ChatScreen> {
               msg['content'] == serverMsg['content'],
         );
       }
-
       final existingIds =
       messages.where((m) => m['id'] != null).map((m) => m['id']).toSet();
       final trulyNewMessages = fetchedMessages
@@ -135,7 +130,6 @@ class _ChatScreenState extends State<ChatScreen> {
       final myBackground = myLastMsg != null
           ? safeAsset(myLastMsg['sender_background'])
           : 'assets/background/black.jpg';
-
       final newMessage = {
         'id': null,
         'sender_id': myUserId,
@@ -148,7 +142,6 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
       _controller.clear();
-
       await _messageService.sendMessage(widget.friendId, content);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -185,20 +178,24 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final bool isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2EA),
+      backgroundColor: colorScheme.background,
       body: SafeArea(
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              color: const Color(0xFF141F5A),
+              color: colorScheme.primary,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back,
-                        color: Colors.white, size: 28),
+                    icon: Icon(Icons.arrow_back,
+                        color: colorScheme.onPrimary, size: 28),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -217,16 +214,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         Text(
                           widget.friendName,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: colorScheme.onPrimary,
                             fontWeight: FontWeight.w600,
                             fontSize: 22,
                           ),
                         ),
                         Text(
                           widget.friendHandle,
-                          style: const TextStyle(
-                            color: Colors.white70,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onPrimary.withOpacity(0.7),
                             fontSize: 15,
                           ),
                         ),
@@ -236,19 +233,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (widget.isPremium)
                     ElevatedButton.icon(
                       onPressed: () {},
-                      icon:
-                      const Icon(Icons.add, size: 15, color: Colors.white),
-                      label: const Text(
+                      icon: Icon(Icons.add, size: 15, color: colorScheme.onSecondary),
+                      label: Text(
                         "Challenge",
-                        style: TextStyle(
-                          color: Colors.black,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSecondary,
                           fontWeight: FontWeight.w500,
                           fontSize: 13,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.yellow,
-                        backgroundColor: const Color(0xFFFFCB35),
+                        foregroundColor: colorScheme.onSecondary,
+                        backgroundColor: colorScheme.secondary,
                         padding: const EdgeInsets.symmetric(
                             vertical: 4, horizontal: 8),
                         minimumSize: const Size(0, 30),
@@ -280,6 +276,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       myUserId != null && senderId == myUserId;
                   final avatarPath = safeAsset(m['sender_avatar']);
                   final backgroundPath = safeAsset(m['sender_background']);
+
                   return Align(
                     alignment: isSelf
                         ? Alignment.centerLeft
@@ -311,8 +308,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 vertical: 10, horizontal: 16),
                             decoration: BoxDecoration(
                               color: isSelf
-                                  ? const Color(0xFFFFF2C3)
-                                  : Colors.white,
+                                  ? colorScheme.secondary.withOpacity(0.19)
+                                  : colorScheme.surface,
                               borderRadius: BorderRadius.only(
                                 topLeft: const Radius.circular(14),
                                 topRight: const Radius.circular(14),
@@ -330,9 +327,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             child: Text(
                               m['content'] ?? '',
-                              style: const TextStyle(
+                              style: theme.textTheme.bodyLarge?.copyWith(
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -358,17 +355,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(22),
                       ),
                       padding: const EdgeInsets.only(left: 16),
                       child: TextField(
                         controller: _controller,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "Send a message...",
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.hintColor,
+                          ),
                         ),
                         onSubmitted: (_) => _sendMessage(),
+                        style: theme.textTheme.bodyLarge,
                       ),
                     ),
                   ),
@@ -377,12 +378,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     onTap: _sendMessage,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFCB35),
+                        color: colorScheme.secondary,
                         shape: BoxShape.circle,
                       ),
                       padding: const EdgeInsets.all(8),
-                      child:
-                      const Icon(Icons.send, color: Colors.black, size: 22),
+                      child: Icon(Icons.send, color: colorScheme.onSecondary, size: 22),
                     ),
                   )
                 ],

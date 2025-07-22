@@ -4,7 +4,6 @@ class RequestsTab extends StatelessWidget {
   final List<Map<String, dynamic>> requests;
   final Function(int) acceptRequest;
   final Function(int) ignoreRequest;
-
   const RequestsTab({
     Key? key,
     required this.requests,
@@ -14,8 +13,16 @@ class RequestsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (requests.isEmpty) {
-      return const Center(child: Text('No requests.'));
+      return Center(
+        child: Text(
+          'No requests.',
+          style: theme.textTheme.bodyMedium,
+        ),
+      );
     }
     return ListView.separated(
       padding: EdgeInsets.zero,
@@ -43,16 +50,17 @@ class RequestsTab extends StatelessWidget {
           ),
           title: Text(
             f['name'] ?? f['username'] ?? '',
-            style: const TextStyle(
+            style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w500,
               fontSize: 17,
+              color: theme.textTheme.titleSmall?.color,
             ),
           ),
           subtitle: Text(
             f['handle'] ?? f['email'] ?? '',
-            style: TextStyle(
+            style: theme.textTheme.bodySmall?.copyWith(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: theme.hintColor,
             ),
           ),
           trailing: Row(
@@ -61,8 +69,8 @@ class RequestsTab extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => acceptRequest(f['id']),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2176FF),
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                   minimumSize: const Size(0, 32),
                   shape: RoundedRectangleBorder(
@@ -70,6 +78,7 @@ class RequestsTab extends StatelessWidget {
                   ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   elevation: 0,
+                  textStyle: theme.textTheme.labelLarge,
                 ),
                 child: const Text('Accept'),
               ),
@@ -77,8 +86,8 @@ class RequestsTab extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => ignoreRequest(f['id']),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[800],
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.secondary,
+                  foregroundColor: colorScheme.onSecondary,
                   padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
                   minimumSize: const Size(0, 32),
                   shape: RoundedRectangleBorder(
@@ -86,6 +95,7 @@ class RequestsTab extends StatelessWidget {
                   ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   elevation: 0,
+                  textStyle: theme.textTheme.labelLarge,
                 ),
                 child: const Text('Ignore'),
               ),
@@ -93,10 +103,11 @@ class RequestsTab extends StatelessWidget {
           ),
         );
       },
-      separatorBuilder: (_, __) => const Divider(
+      separatorBuilder: (_, __) => Divider(
         thickness: 1,
         indent: 24,
         endIndent: 24,
+        color: colorScheme.outline,
       ),
     );
   }

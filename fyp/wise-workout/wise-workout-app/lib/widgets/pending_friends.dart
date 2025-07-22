@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class PendingTab extends StatelessWidget {
   final List<Map<String, dynamic>> pending;
-
   const PendingTab({
     Key? key,
     required this.pending,
@@ -10,8 +9,16 @@ class PendingTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (pending.isEmpty) {
-      return const Center(child: Text('No pending requests.'));
+      return Center(
+        child: Text(
+          'No pending requests.',
+          style: theme.textTheme.bodyMedium,
+        ),
+      );
     }
     return ListView.separated(
       padding: EdgeInsets.zero,
@@ -39,32 +46,34 @@ class PendingTab extends StatelessWidget {
           ),
           title: Text(
             f['name'] ?? f['username'] ?? '',
-            style: const TextStyle(
+            style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w500,
               fontSize: 17,
+              color: theme.textTheme.titleSmall?.color,
             ),
           ),
           subtitle: Text(
             f['handle'] ?? f['email'] ?? '',
-            style: TextStyle(
+            style: theme.textTheme.bodySmall?.copyWith(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: theme.hintColor,
             ),
           ),
-          trailing: const Text(
+          trailing: Text(
             "Requested",
-            style: TextStyle(
-              color: Colors.black45,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.disabledColor,
               fontWeight: FontWeight.w500,
               fontSize: 15,
             ),
           ),
         );
       },
-      separatorBuilder: (_, __) => const Divider(
+      separatorBuilder: (_, __) => Divider(
         thickness: 1,
         indent: 24,
         endIndent: 24,
+        color: colorScheme.outline,
       ),
     );
   }

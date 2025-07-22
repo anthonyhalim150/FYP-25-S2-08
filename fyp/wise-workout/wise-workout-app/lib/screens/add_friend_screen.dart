@@ -3,7 +3,6 @@ import '../services/friend_service.dart';
 
 class AddFriendScreen extends StatefulWidget {
   const AddFriendScreen({Key? key}) : super(key: key);
-
   @override
   State<AddFriendScreen> createState() => _AddFriendScreenState();
 }
@@ -45,78 +44,68 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
     }
   }
 
-  Widget _buildTrailing(dynamic u) {
+  Widget _buildTrailing(BuildContext context, dynamic u, ColorScheme colorScheme, ThemeData theme) {
     final status = u['relationship_status'];
+    final labelStyle = theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold);
     if (status == 'friends') {
       return ElevatedButton(
         onPressed: null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
+          foregroundColor: colorScheme.onPrimary,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           minimumSize: const Size(60, 36),
         ),
-        child: const Text('Friend', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: Text('Friend', style: labelStyle),
       );
-    } else if (status == 'sent') {
+    } else if (status == 'sent' || status == 'pending') {
       return ElevatedButton(
         onPressed: null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[400],
-          foregroundColor: Colors.white,
+          backgroundColor: colorScheme.surfaceVariant,
+          foregroundColor: colorScheme.onSurfaceVariant,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           minimumSize: const Size(60, 36),
         ),
-        child: const Text('Sent', style: TextStyle(fontWeight: FontWeight.bold)),
-      );
-    } else if (status == 'pending') {
-      return ElevatedButton(
-        onPressed: null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[400],
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          minimumSize: const Size(60, 36),
-        ),
-        child: const Text('Pending', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: Text(status == 'sent' ? 'Sent' : 'Pending', style: labelStyle),
       );
     }
     return ElevatedButton(
       onPressed: () => _sendFriendRequest(
           u['id'].toString(), u['name'] ?? u['username'] ?? ''),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         minimumSize: const Size(60, 36),
       ),
-      child: const Text('Add', style: TextStyle(fontWeight: FontWeight.bold)),
+      child: Text('Add', style: labelStyle),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2EA),
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
+        foregroundColor: colorScheme.onBackground,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Add Friend',
-          style: TextStyle(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: theme.textTheme.titleMedium?.color,
           ),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ),
+        iconTheme: IconThemeData(color: colorScheme.onBackground),
       ),
       body: Column(
         children: [
@@ -134,9 +123,12 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
               },
               decoration: InputDecoration(
                 hintText: 'Search by username or email',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.hintColor,
+                ),
+                prefixIcon: Icon(Icons.search, color: colorScheme.onSurface),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: colorScheme.surface,
                 contentPadding: const EdgeInsets.symmetric(vertical: 4),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
@@ -150,53 +142,63 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
             child: loading
                 ? const Center(child: CircularProgressIndicator())
                 : (searchResults.isEmpty || search.isEmpty)
-                    ? Center(
-                        child: Text("No users found.",
-                            style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-                      )
-                    : ListView.separated(
-                        itemCount: searchResults.length,
-                        separatorBuilder: (_, __) => const Divider(
-                          thickness: 1,
-                          indent: 24,
-                          endIndent: 24,
-                        ),
-                        itemBuilder: (context, i) {
-                          final u = searchResults[i];
-                          return ListTile(
-                            leading: Container(
-                              width: 56,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: AssetImage(u['background_url'] ?? 'assets/background/black.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              child: Center(
-                                child: CircleAvatar(
-                                  backgroundImage: AssetImage(u['avatar_url'] ?? ''),
-                                  radius: 22,
-                                  backgroundColor: Colors.transparent,
-                                ),
-                              ),
-                            ),
-                            title: Text(
-                              u['name'] ?? u['username'] ?? '',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 17,
-                              ),
-                            ),
-                            subtitle: Text(
-                              u['handle'] ?? u['email'] ?? '',
-                              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                            ),
-                            trailing: _buildTrailing(u),
-                          );
-                        },
+                ? Center(
+              child: Text(
+                "No users found.",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.hintColor,
+                  fontSize: 16,
+                ),
+              ),
+            )
+                : ListView.separated(
+              itemCount: searchResults.length,
+              separatorBuilder: (_, __) => Divider(
+                thickness: 1,
+                indent: 24,
+                endIndent: 24,
+                color: colorScheme.outline,
+              ),
+              itemBuilder: (context, i) {
+                final u = searchResults[i];
+                return ListTile(
+                  leading: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: AssetImage(u['background_url'] ?? 'assets/background/black.jpg'),
+                        fit: BoxFit.cover,
                       ),
+                    ),
+                    child: Center(
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage(u['avatar_url'] ?? ''),
+                        radius: 22,
+                        backgroundColor: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    u['name'] ?? u['username'] ?? '',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 17,
+                      color: theme.textTheme.titleSmall?.color,
+                    ),
+                  ),
+                  subtitle: Text(
+                    u['handle'] ?? u['email'] ?? '',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 13,
+                      color: theme.hintColor,
+                    ),
+                  ),
+                  trailing: _buildTrailing(context, u, colorScheme, theme),
+                );
+              },
+            ),
           ),
         ],
       ),
