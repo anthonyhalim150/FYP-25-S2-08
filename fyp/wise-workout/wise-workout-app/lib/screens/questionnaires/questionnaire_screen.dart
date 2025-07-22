@@ -11,7 +11,6 @@ class QuestionnaireScreen extends StatefulWidget {
     required this.totalSteps,
     required this.responses,
   });
-
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
 }
@@ -32,16 +31,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     heightController.addListener(_onTextChange);
     weightController.addListener(_onTextChange);
   }
-
   void _onTextChange() => setState(() {});
-
   @override
   void dispose() {
     heightController.dispose();
     weightController.dispose();
     super.dispose();
   }
-
   void handleNext() {
     widget.responses['height_cm'] = heightController.text;
     widget.responses['weight_kg'] = weightController.text;
@@ -59,11 +55,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = const Color(0xFFF9F7F2);
-    final bool buttonEnabled = heightController.text.isNotEmpty && weightController.text.isNotEmpty;
+    final scheme = Theme.of(context).colorScheme;
+    final bool buttonEnabled =
+        heightController.text.isNotEmpty && weightController.text.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: scheme.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -73,10 +70,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded, color: scheme.onBackground),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Icon(Icons.fitness_center, color: Color(0xFFFFC700), size: 34),
+                  Icon(Icons.fitness_center, color: scheme.secondary, size: 34),
                 ],
               ),
             ),
@@ -90,8 +87,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       const SizedBox(height: 32),
                       Text(
                         "Question ${widget.step} out of ${widget.totalSteps}",
-                        style: const TextStyle(
-                          color: Color(0xFFB7B8B8),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
                           fontStyle: FontStyle.italic,
@@ -100,12 +97,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
-                      const Text(
+                      Text(
                         "What's your height?",
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.black,
+                          color: scheme.onBackground,
                           letterSpacing: 0.1,
                         ),
                         textAlign: TextAlign.center,
@@ -119,11 +115,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                               child: Container(
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: scheme.surface,
                                   borderRadius: BorderRadius.circular(25),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.04),
+                                      color: scheme.shadow.withOpacity(0.055),
                                       blurRadius: 6,
                                       offset: const Offset(0, 2),
                                     )
@@ -132,10 +128,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 alignment: Alignment.center,
                                 child: TextField(
                                   controller: heightController,
-                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   textAlignVertical: TextAlignVertical.center,
                                   textAlign: TextAlign.left,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                                   decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     isDense: true,
@@ -145,23 +141,25 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 2.0),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
                               child: Text(
                                 "cm",
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black87),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  color: scheme.onSurfaceVariant,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 36),
-                      const Text(
+                      Text(
                         "What's your weight?",
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.black,
+                          color: scheme.onBackground,
                           letterSpacing: 0.1,
                         ),
                         textAlign: TextAlign.center,
@@ -175,11 +173,11 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                               child: Container(
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: scheme.surface,
                                   borderRadius: BorderRadius.circular(25),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.04),
+                                      color: scheme.shadow.withOpacity(0.055),
                                       blurRadius: 6,
                                       offset: const Offset(0, 2),
                                     )
@@ -188,10 +186,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 alignment: Alignment.center,
                                 child: TextField(
                                   controller: weightController,
-                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   textAlignVertical: TextAlignVertical.center,
                                   textAlign: TextAlign.left,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                                   decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     isDense: true,
@@ -201,11 +199,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 2.0),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
                               child: Text(
                                 "kg",
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black87),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  color: scheme.onSurfaceVariant,
+                                ),
                               ),
                             ),
                           ],
@@ -219,16 +220,15 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                           onPressed: buttonEnabled ? handleNext : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonEnabled
-                                ? const Color(0xFF0D1850)
-                                : const Color(0xFFDBDBDB),
-                            foregroundColor: Colors.white,
+                                ? scheme.primary
+                                : scheme.surfaceVariant,
+                            foregroundColor: buttonEnabled ? scheme.onPrimary : scheme.onSurface,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
-                            textStyle: const TextStyle(
-                              fontSize: 19,
+                            textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.5,
                             ),

@@ -53,14 +53,12 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final bool buttonEnabled = selectedIndex != -1;
-    const background = Color(0xFFF9F7F2);
-    const yellow = Color(0xFFFFC832);
-    const darkBlue = Color(0xFF0D1850);
-    const gray = Color(0xFFD6D6D8);
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: colorScheme.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -71,10 +69,18 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 22),
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: theme.iconTheme.color ?? Colors.black,
+                      size: 22,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Icon(Icons.fitness_center, color: yellow, size: 28),
+                  Icon(
+                    Icons.fitness_center,
+                    color: colorScheme.secondary,
+                    size: 28,
+                  ),
                 ],
               ),
             ),
@@ -88,8 +94,8 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                       const SizedBox(height: 38),
                       Text(
                         "Question ${widget.step} out of ${widget.totalSteps}",
-                        style: const TextStyle(
-                          color: Color(0xFFB7B8B8),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.disabledColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
                           fontStyle: FontStyle.italic,
@@ -98,14 +104,14 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 14),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 22),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
                           "How long do you want\nyour workouts to be?",
-                          style: TextStyle(
+                          style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w900,
                             fontSize: 21,
-                            color: Colors.black,
+                            color: theme.textTheme.titleLarge?.color,
                             height: 1.19,
                           ),
                           textAlign: TextAlign.center,
@@ -124,7 +130,9 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                               width: MediaQuery.of(context).size.width * 0.94,
                               height: 54,
                               decoration: BoxDecoration(
-                                color: selected ? yellow : Colors.white,
+                                color: selected
+                                    ? colorScheme.secondary
+                                    : colorScheme.surface,
                                 borderRadius: BorderRadius.circular(27),
                                 boxShadow: [
                                   BoxShadow(
@@ -139,10 +147,12 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                                 padding: const EdgeInsets.symmetric(horizontal: 28.0),
                                 child: Text(
                                   options[i],
-                                  style: TextStyle(
+                                  style: theme.textTheme.bodyLarge?.copyWith(
                                     fontSize: 15.5,
-                                    color: Colors.black,
-                                    fontWeight: selected ? FontWeight.bold : FontWeight.w600,
+                                    color: theme.textTheme.bodyLarge?.color,
+                                    fontWeight: selected
+                                        ? FontWeight.bold
+                                        : FontWeight.w600,
                                     letterSpacing: 0.08,
                                   ),
                                 ),
@@ -158,13 +168,17 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
                         child: ElevatedButton(
                           onPressed: buttonEnabled ? handleNext : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonEnabled ? darkBlue : gray,
-                            foregroundColor: buttonEnabled ? Colors.white : Colors.black,
+                            backgroundColor: buttonEnabled
+                                ? colorScheme.primary // was: darkBlue
+                                : colorScheme.onSurface.withOpacity(0.12),
+                            foregroundColor: buttonEnabled
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurface,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),
                             ),
-                            textStyle: const TextStyle(
+                            textStyle: theme.textTheme.labelLarge?.copyWith(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.1,
