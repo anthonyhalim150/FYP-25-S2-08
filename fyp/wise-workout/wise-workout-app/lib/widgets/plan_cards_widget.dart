@@ -4,7 +4,6 @@ class PlanCardsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> plans;
   final int selectedPlan;
   final ValueChanged<int> onSelected;
-
   const PlanCardsWidget({
     Key? key,
     required this.plans,
@@ -14,6 +13,15 @@ class PlanCardsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final highlightColor = colorScheme.primaryContainer;
+    final highlightBorder = colorScheme.primary;
+    final fadedBorder = colorScheme.outlineVariant ?? colorScheme.outline;
+    final bestValueBg = colorScheme.secondary;
+    final bestValueText = colorScheme.onSecondary;
+
     return SizedBox(
       height: 160,
       child: ListView.separated(
@@ -28,10 +36,10 @@ class PlanCardsWidget extends StatelessWidget {
             child: Container(
               width: 140,
               decoration: BoxDecoration(
-                color: highlight ? Colors.purple[50] : Colors.white,
+                color: highlight ? highlightColor : colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: highlight ? Colors.deepPurple : Colors.grey.shade300,
+                  color: highlight ? highlightBorder : fadedBorder,
                   width: highlight ? 2 : 1.3,
                 ),
               ),
@@ -42,8 +50,8 @@ class PlanCardsWidget extends StatelessWidget {
                   Text(
                     plans[idx]['name'],
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: highlight ? Colors.deepPurple : Colors.black,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: highlight ? highlightBorder : theme.textTheme.bodyMedium?.color,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -52,17 +60,17 @@ class PlanCardsWidget extends StatelessWidget {
                   Text(
                     plans[idx]['price'],
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: highlight ? Colors.deepPurple : Colors.black,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: highlight ? highlightBorder : theme.textTheme.titleMedium?.color,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
                   ),
                   Text(
                     plans[idx]['period'],
-                    style: const TextStyle(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       fontSize: 14,
-                      color: Colors.black54,
+                      color: theme.hintColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -72,15 +80,15 @@ class PlanCardsWidget extends StatelessWidget {
                       Icon(
                         Icons.monetization_on,
                         size: 17,
-                        color: highlight ? Colors.deepPurple : Colors.grey[700],
+                        color: highlight ? highlightBorder : theme.iconTheme.color,
                       ),
                       const SizedBox(width: 3),
                       Flexible(
                         child: Text(
                           '${(plans[idx]['tokens'] as num).toInt()} Tokens',
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: highlight ? Colors.deepPurple : Colors.grey[700],
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: highlight ? highlightBorder : theme.hintColor,
                             fontWeight: FontWeight.w600,
                             fontSize: 13.7,
                           ),
@@ -93,14 +101,17 @@ class PlanCardsWidget extends StatelessWidget {
                       margin: const EdgeInsets.only(top: 7),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: bestValueBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text('Best Value',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12)),
+                      child: Text(
+                        'Best Value',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: bestValueText,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
                     )
                 ],
               ),

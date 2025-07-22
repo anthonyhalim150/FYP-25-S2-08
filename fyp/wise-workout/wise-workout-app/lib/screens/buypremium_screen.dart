@@ -7,7 +7,6 @@ import '../widgets/money_back_widget.dart';
 
 class BuyPremiumScreen extends StatefulWidget {
   const BuyPremiumScreen({Key? key}) : super(key: key);
-
   @override
   State<BuyPremiumScreen> createState() => _BuyPremiumScreenState();
 }
@@ -24,6 +23,9 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
   ];
 
   Future<void> _showBuyWithTokenConfirmation() async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final int neededTokens = (plans[selectedPlan]['tokens'] as num).toInt();
     final int durationDays = (plans[selectedPlan]['durationDays'] as num).toInt();
     String planName = plans[selectedPlan]['name'];
@@ -34,7 +36,14 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
         content: Text("Are you sure you want to buy the $planName plan for $neededTokens tokens?"),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("No")),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text("Yes")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Yes"),
+          ),
         ],
       ),
     );
@@ -42,9 +51,19 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => const AlertDialog(
-          content: SizedBox(height: 80, child: Center(
-              child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [CircularProgressIndicator(), SizedBox(height: 16), Text("Processing your purchase...")]))
+        builder: (_) => AlertDialog(
+          content: SizedBox(
+            height: 80,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text("Processing your purchase...", style: theme.textTheme.bodyMedium)
+                ],
+              ),
+            ),
           ),
         ),
       );
@@ -63,8 +82,17 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text("Success!"),
-          content: Text(premiumMsg),
-          actions: [ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+          content: Text(premiumMsg, style: theme.textTheme.bodyMedium),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
         ),
       );
     }
@@ -72,18 +100,25 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF6EE),
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF6EE),
+        backgroundColor: colorScheme.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onBackground),
           onPressed: () { Navigator.pop(context); },
         ),
-        title: const Text(
+        title: Text(
           'Premium Plan',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 20),
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: colorScheme.onBackground,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
         ),
         centerTitle: true,
       ),
@@ -92,21 +127,21 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           children: [
             if (isPremium) ...[
-              _premiumDurationCard(),
+              _premiumDurationCard(context),
               const SizedBox(height: 13),
             ],
             const SizedBox(height: 10),
-            _sectionTitle('Choose your Plan'),
+            _sectionTitle(context, 'Choose your Plan'),
             PlanCardsWidget(
               plans: plans,
               selectedPlan: selectedPlan,
               onSelected: (i) => setState(() => selectedPlan = i),
             ),
             const SizedBox(height: 24),
-            _sectionTitle('Premium Benefits'),
+            _sectionTitle(context, 'Premium Benefits'),
             const BenefitsWidget(),
             const SizedBox(height: 24),
-            _sectionTitle("What's Included"),
+            _sectionTitle(context, "What's Included"),
             const IncludedWidget(),
             const SizedBox(height: 18),
             const MoneyBackWidget(),
@@ -123,9 +158,10 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
               height: 52, width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber[700],
-                  foregroundColor: Colors.white,
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  backgroundColor: colorScheme.secondary,
+                  foregroundColor: colorScheme.onSecondary,
+                  textStyle: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold, fontSize: 18),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                   elevation: 2,
@@ -149,9 +185,10 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
               height: 48, width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  foregroundColor: Colors.white,
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  textStyle: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold, fontSize: 17),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: userTokens >= (plans[selectedPlan]['tokens'] as num).toInt()
@@ -163,11 +200,19 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
             const SizedBox(height: 4),
             Text(
               "You have $userTokens tokens",
-              style: TextStyle(fontSize: 14, color: Colors.deepPurple[400], fontWeight: FontWeight.w500),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 14,
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 2),
-            Text("(Tokens can be won on Lucky Spin!)",
-              style: TextStyle(fontSize: 12, color: Colors.deepPurple[200]),
+            Text(
+              "(Tokens can be won on Lucky Spin!)",
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 12,
+                color: colorScheme.primary.withOpacity(0.4),
+              ),
             ),
           ],
         ),
@@ -175,7 +220,9 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
     );
   }
 
-  Widget _premiumDurationCard() {
+  Widget _premiumDurationCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     String durationText = '';
     if (premiumExpiry != null) {
       final daysLeft = premiumExpiry!.difference(DateTime.now()).inDays;
@@ -190,28 +237,37 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
       durationText = "Active";
     }
     return Card(
-      color: Colors.lightGreen[100],
+      color: colorScheme.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Row(
           children: [
-            Icon(Icons.star, color: Colors.amber[800]),
+            Icon(Icons.star, color: colorScheme.secondary),
             const SizedBox(width: 14),
-            Text("You are Premium: ", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            Text(durationText, style: const TextStyle(fontSize: 16)),
+            Text(
+              "You are Premium: ",
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            Text(
+              durationText,
+              style: theme.textTheme.titleMedium?.copyWith(fontSize: 16),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _sectionTitle(String title) => Padding(
+  Widget _sectionTitle(BuildContext context, String title) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
     child: Text(
       title,
-      style: const TextStyle(
-          fontWeight: FontWeight.w700, fontSize: 17, color: Color(0xFF071655)),
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w700,
+        fontSize: 17,
+        color: Theme.of(context).colorScheme.primary,
+      ),
     ),
   );
 }

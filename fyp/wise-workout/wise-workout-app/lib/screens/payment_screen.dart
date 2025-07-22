@@ -4,13 +4,10 @@ import 'home_screen.dart';
 class PaymentScreen extends StatefulWidget {
   final String planName;
   final double price;
-
   const PaymentScreen({required this.planName, required this.price, Key? key}) : super(key: key);
-
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
 }
-
 class _PaymentScreenState extends State<PaymentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _cardNumController = TextEditingController();
@@ -29,13 +26,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     String previewNumber = cardNumber.isEmpty
         ? '**** **** **** ****'
         : cardNumber.padRight(16, '*').replaceRange(4, 12, ' **** **** ');
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Payment'),
+        backgroundColor: cs.primary,
+        foregroundColor: cs.onPrimary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,8 +44,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              // Card Preview
               Card(
-                color: Colors.deepPurple[400],
+                color: cs.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                 child: Container(
                   width: double.infinity,
@@ -57,8 +59,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         children: [
                           Text(
                             cardType ?? "",
-                            style: const TextStyle(
-                                color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 18),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: cs.onPrimary.withOpacity(0.7),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
                           ),
                           const Spacer(),
                         ],
@@ -66,20 +70,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       const Spacer(),
                       Text(
                         previewNumber,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w600, fontSize: 22, letterSpacing: 2.0),
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: cs.onPrimary, fontWeight: FontWeight.w600,
+                          fontSize: 22, letterSpacing: 2.0,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
                           Text(
                             expiryDate.isEmpty ? 'MM/YY' : expiryDate,
-                            style: const TextStyle(color: Colors.white70, fontSize: 16),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                                color: cs.onPrimary.withOpacity(0.7), fontSize: 16),
                           ),
                           const Spacer(),
                           Text(
                             cardHolder.isEmpty ? 'NAME' : cardHolder.toUpperCase(),
-                            style: const TextStyle(color: Colors.white70, fontSize: 16),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                                color: cs.onPrimary.withOpacity(0.7), fontSize: 16),
                           )
                         ],
                       )
@@ -88,19 +96,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Text(
                 'You\'re purchasing: ${widget.planName}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 8),
               Text(
                 '\$${widget.price.toStringAsFixed(2)}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Colors.deepPurple),
+                style: theme.textTheme.displayMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: cs.primary,
+                ),
               ),
               const SizedBox(height: 24),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Card Holder Name'),
+                decoration: InputDecoration(labelText: 'Card Holder Name'),
                 onChanged: (value) => setState(() {
                   cardHolder = value;
                 }),
@@ -141,10 +152,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         }
                         int month = int.tryParse(value.substring(0, 2)) ?? 0;
                         int year = int.tryParse(value.substring(3, 5)) ?? 0;
-
                         if (month < 1 || month > 12) return 'Month must be 01-12';
-
-                        // Check not expired
                         final now = DateTime.now();
                         int currentYear = now.year % 100;
                         int currentMonth = now.month;
@@ -173,8 +181,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    padding: const EdgeInsets.symmetric(vertical: 14)
+                  backgroundColor: cs.primary,
+                  foregroundColor: cs.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: isProcessing
                     ? null
@@ -192,7 +201,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         context: context,
                         barrierDismissible: false,
                         builder: (context) => AlertDialog(
-                          icon: const Icon(Icons.check_circle, color: Colors.green, size: 40),
+                          icon: Icon(Icons.check_circle, color: Colors.green[700], size: 40),
                           title: const Text('Payment Successful!'),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -206,21 +215,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   Expanded(
                                     child: Text(
                                       "You're eligible for a 7-day money back guarantee.",
-                                      style: TextStyle(color: Colors.green[700], fontSize: 14),
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: Colors.green[700],
+                                        fontSize: 14,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 "Cancel within 7 days for a full refund.",
-                                style: TextStyle(fontSize: 13),
+                                style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
                                 textAlign: TextAlign.center,
                               ),
                             ],
                           ),
                           actions: [
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: cs.primary,
+                                foregroundColor: cs.onPrimary,
+                              ),
                               onPressed: () {
                                 Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(builder: (context) => const HomeScreen(userName: '')),
@@ -236,8 +252,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   }
                 },
                 child: isProcessing
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('Pay \$${widget.price.toStringAsFixed(2)}'),
+                    ? CircularProgressIndicator(color: cs.onPrimary)
+                    : Text('Pay \$${widget.price.toStringAsFixed(2)}',
+                    style: theme.textTheme.titleMedium?.copyWith(color: cs.onPrimary)),
               )
             ],
           ),
