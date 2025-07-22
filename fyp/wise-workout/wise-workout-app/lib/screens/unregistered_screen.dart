@@ -11,7 +11,6 @@ class UnregisteredUserPage extends StatelessWidget {
   final int maxSteps = 0;
   final int caloriesBurned = 0;
   final int xpEarned = 0;
-
   const UnregisteredUserPage({super.key});
 
   void _showRegistrationPrompt(BuildContext context) {
@@ -48,6 +47,13 @@ class UnregisteredUserPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final bannerColor = colorScheme.primary;
+    final bannerContrast = colorScheme.onPrimary;
+    final bannerAccent = colorScheme.secondary;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -60,30 +66,29 @@ class UnregisteredUserPage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Welcome to FitQuest!',
-                        style: TextStyle(
-                          fontSize: 24,
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.blueAccent.withOpacity(0.1),
+                        color: colorScheme.primary.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: TextButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/');
                         },
-                        child: const Text(
+                        child: Text(
                           "Login",
-                          style: TextStyle(
+                          style: theme.textTheme.labelLarge?.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.blueAccent,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ),
@@ -91,7 +96,6 @@ class UnregisteredUserPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               // Search bar
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -100,7 +104,7 @@ class UnregisteredUserPage extends StatelessWidget {
                   Container(
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
@@ -111,55 +115,45 @@ class UnregisteredUserPage extends StatelessWidget {
                       ],
                     ),
                     child: Row(
-                      children: const [
-                        SizedBox(width: 15),
+                      children: [
+                        const SizedBox(width: 15),
                         Expanded(
                           child: Text(
                             'Search on FitQuest',
-                            style: TextStyle(color: Colors.grey),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.hintColor,
+                            ),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 15),
-                          child: Icon(Icons.search, color: Colors.black),
+                          padding: const EdgeInsets.only(right: 15),
+                          child: Icon(Icons.search, color: colorScheme.onSurface),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-
               // Exercise stats
               _wrapWithPrompt(
                 context,
-                Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: Theme.of(context).colorScheme.copyWith(
-                      surface: Colors.white.withOpacity(1),
-                      primaryContainer: Colors.white,
-                    ),
-                  ),
-                  child: ExerciseStatsCard(
-                    currentSteps: currentSteps,
-                    maxSteps: maxSteps,
-                    caloriesBurned: caloriesBurned,
-                    xpEarned: xpEarned,
-                  ),
+                ExerciseStatsCard(
+                  currentSteps: currentSteps,
+                  maxSteps: maxSteps,
+                  caloriesBurned: caloriesBurned,
+                  xpEarned: xpEarned,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               // Workout title
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
                   "Workout",
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: theme.textTheme.headlineSmall,
                 ),
               ),
               const SizedBox(height: 10),
-
               // Workout cards
               SizedBox(
                 height: 150,
@@ -181,8 +175,7 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Yellow banner: join challenge
+              // Blue (banner): join challenge
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _wrapWithPrompt(
@@ -191,39 +184,41 @@ class UnregisteredUserPage extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF001F6D),
+                      color: bannerColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "Let's start a challenge!",
-                          style: TextStyle(
-                            fontSize: 18,
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: bannerContrast,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           "Friendly rivalry fires up results. Invite a friend and crush your goals—one challenge at a time!",
-                          style: TextStyle(color: Colors.white70),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: bannerContrast.withOpacity(0.7),
+                          ),
                         ),
                         const SizedBox(height: 15),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.yellow[700],
+                            color: bannerAccent,
                             borderRadius: BorderRadius.circular(25),
                           ),
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
                             horizontal: 20,
                           ),
-                          child: const Text(
+                          child: Text(
                             "Challenge a friend now!",
-                            style: TextStyle(
+                            style: theme.textTheme.labelLarge?.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: colorScheme.onSecondary,
                             ),
                           ),
                         )
@@ -232,19 +227,16 @@ class UnregisteredUserPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 30),
-
               // Tournaments title
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
                   "Tournaments",
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: theme.textTheme.headlineSmall,
                 ),
               ),
               const SizedBox(height: 10),
-
               // Tournament cards
               SizedBox(
                 height: 230,
@@ -269,7 +261,6 @@ class UnregisteredUserPage extends StatelessWidget {
           ),
         ),
       ),
-
       // Bottom navigation only
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,

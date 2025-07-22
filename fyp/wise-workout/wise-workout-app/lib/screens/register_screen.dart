@@ -25,7 +25,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: success ? Colors.green : Colors.red,
+        backgroundColor: success
+            ? Colors.green
+            : Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -78,11 +80,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Text(
             '''
 Welcome to FitQuest!
-
 - Use of this service is at your own risk.
 - Respect community guidelines.
 - Your data is held confidentially.
-
 Thank you for using FitQuest!
 ''',
           ),
@@ -99,6 +99,9 @@ Thank you for using FitQuest!
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -112,61 +115,128 @@ Thank you for using FitQuest!
                   height: 150,
                 ),
                 const SizedBox(height: 32),
-
-                const Text("Email", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(
+                  "Email",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(
                     hintText: 'Enter Your Email',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                const Text("First Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(
+                  "First Name",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: firstNameController,
                   decoration: InputDecoration(
                     hintText: 'Enter Your First Name',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                const Text("Last Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(
+                  "Last Name",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: lastNameController,
                   decoration: InputDecoration(
                     hintText: 'Enter Your Last Name',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                const Text("Username", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(
+                  "Username",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: usernameController,
                   decoration: InputDecoration(
                     hintText: 'Choose a Username',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                const Text("Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(
+                  "Password",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: passwordController,
                   obscureText: !showPassword,
                   decoration: InputDecoration(
                     hintText: 'Create Password',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
                     suffixIcon: IconButton(
-                      icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
+                      icon: Icon(
+                        showPassword ? Icons.visibility_off : Icons.visibility,
+                        color: theme.iconTheme.color,
+                      ),
                       onPressed: () {
                         setState(() => showPassword = !showPassword);
                       },
@@ -174,22 +244,43 @@ Thank you for using FitQuest!
                   ),
                 ),
                 const SizedBox(height: 3),
-                const Text(
+                Text(
                   "Min 8 chars, upper, lower, digit, special char",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.hintColor,
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 16),
 
-                const Text("Confirm Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(
+                  "Confirm Password",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: confirmPasswordController,
                   obscureText: !showConfirmPassword,
                   decoration: InputDecoration(
                     hintText: 'Re-enter Password',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
                     suffixIcon: IconButton(
-                      icon: Icon(showConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                      icon: Icon(
+                        showConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: theme.iconTheme.color,
+                      ),
                       onPressed: () {
                         setState(() => showConfirmPassword = !showConfirmPassword);
                       },
@@ -197,28 +288,29 @@ Thank you for using FitQuest!
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Row(
                   children: [
                     Checkbox(
                       value: agreeToTerms,
+                      activeColor: colorScheme.primary,
                       onChanged: (val) => setState(() => agreeToTerms = val ?? false),
                     ),
                     Expanded(
                       child: Text.rich(
                         TextSpan(
                           text: 'I agree to the ',
-                          style: const TextStyle(color: Colors.black),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
                           children: [
                             TextSpan(
                               text: 'Terms & Conditions',
-                              style: const TextStyle(
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue,
+                                color: colorScheme.primary,
                                 decoration: TextDecoration.underline,
                               ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = showTermsDialog,
+                              recognizer: TapGestureRecognizer()..onTap = showTermsDialog,
                             ),
                           ],
                         ),
@@ -227,32 +319,35 @@ Thank you for using FitQuest!
                   ],
                 ),
                 const SizedBox(height: 16),
-
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: isLoading ? null : handleRegister,
                     child: isLoading
-                        ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-                        : const Text(
+                        ? CircularProgressIndicator(
+                      color: colorScheme.onPrimary,
+                      strokeWidth: 2,
+                    )
+                        : Text(
                       "Create Account",
-                      style: TextStyle(
+                      style: theme.textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                         letterSpacing: 1,
+                        color: colorScheme.onPrimary,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Center(
                   child: TextButton(
                     onPressed: () {
@@ -261,9 +356,9 @@ Thank you for using FitQuest!
                     child: Text(
                       "Already have an account? Click here to go back to the login page!",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 14,
-                        color: Colors.blue.shade700,
+                        color: colorScheme.primary,
                         decoration: TextDecoration.underline,
                       ),
                     ),
