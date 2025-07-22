@@ -24,6 +24,7 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
     'Wrist',
     'Knees',
     'Shoulder',
+    'No Injury'
     'Others (Type here)',
   ];
   final TextEditingController othersController = TextEditingController();
