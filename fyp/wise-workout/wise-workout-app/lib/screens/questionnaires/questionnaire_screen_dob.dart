@@ -12,6 +12,7 @@ class QuestionnaireDobScreen extends StatefulWidget {
     this.totalSteps = 9,
     required this.responses,
   });
+
   @override
   State<QuestionnaireDobScreen> createState() => _QuestionnaireDobScreenState();
 }
@@ -63,12 +64,14 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
     final dobText = selectedDate != null
         ? DateFormat('MMMM d, yyyy').format(selectedDate!)
         : 'Tap to select your date of birth';
-    const background = Color(0xFFF9F7F2);
-    const yellow = Color(0xFFFFC832);
-    const darkBlue = Color(0xFF0D1850);
+
+    final scheme = Theme.of(context).colorScheme;
+    final onBackground = scheme.onBackground;
+    final buttonColor = selectedDate != null ? scheme.primary : scheme.surfaceVariant;
+    final buttonTextColor = selectedDate != null ? scheme.onPrimary : scheme.onSurfaceVariant;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: scheme.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -78,11 +81,11 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        color: Colors.black, size: 22),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded,
+                        color: onBackground, size: 22),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Icon(Icons.fitness_center, color: yellow, size: 28),
+                  Icon(Icons.fitness_center, color: scheme.secondary, size: 28),
                 ],
               ),
             ),
@@ -94,15 +97,14 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 38),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 22),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
                           "What's your date of birth?",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: onBackground,
                           ),
                         ),
                       ),
@@ -113,11 +115,11 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                           width: MediaQuery.of(context).size.width * 0.94,
                           height: 54,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(27),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
+                                color: scheme.shadow.withOpacity(0.03),
                                 blurRadius: 2,
                                 offset: const Offset(0, 2),
                               )
@@ -128,14 +130,16 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 28.0),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_month, color: Colors.black54),
+                                Icon(Icons.calendar_month, color: scheme.onSurface.withOpacity(0.66)),
                                 const SizedBox(width: 15),
                                 Expanded(
                                   child: Text(
                                     dobText,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: selectedDate == null ? Colors.black38 : Colors.black,
+                                      color: selectedDate == null
+                                          ? scheme.onSurfaceVariant
+                                          : onBackground,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -152,8 +156,8 @@ class _QuestionnaireDobScreenState extends State<QuestionnaireDobScreen> {
                         child: ElevatedButton(
                           onPressed: selectedDate != null ? _handleNext : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: selectedDate != null ? darkBlue : const Color(0xFFD6D6D8),
-                            foregroundColor: Colors.white,
+                            backgroundColor: buttonColor,
+                            foregroundColor: buttonTextColor,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),

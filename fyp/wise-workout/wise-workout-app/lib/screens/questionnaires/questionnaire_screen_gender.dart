@@ -11,7 +11,6 @@ class QuestionnaireScreenGender extends StatefulWidget {
     this.totalSteps = 9,
     required this.responses,
   });
-
   @override
   State<QuestionnaireScreenGender> createState() => _QuestionnaireScreenGenderState();
 }
@@ -19,7 +18,6 @@ class QuestionnaireScreenGender extends StatefulWidget {
 class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
   int selectedIndex = -1;
   final List<String> options = ['Male', 'Female'];
-
   @override
   void initState() {
     super.initState();
@@ -29,7 +27,6 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
       if (idx != -1) selectedIndex = idx;
     }
   }
-
   void handleNext() {
     if (selectedIndex != -1) {
       widget.responses['gender'] = options[selectedIndex];
@@ -45,17 +42,18 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final bool buttonEnabled = selectedIndex != -1;
-    const background = Color(0xFFF9F7F2);
-    const yellow = Color(0xFFFFC832);
-    const darkBlue = Color(0xFF0D1850);
-    const gray = Color(0xFFD6D6D8);
+    final scheme = Theme.of(context).colorScheme;
+    final onBackground = scheme.onBackground;
+    final yellow = scheme.secondary;
+    final darkBlue = scheme.primary;
+    final gray = scheme.surfaceVariant;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: scheme.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -65,10 +63,10 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 22),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded, color: onBackground, size: 22),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Icon(Icons.fitness_center, color: yellow, size: 28),
+                  Icon(Icons.fitness_center, color: yellow, size: 28),
                 ],
               ),
             ),
@@ -83,8 +81,8 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
                       const SizedBox(height: 38),
                       Text(
                         "Question ${widget.step} out of ${widget.totalSteps}",
-                        style: const TextStyle(
-                          color: Color(0xFFB7B8B8),
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
                           fontStyle: FontStyle.italic,
@@ -93,14 +91,13 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 14),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 22),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
                           "What is your gender?",
-                          style: TextStyle(
+                          style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w900,
-                            fontSize: 21,
-                            color: Colors.black,
+                            color: onBackground,
                             height: 1.19,
                           ),
                           textAlign: TextAlign.center,
@@ -118,11 +115,11 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
                               width: MediaQuery.of(context).size.width * 0.94,
                               height: 54,
                               decoration: BoxDecoration(
-                                color: selected ? yellow : Colors.white,
+                                color: selected ? yellow : scheme.surface,
                                 borderRadius: BorderRadius.circular(27),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.03),
+                                    color: scheme.shadow.withOpacity(0.04),
                                     blurRadius: 2,
                                     offset: const Offset(0, 2),
                                   )
@@ -133,9 +130,9 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
                                 padding: const EdgeInsets.symmetric(horizontal: 28.0),
                                 child: Text(
                                   options[i],
-                                  style: TextStyle(
+                                  style: textTheme.bodyLarge?.copyWith(
                                     fontSize: 15.5,
-                                    color: Colors.black,
+                                    color: selected ? scheme.onSecondary : onBackground,
                                     fontWeight: selected ? FontWeight.bold : FontWeight.w600,
                                     letterSpacing: 0.08,
                                   ),
@@ -153,7 +150,7 @@ class _QuestionnaireScreenGenderState extends State<QuestionnaireScreenGender> {
                           onPressed: buttonEnabled ? handleNext : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonEnabled ? darkBlue : gray,
-                            foregroundColor: buttonEnabled ? Colors.white : Colors.black,
+                            foregroundColor: buttonEnabled ? scheme.onPrimary : scheme.onSurface,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),

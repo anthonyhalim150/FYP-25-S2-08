@@ -4,14 +4,12 @@ import 'questionnaire_screen_dob.dart';
 
 class SplashAndOnboardingWrapper extends StatefulWidget {
   const SplashAndOnboardingWrapper({super.key});
-
   @override
   State<SplashAndOnboardingWrapper> createState() => _SplashAndOnboardingWrapperState();
 }
 
 class _SplashAndOnboardingWrapperState extends State<SplashAndOnboardingWrapper> {
   bool showOnboarding = false;
-
   @override
   void initState() {
     super.initState();
@@ -21,7 +19,6 @@ class _SplashAndOnboardingWrapperState extends State<SplashAndOnboardingWrapper>
       });
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return showOnboarding ? const OnboardingScreen() : const SplashScreen();
@@ -30,16 +27,18 @@ class _SplashAndOnboardingWrapperState extends State<SplashAndOnboardingWrapper>
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4ED),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('WELCOME TO', style: TextStyle(fontSize: 30)),
+            Text(
+              'WELCOME TO',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
             Image.asset(
               'assets/icons/fitquest-icon.png',
               height: 300,
@@ -53,11 +52,11 @@ class SplashScreen extends StatelessWidget {
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4ED),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -65,18 +64,18 @@ class OnboardingScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.fitness_center, size: 60, color: Colors.amber),
+                Icon(Icons.fitness_center, size: 60, color: scheme.secondary),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   "We’re excited to have you on board!",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   "Let’s begin with a few questions to customize your experience and support your fitness goals!",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 17),
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 30),
                 SizedBox(
@@ -91,17 +90,16 @@ class OnboardingScreen extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
+                      backgroundColor: scheme.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Let's Get Started!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: scheme.onPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
