@@ -11,7 +11,6 @@ class QuestionnaireScreen7 extends StatefulWidget {
     this.totalSteps = 9,
     required this.responses,
   });
-
   @override
   State<QuestionnaireScreen7> createState() => _QuestionnaireScreen7State();
 }
@@ -24,34 +23,29 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
     'Wrist',
     'Knees',
     'Shoulder',
-    'No Injury'
+    'No Injury',
     'Others (Type here)',
   ];
   final TextEditingController othersController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    // Restore selection and text if returning to this screen
     final previous = widget.responses['injury'];
     if (previous != null) {
       final idx = options.indexOf(previous);
       if (idx != -1) {
         selectedIndex = idx;
       } else {
-        // Not in options, must be 'Others'
         selectedIndex = options.length - 1;
         othersController.text = previous;
       }
     }
   }
-
   @override
   void dispose() {
     othersController.dispose();
     super.dispose();
   }
-
   void handleNext() {
     String selectedValue;
     if (selectedIndex == options.length - 1) {
@@ -72,20 +66,16 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
-    final background = Color(0xFFF9F7F2);
-    const yellow = Color(0xFFFFC832);
-    const darkBlue = Color(0xFF0D1850);
-    const gray = Color(0xFFD6D6D8);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    // Button is enabled if one non-Others option is selected, or if Others is selected and not empty
     bool othersSelected = selectedIndex == options.length - 1;
     bool buttonEnabled = (selectedIndex != -1 && (!othersSelected || othersController.text.trim().isNotEmpty));
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: colorScheme.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -96,10 +86,18 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 22),
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: theme.iconTheme.color ?? colorScheme.onSurface,
+                      size: 22,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Icon(Icons.fitness_center, color: yellow, size: 28),
+                  Icon(
+                    Icons.fitness_center,
+                    color: colorScheme.secondary,
+                    size: 28,
+                  ),
                 ],
               ),
             ),
@@ -113,8 +111,8 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                       const SizedBox(height: 38),
                       Text(
                         "Question ${widget.step} out of ${widget.totalSteps}",
-                        style: const TextStyle(
-                          color: Color(0xFFB7B8B8),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.disabledColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
                           fontStyle: FontStyle.italic,
@@ -123,14 +121,14 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 14),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 22),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
                         child: Text(
                           "Do you have any injuries\nor limitations we should consider?",
-                          style: TextStyle(
+                          style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w900,
                             fontSize: 21,
-                            color: Colors.black,
+                            color: theme.textTheme.titleLarge?.color,
                             height: 1.19,
                           ),
                           textAlign: TextAlign.center,
@@ -157,7 +155,9 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                               width: MediaQuery.of(context).size.width * 0.94,
                               height: 54,
                               decoration: BoxDecoration(
-                                color: selected ? yellow : Colors.white,
+                                color: selected
+                                    ? colorScheme.secondary
+                                    : colorScheme.surface,
                                 borderRadius: BorderRadius.circular(27),
                                 boxShadow: [
                                   BoxShadow(
@@ -175,23 +175,23 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                                   enabled: selected,
                                   controller: othersController,
                                   onChanged: (_) => setState(() {}),
-                                  style: TextStyle(
+                                  style: theme.textTheme.bodyLarge?.copyWith(
                                     fontSize: 15.5,
-                                    color: Colors.black,
+                                    color: theme.textTheme.bodyLarge?.color,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 0.08,
                                   ),
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     hintText: "Others (Type here)",
-                                    hintStyle: TextStyle(
-                                      color: Colors.black45,
+                                    hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                                      color: theme.hintColor,
                                       fontSize: 15.5,
                                       fontWeight: FontWeight.w600,
                                     ),
                                     border: InputBorder.none,
                                     isDense: true,
                                     focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black45, width: 1),
+                                      borderSide: BorderSide(color: theme.disabledColor, width: 1),
                                     ),
                                   ),
                                 ),
@@ -200,9 +200,9 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                                 padding: const EdgeInsets.symmetric(horizontal: 28.0),
                                 child: Text(
                                   options[i],
-                                  style: TextStyle(
+                                  style: theme.textTheme.bodyLarge?.copyWith(
                                     fontSize: 15.5,
-                                    color: Colors.black,
+                                    color: theme.textTheme.bodyLarge?.color,
                                     fontWeight: selected ? FontWeight.bold : FontWeight.w600,
                                     letterSpacing: 0.08,
                                   ),
@@ -219,13 +219,17 @@ class _QuestionnaireScreen7State extends State<QuestionnaireScreen7> {
                         child: ElevatedButton(
                           onPressed: buttonEnabled ? handleNext : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonEnabled ? darkBlue : gray,
-                            foregroundColor: buttonEnabled ? Colors.white : Colors.black,
+                            backgroundColor: buttonEnabled
+                                ? colorScheme.primary
+                                : colorScheme.onSurface.withOpacity(0.12),
+                            foregroundColor: buttonEnabled
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurface,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),
                             ),
-                            textStyle: const TextStyle(
+                            textStyle: theme.textTheme.labelLarge?.copyWith(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.1,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/questionnaire_service.dart'; 
+import '../../services/questionnaire_service.dart';
 
 class QuestionnaireScreen9 extends StatelessWidget {
   final int step;
@@ -44,18 +44,17 @@ class QuestionnaireScreen9 extends StatelessWidget {
     final Map<String, dynamic> payload = Map.from(responses);
     payload['bmi_value'] = bmiValue;
     print('Questionnaire Submit Payload: $payload');
-    await QuestionnaireService.submitPreferences(payload); 
+    await QuestionnaireService.submitPreferences(payload);
     Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
-    const yellow = Color(0xFFFFC832);
-    const darkBlue = Color(0xFF0D1850);
-    const background = Color(0xFFF9F7F2);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: colorScheme.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -65,10 +64,10 @@ class QuestionnaireScreen9 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 22),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded, color: theme.iconTheme.color ?? colorScheme.onSurface, size: 22),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  const Icon(Icons.fitness_center, color: yellow, size: 28),
+                  Icon(Icons.fitness_center, color: colorScheme.secondary, size: 28),
                 ],
               ),
             ),
@@ -80,10 +79,10 @@ class QuestionnaireScreen9 extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 48),
-                      const Text(
+                      Text(
                         "Result",
-                        style: TextStyle(
-                          color: Color(0xFFB7B8B8),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.disabledColor,
                           fontWeight: FontWeight.w400,
                           fontSize: 19,
                           fontStyle: FontStyle.italic,
@@ -91,40 +90,41 @@ class QuestionnaireScreen9 extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 18),
-                      const Text(
+                      Text(
                         "Your BMI is",
-                        style: TextStyle(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 21,
-                          color: Colors.black,
+                          color: theme.textTheme.titleLarge?.color ?? colorScheme.onSurface,
                         ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
+                      // BMI Card
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 36),
                         decoration: BoxDecoration(
-                          color: yellow,
+                          color: colorScheme.secondary,
                           borderRadius: BorderRadius.circular(26),
                         ),
                         child: Column(
                           children: [
                             Text(
                               bmiValue == 0 ? '-' : bmiValue.toStringAsFixed(1),
-                              style: const TextStyle(
+                              style: theme.textTheme.displayLarge?.copyWith(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 44,
-                                color: Colors.black,
+                                color: colorScheme.onSecondary,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               bmiCategory,
-                              style: const TextStyle(
+                              style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 26,
-                                color: Colors.black,
+                                color: colorScheme.onSecondary,
                               ),
                             ),
                           ],
@@ -137,13 +137,13 @@ class QuestionnaireScreen9 extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () => handleSubmit(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: darkBlue,
-                            foregroundColor: Colors.white,
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),
                             ),
-                            textStyle: const TextStyle(
+                            textStyle: theme.textTheme.labelLarge?.copyWith(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.1,
