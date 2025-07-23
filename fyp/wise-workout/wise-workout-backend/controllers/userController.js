@@ -1,4 +1,5 @@
 const UserService = require('../services/userService');
+const premiumCosts = require('../config/premiumCosts');
 
 exports.setAvatar = async (req, res) => {
   try {
@@ -96,5 +97,23 @@ exports.getLeaderboard = async (req, res) => {
     res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+exports.buyPremium = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { type, plan } = req.body;
+
+    if (type === 'premium_token') {
+      const planInfo = premiumCosts[plan];
+      if (!planInfo) return res.status(400).json({ message: 'Invalid plan' });
+
+      const expiry = await UserService.buyPremium(userId, plan, 'tokens');
+      res.status(200).json({ message: 'Premium purchased with tokens', plan, expires: expiry });
+    } else {
+      res.status(400).json({ message: 'Error! only token buying implemented here' });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };

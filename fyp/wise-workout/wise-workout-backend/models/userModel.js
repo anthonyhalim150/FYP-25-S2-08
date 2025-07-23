@@ -187,6 +187,23 @@ class UserModel {
       [lastLogin, loginStreak, userId]
     );
   }
+  static async setPremium(userId, premiumUntil) {
+    await db.execute(
+      'UPDATE users SET role = "premium", premium_until = ? WHERE id = ?',
+      [premiumUntil, userId]
+    );
+  }
+
+  static async downgradeToUserIfExpired(userId) {
+    const [rows] = await db.execute(
+      'SELECT role, premium_until FROM users WHERE id = ?',
+      [userId]
+    );
+    const user = rows[0];
+    if (user && user.role === 'premium' && (!user.premium_until || new Date(user.premium_until) < new Date())) {
+      await db.execute('UPDATE users SET role = "user" WHERE id = ?', [userId]);
+    }
+  }
 
 
 }

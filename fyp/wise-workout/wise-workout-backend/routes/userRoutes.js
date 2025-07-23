@@ -7,7 +7,8 @@ const {
   getCurrentBackground, 
   getCurrentProfile,
   updateProfile,
-  getLeaderboard
+  getLeaderboard,
+  buyPremium,
 } = require('../controllers/userController');
 
 router.post('/set-avatar', setAvatar);
@@ -17,5 +18,6 @@ router.get('/current-background', getCurrentBackground);
 router.get('/current-profile', getCurrentProfile);
 router.post('/update-profile', updateProfile);
 router.get('/leaderboard', getLeaderboard);
+router.post('/buy-premium', buyPremium);
 
 module.exports = router;
