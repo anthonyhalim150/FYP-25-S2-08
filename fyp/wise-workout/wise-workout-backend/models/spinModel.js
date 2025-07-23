@@ -24,6 +24,13 @@ class SpinModel {
       [userId, prize.label, prize.type, prize.value]
     );
   }
+  static async countUserSpins(userId) {
+    const [rows] = await db.execute(
+      'SELECT COUNT(*) as count FROM spin_history WHERE user_id = ?',
+      [userId]
+    );
+    return rows[0].count;
+  }
 }
 
 module.exports = SpinModel;

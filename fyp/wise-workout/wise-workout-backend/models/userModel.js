@@ -157,25 +157,36 @@ class UserModel {
   static async addXP(userId, amount) {
     await db.execute('UPDATE users SET xp = xp + ? WHERE id = ?', [amount, userId]);
   }
- static async getLevelsLeaderboard(limit = 20) {
-  const sql = `
-    SELECT u.id, u.username, u.firstName, u.lastName, u.avatar_id, u.tokens, u.xp,
-      (
-        SELECT MAX(l.level)
-        FROM levels l
-        WHERE l.xp_required <= u.xp
-      ) as level,
-      a.image_url as avatar_url,
-      b.image_url as background_url
-    FROM users u
-    LEFT JOIN avatars a ON u.avatar_id = a.id
-    LEFT JOIN backgrounds b ON u.background_id = b.id
-    WHERE u.isSuspended = false
-    ORDER BY level DESC, u.xp DESC, u.id ASC
-    LIMIT ${limit}`;
-  const [rows] = await db.execute(sql);
-  return rows;
-}
+  static async getLevelsLeaderboard(limit = 20) {
+    const sql = `
+      SELECT u.id, u.username, u.firstName, u.lastName, u.avatar_id, u.tokens, u.xp,
+        (
+          SELECT MAX(l.level)
+          FROM levels l
+          WHERE l.xp_required <= u.xp
+        ) as level,
+        a.image_url as avatar_url,
+        b.image_url as background_url
+      FROM users u
+      LEFT JOIN avatars a ON u.avatar_id = a.id
+      LEFT JOIN backgrounds b ON u.background_id = b.id
+      WHERE u.isSuspended = false
+      ORDER BY level DESC, u.xp DESC, u.id ASC
+      LIMIT ${limit}`;
+    const [rows] = await db.execute(sql);
+    return rows;
+  }
+  static async getLoginStreakAndDate(userId) {
+    const [rows] = await db.execute('SELECT last_login, login_streak FROM users WHERE id = ?', [userId]);
+    return rows[0];
+  }
+
+  static async updateLoginStreak(userId, lastLogin, loginStreak) {
+    await db.execute(
+      'UPDATE users SET last_login = ?, login_streak = ? WHERE id = ?',
+      [lastLogin, loginStreak, userId]
+    );
+  }
 
 
 }

@@ -2,6 +2,7 @@ const AuthService = require('../services/authService');
 const UserModel = require('../models/userModel');
 const DailyQuestModel = require('../models/dailyQuestModel');
 const DailyQuestService = require('../services/dailyQuestService');
+const UserService = require('../services/userService');
 const { setCookie } = require('../utils/cookieAuth');
 const { isValidEmail, isValidPassword, sanitizeInput } = require('../utils/sanitize');
 const { sendOTPToEmail } = require('../utils/otpService');
@@ -22,8 +23,9 @@ exports.login = async (req, res) => {
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
   await DailyQuestService.ensureTodayQuests(userObj.id);
-  const today = new Date().toISOString().slice(0,10);
+  const today = new Date().toISOString().slice(0, 10);
   await DailyQuestModel.markQuestDone(userObj.id, 'DAILY_LOGIN', today);
+  await UserService.updateLoginStreak(userObj.id);
 
   await setCookie(res, email);
   res.json({ message: 'Login successful' });
@@ -44,8 +46,9 @@ exports.loginGoogle = async (req, res) => {
 
   const userForQuest = await UserModel.findByEmail(email);
   await DailyQuestService.ensureTodayQuests(userForQuest.id);
-  const today = new Date().toISOString().slice(0,10);
+  const today = new Date().toISOString().slice(0, 10);
   await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
+  await UserService.updateLoginStreak(userForQuest.id);
 
   res.json({ message: 'Google login successful' });
 };
@@ -65,8 +68,9 @@ exports.loginApple = async (req, res) => {
 
   const userForQuest = await UserModel.findByEmail(email);
   await DailyQuestService.ensureTodayQuests(userForQuest.id);
-  const today = new Date().toISOString().slice(0,10);
+  const today = new Date().toISOString().slice(0, 10);
   await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
+  await UserService.updateLoginStreak(userForQuest.id);
 
   res.json({ message: 'Apple login successful' });
 };
@@ -86,8 +90,9 @@ exports.loginFacebook = async (req, res) => {
 
   const userForQuest = await UserModel.findByEmail(email);
   await DailyQuestService.ensureTodayQuests(userForQuest.id);
-  const today = new Date().toISOString().slice(0,10);
+  const today = new Date().toISOString().slice(0, 10);
   await DailyQuestModel.markQuestDone(userForQuest.id, 'DAILY_LOGIN', today);
+  await UserService.updateLoginStreak(userForQuest.id);
 
   res.json({ message: 'Facebook login successful' });
 };

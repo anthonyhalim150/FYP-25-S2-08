@@ -2,6 +2,8 @@ const UserModel = require('../models/userModel');
 const AvatarModel = require('../models/avatarModel');
 const BackgroundModel = require('../models/backgroundModel');
 const LevelModel = require('../models/levelModel');
+const BadgeService = require('./badgeService');
+
 
 class UserService {
   static async setAvatar(userId, avatarId) {
@@ -116,6 +118,18 @@ class UserService {
     } else {
       return await UserModel.getLevelsLeaderboard(limit);
     }
+  }
+  static async updateLoginStreak(userId) {
+    const user = await UserModel.getLoginStreakAndDate(userId);
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    let streak = 1;
+    if (user.last_login === today) return user.login_streak;
+    if (user.last_login === yesterday) streak = user.login_streak + 1;
+    await UserModel.updateLoginStreak(userId, today, streak);
+    if (streak === 7) await BadgeService.grantBadge(userId, 2);
+    if (streak === 30) await BadgeService.grantBadge(userId, 12);
+    return streak;
   }
 }
 
