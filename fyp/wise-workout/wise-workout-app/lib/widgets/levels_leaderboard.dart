@@ -43,14 +43,20 @@ class _LevelsLeaderboardWidgetState extends State<LevelsLeaderboardWidget> {
     if (loading) return const Center(child: CircularProgressIndicator());
     if (error.isNotEmpty) return Center(child: Text(error));
     if (users.isEmpty) return const Center(child: Text('No leaderboard data'));
+
     final top3 = users.take(3).toList();
     final others = users.skip(3).toList();
+
     return Column(
       children: [
         const SizedBox(height: 24),
         const Text(
           'Top Levels',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -77,7 +83,14 @@ class _LevelsLeaderboardWidgetState extends State<LevelsLeaderboardWidget> {
                 final user = others[index];
                 return ListTile(
                   leading: _buildAvatarWithBackground(user, 32),
-                  title: Text(user['username'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+                  title: Text(
+                    user['username'] ?? '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
                   trailing: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -86,7 +99,11 @@ class _LevelsLeaderboardWidgetState extends State<LevelsLeaderboardWidget> {
                     ),
                     child: Text(
                       'Lv. ${user['level'] ?? ''}',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 );
@@ -104,8 +121,21 @@ class _LevelsLeaderboardWidgetState extends State<LevelsLeaderboardWidget> {
       children: [
         _buildAvatarWithBackground(user, size),
         const SizedBox(height: 6),
-        Text(user['username'] ?? '', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
-        Text('Lv. ${user['level'] ?? ''}', style: const TextStyle(fontSize: 12, color: Colors.white70)),
+        Text(
+          user['username'] ?? '',
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          'Lv. ${user['level'] ?? ''}',
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white70,
+          ),
+        ),
       ],
     );
   }
@@ -117,6 +147,7 @@ class _LevelsLeaderboardWidgetState extends State<LevelsLeaderboardWidget> {
     final backgroundUrl = (user['background_url'] == null || user['background_url'].toString().isEmpty)
         ? 'assets/background/black.jpg'
         : user['background_url'];
+
     return SizedBox(
       width: size,
       height: size,

@@ -1,14 +1,15 @@
-// tournament_leaderboard_widget.dart
 import 'package:flutter/material.dart';
 
 class TournamentLeaderboardWidget extends StatefulWidget {
   const TournamentLeaderboardWidget({super.key});
 
   @override
-  State<TournamentLeaderboardWidget> createState() => _TournamentLeaderboardWidgetState();
+  State<TournamentLeaderboardWidget> createState() =>
+      _TournamentLeaderboardWidgetState();
 }
 
-class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidget> {
+class _TournamentLeaderboardWidgetState
+    extends State<TournamentLeaderboardWidget> {
   final List<Map<String, dynamic>> tournaments = [
     {
       'title': '7 Minutes Sit-Up',
@@ -97,11 +98,15 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
         title: const Text("Join Tournament?"),
         content: Text("Do you want to join \"$title\"?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Joined $title")));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Joined $title")));
             },
             child: const Text("Join"),
           ),
@@ -112,6 +117,10 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onBackground;
+    final primaryTextColor = theme.colorScheme.onPrimary;
+
     final tournament = tournaments[currentIndex];
     final title = tournament['title'];
     final podium = tournament['podium'];
@@ -125,19 +134,22 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
           children: [
             IconButton(
               onPressed: () => _changeChallenge(-1),
-              icon: const Icon(Icons.chevron_left, color: Colors.white),
+              icon: Icon(Icons.chevron_left, color: textColor),
             ),
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: Colors.white, // Always white
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             IconButton(
               onPressed: () => _changeChallenge(1),
-              icon: const Icon(Icons.chevron_right, color: Colors.white),
+              icon: Icon(Icons.chevron_right, color: textColor),
             ),
           ],
         ),
@@ -146,9 +158,9 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            _buildPodium(podium[0]),
-            _buildPodium(podium[1]),
-            _buildPodium(podium[2]),
+            _buildPodium(podium[0], primaryTextColor),
+            _buildPodium(podium[1], primaryTextColor),
+            _buildPodium(podium[2], primaryTextColor),
           ],
         ),
         const SizedBox(height: 16),
@@ -165,22 +177,39 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
               elevation: 6,
             ),
             onPressed: () => _promptJoinChallenge(title),
-            child: const Text('Join Challenge', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Join Challenge',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
         Expanded(
           child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF7F7F7),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListView(
               children: others.map<Widget>((entry) {
                 return ListTile(
-                  leading: Text('${entry['rank']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  title: Text(entry['username']),
-                  trailing: Text(entry['score']),
+                  leading: Text(
+                    '${entry['rank']}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  title: Text(
+                    entry['username'],
+                    style:
+                    theme.textTheme.bodyMedium?.copyWith(color: textColor),
+                  ),
+                  trailing: Text(
+                    entry['score'],
+                    style:
+                    theme.textTheme.bodyMedium?.copyWith(color: textColor),
+                  ),
                 );
               }).toList(),
             ),
@@ -190,7 +219,7 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
     );
   }
 
-  Widget _buildPodium(Map<String, dynamic> user) {
+  Widget _buildPodium(Map<String, dynamic> user, Color primaryTextColor) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -212,13 +241,25 @@ class _TournamentLeaderboardWidgetState extends State<TournamentLeaderboardWidge
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               '${user['rank']}',
-              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: primaryTextColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
         const SizedBox(height: 6),
-        Text(user['username'], style: const TextStyle(color: Colors.white, fontSize: 12)),
-        Text('${user['score']} Sit Ups', style: const TextStyle(color: Colors.white, fontSize: 12)),
+        Text(
+          user['username'],
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white, fontSize: 12), // White text
+        ),
+        Text(
+          '${user['score']} Sit Ups',
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white, fontSize: 12), // White text
+        ),
       ],
     );
   }
