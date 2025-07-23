@@ -33,7 +33,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
     super.initState();
 
     // Fetch exercises based on workoutId
-    _exercisesFuture = ExerciseService().fetchExercisesByWorkoutId(widget.workoutId);
+    _exercisesFuture = ExerciseService().fetchExercisesByWorkout(widget.workoutId.toString());
 
     // Listen to the global elapsed time stream to update timer UI
     _elapsedSubscription = _sessionService.elapsedStream.listen((elapsed) {

@@ -1,5 +1,5 @@
 class Workout {
-  final String workoutId;
+  final int workoutId;
   final String workoutName;
   final String categoryKey;
   final String workoutLevel;
@@ -14,7 +14,7 @@ class Workout {
   });
 
   factory Workout.fromJson(Map<String, dynamic> json) => Workout(
-    workoutId: json['workoutId'].toString(),
+    workoutId: int.tryParse(json['workoutId'].toString()) ?? 0,
     categoryKey: json['categoryKey'],
     workoutName: json['workoutName'],
     workoutLevel: json['workoutLevel'],

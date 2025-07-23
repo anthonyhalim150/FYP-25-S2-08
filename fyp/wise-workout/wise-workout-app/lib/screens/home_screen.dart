@@ -218,9 +218,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawer: appDrawer(
+      drawer: AppDrawer(
         userName: _displayName ?? widget.userName,
-        parentContext: context,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

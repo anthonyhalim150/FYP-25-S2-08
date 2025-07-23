@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'questionnaire_screen_2.dart';
 
@@ -5,42 +6,32 @@ class QuestionnaireScreen extends StatefulWidget {
   final int step;
   final int totalSteps;
   final Map<String, dynamic> responses;
+
   const QuestionnaireScreen({
     super.key,
     required this.step,
     required this.totalSteps,
     required this.responses,
   });
+
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
 }
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
-  late final TextEditingController heightController;
-  late final TextEditingController weightController;
+  int selectedHeight = 170;
+  int selectedWeight = 60;
 
   @override
   void initState() {
     super.initState();
-    heightController = TextEditingController(
-      text: widget.responses['height_cm'] ?? '',
-    );
-    weightController = TextEditingController(
-      text: widget.responses['weight_kg'] ?? '',
-    );
-    heightController.addListener(_onTextChange);
-    weightController.addListener(_onTextChange);
+    selectedHeight = int.tryParse(widget.responses['height_cm'] ?? '') ?? 170;
+    selectedWeight = int.tryParse(widget.responses['weight_kg'] ?? '') ?? 60;
   }
-  void _onTextChange() => setState(() {});
-  @override
-  void dispose() {
-    heightController.dispose();
-    weightController.dispose();
-    super.dispose();
-  }
+
   void handleNext() {
-    widget.responses['height_cm'] = heightController.text;
-    widget.responses['weight_kg'] = weightController.text;
+    widget.responses['height_cm'] = selectedHeight.toString();
+    widget.responses['weight_kg'] = selectedWeight.toString();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -56,8 +47,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final bool buttonEnabled =
-        heightController.text.isNotEmpty && weightController.text.isNotEmpty;
 
     return Scaffold(
       backgroundColor: scheme.background,
@@ -106,52 +95,38 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
-                      SizedBox(
+                      const SizedBox(height: 10),
+                      Container(
                         width: 250,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: scheme.surface,
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: scheme.shadow.withOpacity(0.055),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ],
-                                ),
-                                alignment: Alignment.center,
-                                child: TextField(
-                                  controller: heightController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                  textAlignVertical: TextAlignVertical.center,
-                                  textAlign: TextAlign.left,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Text(
-                                "cm",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: scheme.surface,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: scheme.shadow.withOpacity(0.055),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            )
                           ],
+                        ),
+                        child: CupertinoPicker(
+                          scrollController: FixedExtentScrollController(initialItem: selectedHeight - 100),
+                          itemExtent: 40,
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              selectedHeight = 100 + index;
+                            });
+                          },
+                          children: List.generate(151, (index) {
+                            final value = 100 + index;
+                            return Center(
+                              child: Text(
+                                "$value cm",
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                            );
+                          }),
                         ),
                       ),
                       const SizedBox(height: 36),
@@ -164,52 +139,38 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
-                      SizedBox(
+                      const SizedBox(height: 10),
+                      Container(
                         width: 250,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: scheme.surface,
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: scheme.shadow.withOpacity(0.055),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ],
-                                ),
-                                alignment: Alignment.center,
-                                child: TextField(
-                                  controller: weightController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                  textAlignVertical: TextAlignVertical.center,
-                                  textAlign: TextAlign.left,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Text(
-                                "kg",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: scheme.surface,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: scheme.shadow.withOpacity(0.055),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            )
                           ],
+                        ),
+                        child: CupertinoPicker(
+                          scrollController: FixedExtentScrollController(initialItem: selectedWeight - 30),
+                          itemExtent: 40,
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              selectedWeight = 30 + index;
+                            });
+                          },
+                          children: List.generate(171, (index) {
+                            final value = 30 + index;
+                            return Center(
+                              child: Text(
+                                "$value kg",
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                            );
+                          }),
                         ),
                       ),
                       const SizedBox(height: 38),
@@ -217,12 +178,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         width: 160,
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: buttonEnabled ? handleNext : null,
+                          onPressed: handleNext,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonEnabled
-                                ? scheme.primary
-                                : scheme.surfaceVariant,
-                            foregroundColor: buttonEnabled ? scheme.onPrimary : scheme.onSurface,
+                            backgroundColor: scheme.primary,
+                            foregroundColor: scheme.onPrimary,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 0),
                             shape: RoundedRectangleBorder(

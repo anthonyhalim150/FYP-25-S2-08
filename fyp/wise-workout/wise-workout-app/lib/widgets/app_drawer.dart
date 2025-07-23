@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class appDrawer extends StatelessWidget {
+class AppDrawer extends StatelessWidget {
   final String userName;
-  final BuildContext parentContext;
 
-  const appDrawer({
+  const AppDrawer({
     super.key,
     required this.userName,
-    required this.parentContext,
   });
 
-  Future<void> _logout() async {
+
+  Future<void> _logout(BuildContext context) async {
     final secureStorage = FlutterSecureStorage();
     await secureStorage.delete(key: 'jwt_cookie');
-    Navigator.of(parentContext).pushNamedAndRemoveUntil('/', (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class appDrawer extends StatelessWidget {
                   radius: 30,
                   backgroundColor: Colors.white,
                   child: Text(
-                    userName[0].toUpperCase(),
+                    userName.isNotEmpty ? userName[0].toUpperCase() : '?',
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -94,7 +94,7 @@ class appDrawer extends StatelessWidget {
             title: const Text('Logout'),
             onTap: () {
               Navigator.pop(context);
-              _logout();
+              _logout(context);
             },
           ),
         ],

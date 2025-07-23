@@ -13,7 +13,7 @@ class WorkoutService {
     return cookie;
   }
 
-  /// Fetch all workouts (if your backend supports /workouts)
+  /// Fetch all workouts
   Future<List<Workout>> fetchAllWorkouts() async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts');
@@ -35,13 +35,7 @@ class WorkoutService {
     }
 
     final data = jsonDecode(response.body);
-    return List<Workout>.from(data.map((item) => Workout(
-      workoutId: item['workoutId'].toString(),
-      categoryKey: item['categoryKey'],
-      workoutName: item['workoutName'],
-      workoutLevel: item['workoutLevel'],
-      workoutDescription: item['workoutDescription'],
-    )));
+    return List<Workout>.from(data.map((item) => Workout.fromJson(item)));
   }
 
   /// Fetch workouts by category
@@ -66,17 +60,11 @@ class WorkoutService {
     }
 
     final data = jsonDecode(response.body);
-    return List<Workout>.from(data.map((item) => Workout(
-      workoutId: item['workoutId'].toString(),
-      categoryKey: item['categoryKey'],
-      workoutName: item['workoutName'],
-      workoutLevel: item['workoutLevel'],
-      workoutDescription: item['workoutDescription'],
-    )));
+    return List<Workout>.from(data.map((item) => Workout.fromJson(item)));
   }
 
   /// Fetch single workout by ID
-  Future<Workout> fetchWorkoutById(String workoutId) async {
+  Future<Workout> fetchWorkoutById(int workoutId) async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts/$workoutId');
     print('📡 Fetching workout by ID → $url');
@@ -97,12 +85,6 @@ class WorkoutService {
     }
 
     final item = jsonDecode(response.body);
-    return Workout(
-      workoutId: item['workoutId'].toString(),
-      categoryKey: item['categoryKey'],
-      workoutName: item['workoutName'],
-      workoutLevel: item['workoutLevel'],
-      workoutDescription: item['workoutDescription'],
-    );
+    return Workout.fromJson(item);
   }
 }
