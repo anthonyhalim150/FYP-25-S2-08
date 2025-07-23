@@ -68,17 +68,6 @@ class AppearanceScreen extends StatelessWidget {
                     ),
                     secondary: Icon(Icons.dark_mode, color: theme.colorScheme.primary),
                   ),
-                  // ---- System Default ----
-                  RadioListTile<AppThemeMode>(
-                    value: AppThemeMode.system,
-                    groupValue: currentMode,
-                    onChanged: (mode) => themeNotifier.setThemeMode(mode!),
-                    title: Text(
-                      "System Default",
-                      style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                    ),
-                    secondary: Icon(Icons.brightness_auto, color: theme.colorScheme.primary),
-                  ),
                   // ---- Christmas ----
                   RadioListTile<AppThemeMode>(
                     value: AppThemeMode.christmas,
