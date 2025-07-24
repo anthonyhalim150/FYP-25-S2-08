@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/workout_session_service.dart';
 
@@ -11,13 +12,15 @@ class GlobalStopwatchOverlay extends StatefulWidget {
 class _GlobalStopwatchOverlayState extends State<GlobalStopwatchOverlay> {
   final _sessionService = WorkoutSessionService();
   String _formattedTime = "00:00:00";
+  StreamSubscription<Duration>? _timerSubscription;
 
   @override
   void initState() {
     super.initState();
+
     if (_sessionService.isActive) {
       _formattedTime = _formatDuration(_sessionService.elapsed);
-      _sessionService.start((elapsed) {
+      _timerSubscription = _sessionService.elapsedStream.listen((elapsed) {
         if (mounted) {
           setState(() {
             _formattedTime = _formatDuration(elapsed);
@@ -25,6 +28,12 @@ class _GlobalStopwatchOverlayState extends State<GlobalStopwatchOverlay> {
         }
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _timerSubscription?.cancel();
+    super.dispose();
   }
 
   String _formatDuration(Duration d) {
@@ -73,7 +82,7 @@ class _GlobalStopwatchOverlayState extends State<GlobalStopwatchOverlay> {
                 arguments: {
                   'duration': duration,
                   'calories': calories,
-                  'workoutName': 'Workout',
+                  'workoutName': _sessionService.workoutName ?? 'Workout',
                 },
               );
             }

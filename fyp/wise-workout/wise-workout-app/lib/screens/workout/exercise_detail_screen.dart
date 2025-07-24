@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
+import '../../services/workout_session_service.dart';
+import 'exercise_log_page.dart';
 import 'exercise_video_tutorial.dart';
 
 class ExerciseDetailScreen extends StatelessWidget {
@@ -9,6 +11,8 @@ class ExerciseDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final session = WorkoutSessionService();
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: CustomScrollView(
@@ -24,20 +28,16 @@ class ExerciseDetailScreen extends StatelessWidget {
                   Image.asset(
                     _getExerciseImagePath(exercise.exerciseName),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Container(
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.fitness_center, size: 100,
-                              color: Colors.grey),
-                        ),
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.fitness_center, size: 100, color: Colors.grey),
+                    ),
                   ),
                   Positioned(
                     bottom: 10,
                     right: 16,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        print('📦 Exercise object being passed: ${exercise.exerciseName}');
-                        print('🎥 YouTube URL: ${exercise.youtubeUrl}');
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -50,8 +50,7 @@ class ExerciseDetailScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.amber[700],
                         foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                       ),
                     ),
                   ),
@@ -71,13 +70,18 @@ class ExerciseDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: ElevatedButton.icon(
           onPressed: () {
-            Navigator.pushNamed(
+            if (!session.isActive) {
+              session.start(() {}); // ✅ start session once
+            }
+
+            Navigator.push(
               context,
-              '/exercise-log',
-              arguments: exercise, // pass Exercise object
+              MaterialPageRoute(
+                builder: (_) => ExerciseLogPage(exercise: exercise),
+              ),
             );
           },
-          icon: const Icon(Icons.photo_camera),
+          icon: const Icon(Icons.fitness_center),
           label: const Text("Start Exercise!"),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.amber,
@@ -113,8 +117,7 @@ class ExerciseDetailScreen extends StatelessWidget {
         ),
 
         const SizedBox(height: 16),
-        if (exercise.exerciseLevel != null &&
-            exercise.exerciseLevel!.isNotEmpty)
+        if (exercise.exerciseLevel != null && exercise.exerciseLevel!.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -124,8 +127,7 @@ class ExerciseDetailScreen extends StatelessWidget {
             ],
           ),
 
-        if (exercise.exerciseEquipment != null &&
-            exercise.exerciseEquipment!.isNotEmpty)
+        if (exercise.exerciseEquipment != null && exercise.exerciseEquipment!.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -163,6 +165,6 @@ class ExerciseDetailScreen extends StatelessWidget {
 
   String _getExerciseImagePath(String exerciseTitle) {
     final formatted = exerciseTitle.toLowerCase().replaceAll(' ', '_');
-    return 'assets/exerciseGif/${formatted}.gif';
+    return 'assets/exerciseGif/$formatted.gif';
   }
 }

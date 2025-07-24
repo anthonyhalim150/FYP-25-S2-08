@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../screens/model/exercise_model.dart';
 
 class WorkoutSessionService {
   static final WorkoutSessionService _instance = WorkoutSessionService._internal();
@@ -7,51 +8,74 @@ class WorkoutSessionService {
 
   WorkoutSessionService._internal();
 
-  String? _workoutName;
   bool _isActive = false;
-
-  Duration _elapsed = Duration.zero;
+  String? _workoutName;
+  DateTime? _startTime;
   Timer? _timer;
 
-  final StreamController<Duration> _elapsedController = StreamController.broadcast();
+  final List<LoggedExercise> _loggedExercises = [];
+  final StreamController<Duration> _elapsedController = StreamController<Duration>.broadcast();
 
-  Stream<Duration> get elapsedStream => _elapsedController.stream;
-
+  // Public getters
   bool get isActive => _isActive;
+  String? get workoutName => _workoutName;
+  Duration get elapsed => _startTime != null ? DateTime.now().difference(_startTime!) : Duration.zero;
+  Stream<Duration> get elapsedStream => _elapsedController.stream;
+  List<LoggedExercise> get loggedExercises => List.unmodifiable(_loggedExercises);
 
-  Duration get elapsed => _elapsed;
-
+  // Set workout name (called before session starts)
   void setWorkoutName(String name) {
     _workoutName = name;
   }
-  String? get workoutName => _workoutName;
 
-  void start([void Function(Duration)? onElapsed]) {
+  // Start workout session
+  void start([void Function()? onTick]) {
     if (_isActive) return;
+
     _isActive = true;
-    _elapsed = Duration.zero;
+    _startTime = DateTime.now();
+    _loggedExercises.clear();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _elapsed += const Duration(seconds: 1);
-      _elapsedController.add(_elapsed);
-      if (onElapsed != null) onElapsed(_elapsed);
+      _elapsedController.add(elapsed);
+      if (onTick != null) {
+        onTick();
+      }
     });
   }
 
-  void stop() {
+  // Add an exercise log to the session
+  void addExerciseLog({required Exercise exercise, required double calories}) {
+    _loggedExercises.add(
+      LoggedExercise(
+        exercise: exercise,
+        calories: calories,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
+
+  // Clear the session (when user ends the workout)
+  void clearSession() {
     _timer?.cancel();
     _timer = null;
+    _startTime = null;
     _isActive = false;
-  }
-
-  void clearSession() {
-    stop();
-    _elapsed = Duration.zero;
+    _loggedExercises.clear();
     _workoutName = null;
+    _elapsedController.add(Duration.zero);
   }
+}
 
-  void dispose() {
-    _timer?.cancel();
-    _elapsedController.close();
-  }
+// LoggedExercise structure
+class LoggedExercise {
+  final Exercise exercise;
+  final double calories;
+  final DateTime timestamp;
+
+  LoggedExercise({
+    required this.exercise,
+    required this.calories,
+    required this.timestamp,
+  });
 }

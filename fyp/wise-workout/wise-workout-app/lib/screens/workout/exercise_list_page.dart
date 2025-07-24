@@ -62,7 +62,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       );
       return;
     }
-    _sessionService.start((_) {}); // actual UI updates come from stream listener
+    _sessionService.start(() {});
   }
 
   void _endWorkout() async {
