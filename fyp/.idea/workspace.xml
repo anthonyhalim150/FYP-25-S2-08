@@ -8,12 +8,23 @@
       <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/models/workoutModel.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/services/workoutService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< Updated upstream
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/model/workout_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/model/workout_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/workout_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/workout/workout_list_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/workout_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/workout_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-backend/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-backend/controllers/workoutController.js" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/controllers/workoutController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-backend/routes/workoutRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/routes/workoutRoutes.js" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/database.txt" beforeDir="false" afterPath="$PROJECT_DIR$/database.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_3.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_3.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_4.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_4.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_7.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_7.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_9.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/screens/questionnaires/questionnaire_screen_9.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/questionnaire_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-app/lib/services/questionnaire_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-backend/controllers/userPreferencesController.js" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/controllers/userPreferencesController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wise-workout/wise-workout-backend/models/userPreferencesModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/wise-workout/wise-workout-backend/models/userPreferencesModel.js" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
