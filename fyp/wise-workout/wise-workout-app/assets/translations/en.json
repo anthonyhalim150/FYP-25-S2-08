@@ -48,5 +48,12 @@
   "profile_appearance": "Appearance",
   "profile_appearance_subtitle": "Default",
   "profile_premium_user": "🌟 Premium User 🌟",
-  "profile_close": "Close"
+  "profile_close": "Close",
+
+  "badge_collections": "Badge Collections",
+  "workout_categories": "Workout Categories",
+  "all": "All",
+  "no_categories": "No categories available",
+  "no_categories_found": "No categories found.",
+  "error": "Error"
 }

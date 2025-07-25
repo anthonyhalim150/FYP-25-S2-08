@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../services/workout_category_service.dart'; // Make sure this contains both model and service
+import 'package:easy_localization/easy_localization.dart';
+import '../../services/workout_category_service.dart';
 import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
 
 class WorkoutCategoryDashboard extends StatefulWidget {
   @override
-  _WorkoutCategoryDashboardState createState() =>
-      _WorkoutCategoryDashboardState();
+  _WorkoutCategoryDashboardState createState() => _WorkoutCategoryDashboardState();
 }
 
 class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
@@ -33,7 +33,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          // App Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -45,7 +44,7 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 Expanded(
                   child: Center(
                     child: Text(
-                      'Workout Categories',
+                      'workout_categories'.tr(),
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -55,7 +54,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
             ),
           ),
 
-          // Filter Buttons
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: FutureBuilder<List<WorkoutCategory>>(
@@ -64,9 +62,9 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text('error'.tr() + ': ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No categories available'));
+                  return Center(child: Text('no_categories'.tr()));
                 }
 
                 _allCategories = snapshot.data!;
@@ -74,7 +72,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      // "All" button
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: ElevatedButton(
@@ -90,7 +87,7 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                                 : Colors.white10,
                           ),
                           child: Text(
-                            'All',
+                            'all'.tr(),
                             style: TextStyle(
                               color: _selectedCategory == null
                                   ? Colors.white
@@ -99,7 +96,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                           ),
                         ),
                       ),
-                      // Dynamic category buttons
                       ..._allCategories.map((category) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7.0),
@@ -139,7 +135,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
             ),
           ),
 
-          // Category List
           Expanded(
             child: FutureBuilder<List<WorkoutCategory>>(
               future: _categoryFuture,
@@ -147,9 +142,9 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text('error'.tr() + ': ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No categories found.'));
+                  return Center(child: Text('no_categories_found'.tr()));
                 }
 
                 final filteredCategories = _selectedCategory == null

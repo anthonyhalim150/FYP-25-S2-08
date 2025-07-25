@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfileBadgeCollection extends StatelessWidget {
   final List<String> unlockedBadges;
@@ -30,8 +31,10 @@ class ProfileBadgeCollection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Badge Collections', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 8),
+                    Text(
+                      'badge_collections'.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
                     Row(
                       children: List.generate(4, (index) {
                         return Padding(

@@ -48,5 +48,12 @@
   "profile_appearance": "Tampilan",
   "profile_appearance_subtitle": "Default",
   "profile_premium_user": "🌟 Pengguna Premium 🌟",
-  "profile_close": "Tutup"
+  "profile_close": "Tutup",
+  "badge_collections": "Koleksi Lencana",
+  "workout_categories": "Kategori Latihan",
+  "all": "Semua",
+  "no_categories": "Tidak ada kategori yang tersedia",
+  "no_categories_found": "Kategori tidak ditemukan.",
+  "error": "Kesalahan"
+
 }
