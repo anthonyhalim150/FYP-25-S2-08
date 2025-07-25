@@ -80,14 +80,26 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
       sets[index]['finished'] = true;
     });
 
-    // Calculate simple calories: assume 5 per set + 0.2 per rep
-    int reps = sets[index]['reps'];
-    double calories = 5 + (reps * 0.2);
+    // Check if all sets are finished
+    bool allFinished = sets.every((set) => set['finished'] == true);
+    if (allFinished) {
+      // Aggregate total reps and weight
+      double totalReps = sets.fold(0, (sum, set) => sum + (set['reps'] ?? 0));
+      double totalWeight = sets.fold(0.0, (sum, set) => sum + (set['weight'] ?? 0.0));
 
-    _session.addExerciseLog(
-      exercise: widget.exercise,
-      calories: calories,
-    );
+      // MET formula calculation
+      double met = 4.0;
+      double userWeight = 70.0; // TODO: Replace with actual user weight
+      double durationHr = sets.length / 60.0;
+      double calories = met * userWeight * durationHr;
+
+      // Save the actual sets data to the session
+      _session.addExerciseLog(
+        exercise: widget.exercise,
+        calories: calories,
+        sets: List<Map<String, dynamic>>.from(sets),
+      );
+    }
 
     ExerciseTimer.showRestTimer(context, _restTimerController);
   }

@@ -45,11 +45,12 @@ class WorkoutSessionService {
   }
 
   // Add an exercise log to the session
-  void addExerciseLog({required Exercise exercise, required double calories}) {
+  void addExerciseLog({required Exercise exercise, required double calories, required List<Map<String, dynamic>> sets}) {
     _loggedExercises.add(
       LoggedExercise(
         exercise: exercise,
         calories: calories,
+        sets: sets,
         timestamp: DateTime.now(),
       ),
     );
@@ -71,11 +72,13 @@ class WorkoutSessionService {
 class LoggedExercise {
   final Exercise exercise;
   final double calories;
+  final List<Map<String, dynamic>> sets;
   final DateTime timestamp;
 
   LoggedExercise({
     required this.exercise,
     required this.calories,
+    required this.sets,
     required this.timestamp,
   });
 }

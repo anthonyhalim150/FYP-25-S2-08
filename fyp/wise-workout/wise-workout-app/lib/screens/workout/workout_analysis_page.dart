@@ -23,9 +23,10 @@ class WorkoutAnalysisPage extends StatelessWidget {
     final logs = session.loggedExercises;
 
     // Calculations
-    final totalCalories = logs.fold<double>(0.0, (sum, log) => (sum ?? 0.0) + (log.calories ?? 0.0));
+    final totalCalories = logs.fold<double>(0.0, (sum, log) => sum + (log.calories ?? 0.0));
     final totalSets = logs.length;
-    final totalReps = logs.map((log) => log.exercise.exerciseReps ?? 0).toList();
+    // Calculate total reps across all exercises
+    final totalReps = logs.fold<int>(0, (sum, log) => sum + (log.exercise.exerciseReps ?? 0));
     final maxWeight = logs.map((log) => log.exercise.exerciseWeight ?? 0.0).fold<double>(0.0, (a, b) => a > b ? a : b);
     final caloriesPerMin = duration.inMinutes > 0 ? (totalCalories / duration.inMinutes) : 0.0;
 
@@ -93,7 +94,7 @@ class WorkoutAnalysisPage extends StatelessWidget {
               _buildStatRow("Peak Heart Rate", "143 bpm"),
               _buildStatRow("Steps", "1,245"), // Replace with real data if available
               _buildStatRow("Sets", totalSets.toString()),
-              _buildStatRow("Reps", totalReps.join(', ')),
+              _buildStatRow("Total Reps", totalReps.toString()),
               _buildStatRow("Max Weight", "${maxWeight.toStringAsFixed(0)} kg"),
               _buildStatRow("Calories per min", caloriesPerMin.toStringAsFixed(1)),
 
