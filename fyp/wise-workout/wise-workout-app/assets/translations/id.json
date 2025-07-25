@@ -83,6 +83,14 @@
   "exercise_expect": "Apa yang diharapkan",
   "exercise_level": "Tingkat Pelatih",
   "exercise_equipment": "Peralatan",
-  "exercise_instructions": "Instruksi"
+  "exercise_instructions": "Instruksi",
+  "exercise_set": "Set",
+  "exercise_weight": "Berat",
+  "exercise_reps": "Ulangan",
+  "exercise_action": "Aksi",
+  "exercise_add_set": "Tambah Set",
+  "exercise_rest_timer": "Timer Istirahat",
+  "edit": "Ubah",
+  "save": "Simpan"
 
 }

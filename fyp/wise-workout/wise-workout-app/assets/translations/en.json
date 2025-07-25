@@ -83,5 +83,13 @@
   "exercise_expect": "What to expect",
   "exercise_level": "Trainer Level",
   "exercise_equipment": "Equipment",
-  "exercise_instructions": "Instructions"
+  "exercise_instructions": "Instructions",
+  "exercise_set": "Set",
+  "exercise_weight": "Weight",
+  "exercise_reps": "Reps",
+  "exercise_action": "Action",
+  "exercise_add_set": "Add Set",
+  "exercise_rest_timer": "Rest Timer",
+  "edit": "Edit",
+  "save": "Save"
 }

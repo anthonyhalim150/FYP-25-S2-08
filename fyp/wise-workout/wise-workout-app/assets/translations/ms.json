@@ -79,10 +79,18 @@
   "error": "Ralat",
 
   "exercise_play_tutorial": "Mainkan Video Tutorial",
-  "exercise_start_button": "Mulakan Senaman!",
+  "exercise_start_button": "Mula Senaman!",
   "exercise_overview": "Gambaran Keseluruhan",
-  "exercise_expect": "Apa yang dijangka",
+  "exercise_expect": "Apa yang Dijangka",
   "exercise_level": "Tahap Jurulatih",
   "exercise_equipment": "Peralatan",
-  "exercise_instructions": "Arahan"
+  "exercise_instructions": "Arahan",
+  "exercise_set": "Set",
+  "exercise_weight": "Berat",
+  "exercise_reps": "Ulangan",
+  "exercise_action": "Tindakan",
+  "exercise_add_set": "Tambah Set",
+  "exercise_rest_timer": "Pemasa Rehat",
+  "edit": "Edit",
+  "save": "Simpan"
 }

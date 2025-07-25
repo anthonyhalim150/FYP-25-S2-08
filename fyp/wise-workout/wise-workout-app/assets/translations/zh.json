@@ -81,9 +81,17 @@
   "exercise_play_tutorial": "播放教程视频",
   "exercise_start_button": "开始锻炼！",
   "exercise_overview": "概述",
-  "exercise_expect": "锻炼内容",
-  "exercise_level": "训练者等级",
-  "exercise_equipment": "所需设备",
-  "exercise_instructions": "操作说明"
+  "exercise_expect": "预期内容",
+  "exercise_level": "教练等级",
+  "exercise_equipment": "器材",
+  "exercise_instructions": "操作说明",
+  "exercise_set": "组",
+  "exercise_weight": "重量",
+  "exercise_reps": "次数",
+  "exercise_action": "操作",
+  "exercise_add_set": "添加组",
+  "exercise_rest_timer": "休息计时器",
+  "edit": "编辑",
+  "save": "保存"
 
 }
