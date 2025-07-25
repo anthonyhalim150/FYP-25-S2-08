@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../model/exercise_model.dart';
 import 'exercise_video_tutorial.dart';
 
@@ -46,7 +47,7 @@ class ExerciseDetailScreen extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.play_arrow),
-                      label: const Text('Play Tutorial Video'),
+                      label: Text('exercise_play_tutorial').tr(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.amber[700],
                         foregroundColor: Colors.black,
@@ -78,7 +79,7 @@ class ExerciseDetailScreen extends StatelessWidget {
             );
           },
           icon: const Icon(Icons.photo_camera),
-          label: const Text("Start Exercise!"),
+          label: Text("exercise_start_button").tr(),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.amber,
             foregroundColor: Colors.black,
@@ -100,11 +101,11 @@ class ExerciseDetailScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        _buildSectionTitle('Overview'),
+        _buildSectionTitle('exercise_overview'.tr()),
         Text(exercise.exerciseDescription),
 
         const SizedBox(height: 16),
-        _buildSectionTitle('What to expect'),
+        _buildSectionTitle('exercise_expect'.tr()),
         Text(
           '- Full-body warm-up\n'
               '- Strength moves (e.g., push-ups, squats, planks)\n'
@@ -118,7 +119,7 @@ class ExerciseDetailScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle('Trainer Level'),
+              _buildSectionTitle('exercise_level'.tr()),
               Text(exercise.exerciseLevel!),
               const SizedBox(height: 16),
             ],
@@ -129,13 +130,13 @@ class ExerciseDetailScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle('Equipment'),
+              _buildSectionTitle('exercise_equipment'.tr()),
               Text(exercise.exerciseEquipment!),
               const SizedBox(height: 16),
             ],
           ),
 
-        _buildSectionTitle('Instructions'),
+        _buildSectionTitle('exercise_instructions'.tr()),
         ..._buildInstructionList(exercise.exerciseInstructions),
 
         const SizedBox(height: 32),

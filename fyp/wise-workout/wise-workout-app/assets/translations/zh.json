@@ -68,7 +68,7 @@
   "exercise_list_end_title": "结束锻炼",
   "exercise_list_end_confirm": "你确定要结束本次锻炼吗？",
   "cancel": "取消",
-  "end": "结束"
+  "end": "结束",
 
   "badge_collections": "徽章收藏",
 
@@ -76,6 +76,14 @@
   "all": "全部",
   "no_categories": "没有可用的类别",
   "no_categories_found": "未找到类别。",
-  "error": "错误"
+  "error": "错误",
+
+  "exercise_play_tutorial": "播放教程视频",
+  "exercise_start_button": "开始锻炼！",
+  "exercise_overview": "概述",
+  "exercise_expect": "锻炼内容",
+  "exercise_level": "训练者等级",
+  "exercise_equipment": "所需设备",
+  "exercise_instructions": "操作说明"
 
 }

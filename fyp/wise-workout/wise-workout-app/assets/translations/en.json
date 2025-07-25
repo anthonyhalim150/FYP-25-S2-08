@@ -75,5 +75,13 @@
   "all": "All",
   "no_categories": "No categories available",
   "no_categories_found": "No categories found.",
-  "error": "Error"
+  "error": "Error",
+
+  "exercise_play_tutorial": "Play Tutorial Video",
+  "exercise_start_button": "Start Exercise!",
+  "exercise_overview": "Overview",
+  "exercise_expect": "What to expect",
+  "exercise_level": "Trainer Level",
+  "exercise_equipment": "Equipment",
+  "exercise_instructions": "Instructions"
 }

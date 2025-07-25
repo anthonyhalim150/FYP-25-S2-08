@@ -75,6 +75,14 @@
   "all": "Semua",
   "no_categories": "Tidak ada kategori yang tersedia",
   "no_categories_found": "Kategori tidak ditemukan.",
-  "error": "Kesalahan"
+  "error": "Kesalahan",
+
+  "exercise_play_tutorial": "Putar Video Tutorial",
+  "exercise_start_button": "Mulai Latihan!",
+  "exercise_overview": "Ikhtisar",
+  "exercise_expect": "Apa yang diharapkan",
+  "exercise_level": "Tingkat Pelatih",
+  "exercise_equipment": "Peralatan",
+  "exercise_instructions": "Instruksi"
 
 }
