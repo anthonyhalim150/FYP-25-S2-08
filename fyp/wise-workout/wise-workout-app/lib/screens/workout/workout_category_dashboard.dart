@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../services/workout_category_service.dart'; // Make sure this contains both model and service
 import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class WorkoutCategoryDashboard extends StatefulWidget {
   @override
@@ -45,7 +47,7 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 Expanded(
                   child: Center(
                     child: Text(
-                      'Workout Categories',
+                      tr('workout_categories_title'),
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -64,9 +66,9 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text(tr('workout_categories_error')));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No categories available'));
+                  return Center(child: Text(tr('workout_categories_empty')));
                 }
 
                 _allCategories = snapshot.data!;
@@ -90,7 +92,7 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                                 : Colors.white10,
                           ),
                           child: Text(
-                            'All',
+                            tr('workout_categories_all'),
                             style: TextStyle(
                               color: _selectedCategory == null
                                   ? Colors.white
@@ -149,7 +151,7 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No categories found.'));
+                  return Center(child: Text(tr('workout_categories_not_found')));
                 }
 
                 final filteredCategories = _selectedCategory == null

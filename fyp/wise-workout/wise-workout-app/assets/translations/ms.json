@@ -48,5 +48,25 @@
   "profile_appearance": "Penampilan",
   "profile_appearance_subtitle": "Default",
   "profile_premium_user": "🌟 Pengguna Premium 🌟",
-  "profile_close": "Tutup"
+  "profile_close": "Tutup",
+
+  "workout_categories_title": "Kategori Senaman",
+  "workout_categories_all": "Semua",
+  "workout_categories_error": "Ralat semasa memuatkan kategori.",
+  "workout_categories_empty": "Tiada kategori tersedia.",
+  "workout_categories_not_found": "Tiada kategori dijumpai.",
+
+  "workout_list_empty": "Tiada senaman dijumpai.",
+  "workout_list_error": "Ralat semasa memuatkan senaman.",
+  "workout_list_search_hint": "Cari di FitQuest",
+  "workout_list_found": "Senaman Ditemui",
+
+  "exercise_list_found": "Senaman dijumpai",
+  "exercise_list_error": "Ralat semasa memuatkan senaman",
+  "exercise_list_start": "Mula Senaman",
+  "exercise_list_already_started": "Sesi senaman sedang berjalan.",
+  "exercise_list_end_title": "Tamatkan Senaman",
+  "exercise_list_end_confirm": "Adakah anda pasti ingin menamatkan sesi senaman ini?",
+  "cancel": "Batal",
+  "end": "Tamat"
 }

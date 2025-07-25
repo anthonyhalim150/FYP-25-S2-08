@@ -48,5 +48,25 @@
   "profile_appearance": "Tampilan",
   "profile_appearance_subtitle": "Default",
   "profile_premium_user": "🌟 Pengguna Premium 🌟",
-  "profile_close": "Tutup"
+  "profile_close": "Tutup",
+
+  "workout_categories_title": "Kategori Latihan",
+  "workout_categories_all": "Semua",
+  "workout_categories_error": "Terjadi kesalahan saat memuat kategori.",
+  "workout_categories_empty": "Tidak ada kategori tersedia.",
+  "workout_categories_not_found": "Tidak ada kategori ditemukan.",
+
+  "workout_list_empty": "Latihan tidak ditemukan.",
+  "workout_list_error": "Terjadi kesalahan saat memuat latihan.",
+  "workout_list_search_hint": "Cari di FitQuest",
+  "workout_list_found": "Latihan Ditemukan",
+
+  "exercise_list_found": "Latihan ditemukan",
+  "exercise_list_error": "Terjadi kesalahan saat memuat latihan",
+  "exercise_list_start": "Mulai Latihan",
+  "exercise_list_already_started": "Sesi latihan sudah berjalan.",
+  "exercise_list_end_title": "Akhiri Latihan",
+  "exercise_list_end_confirm": "Apakah Anda yakin ingin mengakhiri sesi latihan ini?",
+  "cancel": "Batal",
+  "end": "Akhiri"
 }

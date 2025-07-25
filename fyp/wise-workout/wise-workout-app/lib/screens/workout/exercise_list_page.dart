@@ -5,9 +5,10 @@ import '../../services/exercise_service.dart';
 import '../../services/workout_session_service.dart';
 import '../../widgets/exercise_tile.dart';
 import 'congratulation_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExerciseListPage extends StatefulWidget {
-  final int workoutId;  // Use workoutId instead of exerciseKey
+  final int workoutId;
   final String workoutName;
 
   const ExerciseListPage({
@@ -22,27 +23,19 @@ class ExerciseListPage extends StatefulWidget {
 
 class _ExerciseListPageState extends State<ExerciseListPage> {
   late Future<List<Exercise>> _exercisesFuture;
-
   final WorkoutSessionService _sessionService = WorkoutSessionService();
-
   String _formattedTime = "00:00:00";
   late StreamSubscription<Duration> _elapsedSubscription;
 
   @override
   void initState() {
     super.initState();
-
-    // Fetch exercises based on workoutId
     _exercisesFuture = ExerciseService().fetchExercisesByWorkout(widget.workoutId.toString());
-
-    // Listen to the global elapsed time stream to update timer UI
     _elapsedSubscription = _sessionService.elapsedStream.listen((elapsed) {
       setState(() {
         _formattedTime = _formatDuration(elapsed);
       });
     });
-
-    // Initialize _formattedTime if session already active
     if (_sessionService.isActive) {
       _formattedTime = _formatDuration(_sessionService.elapsed);
     }
@@ -58,23 +51,20 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
     _sessionService.setWorkoutName(widget.workoutName);
     if (_sessionService.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Workout session already in progress.")),
+        SnackBar(content: Text(tr('exercise_list_already_started'))),
       );
       return;
     }
-    _sessionService.start((_) {}); // actual UI updates come from stream listener
+    _sessionService.start((_) {});
   }
 
   void _endWorkout() async {
     final duration = _sessionService.elapsed;
     _sessionService.clearSession();
-
     setState(() {
       _formattedTime = "00:00:00";
     });
-
     final exercises = await _exercisesFuture;
-
     final workoutResult = {
       'workout': {
         'workoutId': widget.workoutId,
@@ -84,7 +74,6 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       'duration': duration,
       'calories': _calculateCalories(duration),
     };
-
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -100,7 +89,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
   double _calculateCalories(Duration duration) {
     final minutes = duration.inMinutes;
-    return 6.5 * minutes; // Simplified formula for calories
+    return 6.5 * minutes;
   }
 
   @override
@@ -114,10 +103,16 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
+
               if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                final errorMsg = snapshot.error?.toString() ?? 'Unknown error';
+                return Center(child: Text('${tr('exercise_list_error')}: $errorMsg'));
               }
+
               final exercises = snapshot.data!;
+              final translated = tr('exercise_list_found');
+              debugPrint('🟠 exercise_list_found = $translated');
+
               return NestedScrollView(
                 headerSliverBuilder: (context, _) => [
                   SliverAppBar(
@@ -173,7 +168,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          '${exercises.length} Exercises Found',
+                          '${exercises.length} $translated',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
@@ -211,16 +206,16 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text("End Workout"),
-                      content: const Text("Are you sure you want to end this workout session?"),
+                      title: Text(tr('exercise_list_end_title')),
+                      content: Text(tr('exercise_list_end_confirm')),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: const Text("Cancel"),
+                          child: Text(tr('cancel')),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text("End"),
+                          child: Text(tr('end')),
                         ),
                       ],
                     ),
@@ -241,7 +236,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
           ? FloatingActionButton.extended(
         onPressed: _startWorkout,
         icon: const Icon(Icons.fitness_center),
-        label: const Text("Start Workout"),
+        label: Text(tr('exercise_list_start')),
         backgroundColor: Colors.orange,
       )
           : null,

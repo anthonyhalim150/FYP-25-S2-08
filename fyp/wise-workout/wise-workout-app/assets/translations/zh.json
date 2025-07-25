@@ -48,5 +48,26 @@
   "profile_appearance": "外观",
   "profile_appearance_subtitle": "默认",
   "profile_premium_user": "🌟 高级用户 🌟",
-  "profile_close": "关闭"
+  "profile_close": "关闭",
+
+  "workout_categories_title": "锻炼分类",
+  "workout_categories_all": "全部",
+  "workout_categories_error": "加载分类时出错。",
+  "workout_categories_empty": "没有可用的分类。",
+  "workout_categories_not_found": "找不到分类。",
+
+  "workout_list_empty": "未找到锻炼项目。",
+  "workout_list_error": "加载锻炼项目时出错。",
+  "workout_list_search_hint": "在 FitQuest 中搜索",
+  "workout_list_found": "个锻炼项目",
+
+  "exercise_list_found": "个锻炼动作已找到",
+  "exercise_list_error": "加载锻炼动作时出错",
+  "exercise_list_start": "开始锻炼",
+  "exercise_list_already_started": "锻炼会话已在进行中。",
+  "exercise_list_end_title": "结束锻炼",
+  "exercise_list_end_confirm": "你确定要结束本次锻炼吗？",
+  "cancel": "取消",
+  "end": "结束"
+
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../model/workout_model.dart';
 import '../../services/workout_service.dart';
 import '../../widgets/workout_tile.dart';
-import 'exercise_list_page.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class WorkoutListPage extends StatefulWidget {
   final String categoryKey;
@@ -34,11 +34,12 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            final errorMessage = snapshot.error?.toString() ?? 'Unknown error';
+            return Center(child: Text('${tr('workout_list_error')}: $errorMessage'));
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No workouts found."));
+            return Center(child: Text(tr('workout_list_empty')));
           }
 
           final workouts = snapshot.data!
@@ -104,7 +105,7 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: 'Search on FitQuest',
+                          hintText: tr('workout_list_search_hint'),
                           prefixIcon: const Icon(Icons.search),
                           filled: true,
                           fillColor: Colors.grey[200],
@@ -115,16 +116,14 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
                       Text(
-                        '${workouts.length} Workouts Found',
+                        '${workouts.length} ${tr('workout_list_found')}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 16),
-
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -140,7 +139,7 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                                   context,
                                   '/exercise-list-page',
                                   arguments: {
-                                    'workoutId': workout.workoutId,     // ✅ USE workoutId
+                                    'workoutId': workout.workoutId,
                                     'workoutName': workout.workoutName,
                                   },
                                 );

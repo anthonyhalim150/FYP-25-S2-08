@@ -48,5 +48,25 @@
   "profile_appearance": "Appearance",
   "profile_appearance_subtitle": "Default",
   "profile_premium_user": "🌟 Premium User 🌟",
-  "profile_close": "Close"
+  "profile_close": "Close",
+
+  "workout_categories_title": "Workout Categories",
+  "workout_categories_all": "All",
+  "workout_categories_error": "An error occurred while loading categories.",
+  "workout_categories_empty": "No categories available.",
+  "workout_categories_not_found": "No categories found.",
+
+  "workout_list_empty": "No workouts found.",
+  "workout_list_error": "An error occurred while loading workouts.",
+  "workout_list_search_hint": "Search on FitQuest",
+  "workout_list_found": "Workouts Found",
+
+  "exercise_list_found": "Exercises Found",
+  "exercise_list_error": "Error loading exercises",
+  "exercise_list_start": "Start Workout",
+  "exercise_list_already_started": "Workout session already in progress.",
+  "exercise_list_end_title": "End Workout",
+  "exercise_list_end_confirm": "Are you sure you want to end this workout session?",
+  "cancel": "Cancel",
+  "end": "End"
 }
