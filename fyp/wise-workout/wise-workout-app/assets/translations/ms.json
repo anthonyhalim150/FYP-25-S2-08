@@ -68,5 +68,13 @@
   "exercise_list_end_title": "Tamatkan Senaman",
   "exercise_list_end_confirm": "Adakah anda pasti ingin menamatkan sesi senaman ini?",
   "cancel": "Batal",
-  "end": "Tamat"
+  "end": "Tamat",
+
+  "badge_collections": "Koleksi Lencana",
+
+  "workout_categories": "Kategori Senaman",
+  "all": "Semua",
+  "no_categories": "Tiada kategori tersedia",
+  "no_categories_found": "Tiada kategori dijumpai.",
+  "error": "Ralat"
 }

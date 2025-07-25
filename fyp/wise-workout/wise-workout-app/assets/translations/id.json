@@ -68,5 +68,13 @@
   "exercise_list_end_title": "Akhiri Latihan",
   "exercise_list_end_confirm": "Apakah Anda yakin ingin mengakhiri sesi latihan ini?",
   "cancel": "Batal",
-  "end": "Akhiri"
+  "end": "Akhiri",
+
+  "badge_collections": "Koleksi Lencana",
+  "workout_categories": "Kategori Latihan",
+  "all": "Semua",
+  "no_categories": "Tidak ada kategori yang tersedia",
+  "no_categories_found": "Kategori tidak ditemukan.",
+  "error": "Kesalahan"
+
 }

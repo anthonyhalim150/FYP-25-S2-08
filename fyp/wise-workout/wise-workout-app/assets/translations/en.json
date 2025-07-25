@@ -68,5 +68,12 @@
   "exercise_list_end_title": "End Workout",
   "exercise_list_end_confirm": "Are you sure you want to end this workout session?",
   "cancel": "Cancel",
-  "end": "End"
+  "end": "End",
+
+  "badge_collections": "Badge Collections",
+  "workout_categories": "Workout Categories",
+  "all": "All",
+  "no_categories": "No categories available",
+  "no_categories_found": "No categories found.",
+  "error": "Error"
 }

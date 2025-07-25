@@ -70,4 +70,12 @@
   "cancel": "取消",
   "end": "结束"
 
+  "badge_collections": "徽章收藏",
+
+  "workout_categories": "锻炼类别",
+  "all": "全部",
+  "no_categories": "没有可用的类别",
+  "no_categories_found": "未找到类别。",
+  "error": "错误"
+
 }
