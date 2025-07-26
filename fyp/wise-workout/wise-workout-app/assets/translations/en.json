@@ -91,5 +91,30 @@
   "exercise_add_set": "Add Set",
   "exercise_rest_timer": "Rest Timer",
   "edit": "Edit",
-  "save": "Save"
+  "save": "Save",
+
+  "friend_add_title": "Add Friend",
+  "friend_search_hint": "Search by username or email",
+  "friend_no_users": "No users found.",
+  "friend_status_friend": "Friend",
+  "friend_status_sent": "Sent",
+  "friend_status_pending": "Pending",
+  "friend_status_add": "Add",
+  "friend_request_sent_to": "Friend request sent to {}",
+  "friend_request_failed": "Failed to send request",
+
+  "appearance_title": "Appearance",
+  "appearance_theme_label": "Theme",
+  "appearance_theme_description": "Choose your preferred app appearance.",
+  "appearance_theme_normal": "Normal",
+  "appearance_theme_dark": "Dark",
+  "appearance_theme_christmas": "Christmas",
+
+  "badge_collections_title": "Badge Collections",
+  "badge_section_label": "Badges",
+  "badge_locked_title": "Locked Badge",
+  "badge_unlocked_title": "Badge Unlocked!",
+  "badge_how_to_unlock": "How to unlock:",
+  "badge_unlocked_message": "You've unlocked this badge! Congratulations!",
+  "badge_close_button": "Close"
 }

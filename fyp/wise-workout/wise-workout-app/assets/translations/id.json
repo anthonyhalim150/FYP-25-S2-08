@@ -91,6 +91,31 @@
   "exercise_add_set": "Tambah Set",
   "exercise_rest_timer": "Timer Istirahat",
   "edit": "Ubah",
-  "save": "Simpan"
+  "save": "Simpan",
+
+  "friend_add_title": "Tambah Teman",
+  "friend_search_hint": "Cari dengan nama pengguna atau email",
+  "friend_no_users": "Pengguna tidak ditemukan.",
+  "friend_status_friend": "Teman",
+  "friend_status_sent": "Terkirim",
+  "friend_status_pending": "Tertunda",
+  "friend_status_add": "Tambah",
+  "friend_request_sent_to": "Permintaan pertemanan dikirim ke {}",
+  "friend_request_failed": "Gagal mengirim permintaan",
+
+  "appearance_title": "Tampilan",
+  "appearance_theme_label": "Tema",
+  "appearance_theme_description": "Pilih tampilan aplikasi yang Anda sukai.",
+  "appearance_theme_normal": "Normal",
+  "appearance_theme_dark": "Gelap",
+  "appearance_theme_christmas": "Natal",
+
+  "badge_collections_title": "Koleksi Lencana",
+  "badge_section_label": "Lencana",
+  "badge_locked_title": "Lencana Terkunci",
+  "badge_unlocked_title": "Lencana Terbuka!",
+  "badge_how_to_unlock": "Cara membuka:",
+  "badge_unlocked_message": "Kamu telah membuka lencana ini! Selamat!",
+  "badge_close_button": "Tutup"
 
 }

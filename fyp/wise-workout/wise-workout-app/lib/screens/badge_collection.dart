@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../services/badge_service.dart';
 
 class BadgeCollectionScreen extends StatefulWidget {
@@ -30,19 +31,10 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
           'id': b['id'],
           'image': b['icon_url'],
           'color': [
-            '#DCF0F7',
-            '#F0FDD7',
-            '#FFF3AD',
-            '#EAD8FF',
-            '#FFDEDE',
-            '#D6EDFF',
-            '#D0F0FF',
-            '#FFD6BD',
-            '#C5F9D7',
-            '#E5E5E5',
-            '#FFE6E6',
-            '#D9F0F4',
-          ][((b['id'] as int) - 1) % 12], // fixed parentheses here
+            '#DCF0F7', '#F0FDD7', '#FFF3AD', '#EAD8FF', '#FFDEDE',
+            '#D6EDFF', '#D0F0FF', '#FFD6BD', '#C5F9D7', '#E5E5E5',
+            '#FFE6E6', '#D9F0F4',
+          ][((b['id'] as int) - 1) % 12],
           'locked': !userBadgeIds.contains(b['id']),
           'name': b['name'],
           'description': b['description'],
@@ -65,11 +57,9 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
         backgroundColor: colorScheme.background,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(
-          color: colorScheme.onBackground,
-        ),
+        iconTheme: IconThemeData(color: colorScheme.onBackground),
         title: Text(
-          'Badge Collections',
+          'badge_collections_title'.tr(),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: colorScheme.onBackground,
             fontWeight: FontWeight.bold,
@@ -77,100 +67,100 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
         ),
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: colorScheme.secondary.withOpacity(0.19),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Badges',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: GridView.builder(
-                        itemCount: _badges.length,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          childAspectRatio: 1,
-                        ),
-                        itemBuilder: (context, index) {
-                          final badge = _badges[index];
-                          final isLocked = badge['locked'] as bool;
-                          return InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => _BadgeDetailDialog(badge: badge),
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(16),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: HexColor.fromHex(badge['color']),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  padding: const EdgeInsets.all(8),
-                                  child: ColorFiltered(
-                                    colorFilter: isLocked
-                                        ? ColorFilter.mode(
-                                            Colors.grey.withOpacity(0.6),
-                                            BlendMode.saturation,
-                                          )
-                                        : const ColorFilter.mode(
-                                            Colors.transparent, BlendMode.multiply),
-                                    child: Image.asset(
-                                      badge['image'],
-                                      fit: BoxFit.contain,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          Icon(Icons.error_outline, size: 32, color: colorScheme.error),
-                                    ),
-                                  ),
-                                ),
-                                if (isLocked)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.background.withOpacity(0.44),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.lock,
-                                        color: colorScheme.onBackground.withOpacity(0.82),
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: colorScheme.secondary.withOpacity(0.19),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'badge_section_label'.tr(),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: GridView.builder(
+                  itemCount: _badges.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    final badge = _badges[index];
+                    final isLocked = badge['locked'] as bool;
+                    return InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => _BadgeDetailDialog(badge: badge),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: HexColor.fromHex(badge['color']),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: ColorFiltered(
+                              colorFilter: isLocked
+                                  ? ColorFilter.mode(
+                                Colors.grey.withOpacity(0.6),
+                                BlendMode.saturation,
+                              )
+                                  : const ColorFilter.mode(
+                                  Colors.transparent, BlendMode.multiply),
+                              child: Image.asset(
+                                badge['image'],
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.error_outline, size: 32, color: colorScheme.error),
+                              ),
+                            ),
+                          ),
+                          if (isLocked)
+                            Container(
+                              decoration: BoxDecoration(
+                                color: colorScheme.background.withOpacity(0.44),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.lock,
+                                  color: colorScheme.onBackground.withOpacity(0.82),
+                                  size: 40,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -204,11 +194,11 @@ class _BadgeDetailDialog extends StatelessWidget {
                   child: ColorFiltered(
                     colorFilter: isLocked
                         ? ColorFilter.mode(
-                            Colors.grey.withOpacity(0.7),
-                            BlendMode.saturation,
-                          )
+                      Colors.grey.withOpacity(0.7),
+                      BlendMode.saturation,
+                    )
                         : const ColorFilter.mode(
-                            Colors.transparent, BlendMode.multiply),
+                        Colors.transparent, BlendMode.multiply),
                     child: Image.asset(
                       badge['image'],
                       height: 220,
@@ -227,13 +217,13 @@ class _BadgeDetailDialog extends StatelessWidget {
             ),
             const SizedBox(height: 28),
             Text(
-              isLocked ? "Locked Badge" : "Badge Unlocked!",
+              isLocked ? "badge_locked_title".tr() : "badge_unlocked_title".tr(),
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (isLocked) ...[
               Text(
-                "How to unlock:",
+                "badge_how_to_unlock".tr(),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 10),
@@ -247,7 +237,7 @@ class _BadgeDetailDialog extends StatelessWidget {
               ),
             ] else ...[
               Text(
-                "You've unlocked this badge! Congratulations!",
+                "badge_unlocked_message".tr(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
@@ -263,7 +253,7 @@ class _BadgeDetailDialog extends StatelessWidget {
                 textStyle: Theme.of(context).textTheme.titleMedium,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               ),
-              child: const Text("Close"),
+              child: Text("badge_close_button".tr()),
             )
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../themes/theme_notifier.dart';
 
@@ -14,7 +15,7 @@ class AppearanceScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Appearance',
+          'appearance_title'.tr(),
           style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onBackground),
         ),
         elevation: 0,
@@ -27,12 +28,12 @@ class AppearanceScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Theme",
+              "appearance_theme_label".tr(),
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              "Choose your preferred app appearance.",
+              "appearance_theme_description".tr(),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: _descColor(),
               ),
@@ -46,41 +47,38 @@ class AppearanceScreen extends StatelessWidget {
               color: theme.colorScheme.surface,
               child: Column(
                 children: [
-                  // ---- Normal Theme ----
                   RadioListTile<AppThemeMode>(
                     value: AppThemeMode.normal,
                     groupValue: currentMode,
                     onChanged: (mode) => themeNotifier.setThemeMode(mode!),
                     title: Text(
-                      "Normal",
+                      "appearance_theme_normal".tr(),
                       style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                     ),
                     secondary: Icon(Icons.style, color: theme.colorScheme.primary),
                   ),
-                  // ---- Dark Theme ----
                   RadioListTile<AppThemeMode>(
                     value: AppThemeMode.dark,
                     groupValue: currentMode,
                     onChanged: (mode) => themeNotifier.setThemeMode(mode!),
                     title: Text(
-                      "Dark",
+                      "appearance_theme_dark".tr(),
                       style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                     ),
                     secondary: Icon(Icons.dark_mode, color: theme.colorScheme.primary),
                   ),
-                  // ---- Christmas ----
                   RadioListTile<AppThemeMode>(
                     value: AppThemeMode.christmas,
                     groupValue: currentMode,
                     onChanged: (mode) => themeNotifier.setThemeMode(mode!),
                     title: Text(
-                      "Christmas",
+                      "appearance_theme_christmas".tr(),
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFFB71C1C),
+                        color: const Color(0xFFB71C1C),
                       ),
                     ),
-                    secondary: Icon(Icons.celebration, color: Color(0xFF388E3C)),
+                    secondary: const Icon(Icons.celebration, color: Color(0xFF388E3C)),
                   ),
                 ],
               ),
@@ -97,7 +95,7 @@ class AppearanceScreen extends StatelessWidget {
                     : Icons.brightness_auto,
                 size: 64,
                 color: currentMode == AppThemeMode.christmas
-                    ? Color(0xFFB71C1C)
+                    ? const Color(0xFFB71C1C)
                     : theme.colorScheme.primary,
               ),
             ),

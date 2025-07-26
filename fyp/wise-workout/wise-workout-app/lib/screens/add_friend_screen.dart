@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../services/friend_service.dart';
 
 class AddFriendScreen extends StatefulWidget {
@@ -32,14 +33,14 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
     try {
       await _friendService.sendRequest(friendId);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Friend request sent to $name")),
+        SnackBar(content: Text("friend_request_sent_to".tr(args: [name]))),
       );
       if (search.trim().isNotEmpty) {
         _searchUsers(search.trim());
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send request")),
+        SnackBar(content: Text("friend_request_failed".tr())),
       );
     }
   }
@@ -57,7 +58,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           minimumSize: const Size(60, 36),
         ),
-        child: Text('Friend', style: labelStyle),
+        child: Text('friend_status_friend'.tr(), style: labelStyle),
       );
     } else if (status == 'sent' || status == 'pending') {
       return ElevatedButton(
@@ -69,7 +70,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           minimumSize: const Size(60, 36),
         ),
-        child: Text(status == 'sent' ? 'Sent' : 'Pending', style: labelStyle),
+        child: Text(status == 'sent' ? 'friend_status_sent'.tr() : 'friend_status_pending'.tr(), style: labelStyle),
       );
     }
     return ElevatedButton(
@@ -82,7 +83,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         minimumSize: const Size(60, 36),
       ),
-      child: Text('Add', style: labelStyle),
+      child: Text('friend_status_add'.tr(), style: labelStyle),
     );
   }
 
@@ -99,10 +100,11 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Add Friend',
+          'friend_add_title'.tr(),
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.textTheme.titleMedium?.color,
+            fontSize: 25
           ),
         ),
         iconTheme: IconThemeData(color: colorScheme.onBackground),
@@ -122,7 +124,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                 }
               },
               decoration: InputDecoration(
-                hintText: 'Search by username or email',
+                hintText: 'friend_search_hint'.tr(),
                 hintStyle: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.hintColor,
                 ),
@@ -144,7 +146,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                 : (searchResults.isEmpty || search.isEmpty)
                 ? Center(
               child: Text(
-                "No users found.",
+                "friend_no_users".tr(),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.hintColor,
                   fontSize: 16,

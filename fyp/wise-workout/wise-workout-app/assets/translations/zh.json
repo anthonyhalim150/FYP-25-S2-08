@@ -92,6 +92,31 @@
   "exercise_add_set": "添加组",
   "exercise_rest_timer": "休息计时器",
   "edit": "编辑",
-  "save": "保存"
+  "save": "保存",
+
+  "friend_add_title": "添加好友",
+  "friend_search_hint": "通过用户名或邮箱搜索",
+  "friend_no_users": "未找到用户。",
+  "friend_status_friend": "好友",
+  "friend_status_sent": "已发送",
+  "friend_status_pending": "待处理",
+  "friend_status_add": "添加",
+  "friend_request_sent_to": "已向 {} 发送好友请求",
+  "friend_request_failed": "发送请求失败",
+
+  "appearance_title": "外观",
+  "appearance_theme_label": "主题",
+  "appearance_theme_description": "选择您喜欢的应用外观。",
+  "appearance_theme_normal": "普通",
+  "appearance_theme_dark": "深色",
+  "appearance_theme_christmas": "圣诞节",
+
+  "badge_collections_title": "徽章收藏",
+  "badge_section_label": "徽章",
+  "badge_locked_title": "已锁定的徽章",
+  "badge_unlocked_title": "徽章已解锁！",
+  "badge_how_to_unlock": "如何解锁：",
+  "badge_unlocked_message": "您已解锁此徽章！恭喜！",
+  "badge_close_button": "关闭"
 
 }
