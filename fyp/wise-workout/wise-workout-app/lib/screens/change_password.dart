@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
@@ -33,8 +35,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     await Future.delayed(const Duration(seconds: 1));
     if (_currentController.text != 'old123') {
       setState(() {
-        _error = 'Current password is incorrect.';
-        _isLoading = false;
+        _error = 'account_change_password_error_incorrect'.tr();        _isLoading = false;
       });
       return;
     }
@@ -42,7 +43,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _isLoading = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password changed successfully!')),
+        SnackBar(content: Text('account_change_password_success'.tr()))
     );
     Navigator.pushAndRemoveUntil(
       context,
@@ -75,7 +76,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         elevation: 0.5,
         iconTheme: IconThemeData(color: onBg),
         title: Text(
-          'Change Password',
+          'account_change_password_title'.tr(),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: onBg,
             fontWeight: FontWeight.w700,
@@ -95,7 +96,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     color: colorScheme.primary, size: 48),
                 const SizedBox(height: 7),
                 Text(
-                  "Change your password securely",
+                  "account_change_password_subtitle".tr(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: onBg.withOpacity(0.95),
                     fontWeight: FontWeight.w500,
@@ -148,23 +149,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       children: [
                         _buildPasswordField(
                           controller: _currentController,
-                          label: "Current Password",
+                          label: 'account_current_password_label'.tr(),
                           showPassword: _showCurrent,
                           onToggle: () => setState(() => _showCurrent = !_showCurrent),
                         ),
                         const SizedBox(height: 16),
                         _buildPasswordField(
                           controller: _newController,
-                          label: "New Password",
+                          label: 'account_new_password_label'.tr(),
                           showPassword: _showNew,
                           onToggle: () => setState(() => _showNew = !_showNew),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Enter a new password';
+                              return 'account_new_password_required'.tr();
                             } else if (!isPasswordStrong(value)) {
-                              return 'Min 8 chars, upper, lower, digit, special char';
+                              return 'account_password_rules'.tr();
                             } else if (value == _currentController.text) {
-                              return 'New password must be different';
+                              return 'account_password_must_be_different'.tr();
                             }
                             return null;
                           },
@@ -173,7 +174,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Min 8 chars, upper, lower, digit, special char",
+                            "account_password_rules".tr(),
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: onSurface.withOpacity(0.55),
                             ),
@@ -182,15 +183,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         const SizedBox(height: 16),
                         _buildPasswordField(
                           controller: _confirmController,
-                          label: "Confirm New Password",
+                          label: 'account_confirm_password_label'.tr(),
                           showPassword: _showConfirm,
                           onToggle: () => setState(() => _showConfirm = !_showConfirm),
                           validator: (value) {
                             if (value != _newController.text) {
-                              return 'Passwords do not match';
+                              return 'account_password_mismatch'.tr();
                             }
                             if (value == null || value.isEmpty) {
-                              return 'Required field';
+                              return 'form_required_field'.tr();
                             }
                             return null;
                           },
@@ -224,7 +225,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               ),
                             )
                                 : Text(
-                              'Change Password',
+                              'account_change_password_button'.tr(),
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: colorScheme.onPrimary,
                               ),

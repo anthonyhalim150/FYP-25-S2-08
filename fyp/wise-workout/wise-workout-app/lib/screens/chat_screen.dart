@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/message_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ChatScreen extends StatefulWidget {
   final int friendId;
@@ -79,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
         loading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load messages")),
+          SnackBar(content: Text('chat_error_load_failed'.tr()))
       );
     }
   }
@@ -145,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
       await _messageService.sendMessage(widget.friendId, content);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send message")),
+          SnackBar(content: Text('chat_error_send_failed'.tr())),
       );
     }
   }
@@ -235,7 +236,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       onPressed: () {},
                       icon: Icon(Icons.add, size: 15, color: colorScheme.onSecondary),
                       label: Text(
-                        "Challenge",
+                        'chat_button_challenge'.tr(),
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: colorScheme.onSecondary,
                           fontWeight: FontWeight.w500,
@@ -363,7 +364,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         controller: _controller,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Send a message...",
+                          hintText: 'chat_input_hint'.tr(),
                           hintStyle: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.hintColor,
                           ),

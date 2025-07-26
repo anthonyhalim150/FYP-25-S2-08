@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'create_avatarbg.dart';
 import 'buypremium_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class CreateAvatarScreen extends StatefulWidget {
   final String username;
@@ -89,7 +91,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
       final apiService = ApiService();
       await apiService.setAvatar(avatarId);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Avatar updated successfully!')),
+        SnackBar(content: Text('avatar_update_success'.tr())),
       );
       Navigator.pop(context, {
         'avatar': selectedAvatarPath,
@@ -98,7 +100,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
     } catch (e) {
       print('Failed to update avatar: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update avatar')),
+        SnackBar(content: Text('avatar_update_failed'.tr())),
       );
     }
   }
@@ -139,7 +141,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    'Avatar',
+                    'avatar_title'.tr(),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -194,7 +196,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                         Icon(Icons.arrow_back, color: colorScheme.onSurface),
                         const Spacer(),
                         Text(
-                          'Avatar',
+                          'avatar_title'.tr(),
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -305,7 +307,7 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                             .labelLarge, // For consistent button text
                       ),
                       onPressed: _confirmAvatar,
-                      child: Text('Confirm',
+                      child: Text('avatar_confirm_button'.tr(),
                           style: TextStyle(color: colorScheme.onPrimary)),
                     ),
                   ],

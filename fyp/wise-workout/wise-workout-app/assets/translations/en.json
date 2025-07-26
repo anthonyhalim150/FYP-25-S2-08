@@ -116,5 +116,29 @@
   "badge_unlocked_title": "Badge Unlocked!",
   "badge_how_to_unlock": "How to unlock:",
   "badge_unlocked_message": "You've unlocked this badge! Congratulations!",
-  "badge_close_button": "Close"
+  "badge_close_button": "Close",
+
+  "account_change_password_title": "Change Password",
+  "account_change_password_subtitle": "Change your password securely",
+  "account_current_password_label": "Current Password",
+  "account_new_password_label": "New Password",
+  "account_confirm_password_label": "Confirm New Password",
+  "account_new_password_required": "Enter a new password",
+  "account_password_rules": "Min 8 chars, upper, lower, digit, special char",
+  "account_password_different": "New password must be different",
+  "account_password_mismatch": "Passwords do not match",
+  "form_required_field": "Required field",
+  "account_change_password_button": "Change Password",
+  "account_change_success": "Password changed successfully!",
+  "account_current_password_incorrect": "Current password is incorrect.",
+
+  "chat_button_challenge": "Challenge",
+  "chat_error_load_failed": "Failed to load messages",
+  "chat_error_send_failed": "Failed to send message",
+  "chat_input_hint": "Send a message...",
+
+  "avatar_title": "Avatar",
+  "avatar_confirm_button": "Confirm",
+  "avatar_update_success": "Avatar updated successfully!",
+  "avatar_update_failed": "Failed to update avatar"
 }

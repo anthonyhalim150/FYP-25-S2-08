@@ -117,6 +117,30 @@
   "badge_unlocked_title": "徽章已解锁！",
   "badge_how_to_unlock": "如何解锁：",
   "badge_unlocked_message": "您已解锁此徽章！恭喜！",
-  "badge_close_button": "关闭"
+  "badge_close_button": "关闭",
+
+  "account_change_password_title": "更改密码",
+  "account_change_password_subtitle": "安全地更改您的密码",
+  "account_current_password_label": "当前密码",
+  "account_new_password_label": "新密码",
+  "account_confirm_password_label": "确认新密码",
+  "account_new_password_required": "请输入新密码",
+  "account_password_rules": "至少8位，包含大写、小写、数字和符号",
+  "account_password_different": "新密码必须不同于旧密码",
+  "account_password_mismatch": "两次输入的密码不一致",
+  "form_required_field": "此字段为必填项",
+  "account_change_password_button": "更改密码",
+  "account_change_success": "密码更改成功！",
+  "account_current_password_incorrect": "当前密码错误。",
+
+  "chat_button_challenge": "挑战",
+  "chat_error_load_failed": "加载消息失败",
+  "chat_error_send_failed": "发送消息失败",
+  "chat_input_hint": "发送消息...",
+
+  "avatar_title": "头像",
+  "avatar_confirm_button": "确认",
+  "avatar_update_success": "头像更新成功！",
+  "avatar_update_failed": "头像更新失败"
 
 }

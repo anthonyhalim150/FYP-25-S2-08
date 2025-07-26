@@ -116,6 +116,30 @@
   "badge_unlocked_title": "Lencana Terbuka!",
   "badge_how_to_unlock": "Cara membuka:",
   "badge_unlocked_message": "Kamu telah membuka lencana ini! Selamat!",
-  "badge_close_button": "Tutup"
+  "badge_close_button": "Tutup",
+
+  "account_change_password_title": "Ubah Kata Sandi",
+  "account_change_password_subtitle": "Ubah kata sandi Anda dengan aman",
+  "account_current_password_label": "Kata Sandi Saat Ini",
+  "account_new_password_label": "Kata Sandi Baru",
+  "account_confirm_password_label": "Konfirmasi Kata Sandi",
+  "account_new_password_required": "Masukkan kata sandi baru",
+  "account_password_rules": "Min 8 karakter, huruf besar, kecil, angka, dan simbol",
+  "account_password_different": "Kata sandi baru harus berbeda",
+  "account_password_mismatch": "Kata sandi tidak cocok",
+  "form_required_field": "Wajib diisi",
+  "account_change_password_button": "Ubah Kata Sandi",
+  "account_change_success": "Kata sandi berhasil diubah!",
+  "account_current_password_incorrect": "Kata sandi saat ini salah.",
+
+  "chat_button_challenge": "Tantang",
+  "chat_error_load_failed": "Gagal memuat pesan",
+  "chat_error_send_failed": "Gagal mengirim pesan",
+  "chat_input_hint": "Kirim pesan...",
+
+  "avatar_title": "Avatar",
+  "avatar_confirm_button": "Konfirmasi",
+  "avatar_update_success": "Avatar berhasil diperbarui!",
+  "avatar_update_failed": "Gagal memperbarui avatar"
 
 }

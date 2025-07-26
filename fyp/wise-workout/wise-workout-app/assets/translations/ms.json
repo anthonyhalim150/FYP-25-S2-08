@@ -117,5 +117,29 @@
   "badge_unlocked_title": "Lencana Telah Dibuka!",
   "badge_how_to_unlock": "Cara untuk membuka:",
   "badge_unlocked_message": "Anda telah membuka lencana ini! Tahniah!",
-  "badge_close_button": "Tutup"
+  "badge_close_button": "Tutup",
+
+  "account_change_password_title": "Tukar Kata Laluan",
+  "account_change_password_subtitle": "Tukar kata laluan anda dengan selamat",
+  "account_current_password_label": "Kata Laluan Semasa",
+  "account_new_password_label": "Kata Laluan Baharu",
+  "account_confirm_password_label": "Sahkan Kata Laluan",
+  "account_new_password_required": "Masukkan kata laluan baharu",
+  "account_password_rules": "Min 8 aksara, huruf besar, kecil, nombor, simbol",
+  "account_password_different": "Kata laluan baharu mesti berbeza",
+  "account_password_mismatch": "Kata laluan tidak sepadan",
+  "form_required_field": "Medan diperlukan",
+  "account_change_password_button": "Tukar Kata Laluan",
+  "account_change_success": "Kata laluan berjaya ditukar!",
+  "account_current_password_incorrect": "Kata laluan semasa salah.",
+
+  "chat_button_challenge": "Cabaran",
+  "chat_error_load_failed": "Gagal memuat mesej",
+  "chat_error_send_failed": "Gagal menghantar mesej",
+  "chat_input_hint": "Hantar mesej...",
+
+  "avatar_title": "Avatar",
+  "avatar_confirm_button": "Sahkan",
+  "avatar_update_success": "Avatar berjaya dikemas kini!",
+  "avatar_update_failed": "Gagal mengemas kini avatar"
 }
