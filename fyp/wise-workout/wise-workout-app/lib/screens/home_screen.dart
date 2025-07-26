@@ -351,12 +351,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                     final timeString = result['time'] as String;
                     final repeatDays = result['repeat'] as List<String>;
-                    final timeParts = timeString.split(RegExp(r'[: ]'));
+
+                    String fixedTimeString = timeString.replaceAll('.', ':');
+                    final timeParts = fixedTimeString.split(RegExp(r'[: ]'));
                     int hour = int.parse(timeParts[0]);
                     int minute = int.parse(timeParts[1]);
-                    bool isPM = timeString.contains('PM');
+                    bool isPM = timeString.toUpperCase().contains('PM');
+                    bool isAM = timeString.toUpperCase().contains('AM');
+                    if ((isPM || isAM) && hour > 12) hour = hour % 12;
                     if (isPM && hour < 12) hour += 12;
-                    if (!isPM && hour == 12) hour = 0;
+                    if (isAM && hour == 12) hour = 0;
 
                     final daysOfWeek = repeatDays.map((d) {
                       switch (d) {
