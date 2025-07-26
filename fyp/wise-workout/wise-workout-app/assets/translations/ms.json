@@ -141,5 +141,42 @@
   "avatar_title": "Avatar",
   "avatar_confirm_button": "Sahkan",
   "avatar_update_success": "Avatar berjaya dikemas kini!",
-  "avatar_update_failed": "Gagal mengemas kini avatar"
+  "avatar_update_failed": "Gagal mengemas kini avatar",
+
+  "profile_title": "Profil",
+  "profile_update_failed": "Gagal mengemas kini profil",
+  "profile_personal_details": "Butiran Peribadi",
+  "profile_first_name": "Nama Pertama",
+  "profile_last_name": "Nama Akhir",
+  "profile_username": "Nama Pengguna",
+  "profile_dob": "Tarikh Lahir",
+  "profile_email": "Emel",
+  "profile_account_details": "Butiran Akaun",
+  "profile_level": "Tahap",
+  "profile_account_type": "Jenis Akaun",
+  "common_edit": "Edit",
+  "common_save": "Simpan",
+  "common_cancel": "Batal",
+
+  "settings_language_title": "Tetapan Bahasa",
+
+  "forgot_title": "Terlupa Kata Laluan",
+  "forgot_email_label": "E-mel",
+  "forgot_send_button": "Hantar OTP",
+  "forgot_otp_error": "Ralat menghantar OTP",
+  "forgot_otp_server_error": "Ralat pelayan: {}",
+
+  "history_title": "Sejarah Senaman",
+  "history_empty_message": "Tiada sejarah senaman lagi.",
+
+  "home_greeting": "Hai,",
+  "home_search_hint": "Cari di FitQuest",
+  "home_badge_collections_title": "Koleksi Lencana",
+  "home_quest_button": "CABARAN HARI INI!",
+  "home_reminder_button": "Tetapkan Peringatan",
+  "home_reminder_cleared": "Semua peringatan telah dipadam.",
+  "home_reminder_set": "Peringatan ditetapkan!",
+  "home_workout_title": "Senaman",
+  "home_tournament_title": "Pertandingan",
+  "home_tournament_view_all": "Lihat semua"
 }

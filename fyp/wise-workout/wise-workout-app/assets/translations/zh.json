@@ -141,6 +141,43 @@
   "avatar_title": "头像",
   "avatar_confirm_button": "确认",
   "avatar_update_success": "头像更新成功！",
-  "avatar_update_failed": "头像更新失败"
+  "avatar_update_failed": "头像更新失败",
+
+  "profile_title": "个人资料",
+  "profile_update_failed": "更新资料失败",
+  "profile_personal_details": "个人信息",
+  "profile_first_name": "名字",
+  "profile_last_name": "姓氏",
+  "profile_username": "用户名",
+  "profile_dob": "出生日期",
+  "profile_email": "电子邮件",
+  "profile_account_details": "账户信息",
+  "profile_level": "等级",
+  "profile_account_type": "账户类型",
+  "common_edit": "编辑",
+  "common_save": "保存",
+  "common_cancel": "取消",
+
+  "settings_language_title": "语言设置",
+
+  "forgot_title": "忘记密码",
+  "forgot_email_label": "电子邮件",
+  "forgot_send_button": "发送 OTP",
+  "forgot_otp_error": "发送 OTP 时出错",
+  "forgot_otp_server_error": "服务器错误：{}",
+r
+  "history_title": "锻炼历史",
+  "history_empty_message": "还没有锻炼记录。",
+
+  "home_greeting": "你好，",
+  "home_search_hint": "在 FitQuest 上搜索",
+  "home_badge_collections_title": "徽章收藏",
+  "home_quest_button": "今日挑战！",
+  "home_reminder_button": "设置提醒",
+  "home_reminder_cleared": "所有提醒已清除。",
+  "home_reminder_set": "提醒已设置！",
+  "home_workout_title": "锻炼",
+  "home_tournament_title": "锦标赛",
+  "home_tournament_view_all": "查看全部"
 
 }

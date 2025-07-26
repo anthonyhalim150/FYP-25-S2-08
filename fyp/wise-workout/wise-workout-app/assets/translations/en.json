@@ -140,5 +140,42 @@
   "avatar_title": "Avatar",
   "avatar_confirm_button": "Confirm",
   "avatar_update_success": "Avatar updated successfully!",
-  "avatar_update_failed": "Failed to update avatar"
+  "avatar_update_failed": "Failed to update avatar",
+
+  "profile_title": "Profile",
+  "profile_update_failed": "Failed to update profile",
+  "profile_personal_details": "Personal Details",
+  "profile_first_name": "First Name",
+  "profile_last_name": "Last Name",
+  "profile_username": "Username",
+  "profile_dob": "Date of Birth",
+  "profile_email": "Email",
+  "profile_account_details": "Account Details",
+  "profile_level": "Level",
+  "profile_account_type": "Account Type",
+  "common_edit": "Edit",
+  "common_save": "Save",
+  "common_cancel": "Cancel",
+
+  "settings_language_title": "Language Settings",
+
+  "forgot_title": "Forgot Password",
+  "forgot_email_label": "Email",
+  "forgot_send_button": "Send OTP",
+  "forgot_otp_error": "Error sending OTP",
+  "forgot_otp_server_error": "Server error: {}",
+
+  "history_title": "Workout History",
+  "history_empty_message": "No workout history yet.",
+
+  "home_greeting": "Hello,",
+  "home_search_hint": "Search on FitQuest",
+  "home_badge_collections_title": "Badge Collections",
+  "home_quest_button": "QUEST OF THE DAY!",
+  "home_reminder_button": "Set Reminder",
+  "home_reminder_cleared": "All reminders cleared.",
+  "home_reminder_set": "Reminder set!",
+  "home_workout_title": "Workout",
+  "home_tournament_title": "Tournaments",
+  "home_tournament_view_all": "View all"
 }

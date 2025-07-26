@@ -140,6 +140,43 @@
   "avatar_title": "Avatar",
   "avatar_confirm_button": "Konfirmasi",
   "avatar_update_success": "Avatar berhasil diperbarui!",
-  "avatar_update_failed": "Gagal memperbarui avatar"
+  "avatar_update_failed": "Gagal memperbarui avatar",
+
+  "profile_title": "Profil",
+  "profile_update_failed": "Gagal memperbarui profil",
+  "profile_personal_details": "Detail Pribadi",
+  "profile_first_name": "Nama Depan",
+  "profile_last_name": "Nama Belakang",
+  "profile_username": "Nama Pengguna",
+  "profile_dob": "Tanggal Lahir",
+  "profile_email": "Email",
+  "profile_account_details": "Detail Akun",
+  "profile_level": "Level",
+  "profile_account_type": "Tipe Akun",
+  "common_edit": "Ubah",
+  "common_save": "Simpan",
+  "common_cancel": "Batal",
+
+  "settings_language_title": "Pengaturan Bahasa",
+
+  "forgot_title": "Lupa Kata Sandi",
+  "forgot_email_label": "Email",
+  "forgot_send_button": "Kirim OTP",
+  "forgot_otp_error": "Gagal mengirim OTP",
+  "forgot_otp_server_error": "Kesalahan server: {}",
+
+  "history_title": "Riwayat Latihan",
+  "history_empty_message": "Belum ada riwayat latihan.",
+
+  "home_greeting": "Halo,",
+  "home_search_hint": "Cari di FitQuest",
+  "home_badge_collections_title": "Koleksi Lencana",
+  "home_quest_button": "TANTANGAN HARI INI!",
+  "home_reminder_button": "Atur Pengingat",
+  "home_reminder_cleared": "Semua pengingat telah dihapus.",
+  "home_reminder_set": "Pengingat berhasil disetel!",
+  "home_workout_title": "Latihan",
+  "home_tournament_title": "Turnamen",
+  "home_tournament_view_all": "Lihat semua"
 
 }

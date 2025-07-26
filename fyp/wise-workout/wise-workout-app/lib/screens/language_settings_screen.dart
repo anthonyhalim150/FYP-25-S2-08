@@ -49,7 +49,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Language Settings')),
+      appBar: AppBar(title: Text('settings_language_title').tr()),
       body: ListView(
         children: languages.map((lang) {
           final isSelected = lang['code'] == _selectedLang;

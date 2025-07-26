@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_workout_app/services/profile_edit_service.dart';
@@ -84,7 +85,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update profile')),
+        SnackBar(content: Text('profile_update_failed'.tr())),
       );
     }
   }
@@ -176,7 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         Expanded(
                           child: Text(
-                            'Profile',
+                            'profile_title'.tr(),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: colorScheme.onSecondary,
@@ -239,7 +240,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Personal Details",
+                                    "profile_details".tr(),
                                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -248,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ElevatedButton.icon(
                                       onPressed: startEditing,
                                       icon: const Icon(Icons.edit, size: 16),
-                                      label: const Text("Edit"),
+                                      label: Text("common_edit".tr()),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: secondary,
                                         foregroundColor: colorScheme.onSecondary,
@@ -262,11 +263,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              dataItem("First Name", isEditing ? buildField(firstNameController) : firstName, context),
-                              dataItem("Last Name", isEditing ? buildField(lastNameController) : lastName, context),
-                              dataItem("Username", isEditing ? buildField(usernameController) : username, context),
-                              dataItem("Date of Birth", isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth), context),
-                              dataItem("Email", isEditing ? buildField(emailController) : email, context),
+                              dataItem("profile_first_name".tr(), isEditing ? buildField(firstNameController) : firstName, context),
+                              dataItem("profile_last_name".tr(), isEditing ? buildField(lastNameController) : lastName, context),
+                              dataItem("profile_username".tr(), isEditing ? buildField(usernameController) : username, context),
+                              dataItem("profile_dob".tr(), isEditing ? buildDOBField(context, dobController) : _formatIncomingDOB(dateOfBirth), context),
+                              dataItem("profile_email".tr(), isEditing ? buildField(emailController) : email, context),
                               const SizedBox(height: 20),
                               Text(
                                 "Account Details",
@@ -275,8 +276,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              dataItem("Level", level, context, isGrey: true),
-                              dataItem("Account", accountType, context, isGrey: true),
+                              dataItem("profile_level".tr(), level, context, isGrey: true),
+                              dataItem("profile_account_type".tr(), accountType, context, isGrey: true),
                             ],
                           ),
                         ),
@@ -327,7 +328,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text("Save"),
+                      child: Text("common_save".tr()),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -342,7 +343,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text("Cancel"),
+                      child: Text("common_cancel".tr()),
                     ),
                   ),
                 ],

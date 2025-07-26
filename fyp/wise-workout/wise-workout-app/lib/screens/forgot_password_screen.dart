@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -32,10 +33,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (response.statusCode == 200) {
         Navigator.pushNamed(context, '/verify-reset', arguments: emailController.text.trim());
       } else {
-        setState(() => message = data['message'] ?? 'Error sending OTP');
+        setState(() => message = data['message'] ?? 'forgot_otp_error'.tr());
       }
     } catch (e) {
-      setState(() => message = 'Server error: $e');
+      setState(() => message = 'forgot_otp_server_error'.tr(args: [e.toString()]));
     } finally {
       setState(() => isSubmitting = false);
     }
@@ -44,14 +45,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Forgot Password")),
+      appBar: AppBar(title: Text("forgot_title".tr())),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: 'forgot_email_label'.tr()),
             ),
             const SizedBox(height: 16),
             if (message != null)
@@ -61,7 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               onPressed: isSubmitting ? null : sendResetOtp,
               child: isSubmitting
                   ? const CircularProgressIndicator()
-                  : const Text("Send OTP"),
+                  : Text("forgot_send_button".tr()),
             ),
           ],
         ),

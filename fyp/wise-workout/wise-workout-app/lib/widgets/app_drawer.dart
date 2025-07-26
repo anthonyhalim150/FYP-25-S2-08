@@ -9,13 +9,38 @@ class AppDrawer extends StatelessWidget {
     required this.userName,
   });
 
+  Future<void> _confirmLogout(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+            ),
+            ElevatedButton(
+              child: const Text('Logout'),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+            ),
+          ],
+        );
+      },
+    );
 
-  Future<void> _logout(BuildContext context) async {
-    final secureStorage = FlutterSecureStorage();
-    await secureStorage.delete(key: 'jwt_cookie');
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+    if (shouldLogout == true) {
+      const secureStorage = FlutterSecureStorage();
+      await secureStorage.delete(key: 'jwt_cookie');
+
+      // Delay to allow dialog to close before navigating
+      Future.delayed(const Duration(milliseconds: 100), () {
+        Navigator.of(context, rootNavigator: true)
+            .pushNamedAndRemoveUntil('/', (route) => false);
+      });
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +85,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Settings'),
             onTap: () {
               Navigator.pop(context);
-              // Add navigation to settings screen here
+              // Add settings navigation
             },
           ),
           ListTile(
@@ -69,7 +94,6 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/workout');
-              // Add navigation to settings screen here
             },
           ),
           ListTile(
@@ -77,7 +101,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Workout History'),
             onTap: () {
               Navigator.pop(context);
-              // Add navigation to workout history here
+              // Add workout history navigation
             },
           ),
           ListTile(
@@ -85,17 +109,14 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Achievements'),
             onTap: () {
               Navigator.pop(context);
-              // Add navigation to achievements here
+              // Add achievements navigation
             },
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
-            onTap: () {
-              Navigator.pop(context);
-              _logout(context);
-            },
+            onTap: () => _confirmLogout(context),
           ),
         ],
       ),

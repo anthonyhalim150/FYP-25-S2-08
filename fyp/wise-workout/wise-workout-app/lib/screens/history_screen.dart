@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'analysis_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -66,9 +68,9 @@ class HistoryScreen extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back, color: Colors.black),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Workout History',
+                        'history_title'.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
@@ -87,9 +89,9 @@ class HistoryScreen extends StatelessWidget {
           // 📝 Workout List or Empty State
           Expanded(
             child: workoutHistory.isEmpty
-                ? const Center(
+                ? Center(
               child: Text(
-                'No workout history yet.',
+                'history_empty_message'.tr(),
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
             )

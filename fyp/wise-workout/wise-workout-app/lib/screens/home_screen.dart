@@ -17,6 +17,8 @@ import '../widgets/reminder_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -149,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Badge Collections',
+                      'home_badge_collections_title'.tr(),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
@@ -232,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     Text(
-                      'Hello, ${_displayName ?? widget.userName}!',
+                      'home_greeting, ${_displayName ?? widget.userName}!'.tr(),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -288,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: TextField(
                           decoration: InputDecoration(
-                            hintText: 'Search on FitQuest',
+                            hintText: 'home_search_hint'.tr(),
                             border: InputBorder.none,
                             hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
                           ),
@@ -320,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
               buildBlueButton(
                 context: context,
-                text: "QUEST OF THE DAY!",
+                text: "home_quest_button".tr(),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => QuestScreen()));
                 },
@@ -328,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               buildBlueButton(
                 context: context,
-                text: "Set Reminder",
+                text: "home_reminder_cleared".tr(),
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
                   final lastTime = prefs.getString('reminder_time');
@@ -345,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       await prefs.remove('reminder_days');
                       await NotificationService.cancelAllReminders(); 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('All reminders cleared.')),
+                        SnackBar(content: Text('home_reminder_cleared'.tr())),
                       );
                       return;
                     }
@@ -397,7 +399,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
-                  "Workout",
+                  "home_workout_title".tr(),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.normal,
                     color: colorScheme.onBackground,
@@ -427,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Tournaments",
+                      "home_tournament_title".tr(),
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.normal,
                         color: colorScheme.onBackground,
@@ -442,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                       child: Text(
-                        "View all",
+                        "home_tournament_view_all".tr(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
