@@ -165,11 +165,10 @@
   "forgot_send_button": "发送 OTP",
   "forgot_otp_error": "发送 OTP 时出错",
   "forgot_otp_server_error": "服务器错误：{}",
-r
   "history_title": "锻炼历史",
   "history_empty_message": "还没有锻炼记录。",
 
-  "home_greeting": "你好，",
+  "home_greeting": "你好，{}！",
   "home_search_hint": "在 FitQuest 上搜索",
   "home_badge_collections_title": "徽章收藏",
   "home_quest_button": "今日挑战！",
@@ -178,6 +177,38 @@ r
   "home_reminder_set": "提醒已设置！",
   "home_workout_title": "锻炼",
   "home_tournament_title": "锦标赛",
-  "home_tournament_view_all": "查看全部"
+  "home_tournament_view_all": "查看全部",
+
+  "login_email_label": "电子邮箱",
+  "login_email_hint": "请输入您的邮箱",
+  "login_password_label": "密码",
+  "login_password_hint": "请输入密码",
+  "login_button": "继续您的旅程！→",
+  "login_forgot_password": "忘记密码？",
+  "login_create_account": "创建账户？",
+  "login_invalid_email": "无效的电子邮箱",
+  "login_invalid_password": "无效的密码",
+  "login_invalid_credentials": "邮箱或密码错误",
+  "login_success": "登录成功",
+  "login_google_success": "成功通过 Google 登录",
+  "login_google_failed": "Google 登录失败",
+  "login_google_cancelled": "Google 登录已取消或失败",
+  "login_facebook_success": "成功通过 Facebook 登录",
+  "login_facebook_failed": "Facebook 登录失败",
+  "login_facebook_cancelled": "Facebook 登录已取消或失败",
+  "login_check_preferences_failed": "检查偏好设置失败",
+
+  "lucky_spin_title": "幸运转盘",
+  "lucky_spin_tokens": "{0} 代币",
+  "lucky_spin_instruction": "转动转盘！",
+  "lucky_spin_result": "🎉 你赢得了: {0} 🎉",
+  "lucky_spin_button_free": "旋转",
+  "lucky_spin_countdown": "下次免费旋转倒计时: {0}",
+  "lucky_spin_button_token": "再次旋转（50代币）",
+  "lucky_spin_error_load_prizes": "奖品加载失败，请稍后再试。",
+  "lucky_spin_error_status": "加载状态失败，请稍后再试。",
+  "lucky_spin_error_unknown_prize": "收到未知奖品“{0}”。",
+  "common_error": "错误",
+  "common_ok": "确定"
 
 }

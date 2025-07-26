@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import '../services/lucky_spin_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LuckySpinScreen extends StatefulWidget {
   final int tokens;
@@ -38,8 +39,8 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
       setState(() => items = []);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to load prizes. Please try again later.'),
+          SnackBar(
+            content: Text('lucky_spin_error_load_prizes'.tr()),
             backgroundColor: Colors.red,
           ),
         );
@@ -62,8 +63,8 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to load spin status. Please try again later.'),
+          SnackBar(
+            content: Text('lucky_spin_error_status'.tr()),
             backgroundColor: Colors.red,
           ),
         );
@@ -106,7 +107,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text('Error'),
+            title: Text('common_error'.tr()),
             content: Text('Unknown prize "$label" received.'),
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
@@ -136,7 +137,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
           title: const Text('Error'),
           content: Text(e.toString().replaceAll('Exception: ', '')),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text('common_ok'.tr())),
           ],
         ),
       );
@@ -173,10 +174,10 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () => Navigator.of(context).pop(tokenCount),
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Center(
                           child: Text(
-                            'Lucky Spin',
+                            'lucky_spin_title'.tr(),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 22,
@@ -196,7 +197,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                         const Icon(Icons.monetization_on, color: Colors.amber, size: 28),
                         const SizedBox(width: 8),
                         Text(
-                          "$tokenCount Tokens",
+                          'lucky_spin_tokens'.tr(args: ['$tokenCount']),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -207,8 +208,8 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Spin The Wheel!',
+                  Text(
+                    'lucky_spin_instruction'.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 32,
@@ -282,7 +283,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                   const SizedBox(height: 32),
                   if (prizeLabel != null)
                     Text(
-                      '🎉 You won: $prizeLabel 🎉',
+                      'lucky_spin_win_message'.tr(args: [prizeLabel!]),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -299,13 +300,13 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                       textStyle: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     onPressed: canSpinFree ? () => spin() : null,
-                    child: const Text('SPIN'),
+                    child: Text('lucky_spin_button_free'.tr()),
                   ),
                   if (!canSpinFree && remainingTime.inSeconds > 0)
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Text(
-                        'Next free spin in: ${formatDuration(remainingTime)}',
+                        'lucky_spin_next_spin'.tr(args: [formatDuration(remainingTime)]),
                         style: const TextStyle(color: Colors.white70),
                       ),
                     ),
@@ -318,7 +319,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
                       textStyle: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     onPressed: () => spin(useTokens: true),
-                    child: const Text('SPIN AGAIN (50 Tokens)'),
+                    child: Text('lucky_spin_button_token'.tr()),
                   ),
                 ],
               ),

@@ -234,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     Text(
-                      'home_greeting, ${_displayName ?? widget.userName}!'.tr(),
+                      'home_greeting'.tr(args: [_displayName ?? widget.userName]),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

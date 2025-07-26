@@ -168,7 +168,7 @@
   "history_title": "Riwayat Latihan",
   "history_empty_message": "Belum ada riwayat latihan.",
 
-  "home_greeting": "Halo,",
+  "home_greeting": "halo, {}!",
   "home_search_hint": "Cari di FitQuest",
   "home_badge_collections_title": "Koleksi Lencana",
   "home_quest_button": "TANTANGAN HARI INI!",
@@ -177,6 +177,38 @@
   "home_reminder_set": "Pengingat berhasil disetel!",
   "home_workout_title": "Latihan",
   "home_tournament_title": "Turnamen",
-  "home_tournament_view_all": "Lihat semua"
+  "home_tournament_view_all": "Lihat semua",
+
+  "login_email_label": "Email",
+  "login_email_hint": "Masukkan Email Anda",
+  "login_password_label": "Kata Sandi",
+  "login_password_hint": "Masukkan Kata Sandi",
+  "login_button": "LANJUTKAN PERJALANANMU! →",
+  "login_forgot_password": "Lupa Kata Sandi?",
+  "login_create_account": "Buat Akun?",
+  "login_invalid_email": "Email tidak valid",
+  "login_invalid_password": "Kata sandi tidak valid",
+  "login_invalid_credentials": "Email atau kata sandi salah",
+  "login_success": "Berhasil masuk",
+  "login_google_success": "Berhasil masuk dengan Google",
+  "login_google_failed": "Gagal masuk dengan Google",
+  "login_google_cancelled": "Login Google dibatalkan atau gagal",
+  "login_facebook_success": "Berhasil masuk dengan Facebook",
+  "login_facebook_failed": "Gagal masuk dengan Facebook",
+  "login_facebook_cancelled": "Login Facebook dibatalkan atau gagal",
+  "login_check_preferences_failed": "Gagal memeriksa preferensi",
+
+  "lucky_spin_title": "Putaran Keberuntungan",
+  "lucky_spin_tokens": "{0} Token",
+  "lucky_spin_instruction": "Putar Roda!",
+  "lucky_spin_result": "🎉 Kamu memenangkan: {0} 🎉",
+  "lucky_spin_button_free": "PUTAR",
+  "lucky_spin_countdown": "Putaran gratis berikutnya dalam: {0}",
+  "lucky_spin_button_token": "PUTAR LAGI (50 Token)",
+  "lucky_spin_error_load_prizes": "Gagal memuat hadiah. Coba lagi nanti.",
+  "lucky_spin_error_status": "Gagal memuat status putaran. Coba lagi nanti.",
+  "lucky_spin_error_unknown_prize": "Hadiah \"{0}\" tidak dikenal.",
+  "common_error": "Kesalahan",
+  "common_ok": "OK"
 
 }

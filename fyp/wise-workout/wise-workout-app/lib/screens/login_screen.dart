@@ -9,6 +9,8 @@ import '../widgets/apple_login_button.dart';
 import '../widgets/facebook_login_button.dart';
 import '../utils/sanitize.dart';
 import 'questionnaires/questionnaire_screen_start.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,11 +31,11 @@ class _LoginScreenState extends State<LoginScreen> {
     final emailResult = sanitize.isValidEmail(emailController.text);
     final passwordResult = sanitize.isValidPassword(passwordController.text);
     if (!emailResult.valid) {
-      showError(emailResult.message ?? 'Invalid email');
+      showError(emailResult.message ?? 'login_invalid_email'.tr());
       return;
     }
     if (!passwordResult.valid) {
-      showError(passwordResult.message ?? 'Invalid password');
+      showError(passwordResult.message ?? 'login_invalid_password'.tr());
       return;
     }
     final email = emailResult.value;
@@ -47,10 +49,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200 && cookie != null) {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
-      showSuccess('Login successful');
+      showSuccess('login_success'.tr());
       await navigateAfterLogin(jwt);
     } else {
-      String msg = 'Invalid email or password';
+      String msg = 'login_invalid_credentials'.tr();
       try {
         msg = jsonDecode(response.body)['message'] ?? msg;
       } catch (_) {}
@@ -61,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loginWithGoogle() async {
     final googleData = await authService.signInWithGoogle();
     if (googleData == null) {
-      showError('Google sign-in was cancelled or failed');
+      showError('login_google_cancelled'.tr());
       return;
     }
     final response = await http.post(
@@ -79,10 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200 && cookie != null) {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
-      showSuccess('Google login successful');
+      showSuccess('login_google_success'.tr());
       await navigateAfterLogin(jwt);
     } else {
-      String msg = 'Google login failed';
+      String msg = 'login_google_failed'.tr();
       try {
         msg = jsonDecode(response.body)['message'] ?? msg;
       } catch (_) {}
@@ -93,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loginWithFacebook() async {
     final fbData = await authService.signInWithFacebook();
     if (fbData == null) {
-      showError('Facebook sign-in was cancelled or failed');
+      showError('login_facebook_cancelled'.tr());
       return;
     }
     final response = await http.post(
@@ -111,10 +113,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200 && cookie != null) {
       final jwt = cookie.split(';').first.split('=').last;
       await secureStorage.write(key: 'jwt_cookie', value: jwt);
-      showSuccess('Facebook login successful');
+      showSuccess('login_facebook_success'.tr());
       await navigateAfterLogin(jwt);
     } else {
-      String msg = 'Facebook login failed';
+      String msg = 'login_facebook_failed'.tr();
       try {
         msg = jsonDecode(response.body)['message'] ?? msg;
       } catch (_) {}
@@ -147,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final data = jsonDecode(res.body);
       return data['hasPreferences'] as bool;
     } else {
-      showError('Failed to check preferences');
+      showError('login_check_preferences_failed'.tr());
       return false;
     }
   }
@@ -192,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  "Email",
+                  "login_email_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -203,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(
-                    hintText: 'Enter Your Email',
+                    hintText: 'login_email_hint'.tr(),
                     filled: true,
                     fillColor: colorScheme.surface,
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -216,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Password",
+                  "login_password_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -228,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    hintText: 'Enter Password',
+                    hintText: 'login_password_hint'.tr(),
                     filled: true,
                     fillColor: colorScheme.surface,
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -264,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   onPressed: loginWithEmail,
                   child: Text(
-                    'CONTINUE YOUR JOURNEY! →',
+                    'login_button'.tr(),
                     style: theme.textTheme.labelLarge?.copyWith(
                       letterSpacing: 1.2,
                       color: colorScheme.onPrimary,
@@ -288,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/forgot-password');
                     },
                     child: Text(
-                      'Forgot Password?',
+                      'login_forgot_password'.tr(),
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: colorScheme.primary,
                       ),
@@ -301,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/register');
                     },
                     child: Text(
-                      'Create Account?',
+                      'login_create_account'.tr(),
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: colorScheme.primary,
                       ),
