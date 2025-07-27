@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String planName;
@@ -34,7 +35,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         : cardNumber.padRight(16, '*').replaceRange(4, 12, ' **** **** ');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payment'),
+        title: Text('payment_title'.tr()),
         backgroundColor: cs.primary,
         foregroundColor: cs.onPrimary,
       ),
@@ -79,13 +80,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Row(
                         children: [
                           Text(
-                            expiryDate.isEmpty ? 'MM/YY' : expiryDate,
+                            expiryDate.isEmpty ? 'payment_card_expiry_hint'.tr() : expiryDate,
                             style: theme.textTheme.titleSmall?.copyWith(
                                 color: cs.onPrimary.withOpacity(0.7), fontSize: 16),
                           ),
                           const Spacer(),
                           Text(
-                            cardHolder.isEmpty ? 'NAME' : cardHolder.toUpperCase(),
+                            cardHolder.isEmpty ? 'payment_card_name_hint'.tr() : cardHolder.toUpperCase(),
                             style: theme.textTheme.titleSmall?.copyWith(
                                 color: cs.onPrimary.withOpacity(0.7), fontSize: 16),
                           )
@@ -97,7 +98,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'You\'re purchasing: ${widget.planName}',
+                'payment_summary_title'.tr(args: [widget.planName]),
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 8),
@@ -111,18 +112,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               const SizedBox(height: 24),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Card Holder Name'),
+                decoration: InputDecoration(labelText: 'payment_label_cardholder'.tr()),
                 onChanged: (value) => setState(() {
                   cardHolder = value;
                 }),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Enter card holder name' : null,
+                value == null || value.isEmpty ? 'payment_error_cardholder'.tr() : null,
                 onSaved: (value) => cardHolder = value!,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _cardNumController,
-                decoration: const InputDecoration(labelText: 'Card Number'),
+                decoration: InputDecoration(labelText: 'payment_label_cardnumber'.tr()),
                 keyboardType: TextInputType.number,
                 maxLength: 16,
                 onChanged: (value) => setState(() {
@@ -130,7 +131,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 }),
                 validator: (value) {
                   if (value == null || value.length != 16) {
-                    return 'Enter 16-digit card number';
+                    return 'payment_error_cardnumber'.tr();
                   }
                   return null;
                 },
@@ -141,23 +142,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      decoration: const InputDecoration(labelText: 'Expiry Date (MM/YY)'),
+                      decoration: InputDecoration(labelText: 'payment_label_expiry'.tr()),
                       maxLength: 5,
                       onChanged: (value) => setState(() {
                         expiryDate = value;
                       }),
                       validator: (value) {
                         if (value == null || !RegExp(r'^\d{2}/\d{2}$').hasMatch(value)) {
-                          return 'Expiry format MM/YY';
+                          return 'payment_error_expiry_format'.tr();
                         }
                         int month = int.tryParse(value.substring(0, 2)) ?? 0;
                         int year = int.tryParse(value.substring(3, 5)) ?? 0;
-                        if (month < 1 || month > 12) return 'Month must be 01-12';
+                        if (month < 1 || month > 12) return 'payment_error_expiry_month'.tr();
                         final now = DateTime.now();
                         int currentYear = now.year % 100;
                         int currentMonth = now.month;
                         if (year < currentYear || (year == currentYear && month < currentMonth)) {
-                          return 'Card expired';
+                          return 'payment_error_expiry_expired'.tr();
                         }
                         return null;
                       },
@@ -167,12 +168,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
-                      decoration: const InputDecoration(labelText: 'CVV'),
+                      decoration: InputDecoration(labelText: 'payment_label_cvv'.tr()),
                       obscureText: true,
                       maxLength: 3,
                       keyboardType: TextInputType.number,
                       validator: (value) =>
-                      value == null || value.length != 3 ? 'Invalid CVV' : null,
+                      value == null || value.length != 3 ? 'payment_error_cvv'.tr() : null,
                       onSaved: (value) => cvv = value!,
                     ),
                   ),
@@ -202,7 +203,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         barrierDismissible: false,
                         builder: (context) => AlertDialog(
                           icon: Icon(Icons.check_circle, color: Colors.green[700], size: 40),
-                          title: const Text('Payment Successful!'),
+                          title: Text('payment_success_title'.tr()),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [

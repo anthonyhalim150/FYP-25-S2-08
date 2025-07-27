@@ -7,6 +7,7 @@ import '../widgets/requests_friends.dart';
 import '../widgets/pending_friends.dart';
 import '../services/friend_service.dart';
 import '../services/message_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
@@ -83,13 +84,13 @@ class _MessageScreenState extends State<MessageScreen> {
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Friend request accepted')),
+        SnackBar(content: Text('message_accept_success'.tr()	)),
       );
       await _loadFriendsData();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to accept request')),
+        SnackBar(content: Text('message_accept_fail'.tr()	)),
       );
     }
   }
@@ -103,13 +104,13 @@ class _MessageScreenState extends State<MessageScreen> {
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Request ignored')),
+        SnackBar(content: Text('message_ignore_success'.tr()	)),
       );
       await _loadFriendsData();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to ignore request')),
+        SnackBar(content: Text('message_ignore_fail'.tr())),
       );
     }
   }
@@ -151,7 +152,7 @@ class _MessageScreenState extends State<MessageScreen> {
                 children: [
                   const Spacer(),
                   Text(
-                    'Friends',
+                    'message_friends'.tr(),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -169,7 +170,7 @@ class _MessageScreenState extends State<MessageScreen> {
               child: TextField(
                 onChanged: (v) => setState(() => search = v),
                 decoration: InputDecoration(
-                  hintText: 'Search by username or email',
+                  hintText: 'message_search_hint'.tr(),
                   prefixIcon: Icon(Icons.search, color: colorScheme.onSurface),
                   filled: true,
                   fillColor: colorScheme.surface,
@@ -189,9 +190,9 @@ class _MessageScreenState extends State<MessageScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _tabButton(context, 'All Friends', 0, selectedTab == 0, colorScheme),
-                    _tabButton(context, 'Requests', 1, selectedTab == 1, colorScheme),
-                    _tabButton(context, 'Pending', 2, selectedTab == 2, colorScheme),
+                    _tabButton(context, 'message_tab_all'.tr(), 0, selectedTab == 0, colorScheme),
+                    _tabButton(context, 'message_tab_requests'.tr()	, 1, selectedTab == 1, colorScheme),
+                    _tabButton(context, 'message_tab_pending'.tr()	, 2, selectedTab == 2, colorScheme),
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0, left: 6.0),
                       child: ElevatedButton.icon(
@@ -205,7 +206,7 @@ class _MessageScreenState extends State<MessageScreen> {
                           });
                         },
                         icon: Icon(Icons.add, color: colorScheme.onPrimary, size: 18),
-                        label: const Text("Add New"),
+                        label: Text('message_add_new'.tr()	),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: colorScheme.onPrimary,
                           backgroundColor: colorScheme.primary,

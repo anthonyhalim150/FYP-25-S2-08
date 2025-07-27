@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'questionnaires/questionnaire_screen.dart';
 import 'questionnaires/questionnaire_screen_start.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class OtpScreen extends StatefulWidget {
   final String email;
@@ -44,10 +45,10 @@ class _OtpScreenState extends State<OtpScreen> {
         await navigateAfterVerification(jwt);
       } else {
         final data = jsonDecode(response.body);
-        setState(() => error = data['message'] ?? 'Invalid OTP');
+        setState(() => error = data['message'] ?? 'otp_error_invalid'.tr());
       }
     } catch (e) {
-      setState(() => error = 'Server error: $e');
+      setState(() => error = 'otp_error_server'.tr(args: [e.toString()]));
     } finally {
       setState(() => isSubmitting = false);
     }
@@ -79,7 +80,7 @@ class _OtpScreenState extends State<OtpScreen> {
       final data = jsonDecode(res.body);
       return data['hasPreferences'] as bool;
     } else {
-      setState(() => error = 'Failed to check preferences');
+      setState(() => error = 'otp_error_check_preferences'.tr());
       return false;
     }
   }
@@ -87,17 +88,17 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Enter OTP')),
+      appBar: AppBar(title: Text('otp_title'.tr())),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Text('A verification code was sent to ${widget.email}'),
+            Text('otp_subtitle'.tr(args: [widget.email])),
             const SizedBox(height: 16),
             TextField(
               controller: otpController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: '6-digit OTP'),
+              decoration: InputDecoration(labelText: 'otp_label'.tr()),
             ),
             const SizedBox(height: 16),
             if (error != null)
@@ -107,7 +108,7 @@ class _OtpScreenState extends State<OtpScreen> {
               onPressed: isSubmitting ? null : verifyOtp,
               child: isSubmitting
                   ? const CircularProgressIndicator()
-                  : const Text('Verify'),
+                  : Text('otp_button_verify'.tr()),
             ),
           ],
         ),

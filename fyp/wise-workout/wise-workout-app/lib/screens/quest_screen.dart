@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/daily_quest_service.dart';
 import '../widgets/bottom_navigation.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class QuestScreen extends StatefulWidget {
   const QuestScreen({Key? key}) : super(key: key);
@@ -107,7 +108,7 @@ class _QuestScreenState extends State<QuestScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               onPressed: _claiming ? null : () => _claimXP(i),
-              child: const Text("Claim XP"),
+              child: Text('quest_button_claim'.tr()),
             )
           else if (done && claimed)
             const Icon(Icons.check_circle, color: Colors.green, size: 24),
@@ -162,9 +163,9 @@ class _QuestScreenState extends State<QuestScreen> {
                             ),
                           ),
                           const SizedBox(height: 18),
-                          const Center(
+                          Center(
                             child: Text(
-                              'Daily Quest',
+                              'quest_title'.tr(),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -173,9 +174,9 @@ class _QuestScreenState extends State<QuestScreen> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          const Center(
+                          Center(
                             child: Text(
-                              'Finish a daily quest and claim the rewards!',
+                              'quest_subtitle'.tr(),
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 15,
@@ -214,8 +215,8 @@ class _QuestScreenState extends State<QuestScreen> {
                   ),
                   onPressed: _claiming ? null : _claimAllXP,
                   icon: const Icon(Icons.star, color: Colors.amber),
-                  label: const Text(
-                    "Claim All XP",
+                  label: Text(
+                    'quest_button_claim_all'.tr(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
