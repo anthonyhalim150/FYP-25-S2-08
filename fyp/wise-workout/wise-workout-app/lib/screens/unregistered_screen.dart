@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../widgets/exercise_stats_card.dart';
-import '../widgets/exercise_gauge.dart';
 import '../widgets/tournament_widget.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/bottom_navigation.dart';
@@ -11,6 +10,7 @@ class UnregisteredUserPage extends StatelessWidget {
   final int maxSteps = 0;
   final int caloriesBurned = 0;
   final int xpEarned = 0;
+
   const UnregisteredUserPage({super.key});
 
   void _showRegistrationPrompt(BuildContext context) {
@@ -18,9 +18,7 @@ class UnregisteredUserPage extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Create an Account"),
-        content: const Text(
-          "Please login or create a account to view more",
-        ),
+        content: const Text("Please login or create an account to view more"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -49,8 +47,16 @@ class UnregisteredUserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final brightness = theme.brightness;
 
-    final bannerColor = colorScheme.primary;
+    final surfaceColor =
+    brightness == Brightness.dark ? Colors.grey[800] : colorScheme.surface;
+    final hintTextColor =
+    brightness == Brightness.dark ? Colors.grey[400] : theme.hintColor;
+
+    final bannerColor = brightness == Brightness.dark
+        ? const Color(0xFF1E1E2C)
+        : colorScheme.primary;
     final bannerContrast = colorScheme.onPrimary;
     final bannerAccent = colorScheme.secondary;
 
@@ -61,7 +67,7 @@ class UnregisteredUserPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with login
+              // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Row(
@@ -74,29 +80,30 @@ class UnregisteredUserPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(20),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                       ),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/');
-                        },
-                        child: Text(
-                          "Login",
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.primary,
-                          ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/');
+                      },
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onPrimary,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              // Search bar
+              // Search Bar
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: _wrapWithPrompt(
@@ -104,11 +111,13 @@ class UnregisteredUserPage extends StatelessWidget {
                   Container(
                     height: 50,
                     decoration: BoxDecoration(
-                      color: colorScheme.surface,
+                      color: surfaceColor,
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: brightness == Brightness.dark
+                              ? Colors.black.withOpacity(0.3)
+                              : Colors.black.withOpacity(0.05),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -121,20 +130,21 @@ class UnregisteredUserPage extends StatelessWidget {
                           child: Text(
                             'Search on FitQuest',
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.hintColor,
+                              color: hintTextColor,
                             ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 15),
-                          child: Icon(Icons.search, color: colorScheme.onSurface),
+                          child:
+                          Icon(Icons.search, color: colorScheme.onSurface),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              // Exercise stats
+              // Exercise Stats
               _wrapWithPrompt(
                 context,
                 ExerciseStatsCard(
@@ -145,7 +155,7 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Workout title
+              // Workout Title
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
@@ -154,7 +164,7 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              // Workout cards
+              // Workout Cards
               SizedBox(
                 height: 150,
                 child: ListView.builder(
@@ -175,7 +185,7 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Blue (banner): join challenge
+              // Challenge Banner
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _wrapWithPrompt(
@@ -228,7 +238,8 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              // Tournaments title
+
+              // Tournaments
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
@@ -237,7 +248,6 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              // Tournament cards
               SizedBox(
                 height: 230,
                 child: ListView(
@@ -261,12 +271,12 @@ class UnregisteredUserPage extends StatelessWidget {
           ),
         ),
       ),
-      // Bottom navigation only
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
-          _showRegistrationPrompt(context);
+          // You don't need to handle anything here
         },
+        isRegistered: false, // Important!
       ),
     );
   }
