@@ -4,6 +4,7 @@ import '../widgets/tournament_widget.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/bottom_navigation.dart';
 import 'workout_sample_data.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
   final int currentSteps = 0;
@@ -17,19 +18,19 @@ class UnregisteredUserPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Create an Account"),
-        content: const Text("Please login or create an account to view more"),
+        title: Text('unreg_dialog_title'.tr()),
+        content: Text('unreg_dialog_message'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Later"),
+            child: Text('unreg_dialog_later'.tr()),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/register');
             },
-            child: const Text("Register"),
+            child: Text('unreg_dialog_register'.tr()),
           ),
         ],
       ),
@@ -74,7 +75,7 @@ class UnregisteredUserPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Welcome to FitQuest!',
+                        'unreg_welcome_title'.tr(),
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -92,7 +93,7 @@ class UnregisteredUserPage extends StatelessWidget {
                         Navigator.pushNamed(context, '/');
                       },
                       child: Text(
-                        "Login",
+                        'unreg_button_login'.tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -128,7 +129,7 @@ class UnregisteredUserPage extends StatelessWidget {
                         const SizedBox(width: 15),
                         Expanded(
                           child: Text(
-                            'Search on FitQuest',
+                            'unreg_search_placeholder'.tr(),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: hintTextColor,
                             ),
@@ -159,7 +160,7 @@ class UnregisteredUserPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
-                  "Workout",
+                  'unreg_workout_title'.tr(),
                   style: theme.textTheme.headlineSmall,
                 ),
               ),
@@ -201,7 +202,7 @@ class UnregisteredUserPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Let's start a challenge!",
+                          'unreg_challenge_title'.tr(),
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: bannerContrast,
@@ -209,7 +210,7 @@ class UnregisteredUserPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Friendly rivalry fires up results. Invite a friend and crush your goals—one challenge at a time!",
+                          'unreg_challenge_desc'.tr(),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: bannerContrast.withOpacity(0.7),
                           ),
@@ -225,7 +226,7 @@ class UnregisteredUserPage extends StatelessWidget {
                             horizontal: 20,
                           ),
                           child: Text(
-                            "Challenge a friend now!",
+                            'unreg_challenge_button'.tr(),
                             style: theme.textTheme.labelLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSecondary,
@@ -243,7 +244,7 @@ class UnregisteredUserPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
-                  "Tournaments",
+                  'unreg_tournaments_title'.tr(),
                   style: theme.textTheme.headlineSmall,
                 ),
               ),

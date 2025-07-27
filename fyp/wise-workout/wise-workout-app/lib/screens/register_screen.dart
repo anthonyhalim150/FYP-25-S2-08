@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '../widgets/register_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -67,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (error != null) {
       showSnack(error);
     } else {
-      showSnack("OTP sent to your email!", success: true);
+      showSnack("register_success_otp_sent".tr(), success: true);
     }
   }
 
@@ -116,7 +117,7 @@ Thank you for using FitQuest!
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  "Email",
+                  "register_email_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -126,7 +127,7 @@ Thank you for using FitQuest!
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(
-                    hintText: 'Enter Your Email',
+                    hintText: 'register_email_hint'.tr(),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -140,7 +141,7 @@ Thank you for using FitQuest!
                 const SizedBox(height: 16),
 
                 Text(
-                  "First Name",
+                  "register_first_name_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -150,7 +151,7 @@ Thank you for using FitQuest!
                 TextField(
                   controller: firstNameController,
                   decoration: InputDecoration(
-                    hintText: 'Enter Your First Name',
+                    hintText: 'register_first_name_hint'.tr(),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -164,7 +165,7 @@ Thank you for using FitQuest!
                 const SizedBox(height: 16),
 
                 Text(
-                  "Last Name",
+                  'register_last_name_label'.tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -174,7 +175,7 @@ Thank you for using FitQuest!
                 TextField(
                   controller: lastNameController,
                   decoration: InputDecoration(
-                    hintText: 'Enter Your Last Name',
+                    hintText: 'register_last_name_hint'.tr(),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -188,7 +189,7 @@ Thank you for using FitQuest!
                 const SizedBox(height: 16),
 
                 Text(
-                  "Username",
+                  "register_username_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -198,7 +199,7 @@ Thank you for using FitQuest!
                 TextField(
                   controller: usernameController,
                   decoration: InputDecoration(
-                    hintText: 'Choose a Username',
+                    hintText: 'register_username_hint'.tr(),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -212,7 +213,7 @@ Thank you for using FitQuest!
                 const SizedBox(height: 16),
 
                 Text(
-                  "Password",
+                  "register_password_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -223,7 +224,7 @@ Thank you for using FitQuest!
                   controller: passwordController,
                   obscureText: !showPassword,
                   decoration: InputDecoration(
-                    hintText: 'Create Password',
+                    hintText: 'register_password_hint'.tr(),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -245,7 +246,7 @@ Thank you for using FitQuest!
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  "Min 8 chars, upper, lower, digit, special char",
+                  "register_password_requirement".tr(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.hintColor,
                     fontSize: 12,
@@ -254,7 +255,7 @@ Thank you for using FitQuest!
                 const SizedBox(height: 16),
 
                 Text(
-                  "Confirm Password",
+                  "register_confirm_password_label".tr(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -265,7 +266,7 @@ Thank you for using FitQuest!
                   controller: confirmPasswordController,
                   obscureText: !showConfirmPassword,
                   decoration: InputDecoration(
-                    hintText: 'Re-enter Password',
+                    hintText: 'register_confirm_password_hint'.tr(),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -298,13 +299,13 @@ Thank you for using FitQuest!
                     Expanded(
                       child: Text.rich(
                         TextSpan(
-                          text: 'I agree to the ',
+                          text: 'register_terms_prefix'.tr(),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.textTheme.bodyMedium?.color,
                           ),
                           children: [
                             TextSpan(
-                              text: 'Terms & Conditions',
+                              text: 'register_terms_text'.tr(),
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.primary,
@@ -337,7 +338,7 @@ Thank you for using FitQuest!
                       strokeWidth: 2,
                     )
                         : Text(
-                      "Create Account",
+                      "register_button_create_account".tr(),
                       style: theme.textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -354,7 +355,7 @@ Thank you for using FitQuest!
                       Navigator.pushReplacementNamed(context, '/');
                     },
                     child: Text(
-                      "Already have an account? Click here to go back to the login page!",
+                      "register_already_have_account".tr(),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 14,

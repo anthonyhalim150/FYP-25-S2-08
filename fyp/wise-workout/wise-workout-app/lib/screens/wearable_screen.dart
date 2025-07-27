@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import '/services/wearable_service.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class WearableScreen extends StatefulWidget {
   const WearableScreen({Key? key}) : super(key: key);
@@ -26,16 +28,16 @@ class _WearableScreenState extends State<WearableScreen> {
           children: [
             _buildHeader(context),
             const SizedBox(height: 10),
-            const Text(
-              'Connect Your Device',
+              Text(
+              'wearable_connect_title'.tr(),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'FitQuest seamlessly connects to your fitness devices for syncing workouts, steps, and health stats—all in one place.',
+            Text(
+              'wearable_connect_description'.tr(),
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.grey,
@@ -51,8 +53,8 @@ class _WearableScreenState extends State<WearableScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
-                  'Connected to $selectedDevice',
-                  style: const TextStyle(
+                'wearable_connected_message'.tr(args: [selectedDevice ?? '']),
+                style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -76,7 +78,7 @@ class _WearableScreenState extends State<WearableScreen> {
                 child: _isConnecting
                     ? const CircularProgressIndicator(color: Colors.white)
                     : Text(
-                        _isConnected ? 'DISCONNECT' : 'CONNECT',
+                        _isConnected ? 'wearable_disconnect_button'.tr() : 'wearable_connect_button'.tr(),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -97,8 +99,8 @@ class _WearableScreenState extends State<WearableScreen> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Text(
-            'Wearable',
+          Text(
+            'wearable_screen_title'.tr(),
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
@@ -189,18 +191,18 @@ class _WearableScreenState extends State<WearableScreen> {
 
         if (isAuthorized) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully connected to Health Connect')),
+            SnackBar(content: Text('wearable_connect_health_success'.tr())),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to connect to Health Connect')),
+            SnackBar(content: Text('wearable_connect_health_failure'.tr())),
           );
         }
       }
     } catch (e) {
       setState(() => _isConnecting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Connection failed. Please try again.')),
+        SnackBar(content: Text('wearable_connection_failed'.tr())),
       );
     }
   }
@@ -221,12 +223,12 @@ class _WearableScreenState extends State<WearableScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Disconnected from $selectedDevice')),
+        SnackBar(content: Text('wearable_disconnect_success'.tr(args: [selectedDevice ?? '']))),
       );
     } catch (e) {
       setState(() => _isConnecting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Disconnection failed')),
+        SnackBar(content: Text('wearable_disconnect_failed'.tr())),
       );
     }
   }
