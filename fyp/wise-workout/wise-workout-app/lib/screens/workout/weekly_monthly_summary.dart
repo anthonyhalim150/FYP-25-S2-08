@@ -6,21 +6,17 @@ import '../../widgets/week_picker_dialog.dart';
 
 class WeeklyMonthlySummaryPage extends StatefulWidget {
   const WeeklyMonthlySummaryPage({super.key});
-
   @override
   State<WeeklyMonthlySummaryPage> createState() => _WeeklyMonthlySummaryPageState();
 }
 
 class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   final HealthService _healthService = HealthService();
-
   bool _isLoading = false;
   bool _isWeeklyView = true;
-
   DateTimeRange? _selectedWeek;
   int _selectedMonth = DateTime.now().month;
   int _selectedYear = DateTime.now().year;
-
   List<int> _stepsData = List.filled(24, 0);
   List<int> _caloriesData = List.filled(24, 0);
   int _totalSteps = 0;
@@ -45,7 +41,6 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     final totalCalories = await _healthService.getCaloriesInRange(start, end);
     final stepsData = await _healthService.getDailyStepsInRange(start, end);
     final caloriesData = await _healthService.getDailyCaloriesInRange(start, end);
-
     setState(() {
       _totalSteps = totalSteps;
       _totalCalories = totalCalories;
@@ -57,23 +52,28 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     });
   }
 
-  Widget _buildToggleTabs() {
+  Widget _buildToggleTabs(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
       height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.orange.shade100,
+        color: colorScheme.secondaryContainer,
       ),
       child: Row(
         children: [
-          _toggleButton("Weekly", true),
-          _toggleButton("Monthly", false),
+          _toggleButton("Weekly", true, context),
+          _toggleButton("Monthly", false, context),
         ],
       ),
     );
   }
 
-  Widget _toggleButton(String label, bool isWeekly) {
+  Widget _toggleButton(String label, bool isWeekly, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final isSelected = _isWeeklyView == isWeekly;
     return Expanded(
       child: GestureDetector(
@@ -89,25 +89,34 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: isSelected ? Colors.orange : Colors.transparent,
+            color: isSelected ? colorScheme.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           alignment: Alignment.center,
-          child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          child: Text(
+            label,
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildDatePicker() {
+  Widget _buildDatePicker(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (_isWeeklyView) {
       return Column(
         children: [
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: () async {
@@ -124,7 +133,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                   _fetchSummaryData(picked.start, picked.end);
                 }
               },
-              child: const Text("Select Week"),
+              child: Text("Select Week", style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary)),
             ),
           ),
           if (_selectedWeek != null)
@@ -133,7 +142,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
               child: Text(
                 "${_selectedWeek!.start.day} ${_monthName(_selectedWeek!.start.month)} - "
                     "${_selectedWeek!.end.day} ${_monthName(_selectedWeek!.end.month)}",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
         ],
@@ -144,7 +153,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
-            icon: const Icon(Icons.chevron_left),
+            icon: Icon(Icons.chevron_left, color: colorScheme.primary),
             onPressed: () {
               setState(() {
                 _selectedMonth--;
@@ -160,10 +169,10 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
           ),
           Text(
             "${_monthName(_selectedMonth)} $_selectedYear",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           IconButton(
-            icon: Icon(Icons.chevron_right, color: isLatestMonth ? Colors.grey : Colors.black),
+            icon: Icon(Icons.chevron_right, color: isLatestMonth ? colorScheme.outline : colorScheme.primary),
             onPressed: isLatestMonth
                 ? null
                 : () {
@@ -194,8 +203,11 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: colorScheme.background,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
         child: Column(
@@ -208,21 +220,28 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back, color: colorScheme.onBackground),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
-                  const Text("Summary", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Summary",
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontSize: 24,
+                      color: colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            _buildToggleTabs(),
+            _buildToggleTabs(context),
             const SizedBox(height: 12),
-            _buildDatePicker(),
+            _buildDatePicker(context),
             const SizedBox(height: 20),
             if (_isLoading)
-              const Center(child: CircularProgressIndicator())
+              Center(child: CircularProgressIndicator(color: colorScheme.primary))
             else
               Expanded(
                 child: ListView(
@@ -232,7 +251,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       title: "Steps",
                       currentValue: "$_totalSteps",
                       avgValue: "$_averageSteps",
-                      barColor: Colors.orange,
+                      barColor: colorScheme.primary,
                       maxY: 10000,
                       data: _stepsData,
                     ),
@@ -242,7 +261,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       title: "Calories",
                       currentValue: "$_totalCalories kcal",
                       avgValue: "$_averageCalories kcal",
-                      barColor: Colors.redAccent,
+                      barColor: colorScheme.secondary,
                       maxY: 300,
                       data: _caloriesData,
                     ),
