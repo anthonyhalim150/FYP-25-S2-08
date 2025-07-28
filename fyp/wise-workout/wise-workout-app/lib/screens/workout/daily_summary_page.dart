@@ -5,21 +5,18 @@ import '../../services/health_service.dart';
 
 class DailySummaryPage extends StatefulWidget {
   const DailySummaryPage({super.key});
-
   @override
   State<DailySummaryPage> createState() => _DailySummaryPageState();
 }
 
 class _DailySummaryPageState extends State<DailySummaryPage> {
   final HealthService _healthService = HealthService();
-
   bool _isLoading = true;
   List<int> _hourlySteps = List.filled(24, 0);
   List<int> _hourlyCalories = List.filled(24, 0);
   int _currentSteps = 0;
   int _caloriesBurned = 0;
   int _xpEarned = 0;
-
   DateTime _selectedDate = DateTime.now();
 
   @override
@@ -30,7 +27,6 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
   Future<void> _initHealthData(DateTime date) async {
     setState(() => _isLoading = true);
-
     final connected = await _healthService.connect();
     if (!connected) {
       setState(() => _isLoading = false);
@@ -40,7 +36,6 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     final hourlySteps = await _healthService.getHourlyStepsForToday();
     final hourlyCalories = await _healthService.getHourlyCaloriesForToday();
     final calories = await _healthService.getTodayCalories();
-
     setState(() {
       _selectedDate = date;
       _currentSteps = steps;
@@ -65,21 +60,26 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final shadowColor = Theme.of(context).shadowColor;
+
     final isToday = _selectedDate.year == DateTime.now().year &&
         _selectedDate.month == DateTime.now().month &&
         _selectedDate.day == DateTime.now().day;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F0EB),
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF4F0EB),
+        backgroundColor: colorScheme.background,
         elevation: 0,
-        leading: const BackButton(color: Colors.black),
-        title: const Text("Daily Activity", style: TextStyle(color: Colors.black)),
+        leading: BackButton(color: colorScheme.onBackground),
+        title: Text("Daily Activity",
+            style: textTheme.titleLarge?.copyWith(color: colorScheme.onBackground)),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today, color: Colors.black),
+            icon: Icon(Icons.calendar_today, color: colorScheme.onBackground),
             onPressed: () {
               Navigator.pushNamed(context, '/weekly-monthly-summary');
             },
@@ -87,7 +87,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: colorScheme.primary))
           : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -98,57 +98,49 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_left),
+                    icon: Icon(Icons.chevron_left, color: colorScheme.primary),
                     onPressed: () => _changeDate(-1),
                   ),
                   Text(
                     _formattedDate(_selectedDate),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   IconButton(
                     icon: Icon(
                       Icons.chevron_right,
-                      color: isToday ? Colors.transparent : Colors.black,
+                      color: isToday ? Colors.transparent : colorScheme.primary,
                     ),
                     onPressed: isToday ? null : () => _changeDate(1),
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
-              /// Exercise Stats
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
                 maxSteps: 10000,
                 caloriesBurned: _caloriesBurned,
                 xpEarned: _xpEarned,
               ),
-
               const SizedBox(height: 20),
-
               _TimeBasedChart(
                 icon: Icons.directions_walk,
                 title: "Steps",
                 currentValue: _currentSteps.toString(),
                 avgValue: "9,121",
-                barColor: Colors.blue,
+                barColor: colorScheme.primary,
                 maxY: 10000,
                 data: _hourlySteps,
               ),
-
               const SizedBox(height: 20),
-
               _TimeBasedChart(
                 icon: Icons.local_fire_department,
                 title: "Calories",
                 currentValue: _caloriesBurned.toString(),
                 avgValue: "234",
-                barColor: Colors.red,
+                barColor: colorScheme.secondary,
                 maxY: 300,
                 data: _hourlyCalories,
               ),
-
               const SizedBox(height: 40),
             ],
           ),
@@ -197,12 +189,23 @@ class _TimeBasedChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final shadowColor = Theme.of(context).shadowColor;
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: barColor, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor.withOpacity(0.04),
+            blurRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,15 +214,18 @@ class _TimeBasedChart extends StatelessWidget {
             children: [
               Icon(icon, color: barColor),
               const SizedBox(width: 6),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text(title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 12),
           Center(
             child: Column(
               children: [
-                Text(currentValue, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                Text("Current", style: TextStyle(color: Colors.grey[600])),
+                Text(
+                  currentValue,
+                  style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text("Current", style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
@@ -235,7 +241,10 @@ class _TimeBasedChart extends StatelessWidget {
                       showTitles: true,
                       getTitlesWidget: (value, _) {
                         if (value.toInt() % 6 == 0) {
-                          return Text("${value.toInt()}h", style: const TextStyle(fontSize: 10));
+                          return Text(
+                            "${value.toInt()}h",
+                            style: textTheme.labelSmall,
+                          );
                         }
                         return const SizedBox.shrink();
                       },
@@ -249,7 +258,10 @@ class _TimeBasedChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       interval: maxY / 3,
-                      getTitlesWidget: (value, _) => Text("${value.toInt()}", style: const TextStyle(fontSize: 10)),
+                      getTitlesWidget: (value, _) => Text(
+                        "${value.toInt()}",
+                        style: textTheme.labelSmall,
+                      ),
                       reservedSize: 30,
                     ),
                   ),

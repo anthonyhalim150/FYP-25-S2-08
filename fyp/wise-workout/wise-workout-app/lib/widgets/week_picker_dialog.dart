@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class WeekPickerDialog extends StatefulWidget {
   final DateTimeRange? initialRange;
-
   const WeekPickerDialog({super.key, this.initialRange});
 
   @override
@@ -24,12 +23,18 @@ class _WeekPickerDialogState extends State<WeekPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: MediaQuery.of(context).viewInsets.add(const EdgeInsets.all(20)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Select Week", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            "Select Week",
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -51,27 +56,33 @@ class _WeekPickerDialogState extends State<WeekPickerDialog> {
                   },
                   child: Column(
                     children: [
-                      const Text("Start Date"),
+                      Text(
+                        "Start Date",
+                        style: textTheme.bodyMedium,
+                      ),
                       Text(
                         _startDate != null
                             ? "${_startDate!.day}/${_startDate!.month}/${_startDate!.year}"
                             : "Pick Date",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward),
+              Icon(Icons.arrow_forward, color: colorScheme.onSurfaceVariant),
               Expanded(
                 child: Column(
                   children: [
-                    const Text("End Date"),
+                    Text(
+                      "End Date",
+                      style: textTheme.bodyMedium,
+                    ),
                     Text(
                       _endDate != null
                           ? "${_endDate!.day}/${_endDate!.month}/${_endDate!.year}"
                           : "-",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -81,14 +92,22 @@ class _WeekPickerDialogState extends State<WeekPickerDialog> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: (_startDate != null)
-                ? () => Navigator.pop(context, DateTimeRange(start: _startDate!, end: _endDate!))
+                ? () => Navigator.pop(
+                context, DateTimeRange(start: _startDate!, end: _endDate!))
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text("Confirm"),
+            child: Text(
+              "Confirm",
+              style: textTheme.titleMedium?.copyWith(
+                color: colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(height: 10),
         ],
