@@ -14,17 +14,30 @@ class WorkoutCardHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final Color cardColor = colorScheme.surface;
+    final Color shadowColor = Theme.of(context).shadowColor;
+    final TextStyle? nameStyle = textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.bold,
+      color: colorScheme.onSurface,
+    );
+    final TextStyle? levelStyle = textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.bold,
+      color: colorScheme.onSurfaceVariant,
+    );
+
     return Container(
       width: 200,
       margin: const EdgeInsets.only(right: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: shadowColor.withOpacity(0.08),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -45,18 +58,14 @@ class WorkoutCardHomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               workoutName,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: nameStyle,
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
             child: Text(
               workoutLevel,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: levelStyle,
             ),
           ),
         ],
