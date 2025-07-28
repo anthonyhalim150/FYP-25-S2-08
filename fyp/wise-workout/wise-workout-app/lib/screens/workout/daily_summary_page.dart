@@ -47,6 +47,14 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     });
   }
 
+  double _calculateAdaptiveMaxY(List<int> data, double defaultMax) {
+    final highest = data.reduce((a, b) => a > b ? a : b);
+    if (highest <= defaultMax) return defaultMax;
+    final roundedUp = ((highest + 99) ~/ 100) * 100;
+    return roundedUp.toDouble();
+  }
+
+
   void _changeDate(int offsetDays) {
     final newDate = _selectedDate.add(Duration(days: offsetDays));
     if (!newDate.isAfter(DateTime.now())) {
@@ -128,7 +136,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 currentValue: _currentSteps.toString(),
                 avgValue: "9,121",
                 barColor: colorScheme.primary,
-                maxY: 10000,
+                maxY: _calculateAdaptiveMaxY(_hourlySteps, 10000),
                 data: _hourlySteps,
               ),
               const SizedBox(height: 20),
@@ -138,7 +146,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 currentValue: _caloriesBurned.toString(),
                 avgValue: "234",
                 barColor: colorScheme.secondary,
-                maxY: 300,
+                maxY: _calculateAdaptiveMaxY(_hourlyCalories, 300),
                 data: _hourlyCalories,
               ),
               const SizedBox(height: 40),
