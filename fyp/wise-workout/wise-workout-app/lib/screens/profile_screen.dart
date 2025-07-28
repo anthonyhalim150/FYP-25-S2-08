@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'create_avatar.dart';
 import 'editprofile_screen.dart';
@@ -13,6 +14,7 @@ import '../widgets/profile_badge_collection.dart';
 import '../widgets/profile_info_row.dart';
 import '../widgets/profile_lucky_spin_card.dart';
 import '../widgets/profile_menu_list.dart';
+import '../themes/theme_notifier.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -28,6 +30,7 @@ class ProfileScreen extends StatefulWidget {
     this.xp = 123,
     this.isPremiumUser = false,
   }) : super(key: key);
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -116,6 +119,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  String _themeNameFromMode(AppThemeMode mode) {
+    switch (mode) {
+      case AppThemeMode.normal:
+        return tr('appearance_theme_normal');
+      case AppThemeMode.dark:
+        return tr('appearance_theme_dark');
+      case AppThemeMode.christmas:
+        return tr('appearance_theme_christmas');
+      default:
+        return tr('appearance_theme_normal');
+    }
+  }
+
   void _showAvatarPopup(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     showDialog(
@@ -179,7 +195,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _profileItem(IconData icon, String actionId, {String? subtitle, VoidCallback? onTap}) {
+  Widget _profileItem(IconData icon, String actionId,
+      {String? subtitle, VoidCallback? onTap}) {
     VoidCallback? handleTap = onTap;
     if (handleTap == null) {
       switch (actionId) {
@@ -289,9 +306,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       subtitle: subtitle != null
-          ? Text(subtitle, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
+          ? Text(subtitle,
+          style:
+          TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
           : null,
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
+      trailing: Icon(Icons.arrow_forward_ios,
+          size: 16, color: Theme.of(context).iconTheme.color),
       onTap: handleTap,
     );
   }
@@ -299,6 +319,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final currentThemeMode = themeNotifier.appThemeMode;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -342,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _profileItem(Icons.workspace_premium, "premium_plan"),
                 _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
                 _profileItem(Icons.privacy_tip, "privacy_policy"),
-                _profileItem(Icons.palette, "appearance", subtitle: tr('profile_appearance_subtitle')),
+                _profileItem(Icons.palette, "appearance", subtitle: _themeNameFromMode(currentThemeMode)),
                 _profileItem(Icons.star, "feedback"),
               ],
             ),
