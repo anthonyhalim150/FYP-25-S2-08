@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 class ProfileBadgeCollection extends StatelessWidget {
   final List<String> unlockedBadges;
-
   const ProfileBadgeCollection({Key? key, required this.unlockedBadges}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final shadowColor = Theme.of(context).shadowColor;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
@@ -14,11 +17,11 @@ class ProfileBadgeCollection extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: shadowColor.withOpacity(0.08),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -30,7 +33,14 @@ class ProfileBadgeCollection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Badge Collections', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      'Badge Collections',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: List.generate(4, (index) {
@@ -38,7 +48,7 @@ class ProfileBadgeCollection extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 8),
                           child: CircleAvatar(
                             radius: 16,
-                            backgroundColor: Colors.white,
+                            backgroundColor: colorScheme.surface,
                             backgroundImage: index < unlockedBadges.length
                                 ? AssetImage(unlockedBadges[index])
                                 : const AssetImage('assets/icons/lock.jpg'),
@@ -49,7 +59,11 @@ class ProfileBadgeCollection extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, size: 16),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),

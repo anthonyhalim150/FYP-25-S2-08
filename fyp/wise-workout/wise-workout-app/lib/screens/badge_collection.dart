@@ -50,7 +50,6 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(
@@ -173,7 +172,6 @@ class _BadgeDetailDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isLocked = badge['locked'] as bool;
-
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       backgroundColor: colorScheme.surface,
@@ -204,27 +202,39 @@ class _BadgeDetailDialog extends StatelessWidget {
                       height: 220,
                       width: 220,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.error_outline, size: 100, color: colorScheme.error),
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.error_outline,
+                          size: 100,
+                          color: colorScheme.error),
                     ),
                   ),
                 ),
                 if (isLocked)
                   Positioned(
-                    child: Icon(Icons.lock, color: colorScheme.onSurface.withOpacity(0.88), size: 64),
+                    child: Icon(Icons.lock,
+                        color: colorScheme.onSurface.withOpacity(0.88),
+                        size: 64),
                   ),
               ],
             ),
             const SizedBox(height: 28),
             Text(
-              isLocked ? "badge_locked_title".tr() : "badge_unlocked_title".tr(),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              isLocked
+                  ? "badge_locked_title".tr()
+                  : "badge_unlocked_title".tr(),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (isLocked) ...[
               Text(
                 "badge_how_to_unlock".tr(),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 10),
               Text(
@@ -249,9 +259,10 @@ class _BadgeDetailDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(
-                foregroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onSurface,
                 textStyle: Theme.of(context).textTheme.titleMedium,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               ),
               child: Text("badge_close_button".tr()),
             )
