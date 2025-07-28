@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'create_avatar.dart';
+import 'editprofile_screen.dart';
+import 'privacypolicy_screen.dart';
+import 'feedback_screen.dart';
 import '../services/api_service.dart';
 import '../services/badge_service.dart';
 import '../widgets/bottom_navigation.dart';
-import 'editprofile_screen.dart';
-import 'privacypolicy_screen.dart';
 import '../widgets/profile_avatar_section.dart';
 import '../widgets/profile_badge_collection.dart';
 import '../widgets/profile_info_row.dart';
@@ -19,7 +20,6 @@ class ProfileScreen extends StatefulWidget {
   final String? profileImagePath;
   final String? profileBgPath;
   final bool isPremiumUser;
-
   ProfileScreen({
     Key? key,
     required this.userName,
@@ -28,7 +28,6 @@ class ProfileScreen extends StatefulWidget {
     this.xp = 123,
     this.isPremiumUser = false,
   }) : super(key: key);
-
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -46,7 +45,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<String> _unlockedBadgeIcons = [];
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String _selectedLanguageCode = 'en';
-
   int _level = 1;
   int _progressInLevel = 0;
   int _xpForThisLevel = 100;
@@ -141,9 +139,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ClipOval(
                       child: _profileBgPath!.startsWith('http')
                           ? Image.network(_profileBgPath!,
-                              width: 220, height: 220, fit: BoxFit.cover)
+                          width: 220, height: 220, fit: BoxFit.cover)
                           : Image.asset(_profileBgPath!,
-                              width: 220, height: 220, fit: BoxFit.cover),
+                          width: 220, height: 220, fit: BoxFit.cover),
                     ),
                   if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
                     CircleAvatar(
@@ -262,15 +260,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         case "appearance":
           handleTap = () => Navigator.pushNamed(context, '/appearance-settings');
           break;
+        case "feedback":
+          handleTap = () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FeedbackScreen()),
+            );
+          };
+          break;
         default:
           break;
       }
     }
-
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-      title: Text(
+      title: actionId == "feedback"
+          ? Text(
+        "Rate and Feedback",
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      )
+          : Text(
         tr('profile_$actionId'),
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
@@ -331,6 +343,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
                 _profileItem(Icons.privacy_tip, "privacy_policy"),
                 _profileItem(Icons.palette, "appearance", subtitle: tr('profile_appearance_subtitle')),
+                _profileItem(Icons.star, "feedback"),
               ],
             ),
           ],
