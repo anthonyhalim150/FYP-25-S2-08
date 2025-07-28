@@ -11,10 +11,6 @@ class QuestScreen extends StatefulWidget {
 }
 
 class _QuestScreenState extends State<QuestScreen> {
-  static const darkBlue = Color(0xFF111A43);
-  static const yellow = Color(0xFFFFD94D);
-  static const checkColor = Color(0xFF111A43);
-
   List<Map<String, dynamic>> _quests = [];
   bool _loading = true;
   bool _claiming = false;
@@ -73,16 +69,27 @@ class _QuestScreenState extends State<QuestScreen> {
   }
 
   Widget questCard(int i) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final quest = _quests[i];
     final String text = quest['text'] ?? '';
     final bool done = quest['done'] == 1 || quest['done'] == true;
     final bool claimed = quest['claimed'] == 1 || quest['claimed'] == true;
 
+    final cardColor = done ? colorScheme.primaryContainer : colorScheme.surface;
+    final textColor = done ? colorScheme.onPrimaryContainer : colorScheme.onSurface;
+    final buttonBg = colorScheme.primary;
+    final buttonFg = colorScheme.onPrimary;
+    final checkIconColor = colorScheme.secondary;
+    final claimIconColor = colorScheme.secondary;
+    final claimAllIconColor = colorScheme.secondary;
+    final finishedBorder = colorScheme.outline;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       decoration: BoxDecoration(
-        color: done ? yellow : Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -90,8 +97,8 @@ class _QuestScreenState extends State<QuestScreen> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                color: done ? checkColor : Colors.black87,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: textColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -100,8 +107,8 @@ class _QuestScreenState extends State<QuestScreen> {
           if (done && !claimed)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: darkBlue,
-                foregroundColor: yellow,
+                backgroundColor: buttonBg,
+                foregroundColor: buttonFg,
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 elevation: 0,
@@ -111,7 +118,7 @@ class _QuestScreenState extends State<QuestScreen> {
               child: Text('quest_button_claim'.tr()),
             )
           else if (done && claimed)
-            const Icon(Icons.check_circle, color: Colors.green, size: 24),
+            Icon(Icons.check_circle, color: checkIconColor, size: 24),
         ],
       ),
     );
@@ -119,20 +126,24 @@ class _QuestScreenState extends State<QuestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final int unclaimedCount = _quests
         .where((q) =>
-            (q['done'] == 1 || q['done'] == true) &&
-            (q['claimed'] == 0 || q['claimed'] == false))
+    (q['done'] == 1 || q['done'] == true) &&
+        (q['claimed'] == 0 || q['claimed'] == false))
         .length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F3EA),
+      backgroundColor: colorScheme.background,
       body: Stack(
         children: [
           if (_loading)
-            const Center(child: CircularProgressIndicator())
+            Center(child: CircularProgressIndicator(color: colorScheme.primary))
           else if (_error != null)
-            Center(child: Text(_error!, style: TextStyle(color: Colors.red)))
+            Center(child: Text(_error!, style: TextStyle(color: colorScheme.error)))
           else
             Padding(
               padding: const EdgeInsets.only(bottom: 90),
@@ -143,9 +154,9 @@ class _QuestScreenState extends State<QuestScreen> {
                   if (index == 0) {
                     return Container(
                       padding: const EdgeInsets.only(top: 40, bottom: 30, left: 18, right: 18),
-                      decoration: const BoxDecoration(
-                        color: darkBlue,
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(34),
                           bottomRight: Radius.circular(34),
                         ),
@@ -157,17 +168,17 @@ class _QuestScreenState extends State<QuestScreen> {
                           InkWell(
                             onTap: () => Navigator.pop(context),
                             borderRadius: BorderRadius.circular(30),
-                            child: const Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: Icon(Icons.arrow_back, color: Colors.white, size: 26),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Icon(Icons.arrow_back, color: colorScheme.onPrimary, size: 26),
                             ),
                           ),
                           const SizedBox(height: 18),
                           Center(
                             child: Text(
                               'quest_title'.tr(),
-                              style: TextStyle(
-                                color: Colors.white,
+                              style: textTheme.titleLarge?.copyWith(
+                                color: colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 23,
                               ),
@@ -177,8 +188,8 @@ class _QuestScreenState extends State<QuestScreen> {
                           Center(
                             child: Text(
                               'quest_subtitle'.tr(),
-                              style: TextStyle(
-                                color: Colors.white70,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onPrimary.withOpacity(0.7),
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -205,8 +216,8 @@ class _QuestScreenState extends State<QuestScreen> {
                 height: 56,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: darkBlue,
-                    foregroundColor: yellow,
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -214,13 +225,14 @@ class _QuestScreenState extends State<QuestScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: _claiming ? null : _claimAllXP,
-                  icon: const Icon(Icons.star, color: Colors.amber),
+                  icon: Icon(Icons.star, color: colorScheme.secondary),
                   label: Text(
                     'quest_button_claim_all'.tr(),
-                    style: TextStyle(
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                       letterSpacing: 1,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                 ),
