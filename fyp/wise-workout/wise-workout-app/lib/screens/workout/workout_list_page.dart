@@ -6,9 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 class WorkoutListPage extends StatefulWidget {
   final String categoryKey;
-
   const WorkoutListPage({super.key, required this.categoryKey});
-
   @override
   State<WorkoutListPage> createState() => _WorkoutListPageState();
 }
@@ -25,29 +23,36 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: FutureBuilder<List<Workout>>(
         future: workoutList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: colorScheme.primary));
           }
-
           if (snapshot.hasError) {
             final errorMessage = snapshot.error?.toString() ?? 'Unknown error';
-            return Center(child: Text('${tr('workout_list_error')}: $errorMessage'));
+            return Center(
+                child: Text(
+                  '${tr('workout_list_error')}: $errorMessage',
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.error),
+                ));
           }
-
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text(tr('workout_list_empty')));
+            return Center(
+                child: Text(
+                  tr('workout_list_empty'),
+                  style: textTheme.bodyLarge,
+                ));
           }
-
           final workouts = snapshot.data!
               .where((workout) => workout.workoutName
               .toLowerCase()
               .contains(_searchController.text.toLowerCase()))
               .toList();
-
           return NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
@@ -66,9 +71,9 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                         top: MediaQuery.of(context).padding.top + 10,
                         left: 16,
                         child: CircleAvatar(
-                          backgroundColor: Colors.white70,
+                          backgroundColor: colorScheme.surface.withOpacity(0.8),
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back, color: Colors.black),
+                            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ),
@@ -80,10 +85,12 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: Text(
                             widget.categoryKey.toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 50,
+                            style: textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.orangeAccent,
+                              // color: colorScheme.primary (for accent),
+                              color: colorScheme.primary,
+                              fontSize: 50,
+                              letterSpacing: 2,
                             ),
                           ),
                         ),
@@ -95,7 +102,7 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
             ],
             body: Stack(
               children: [
-                Container(color: Colors.white),
+                Container(color: colorScheme.background),
                 SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                   child: Column(
@@ -106,21 +113,22 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
                           hintText: tr('workout_list_search_hint'),
-                          prefixIcon: const Icon(Icons.search),
+                          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
                           filled: true,
-                          fillColor: Colors.grey[200],
+                          fillColor: colorScheme.surfaceVariant,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
+                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                         ),
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         '${workouts.length} ${tr('workout_list_found')}',
-                        style: const TextStyle(
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 16),
