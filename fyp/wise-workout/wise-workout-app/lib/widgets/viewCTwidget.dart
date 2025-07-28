@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class ViewCTWidget extends StatelessWidget {
   final String title;
   final String target;
@@ -15,15 +16,19 @@ class ViewCTWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final shadowColor = Theme.of(context).shadowColor;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: shadowColor.withOpacity(0.08),
             blurRadius: 6,
             offset: const Offset(0, 4),
           ),
@@ -37,46 +42,56 @@ class ViewCTWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
                   minimumSize: const Size(60, 32),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text("Edit", style: TextStyle(fontSize: 13)),
+                child: Text(
+                  "Edit",
+                  style: textTheme.labelLarge?.copyWith(fontSize: 13, color: colorScheme.onPrimary),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text("Target: $target", style: const TextStyle(fontSize: 14)),
-          Text("Duration: $duration", style: const TextStyle(fontSize: 14)),
+          Text(
+            "Target: $target",
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface, fontSize: 14),
+          ),
+          Text(
+            "Duration: $duration",
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface, fontSize: 14),
+          ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: onInvite,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow[700],
-                foregroundColor: Colors.black,
+                backgroundColor: colorScheme.secondary,
+                foregroundColor: colorScheme.onSecondary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "+ Challenge Friend",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onSecondary),
               ),
             ),
           ),
@@ -99,11 +114,14 @@ class TournamentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -111,23 +129,29 @@ class TournamentCard extends StatelessWidget {
         children: [
           Text(
             tournament['title'],
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text(tournament['description']),
+          Text(
+            tournament['description'],
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+          ),
           const SizedBox(height: 6),
           Text(
             tournament['endDate'],
-            style: const TextStyle(color: Colors.grey),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 12),
           ...List<Widget>.from(
             (tournament['features'] as List<dynamic>).map(
                   (feature) => Row(
                 children: [
-                  const Icon(Icons.check, size: 16, color: Colors.green),
+                  Icon(Icons.check, size: 16, color: colorScheme.secondary),
                   const SizedBox(width: 6),
-                  Text(feature),
+                  Text(
+                    feature,
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                  ),
                 ],
               ),
             ),
@@ -138,10 +162,10 @@ class TournamentCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onJoin,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
               ),
-              child: const Text('Join'),
+              child: Text('Join', style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary)),
             ),
           ),
         ],
@@ -153,6 +177,9 @@ class TournamentCard extends StatelessWidget {
 /// ------------------ JOIN TOURNAMENT POPUP ------------------
 void showTournamentJoinPopup(
     BuildContext context, Map<String, dynamic> tournament) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final textTheme = Theme.of(context).textTheme;
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -168,9 +195,9 @@ void showTournamentJoinPopup(
             maxChildSize: 0.9,
             builder: (_, controller) {
               return Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
                 ),
                 padding: const EdgeInsets.all(24),
                 child: ListView(
@@ -178,24 +205,24 @@ void showTournamentJoinPopup(
                   children: [
                     Text(
                       tournament['title'],
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
+                      style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     Container(
                       height: 120,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: colorScheme.secondary.withOpacity(.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(tournament['description']),
+                    Text(tournament['description'],
+                        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       "What's Included:",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     ...List<Widget>.from(
@@ -205,8 +232,12 @@ void showTournamentJoinPopup(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("• "),
-                              Expanded(child: Text(feature)),
+                              Text("• ",
+                                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.secondary)),
+                              Expanded(
+                                child: Text(feature,
+                                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                              ),
                             ],
                           ),
                         ),
@@ -217,20 +248,22 @@ void showTournamentJoinPopup(
                       onPressed: () {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Joined tournament successfully!'),
+                          SnackBar(
+                            content: Text('Joined tournament successfully!',
+                                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface)),
+                            backgroundColor: colorScheme.inverseSurface,
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        foregroundColor: Colors.white,
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         minimumSize: const Size.fromHeight(48),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text('Join'),
+                      child: Text('Join', style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary)),
                     ),
                   ],
                 ),
@@ -246,14 +279,15 @@ void showTournamentJoinPopup(
 /// ------------------ INVITE FRIEND POPUP ------------------
 void showInviteFriendPopup(
     BuildContext context, String title, String target, String duration) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final textTheme = Theme.of(context).textTheme;
+
   final friends = [
     {'name': 'Anthony Halim', 'username': '@pitbull101'},
     {'name': 'Matilda Yeo', 'username': '@matyeo'},
     {'name': 'Jackson Wang', 'username': '@jackson'},
   ];
-
   final Set<int> selectedIndices = {};
-
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -271,10 +305,10 @@ void showInviteFriendPopup(
               return StatefulBuilder(
                 builder: (context, setState) {
                   return Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
                       borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(25)),
+                      const BorderRadius.vertical(top: Radius.circular(25)),
                     ),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 25),
@@ -282,21 +316,22 @@ void showInviteFriendPopup(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(title,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: colorScheme.surfaceVariant,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Target: $target"),
-                              Text("Duration: $duration"),
+                              Text("Target: $target",
+                                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                              Text("Duration: $duration",
+                                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                             ],
                           ),
                         ),
@@ -307,24 +342,25 @@ void showInviteFriendPopup(
                             itemCount: friends.length,
                             itemBuilder: (context, index) {
                               final friend = friends[index];
-                              final isSelected =
-                              selectedIndices.contains(index);
+                              final isSelected = selectedIndices.contains(index);
                               return ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                leading: const CircleAvatar(
-                                  backgroundColor: Colors.grey,
-                                  child: Icon(Icons.person, color: Colors.white),
+                                leading: CircleAvatar(
+                                  backgroundColor: colorScheme.secondary,
+                                  child: Icon(Icons.person, color: colorScheme.onSecondary),
                                 ),
-                                title: Text(friend['name']!),
-                                subtitle: Text(friend['username']!),
+                                title: Text(friend['name']!,
+                                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
+                                subtitle: Text(friend['username']!,
+                                    style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
                                 trailing: IconButton(
                                   icon: Icon(
                                     isSelected
                                         ? Icons.check_circle
                                         : Icons.add_circle_outline,
                                     color: isSelected
-                                        ? Colors.blue
-                                        : Colors.yellow[700],
+                                        ? colorScheme.primary
+                                        : colorScheme.secondary,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -344,16 +380,16 @@ void showInviteFriendPopup(
                         ElevatedButton(
                           onPressed: () => Navigator.pop(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow[700],
-                            foregroundColor: Colors.black,
+                            backgroundColor: colorScheme.secondary,
+                            foregroundColor: colorScheme.onSecondary,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
                             minimumSize: const Size.fromHeight(48),
                           ),
-                          child: const Text("Done",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text("Done",
+                              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onSecondary)),
                         )
                       ],
                     ),
