@@ -14,24 +14,45 @@ class ProfileInfoRow extends StatelessWidget {
     required this.xpForThisLevel,
   }) : super(key: key);
 
-  Widget _infoCard(String label, String value, {String? subLabel}) {
+  Widget _infoCard(BuildContext context, String label, String value, {String? subLabel}) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(12),
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(color: Colors.black54)),
+            Text(
+              label,
+              style: textTheme.labelMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              value,
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: colorScheme.onSurface,
+              ),
+            ),
             if (subLabel != null) ...[
               const SizedBox(height: 4),
               Text(
                 subLabel,
-                style: const TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.w500, fontSize: 12),
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.secondary,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
               ),
             ]
           ],
@@ -47,9 +68,9 @@ class ProfileInfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          _infoCard("XP", progressText),
+          _infoCard(context, "XP", progressText),
           const SizedBox(width: 15),
-          _infoCard("Level", level),
+          _infoCard(context, "Level", level),
         ],
       ),
     );
