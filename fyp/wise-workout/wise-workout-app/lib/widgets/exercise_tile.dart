@@ -5,7 +5,6 @@ class ExerciseTile extends StatelessWidget {
   final Exercise exercise;
   final VoidCallback onTap;
   final VoidCallback onPlayPressed;
-
   const ExerciseTile({
     super.key,
     required this.exercise,
@@ -15,9 +14,14 @@ class ExerciseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final backgroundColor = colorScheme.primaryContainer;
+    final textColor = colorScheme.onPrimaryContainer;
+
     return Material(
       borderRadius: BorderRadius.circular(12),
-      color: const Color(0xFF688EA3),
+      color: backgroundColor,
       elevation: 2,
       child: InkWell(
         onTap: onTap,
@@ -36,8 +40,8 @@ class ExerciseTile extends StatelessWidget {
                   errorBuilder: (context, error, stackTrace) => Container(
                     width: 180,
                     height: 120,
-                    color: const Color(0xFF688EA3),
-                    child: const Icon(Icons.image),
+                    color: backgroundColor,
+                    child: Icon(Icons.image, color: textColor),
                   ),
                 ),
               ),
@@ -48,10 +52,10 @@ class ExerciseTile extends StatelessWidget {
                   children: [
                     Text(
                       exercise.exerciseName,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: textColor,
+                        fontSize: 20,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -59,18 +63,18 @@ class ExerciseTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${exercise.exerciseSets} sets • ${exercise.exerciseReps} reps',
-                      style: const TextStyle(
-                        fontSize: 17,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: textColor,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        fontSize: 17,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Level: ${exercise.exerciseLevel ?? 'N/A'}',
-                      style: const TextStyle(
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: textColor,
                         fontSize: 14,
-                        color: Colors.white,
                       ),
                     ),
                   ],
