@@ -3,27 +3,30 @@ import 'dart:math';
 
 class ExerciseGauge extends StatelessWidget {
   final double progress; // From 0.0 to 1.0
-  final Color backgroundColor;
-  final Color progressColor;
+  final Color? backgroundColor;
+  final Color? progressColor;
   final VoidCallback? onTap; // Add this for navigation
 
   const ExerciseGauge({
     super.key,
     required this.progress,
-    this.backgroundColor = Colors.grey,
-    this.progressColor = Colors.amber,
+    this.backgroundColor,
+    this.progressColor,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color bgColor = backgroundColor ?? Theme.of(context).colorScheme.surfaceVariant;
+    final Color prColor = progressColor ?? Theme.of(context).colorScheme.primary;
+
     return GestureDetector(
       onTap: onTap, // 👈 Handles press
       child: CustomPaint(
         painter: _SemiCirclePainter(
           progress: progress.clamp(0.0, 1.0),
-          backgroundColor: backgroundColor,
-          progressColor: progressColor,
+          backgroundColor: bgColor,
+          progressColor: prColor,
         ),
         size: const Size(200, 100),
       ),
@@ -66,7 +69,6 @@ class _SemiCirclePainter extends CustomPainter {
       false,
       backgroundPaint,
     );
-
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       pi,
