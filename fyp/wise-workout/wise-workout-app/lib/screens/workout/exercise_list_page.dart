@@ -63,7 +63,23 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
   void _endWorkout() async {
     final duration = _sessionService.elapsed;
-    final exercises = _sessionService.loggedExercises;
+    // Make a deep copy of the exercises list before clearing the session
+    final exercises = _sessionService.loggedExercises.map((exercise) {
+      return {
+        'exerciseId': exercise['exerciseId'],
+        'exerciseKey': exercise['exerciseKey'],
+        'exerciseName': exercise['exerciseName'],
+        'sets': List<Map<String, dynamic>>.from(exercise['sets'].map((set) {
+          return {
+            'set': set['set'],
+            'weight': set['weight'],
+            'reps': set['reps'],
+            'finished': set['finished'],
+          };
+        })),
+      };
+    }).toList();
+    print('DEBUG: Exercises to be saved: $exercises');
     _sessionService.clearSession();
     setState(() {
       _formattedTime = "00:00:00";
@@ -77,6 +93,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       'duration': duration,
       'calories': _calculateCalories(duration),
     };
+    print('DEBUG: Workout result being passed: $workoutResult');
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(

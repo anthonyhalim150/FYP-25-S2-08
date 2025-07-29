@@ -73,7 +73,6 @@ class ExerciseService {
   Future<List<Exercise>> fetchExercisesByWorkout(String workoutId) async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/exercises/workout/$workoutId');
-    print('📡 Fetching exercises for workout $workoutId → $url');
 
     final response = await http.get(
       url,
@@ -83,8 +82,6 @@ class ExerciseService {
       },
     );
 
-    print('🔵 Status Code: ${response.statusCode}');
-    print('📩 Body: ${response.body}');
 
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch exercises');
@@ -119,8 +116,6 @@ class ExerciseService {
         },
       );
 
-      print('🔵 Status Code: ${response.statusCode}');
-      print('📩 Body: ${response.body}');
 
       if (response.statusCode != 200) {
         throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch exercise');

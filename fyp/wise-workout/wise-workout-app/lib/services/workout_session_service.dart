@@ -39,7 +39,10 @@ class WorkoutSessionService {
   }
 
   void addExerciseLog(Map<String, dynamic> log) {
+    print('DEBUG: Adding exercise log to session: $log');
+    print('DEBUG: Current session exercises before adding: $_loggedExercises');
     _loggedExercises.add(log);
+    print('DEBUG: Current session exercises after adding: $_loggedExercises');
   }
 
   void stop() {

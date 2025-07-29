@@ -30,14 +30,30 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
   }
 
   void _saveLogToSession() {
-    final completedSets = sets.where((set) => set['finished'] == true).toList();
+    // If no sets are marked as finished, automatically mark all sets that have reps > 0 as finished
+    List<Map<String, dynamic>> completedSets = sets.where((set) => set['finished'] == true).toList();
+    
+    // If no sets are explicitly marked as finished, check if user entered reps
+    if (completedSets.isEmpty) {
+      completedSets = sets.where((set) => set['reps'] != null && set['reps'] > 0).toList();
+      // Mark these sets as finished for saving purposes
+      for (var set in completedSets) {
+        set['finished'] = true;
+      }
+    }
+    
+    print('DEBUG: Completed sets for ${widget.exercise.exerciseName}: $completedSets');
     if (completedSets.isNotEmpty) {
-      WorkoutSessionService().addExerciseLog({
+      final exerciseLog = {
         'exerciseId': widget.exercise.exerciseId,
         'exerciseKey': widget.exercise.exerciseKey,
         'exerciseName': widget.exercise.exerciseName,
         'sets': completedSets,
-      });
+      };
+      print('DEBUG: Adding exercise log: $exerciseLog');
+      WorkoutSessionService().addExerciseLog(exerciseLog);
+    } else {
+      print('DEBUG: No completed sets for ${widget.exercise.exerciseName}, not adding to session');
     }
   }
 

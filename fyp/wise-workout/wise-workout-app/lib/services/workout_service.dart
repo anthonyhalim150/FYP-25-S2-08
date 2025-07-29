@@ -16,19 +16,13 @@ class WorkoutService {
   Future<List<Workout>> fetchAllWorkouts() async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts');
-    print('📡 Fetching ALL workouts → $url');
-
     final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'session=$jwt',
+          },
     );
-
-    print('🔵 Status Code: ${response.statusCode}');
-    print('📩 Response Body: ${response.body}');
-
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workouts');
     }
@@ -41,19 +35,13 @@ class WorkoutService {
   Future<List<Workout>> fetchWorkoutsByCategory(String categoryKey) async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts/category/$categoryKey');
-    print('📡 Fetching workouts for category "$categoryKey" → $url');
-
     final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'session=$jwt',
+          },
     );
-
-    print('🔵 Status Code: ${response.statusCode}');
-    print('📩 Response Body: ${response.body}');
-
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch category workouts');
     }
@@ -66,22 +54,16 @@ class WorkoutService {
   Future<Workout> fetchWorkoutById(int workoutId) async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts/$workoutId');
-    print('📡 Fetching workout by ID → $url');
-
     final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-    );
-
-    print('🔵 Status Code: ${response.statusCode}');
-    print('📩 Response Body: ${response.body}');
-
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'session=$jwt',
+          },
+        );
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout');
-    }
+          throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout');
+        }
 
     final item = jsonDecode(response.body);
     return Workout.fromJson(item);
@@ -109,22 +91,14 @@ class WorkoutService {
       'notes': notes,
       'exercises': exercises,
     };
-
-    print('📡 Saving workout session → $url');
-    print('📨 Request Body: $requestBody');
-
     final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-      body: jsonEncode(requestBody),
-    );
-
-    print('🔵 Status Code: ${response.statusCode}');
-    print('📩 Response Body: ${response.body}');
-
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'session=$jwt',
+          },
+          body: jsonEncode(requestBody),
+        );
     if (response.statusCode != 201) {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to save workout session');
     }
@@ -134,19 +108,13 @@ class WorkoutService {
   Future<List<dynamic>> fetchUserWorkoutSessions() async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workout-sessions/sessions');
-    print('📡 Fetching user workout sessions → $url');
-
     final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-    );
-
-    print('🔵 Status Code: ${response.statusCode}');
-    print('📩 Response Body: ${response.body}');
-
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'session=$jwt',
+          },
+        );
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout sessions');
     }

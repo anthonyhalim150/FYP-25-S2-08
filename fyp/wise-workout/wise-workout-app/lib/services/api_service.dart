@@ -42,9 +42,6 @@ class ApiService {
       body: jsonEncode({'avatarId': avatarId}),
     );
 
-    print('Response status: ${res.statusCode}');
-    print('Response body: ${res.body}');
-
     if (res.statusCode != 200) {
       throw Exception('Failed to set avatar');
     }
@@ -84,8 +81,6 @@ class ApiService {
       headers: {'Cookie': 'session=$jwt'},
     );
 
-    print('Response status: ${res.statusCode}');
-    print('Response body: ${res.body}');
 
     if (res.statusCode == 200) {
       return jsonDecode(res.body);

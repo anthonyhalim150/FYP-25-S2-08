@@ -43,13 +43,14 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     try {
       final sessionService = WorkoutSessionService();
       final workoutService = WorkoutService();
-      
- 
+        
+  
       final args = ModalRoute.of(context)!.settings.arguments as Map;
       final Map<String, dynamic> workout = args['workout'];
       final List exercises = args['exercises'];
       final Duration duration = args['duration'];
       final double calories = args['calories'];
+      
       
       final List<Map<String, dynamic>> formattedExercises = exercises.map((exercise) {
         return {
@@ -58,6 +59,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
           'setsData': exercise['sets'] ?? [],
         };
       }).toList();
+      
       
    
       await workoutService.saveWorkoutSession(
