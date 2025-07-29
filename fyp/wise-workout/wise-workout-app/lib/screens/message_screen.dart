@@ -11,6 +11,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
+
   @override
   State<MessageScreen> createState() => _MessageScreenState();
 }
@@ -27,6 +28,7 @@ class _MessageScreenState extends State<MessageScreen> {
   String safeAvatar(String? path) {
     return (path == null || path.isEmpty) ? 'assets/avatars/free/free1.png' : path;
   }
+
   String safeBackground(String? path) {
     return (path == null || path.isEmpty) ? 'assets/background/black.jpg' : path;
   }
@@ -84,13 +86,13 @@ class _MessageScreenState extends State<MessageScreen> {
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('message_accept_success'.tr()	)),
+        SnackBar(content: Text('message_accept_success'.tr() )),
       );
       await _loadFriendsData();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('message_accept_fail'.tr()	)),
+        SnackBar(content: Text('message_accept_fail'.tr() )),
       );
     }
   }
@@ -104,7 +106,7 @@ class _MessageScreenState extends State<MessageScreen> {
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('message_ignore_success'.tr()	)),
+        SnackBar(content: Text('message_ignore_success'.tr() )),
       );
       await _loadFriendsData();
     } catch (e) {
@@ -119,7 +121,6 @@ class _MessageScreenState extends State<MessageScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
     final filteredFriends = friends
         .where((f) =>
     (f['name'] ?? f['username'] ?? '').toLowerCase().contains(search.toLowerCase()) ||
@@ -138,7 +139,6 @@ class _MessageScreenState extends State<MessageScreen> {
         (f['handle'] ?? f['email'] ?? '').toLowerCase().contains(search.toLowerCase()))
         .toList()
         .cast<Map<String, dynamic>>();
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: colorScheme.background,
@@ -148,19 +148,13 @@ class _MessageScreenState extends State<MessageScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Spacer(),
                   Text(
                     'message_friends'.tr(),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.menu, size: 28, color: theme.iconTheme.color ?? colorScheme.onSurface),
-                    onPressed: () {},
                   ),
                 ],
               ),
@@ -191,8 +185,8 @@ class _MessageScreenState extends State<MessageScreen> {
                 child: Row(
                   children: [
                     _tabButton(context, 'message_tab_all'.tr(), 0, selectedTab == 0, colorScheme),
-                    _tabButton(context, 'message_tab_requests'.tr()	, 1, selectedTab == 1, colorScheme),
-                    _tabButton(context, 'message_tab_pending'.tr()	, 2, selectedTab == 2, colorScheme),
+                    _tabButton(context, 'message_tab_requests'.tr(), 1, selectedTab == 1, colorScheme),
+                    _tabButton(context, 'message_tab_pending'.tr(), 2, selectedTab == 2, colorScheme),
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0, left: 6.0),
                       child: ElevatedButton.icon(
@@ -206,7 +200,7 @@ class _MessageScreenState extends State<MessageScreen> {
                           });
                         },
                         icon: Icon(Icons.add, color: colorScheme.onPrimary, size: 18),
-                        label: Text('message_add_new'.tr()	),
+                        label: Text('message_add_new'.tr()),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: colorScheme.onPrimary,
                           backgroundColor: colorScheme.primary,
