@@ -25,7 +25,6 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
   Future<void> _showBuyWithTokenConfirmation() async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
     final int neededTokens = (plans[selectedPlan]['tokens'] as num).toInt();
     final int durationDays = (plans[selectedPlan]['durationDays'] as num).toInt();
     String planName = plans[selectedPlan]['name'];
@@ -102,7 +101,6 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(
@@ -247,11 +245,18 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
             const SizedBox(width: 14),
             Text(
               "You are Premium: ",
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: colorScheme.onPrimaryContainer,
+              ),
             ),
             Text(
               durationText,
-              style: theme.textTheme.titleMedium?.copyWith(fontSize: 16),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontSize: 16,
+                color: colorScheme.onPrimaryContainer,
+              ),
             ),
           ],
         ),
@@ -266,7 +271,7 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
       style: Theme.of(context).textTheme.titleSmall?.copyWith(
         fontWeight: FontWeight.w700,
         fontSize: 17,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.onBackground,
       ),
     ),
   );

@@ -16,7 +16,7 @@ class PlanCardsWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final highlightColor = colorScheme.primaryContainer;
+    final highlightColor = colorScheme.primary;
     final highlightBorder = colorScheme.primary;
     final fadedBorder = colorScheme.outlineVariant ?? colorScheme.outline;
     final bestValueBg = colorScheme.secondary;
@@ -51,7 +51,7 @@ class PlanCardsWidget extends StatelessWidget {
                     plans[idx]['name'],
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: highlight ? highlightBorder : theme.textTheme.bodyMedium?.color,
+                      color: highlight ? Colors.white : theme.textTheme.bodyMedium?.color,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -61,7 +61,7 @@ class PlanCardsWidget extends StatelessWidget {
                     plans[idx]['price'],
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: highlight ? highlightBorder : theme.textTheme.titleMedium?.color,
+                      color: highlight ? Colors.white : theme.textTheme.titleMedium?.color,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -80,7 +80,7 @@ class PlanCardsWidget extends StatelessWidget {
                       Icon(
                         Icons.monetization_on,
                         size: 17,
-                        color: highlight ? highlightBorder : theme.iconTheme.color,
+                        color: highlight ? Colors.white : theme.iconTheme.color,
                       ),
                       const SizedBox(width: 3),
                       Flexible(
@@ -88,7 +88,7 @@ class PlanCardsWidget extends StatelessWidget {
                           '${(plans[idx]['tokens'] as num).toInt()} Tokens',
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: highlight ? highlightBorder : theme.hintColor,
+                            color: highlight ? Colors.white : theme.hintColor,
                             fontWeight: FontWeight.w600,
                             fontSize: 13.7,
                           ),
