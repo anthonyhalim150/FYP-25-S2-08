@@ -87,4 +87,72 @@ class WorkoutService {
     final item = jsonDecode(response.body);
     return Workout.fromJson(item);
   }
+
+
+  Future<void> saveWorkoutSession({
+    int? workoutId,
+    DateTime? startTime,
+    DateTime? endTime,
+    int? duration, // in seconds
+    double? caloriesBurned,
+    String? notes,
+    List<Map<String, dynamic>> exercises = const [],
+  }) async {
+    final jwt = await _getJwtCookie();
+    final url = Uri.parse('$baseUrl/workout-sessions/sessions');
+    
+    final requestBody = {
+      'workoutId': workoutId,
+      'startTime': startTime?.toIso8601String(),
+      'endTime': endTime?.toIso8601String(),
+      'duration': duration,
+      'caloriesBurned': caloriesBurned,
+      'notes': notes,
+      'exercises': exercises,
+    };
+
+    print('📡 Saving workout session → $url');
+    print('📨 Request Body: $requestBody');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    print('🔵 Status Code: ${response.statusCode}');
+    print('📩 Response Body: ${response.body}');
+
+    if (response.statusCode != 201) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to save workout session');
+    }
+  }
+
+  /// Fetch user's workout sessions
+  Future<List<dynamic>> fetchUserWorkoutSessions() async {
+    final jwt = await _getJwtCookie();
+    final url = Uri.parse('$baseUrl/workout-sessions/sessions');
+    print('📡 Fetching user workout sessions → $url');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    print('🔵 Status Code: ${response.statusCode}');
+    print('📩 Response Body: ${response.body}');
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch workout sessions');
+    }
+
+    final data = jsonDecode(response.body);
+    return data;
+  }
 }

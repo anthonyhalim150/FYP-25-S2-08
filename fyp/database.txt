@@ -290,3 +290,29 @@ VALUES
   ('legexercises_2', 'Leg Press', 'Leg exercise focusing on quads, hamstrings, and glutes.', 3, 12, 'Sit and push the weight upwards using your legs.', 'Beginner', 'Leg Press Machine', NULL, 'https://www.youtube.com/watch?v=izzzZ9q7Fms', 8),
   ('relaxexercises_1', 'Yoga', 'Gentle yoga focusing on flexibility and mindfulness.', 1, 10, 'Hold each pose for 30 seconds, focusing on your breath.', 'Beginner', 'Yoga Mat', 600, 'https://www.youtube.com/watch?v=v7AYKMP6rOE', 9),
   ('relaxexercises_2', 'Stretching', 'Simple stretching routine to improve flexibility and release tension.', 1, 15, 'Hold each stretch for 30 seconds, focusing on deep breathing.', 'Intermediate', 'None', 600, 'https://www.youtube.com/watch?v=6Ib4Un4WnHI', 10);
+
+-- New tables for workout sessions
+CREATE TABLE workout_sessions (
+  session_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  workout_id INT,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME,
+  duration INT, -- in seconds
+  calories_burned DECIMAL(5,2),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE SET NULL
+);
+
+CREATE TABLE exercise_logs (
+  log_id INT AUTO_INCREMENT PRIMARY KEY,
+  session_id INT NOT NULL,
+  exercise_key VARCHAR(255),
+  exercise_name VARCHAR(255),
+  sets_data JSON, -- Store completed sets data
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (session_id) REFERENCES workout_sessions(session_id) ON DELETE CASCADE,
+  FOREIGN KEY (exercise_key) REFERENCES exercises(exercise_key) ON DELETE SET NULL
+);
