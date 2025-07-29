@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class WorkoutAnalysisPage extends StatefulWidget {
   const WorkoutAnalysisPage({super.key});
-
   @override
   State<WorkoutAnalysisPage> createState() => _WorkoutAnalysisPageState();
 }
@@ -16,6 +15,9 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     final args = ModalRoute.of(context)!.settings.arguments as Map;
     final Map<String, dynamic> workout = args['workout'];
     final List exercises = args['exercises'];
@@ -35,10 +37,10 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         .whereType<num>()
         .fold<num>(0.0, (prev, w) => w > prev ? w : prev)
         .toDouble();
-    final double caloriesPerMin = (calories / duration.inMinutes);
+    final double caloriesPerMin = calories / (duration.inMinutes == 0 ? 1 : duration.inMinutes);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF9F2),
+      backgroundColor: colorScheme.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -48,25 +50,24 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back, color: colorScheme.onBackground),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Workout Analysis',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
               // Workout Name + Date + Icon
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 24,
-                    backgroundColor: Colors.deepPurple,
-                    child: Icon(Icons.fitness_center, color: Colors.white),
+                    backgroundColor: colorScheme.primary,
+                    child: Icon(Icons.fitness_center, color: colorScheme.onPrimary),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -74,60 +75,64 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                     children: [
                       Text(
                         workout['workoutName'] ?? 'Workout',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         DateTime.now().toIso8601String().substring(0, 10), // Replace with saved date if available
-                        style: const TextStyle(color: Colors.grey),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-
               // Top Summary Cards
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _summaryCard(Icons.timer, '${formatDuration(duration)}', 'Duration'),
-                  _summaryCard(Icons.local_fire_department, '${calories.toStringAsFixed(0)} kcal', 'Calories'),
-                  _summaryCard(Icons.fitness_center, 'Advanced', 'Intensity'), // placeholder
+                  _summaryCard(context, Icons.timer, '${formatDuration(duration)}', 'Duration'),
+                  _summaryCard(context, Icons.local_fire_department, '${calories.toStringAsFixed(0)} kcal', 'Calories'),
+                  _summaryCard(context, Icons.fitness_center, 'Advanced', 'Intensity'), // placeholder
                 ],
               ),
-
               const SizedBox(height: 24),
-
               // Detailed Stats
-              _statsSection([
-                _statRow('Average Heart Rate', '$avgHeartRate bpm'),
-                _statRow('Peak Heart Rate', '$peakHeartRate bpm'),
-                _statRow('Steps', '$steps'),
-                _statRow('Sets', '$totalSets'),
-                _statRow('Reps', repStrings.join(', ')),
-                _statRow('Max Weight', '${maxWeight?.toStringAsFixed(1)} kg'),
-                _statRow('Calories per min', caloriesPerMin.toStringAsFixed(1)),
+              _statsSection(context, [
+                _statRow(context, 'Average Heart Rate', '$avgHeartRate bpm'),
+                _statRow(context, 'Peak Heart Rate', '$peakHeartRate bpm'),
+                _statRow(context, 'Steps', '$steps'),
+                _statRow(context, 'Sets', '$totalSets'),
+                _statRow(context, 'Reps', repStrings.join(', ')),
+                _statRow(context, 'Max Weight', '${maxWeight.toStringAsFixed(1)} kg'),
+                _statRow(context, 'Calories per min', caloriesPerMin.toStringAsFixed(1)),
               ]),
-
               const SizedBox(height: 24),
-
               // Session Notes (optional)
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Session Notes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Session Notes',
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 8),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Felt strong! Increased weight 😎'),
+                child: Text(
+                  'Felt strong! Increased weight 😎',
+                  style: textTheme.bodyMedium,
+                ),
               ),
-
               const SizedBox(height: 24),
-
               // Exercises performed
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Exercises Performed', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Exercises Performed',
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 8),
               Expanded(
@@ -138,13 +143,20 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                     final sets = e['sets'] as List;
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 6),
+                      color: colorScheme.surface,
                       elevation: 2,
                       child: ListTile(
-                        title: Text(e['exerciseName']),
+                        title: Text(
+                            e['exerciseName'],
+                            style: textTheme.titleSmall
+                        ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: sets.map<Widget>((s) {
-                            return Text('Set ${s['set']}: ${s['reps']} reps @ ${s['weight']} kg');
+                            return Text(
+                              'Set ${s['set']}: ${s['reps']} reps @ ${s['weight']} kg',
+                              style: textTheme.bodyMedium,
+                            );
                           }).toList(),
                         ),
                       ),
@@ -152,20 +164,20 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                   },
                 ),
               ),
-
               // Share button
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade900,
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   onPressed: () {
                     // TODO: Add sharing logic
                   },
-                  icon: const Icon(Icons.share),
-                  label: const Text('Share'),
+                  icon: Icon(Icons.share, color: colorScheme.onPrimary),
+                  label: Text('Share', style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary)),
                 ),
               ),
             ],
@@ -175,36 +187,51 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     );
   }
 
-  Widget _summaryCard(IconData icon, String value, String label) {
+  Widget _summaryCard(BuildContext context, IconData icon, String value, String label) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
-        Icon(icon, size: 32, color: Colors.deepOrange),
+        Icon(icon, size: 32, color: colorScheme.secondary),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        Text(label, style: const TextStyle(fontSize: 12)),
+        Text(
+          value,
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        Text(label, style: textTheme.bodySmall),
       ],
     );
   }
 
-  Widget _statsSection(List<Widget> children) {
+  Widget _statsSection(BuildContext context, List<Widget> children) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Detailed Stats', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text('Detailed Stats', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
         ...children,
       ],
     );
   }
 
-  Widget _statRow(String label, String value) {
+  Widget _statRow(BuildContext context, String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+          Text(label, style: textTheme.bodyMedium),
+          Text(
+            value,
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              // Use onSurface for best visibility!
+              color: colorScheme.onSurface,
+            ),
+          ),
         ],
       ),
     );

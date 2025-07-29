@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
 
 class CongratulationScreen extends StatefulWidget {
-  final Map<String, dynamic> workoutResult; // Pass arguments here
-
+  final Map<String, dynamic> workoutResult;
   const CongratulationScreen({super.key, required this.workoutResult});
 
   @override
@@ -19,14 +18,15 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     _confettiController.play();
-
-    // Auto-navigate to WorkoutAnalysisPage after delay
+    // Auto-navigate after delay
     Future.delayed(const Duration(seconds: 4), () {
-      Navigator.pushReplacementNamed(
-        context,
-        '/workout-analysis',
-        arguments: widget.workoutResult,
-      );
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/workout-analysis',
+          arguments: widget.workoutResult,
+        );
+      }
     });
   }
 
@@ -38,12 +38,23 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cc = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final confettiColors = [
+      cc.primary,
+      cc.secondary,
+      cc.error,
+      cc.primaryContainer,
+      cc.secondaryContainer,
+      Colors.amber, // fallback/confetti
+      Colors.teal,  // fallback/confetti
+    ];
+
     return Scaffold(
-      backgroundColor: Colors.orange[50],
+      backgroundColor: cc.background,
       body: Stack(
         alignment: Alignment.center,
         children: [
-          /// Confetti
           ConfettiWidget(
             confettiController: _confettiController,
             blastDirectionality: BlastDirectionality.explosive,
@@ -51,35 +62,39 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
             numberOfParticles: 40,
             emissionFrequency: 0.05,
             gravity: 0.2,
-            colors: const [Colors.red, Colors.blue, Colors.orange, Colors.green],
+            colors: confettiColors,
           ),
-
-          /// Congratulations Message
-          Transform.translate(
-            offset: const Offset(30, 0), // 👈 pushes widget 30px to the right
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
                   "🎉 Congratulations! 🎉",
-                  style: TextStyle(
+                  style: tt.headlineSmall?.copyWith(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepOrange,
+                    color: cc.onBackground,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   "You’ve completed your workout!",
-                  style: TextStyle(fontSize: 20),
+                  style: tt.titleMedium?.copyWith(
+                    color: cc.onBackground,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 10),
-                Text("Loading summary...", style: TextStyle(color: Colors.grey)),
+                const SizedBox(height: 10),
+                Text(
+                  "Loading summary...",
+                  style: tt.bodyMedium?.copyWith(color: cc.onSurfaceVariant),
+                  textAlign: TextAlign.center,
+                ),
               ],
             ),
           ),
-
         ],
       ),
     );

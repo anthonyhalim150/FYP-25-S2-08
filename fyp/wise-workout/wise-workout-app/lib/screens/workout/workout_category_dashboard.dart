@@ -4,11 +4,9 @@ import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-
 class WorkoutCategoryDashboard extends StatefulWidget {
   @override
-  _WorkoutCategoryDashboardState createState() =>
-      _WorkoutCategoryDashboardState();
+  _WorkoutCategoryDashboardState createState() => _WorkoutCategoryDashboardState();
 }
 
 class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
@@ -16,21 +14,20 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
   String? _selectedCategory;
   late Future<List<WorkoutCategory>> _categoryFuture;
   List<WorkoutCategory> _allCategories = [];
-
   @override
   void initState() {
     super.initState();
     _categoryFuture = WorkoutCategoryService().fetchCategories();
   }
-
   void _filterByCategory(String? categoryKey) {
     setState(() {
       _selectedCategory = categoryKey;
     });
   }
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
@@ -41,14 +38,14 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                  icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
                   onPressed: () => Navigator.pop(context),
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
                       tr('workout_categories_title'),
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: textTheme.titleLarge?.copyWith(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -56,7 +53,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
               ],
             ),
           ),
-
           // Filter Buttons
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -64,13 +60,12 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
               future: _categoryFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator(color: colorScheme.primary));
                 } else if (snapshot.hasError) {
-                  return Center(child: Text(tr('workout_categories_error')));
+                  return Center(child: Text(tr('workout_categories_error'), style: textTheme.bodyLarge));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text(tr('workout_categories_empty')));
+                  return Center(child: Text(tr('workout_categories_empty'), style: textTheme.bodyLarge));
                 }
-
                 _allCategories = snapshot.data!;
                 return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -88,21 +83,22 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             backgroundColor: _selectedCategory == null
-                                ? Colors.lightBlueAccent
-                                : Colors.white10,
+                                ? colorScheme.primary
+                                : colorScheme.surfaceVariant,
+                            foregroundColor: _selectedCategory == null
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurface,
+                            elevation: 0,
                           ),
                           child: Text(
                             tr('workout_categories_all'),
-                            style: TextStyle(
-                              color: _selectedCategory == null
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
+                            style: textTheme.labelLarge,
                           ),
                         ),
                       ),
                       // Dynamic category buttons
                       ..._allCategories.map((category) {
+                        final isSelected = _selectedCategory == category.categoryKey;
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7.0),
                           child: ElevatedButton(
@@ -113,22 +109,22 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              backgroundColor: _selectedCategory == category.categoryKey
-                                  ? Colors.lightBlueAccent
-                                  : Colors.white10,
+                              backgroundColor: isSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.surfaceVariant,
+                              foregroundColor: isSelected
+                                  ? colorScheme.onPrimary
+                                  : colorScheme.onSurface,
+                              elevation: 0,
                             ),
                             child: Row(
                               children: [
                                 Text(
                                   category.categoryName,
-                                  style: TextStyle(
-                                    color: _selectedCategory == category.categoryKey
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
+                                  style: textTheme.labelLarge,
                                 ),
-                                if (_selectedCategory == category.categoryKey)
-                                  const Icon(Icons.check, color: Colors.white, size: 18),
+                                if (isSelected)
+                                  Icon(Icons.check, color: colorScheme.onPrimary, size: 18),
                               ],
                             ),
                           ),
@@ -140,26 +136,23 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
               },
             ),
           ),
-
           // Category List
           Expanded(
             child: FutureBuilder<List<WorkoutCategory>>(
               future: _categoryFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator(color: colorScheme.primary));
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text('Error: ${snapshot.error}', style: textTheme.bodyLarge));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text(tr('workout_categories_not_found')));
+                  return Center(child: Text(tr('workout_categories_not_found'), style: textTheme.bodyLarge));
                 }
-
                 final filteredCategories = _selectedCategory == null
                     ? snapshot.data!
                     : snapshot.data!
                     .where((c) => c.categoryKey == _selectedCategory)
                     .toList();
-
                 return ListView.builder(
                   itemCount: filteredCategories.length,
                   itemBuilder: (context, index) {
@@ -210,8 +203,8 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
               break;
           }
         },
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: colorScheme.secondary,
+        unselectedItemColor: colorScheme.onSurface.withOpacity(0.5),
       ),
     );
   }

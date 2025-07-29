@@ -5,12 +5,9 @@ import '../model/exercise_model.dart';
 import '../../widgets/exercise_timer.dart';
 import '../../services/workout_session_service.dart';
 
-
 class ExerciseLogPage extends StatefulWidget {
   final Exercise exercise;
-
   const ExerciseLogPage({super.key, required this.exercise});
-
   @override
   State<ExerciseLogPage> createState() => _ExerciseLogPageState();
 }
@@ -31,9 +28,9 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
       };
     });
   }
+
   void _saveLogToSession() {
     final completedSets = sets.where((set) => set['finished'] == true).toList();
-
     if (completedSets.isNotEmpty) {
       WorkoutSessionService().addExerciseLog({
         'exerciseId': widget.exercise.exerciseId,
@@ -59,6 +56,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
       sets[index][key] = value;
     });
   }
+
   @override
   void dispose() {
     _saveLogToSession();
@@ -67,19 +65,40 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
 
   Future<String?> _showEditDialog(String initial, String label) async {
     final controller = TextEditingController(text: initial);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${'edit'.tr()} $label'),
+        title: Text('${'edit'.tr()} $label', style: textTheme.titleMedium),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(hintText: label),
+          style: textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurface,
+          ),
+          decoration: InputDecoration(
+            hintText: label,
+            hintStyle: textTheme.bodyLarge?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.6),
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: colorScheme.outline),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: colorScheme.primary),
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: Text('save'.tr()),
+            child: Text(
+              'save'.tr(),
+              style: textTheme.labelLarge?.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
           ),
         ],
       ),
@@ -88,8 +107,10 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F1),
+      backgroundColor: colorScheme.background,
       body: Column(
         children: [
           Stack(
@@ -106,9 +127,9 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                 top: MediaQuery.of(context).padding.top + 8,
                 left: 12,
                 child: CircleAvatar(
-                  backgroundColor: Colors.white.withOpacity(0.85),
+                  backgroundColor: colorScheme.surface.withOpacity(0.88),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon: Icon(Icons.arrow_back, color: colorScheme.onSurface, size: 24),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -116,7 +137,6 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
             ],
           ),
           const SizedBox(height: 16),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Table(
@@ -129,17 +149,16 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
               children: [
                 TableRow(
                   children: [
-                    Center(child: Text('exercise_set'.tr(), style: const TextStyle(fontWeight: FontWeight.bold))),
-                    Center(child: Text('exercise_weight'.tr(), style: const TextStyle(fontWeight: FontWeight.bold))),
-                    Center(child: Text('exercise_reps'.tr(), style: const TextStyle(fontWeight: FontWeight.bold))),
-                    Center(child: Text('exercise_action'.tr(), style: const TextStyle(fontWeight: FontWeight.bold))),
+                    Center(child: Text('exercise_set'.tr(), style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold))),
+                    Center(child: Text('exercise_weight'.tr(), style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold))),
+                    Center(child: Text('exercise_reps'.tr(), style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold))),
+                    Center(child: Text('exercise_action'.tr(), style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold))),
                   ],
                 ),
               ],
             ),
           ),
-          const Divider(thickness: 1.5, color: Colors.grey),
-
+          Divider(thickness: 1.5, color: colorScheme.outline),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -157,30 +176,47 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
-                            child: Text('${'exercise_set'.tr()} ${sets[index]['set']}', style: const TextStyle(fontSize: 16)),
-                          ),
-                        ),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () async {
-                              final result = await _showEditDialog(sets[index]['weight'].toString(), 'exercise_weight'.tr());
-                              if (result != null) _editValue(index, 'weight', double.tryParse(result) ?? 0.0);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12.0),
-                              child: Text('${sets[index]['weight']} kg', style: const TextStyle(color: Colors.blue, fontSize: 16)),
+                            child: Text(
+                              '${'exercise_set'.tr()} ${sets[index]['set']}',
+                              style: textTheme.bodyLarge?.copyWith(fontSize: 16),
                             ),
                           ),
                         ),
                         Center(
                           child: GestureDetector(
                             onTap: () async {
-                              final result = await _showEditDialog(sets[index]['reps'].toString(), 'exercise_reps'.tr());
+                              final result = await _showEditDialog(
+                                  sets[index]['weight'].toString(), 'exercise_weight'.tr());
+                              if (result != null) _editValue(index, 'weight', double.tryParse(result) ?? 0.0);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Text(
+                                '${sets[index]['weight']} kg',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final result = await _showEditDialog(
+                                  sets[index]['reps'].toString(), 'exercise_reps'.tr());
                               if (result != null) _editValue(index, 'reps', int.tryParse(result) ?? 1);
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 12.0),
-                              child: Text('${sets[index]['reps']}', style: const TextStyle(color: Colors.blue, fontSize: 16)),
+                              child: Text(
+                                '${sets[index]['reps']}',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -195,8 +231,12 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 12.0),
                               child: Icon(
-                                sets[index]['finished'] == true ? Icons.check_circle : Icons.check_circle_outline,
-                                color: sets[index]['finished'] == true ? Colors.green : Colors.grey,
+                                sets[index]['finished'] == true
+                                    ? Icons.check_circle
+                                    : Icons.check_circle_outline,
+                                color: sets[index]['finished'] == true
+                                    ? colorScheme.tertiary
+                                    : colorScheme.outline,
                               ),
                             ),
                           ),
@@ -207,23 +247,28 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade900),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+              ),
               onPressed: _addSet,
-              child: Text('+ ${'exercise_add_set'.tr()}'),
+              child: Text('+ ${'exercise_add_set'.tr()}', style: textTheme.labelLarge),
             ),
           ),
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.secondary,
+                foregroundColor: colorScheme.onSecondary,
+              ),
               onPressed: () => ExerciseTimer.showRestTimer(context, _restTimerController),
-              child: Text('exercise_rest_timer'.tr()),
+              child: Text('exercise_rest_timer'.tr(), style: textTheme.labelLarge),
             ),
           ),
           const SizedBox(height: 20),

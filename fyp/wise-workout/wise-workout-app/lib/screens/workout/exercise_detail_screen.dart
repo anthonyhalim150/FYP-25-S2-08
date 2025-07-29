@@ -7,16 +7,13 @@ import '../../services/api_service.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
   final Exercise exercise;
-
   const ExerciseDetailScreen({super.key, required this.exercise});
-
   @override
   State<ExerciseDetailScreen> createState() => _ExerciseDetailScreenState();
 }
 
 class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   bool _isPremiumUser = false;
-
   @override
   void initState() {
     super.initState();
@@ -34,14 +31,16 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: colorScheme.background,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
             expandedHeight: 280,
-            backgroundColor: Colors.grey[800],
+            backgroundColor: colorScheme.surfaceVariant ?? colorScheme.surface,
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -50,8 +49,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                     _getExerciseImagePath(widget.exercise.exerciseName),
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.fitness_center, size: 100, color: Colors.grey),
+                      color: colorScheme.surface,
+                      child: Icon(Icons.fitness_center, size: 100, color: colorScheme.outline),
                     ),
                   ),
                   Positioned(
@@ -79,9 +78,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           icon: const Icon(Icons.play_arrow),
                           label: Text('exercise_play_tutorial').tr(),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                            _isPremiumUser ? Colors.amber[700] : Colors.grey[400],
-                            foregroundColor: Colors.black,
+                            backgroundColor: _isPremiumUser
+                                ? colorScheme.secondary
+                                : colorScheme.surfaceVariant ?? colorScheme.surface,
+                            foregroundColor: colorScheme.onSecondary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -92,7 +92,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                             padding: const EdgeInsets.only(top: 6),
                             child: Text(
                               "Unlock tutorial with Premium",
-                              style: TextStyle(fontSize: 12, color: Colors.grey[300]),
+                              style: textTheme.bodySmall?.copyWith(
+                                  fontSize: 12,
+                                  color: colorScheme.onSurface.withOpacity(0.7)),
                             ),
                           ),
                       ],
@@ -123,8 +125,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           icon: const Icon(Icons.photo_camera),
           label: Text("exercise_start_button").tr(),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber,
-            foregroundColor: Colors.black,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           ),
@@ -135,34 +137,39 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   Widget _buildDetailContent(BuildContext context) {
     final exercise = widget.exercise;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           exercise.exerciseName,
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
 
-        _buildSectionTitle('exercise_overview'.tr()),
-        Text(exercise.exerciseDescription),
-
+        _buildSectionTitle('exercise_overview'.tr(), context),
+        Text(
+          exercise.exerciseDescription,
+          style: textTheme.bodyLarge,
+        ),
         const SizedBox(height: 16),
-        _buildSectionTitle('exercise_expect'.tr()),
+
+        _buildSectionTitle('exercise_expect'.tr(), context),
         Text(
           '- Full-body warm-up\n'
               '- Strength moves (e.g., push-ups, squats, planks)\n'
               '- Balance, endurance & posture\n'
               '- Cooldown with mobility work',
+          style: textTheme.bodyMedium,
         ),
-
         const SizedBox(height: 16),
+
         if (exercise.exerciseLevel != null && exercise.exerciseLevel!.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle('exercise_level'.tr()),
-              Text(exercise.exerciseLevel!),
+              _buildSectionTitle('exercise_level'.tr(), context),
+              Text(exercise.exerciseLevel!, style: textTheme.bodyMedium),
               const SizedBox(height: 16),
             ],
           ),
@@ -171,35 +178,40 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle('exercise_equipment'.tr()),
-              Text(exercise.exerciseEquipment!),
+              _buildSectionTitle('exercise_equipment'.tr(), context),
+              Text(exercise.exerciseEquipment!, style: textTheme.bodyMedium),
               const SizedBox(height: 16),
             ],
           ),
 
-        _buildSectionTitle('exercise_instructions'.tr()),
-        ..._buildInstructionList(exercise.exerciseInstructions),
-
+        _buildSectionTitle('exercise_instructions'.tr(), context),
+        ..._buildInstructionList(exercise.exerciseInstructions, context),
         const SizedBox(height: 32),
       ],
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Text(
       title,
-      style: const TextStyle(
+      style: textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
-        fontSize: 16,
         decoration: TextDecoration.underline,
+        fontSize: 16,
+        // No color override here!
       ),
     );
   }
 
-  List<Widget> _buildInstructionList(String instructions) {
+  List<Widget> _buildInstructionList(String instructions, BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final parts = instructions.split(RegExp(r'\n|\r'));
     return List.generate(parts.length, (i) {
-      return Text('${i + 1}. ${parts[i]}');
+      return Text(
+        '${i + 1}. ${parts[i]}',
+        style: textTheme.bodyMedium,
+      );
     });
   }
 

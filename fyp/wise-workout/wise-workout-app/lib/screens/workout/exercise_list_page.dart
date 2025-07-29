@@ -10,11 +10,13 @@ import 'package:easy_localization/easy_localization.dart';
 class ExerciseListPage extends StatefulWidget {
   final int workoutId;
   final String workoutName;
+
   const ExerciseListPage({
     super.key,
     required this.workoutId,
     required this.workoutName,
   });
+
   @override
   State<ExerciseListPage> createState() => _ExerciseListPageState();
 }
@@ -22,27 +24,32 @@ class ExerciseListPage extends StatefulWidget {
 class _ExerciseListPageState extends State<ExerciseListPage> {
   late Future<List<Exercise>> _exercisesFuture;
   final WorkoutSessionService _sessionService = WorkoutSessionService();
+
   String _formattedTime = "00:00:00";
   late StreamSubscription<Duration> _elapsedSubscription;
 
   @override
   void initState() {
     super.initState();
-    _exercisesFuture = ExerciseService().fetchExercisesByWorkout(widget.workoutId.toString());
-    _elapsedSubscription = _sessionService.elapsedStream.listen((elapsed) {
-      setState(() {
-        _formattedTime = _formatDuration(elapsed);
-      });
-    });
+    _exercisesFuture =
+        ExerciseService().fetchExercisesByWorkout(widget.workoutId.toString());
+    _elapsedSubscription =
+        _sessionService.elapsedStream.listen((elapsed) {
+          setState(() {
+            _formattedTime = _formatDuration(elapsed);
+          });
+        });
     if (_sessionService.isActive) {
       _formattedTime = _formatDuration(_sessionService.elapsed);
     }
   }
+
   @override
   void dispose() {
     _elapsedSubscription.cancel();
     super.dispose();
   }
+
   void _startWorkout() {
     _sessionService.setWorkoutName(widget.workoutName);
     if (_sessionService.isActive) {
@@ -53,6 +60,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
     }
     _sessionService.start((_) {});
   }
+
   void _endWorkout() async {
     final duration = _sessionService.elapsed;
     _sessionService.clearSession();
@@ -72,18 +80,22 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => CongratulationScreen(workoutResult: workoutResult),
+        builder: (context) =>
+            CongratulationScreen(workoutResult: workoutResult),
       ),
     );
   }
+
   String _formatDuration(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     return "${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}";
   }
+
   double _calculateCalories(Duration duration) {
     final minutes = duration.inMinutes;
     return 6.5 * minutes;
   }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -97,14 +109,21 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
             future: _exercisesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator(color: colorScheme.primary));
+                // USING THEMED COLOR
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: colorScheme.primary,
+                  ),
+                );
               }
               if (snapshot.hasError) {
                 final errorMsg = snapshot.error?.toString() ?? 'Unknown error';
                 return Center(
                   child: Text(
                     '${tr('exercise_list_error')}: $errorMsg',
-                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.error),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.error,
+                    ),
                   ),
                 );
               }
@@ -128,9 +147,11 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                             top: MediaQuery.of(context).padding.top + 10,
                             left: 16,
                             child: CircleAvatar(
-                              backgroundColor: colorScheme.surface.withOpacity(0.8),
+                              backgroundColor:
+                              colorScheme.surface.withOpacity(0.8),
                               child: IconButton(
-                                icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+                                icon: Icon(Icons.arrow_back,
+                                    color: colorScheme.onSurface),
                                 onPressed: () => Navigator.of(context).pop(),
                               ),
                             ),
@@ -159,7 +180,8 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                     children: [
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(8),
@@ -210,11 +232,21 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: Text(tr('cancel'), style: textTheme.labelLarge?.copyWith(color: colorScheme.primary)),
+                          child: Text(
+                            tr('cancel'),
+                            style: textTheme.labelLarge?.copyWith(
+                              color: colorScheme.primary,
+                            ),
+                          ),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: Text(tr('end'), style: textTheme.labelLarge?.copyWith(color: colorScheme.error)),
+                          child: Text(
+                            tr('end'),
+                            style: textTheme.labelLarge?.copyWith(
+                              color: colorScheme.error,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -223,8 +255,13 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                     _endWorkout();
                   }
                 },
-                icon: const Icon(Icons.stop),
-                label: Text(_formattedTime, style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary)),
+                icon: Icon(Icons.stop,
+                    color: colorScheme.onPrimary),
+                label: Text(
+                  _formattedTime,
+                  style: textTheme.labelLarge
+                      ?.copyWith(color: colorScheme.onPrimary),
+                ),
                 backgroundColor: colorScheme.error,
                 foregroundColor: colorScheme.onPrimary,
               ),
@@ -234,8 +271,13 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       floatingActionButton: !_sessionService.isActive
           ? FloatingActionButton.extended(
         onPressed: _startWorkout,
-        icon: Icon(Icons.fitness_center, color: colorScheme.onPrimary),
-        label: Text(tr('exercise_list_start'), style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary)),
+        icon: Icon(Icons.fitness_center,
+            color: colorScheme.onPrimary),
+        label: Text(
+          tr('exercise_list_start'),
+          style: textTheme.labelLarge
+              ?.copyWith(color: colorScheme.onPrimary),
+        ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       )

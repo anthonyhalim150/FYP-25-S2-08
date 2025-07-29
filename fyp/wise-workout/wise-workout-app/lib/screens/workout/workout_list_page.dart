@@ -25,13 +25,14 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       body: FutureBuilder<List<Workout>>(
         future: workoutList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(color: colorScheme.primary));
+            return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary)
+            );
           }
           if (snapshot.hasError) {
             final errorMessage = snapshot.error?.toString() ?? 'Unknown error';
@@ -87,7 +88,6 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                             widget.categoryKey.toUpperCase(),
                             style: textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              // color: colorScheme.primary (for accent),
                               color: colorScheme.primary,
                               fontSize: 50,
                               letterSpacing: 2,
@@ -108,6 +108,7 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Search Bar
                       TextField(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),

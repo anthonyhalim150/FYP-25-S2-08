@@ -5,13 +5,23 @@ class ExerciseTimer {
   static void showRestTimer(BuildContext context, CountDownController timerController) {
     int duration = 60;
 
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Rest Timer", textAlign: TextAlign.center),
+              backgroundColor: colorScheme.surface,
+              title: Text(
+                "Rest Timer",
+                textAlign: TextAlign.center,
+                style: textTheme.titleLarge?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -21,14 +31,17 @@ class ExerciseTimer {
                     controller: timerController,
                     width: 120,
                     height: 120,
-                    ringColor: Colors.grey[300]!,
-                    fillColor: Colors.blue[500]!,
-                    backgroundColor: Colors.white,
+                    ringColor: colorScheme.outline.withOpacity(0.3),
+                    fillColor: colorScheme.primary,
+                    backgroundColor: colorScheme.surface,
                     strokeWidth: 10.0,
                     strokeCap: StrokeCap.round,
                     isTimerTextShown: true,
                     isReverse: true,
-                    textStyle: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    textStyle: textTheme.displayMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface, // visible!
+                    ),
                     onComplete: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: 16),
@@ -36,16 +49,25 @@ class ExerciseTimer {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                        ),
                         onPressed: () {
-                          // Increase time by 10 seconds
                           duration += 10;
                           timerController.restart(duration: duration);
                           setState(() {});
                         },
-                        child: const Text("+10s"),
+                        child: Text("+10s", style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onPrimary,
+                        )),
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.secondary,
+                          foregroundColor: colorScheme.onSecondary,
+                        ),
                         onPressed: () {
                           if (duration > 10) {
                             duration -= 10;
@@ -53,7 +75,9 @@ class ExerciseTimer {
                             setState(() {});
                           }
                         },
-                        child: const Text("-10s"),
+                        child: Text("-10s", style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSecondary,
+                        )),
                       ),
                     ],
                   ),
@@ -62,15 +86,30 @@ class ExerciseTimer {
               actions: [
                 TextButton(
                   onPressed: () => timerController.pause(),
-                  child: const Text("Pause"),
+                  child: Text(
+                    "Pause",
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onSurface,  // <--- final fix
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => timerController.resume(),
-                  child: const Text("Resume"),
+                  child: Text(
+                    "Resume",
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onSurface,  // <--- final fix
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Close"),
+                  child: Text(
+                    "Close",
+                    style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.error
+                    ),
+                  ),
                 ),
               ],
             );
