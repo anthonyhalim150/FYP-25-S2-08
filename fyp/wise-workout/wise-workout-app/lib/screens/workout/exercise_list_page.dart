@@ -59,7 +59,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
     setState(() {
       _formattedTime = "00:00:00";
     });
-    final exercises = await _exercisesFuture;
+    final exercises = _sessionService.loggedExercises;
     final workoutResult = {
       'workout': {
         'workoutId': widget.workoutId,

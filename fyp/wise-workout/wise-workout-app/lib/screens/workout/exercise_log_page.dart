@@ -3,6 +3,8 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../model/exercise_model.dart';
 import '../../widgets/exercise_timer.dart';
+import '../../services/workout_session_service.dart';
+
 
 class ExerciseLogPage extends StatefulWidget {
   final Exercise exercise;
@@ -29,6 +31,17 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
       };
     });
   }
+  void _saveLogToSession() {
+    final completedSets = sets.where((set) => set['finished'] == true).toList();
+
+    if (completedSets.isNotEmpty) {
+      WorkoutSessionService().addExerciseLog({
+        'exerciseId': widget.exercise.exerciseId,
+        'exerciseName': widget.exercise.exerciseName,
+        'sets': completedSets,
+      });
+    }
+  }
 
   void _addSet() {
     setState(() {
@@ -45,6 +58,11 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
     setState(() {
       sets[index][key] = value;
     });
+  }
+  @override
+  void dispose() {
+    _saveLogToSession();
+    super.dispose();
   }
 
   Future<String?> _showEditDialog(String initial, String label) async {

@@ -13,18 +13,18 @@ class WorkoutSessionService {
   Duration _elapsed = Duration.zero;
   Timer? _timer;
 
+  final List<Map<String, dynamic>> _loggedExercises = [];
   final StreamController<Duration> _elapsedController = StreamController.broadcast();
 
   Stream<Duration> get elapsedStream => _elapsedController.stream;
-
   bool get isActive => _isActive;
-
   Duration get elapsed => _elapsed;
+  String? get workoutName => _workoutName;
+  List<Map<String, dynamic>> get loggedExercises => _loggedExercises;
 
   void setWorkoutName(String name) {
     _workoutName = name;
   }
-  String? get workoutName => _workoutName;
 
   void start([void Function(Duration)? onElapsed]) {
     if (_isActive) return;
@@ -38,6 +38,10 @@ class WorkoutSessionService {
     });
   }
 
+  void addExerciseLog(Map<String, dynamic> log) {
+    _loggedExercises.add(log);
+  }
+
   void stop() {
     _timer?.cancel();
     _timer = null;
@@ -48,6 +52,7 @@ class WorkoutSessionService {
     stop();
     _elapsed = Duration.zero;
     _workoutName = null;
+    _loggedExercises.clear();
   }
 
   void dispose() {
