@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../services/workout_service.dart';
+import '../../services/workout_session_service.dart';
 
 class WorkoutAnalysisPage extends StatefulWidget {
   const WorkoutAnalysisPage({super.key});
@@ -12,6 +14,74 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     final m = d.inMinutes;
     final s = d.inSeconds.remainder(60);
     return '${m}m ${s}s';
+  }
+
+  DateTime _workoutStartTime = DateTime.now();
+  bool _hasSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _workoutStartTime = DateTime.now().subtract(Duration(
+      seconds: WorkoutSessionService().elapsed.inSeconds,
+    ));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Only save once when the widget is first built
+    if (!_hasSaved) {
+      _hasSaved = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _saveWorkoutSession();
+      });
+    }
+  }
+
+  Future<void> _saveWorkoutSession() async {
+    try {
+      final sessionService = WorkoutSessionService();
+      final workoutService = WorkoutService();
+      
+ 
+      final args = ModalRoute.of(context)!.settings.arguments as Map;
+      final Map<String, dynamic> workout = args['workout'];
+      final List exercises = args['exercises'];
+      final Duration duration = args['duration'];
+      final double calories = args['calories'];
+      
+      final List<Map<String, dynamic>> formattedExercises = exercises.map((exercise) {
+        return {
+          'exerciseKey': exercise['exerciseKey'] ?? exercise['exercise_name']?.toString().toLowerCase().replaceAll(' ', '_'),
+          'exerciseName': exercise['exerciseName'] ?? exercise['exercise_name'],
+          'setsData': exercise['sets'] ?? [],
+        };
+      }).toList();
+      
+   
+      await workoutService.saveWorkoutSession(
+        workoutId: workout['workoutId'],
+        startTime: _workoutStartTime,
+        endTime: DateTime.now(),
+        duration: duration.inSeconds,
+        caloriesBurned: calories,
+        exercises: formattedExercises,
+      );
+      
+      print('✅ Workout session saved successfully to database');
+    } catch (e) {
+      print('❌ Error saving workout session: $e');
+ 
+     // Show error in a safe way
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to save workout: $e')),
+          );
+        }
+      });
+    }
   }
 
   String buildShareContent({

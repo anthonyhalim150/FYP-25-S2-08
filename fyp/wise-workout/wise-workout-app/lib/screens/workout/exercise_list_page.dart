@@ -63,11 +63,11 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
   void _endWorkout() async {
     final duration = _sessionService.elapsed;
+    final exercises = _sessionService.loggedExercises;
     _sessionService.clearSession();
     setState(() {
       _formattedTime = "00:00:00";
     });
-    final exercises = _sessionService.loggedExercises;
     final workoutResult = {
       'workout': {
         'workoutId': widget.workoutId,

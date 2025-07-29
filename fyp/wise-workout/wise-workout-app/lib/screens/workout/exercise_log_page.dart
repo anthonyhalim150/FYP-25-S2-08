@@ -34,6 +34,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
     if (completedSets.isNotEmpty) {
       WorkoutSessionService().addExerciseLog({
         'exerciseId': widget.exercise.exerciseId,
+        'exerciseKey': widget.exercise.exerciseKey,
         'exerciseName': widget.exercise.exerciseName,
         'sets': completedSets,
       });

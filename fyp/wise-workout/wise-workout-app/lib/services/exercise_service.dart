@@ -9,7 +9,6 @@ class ExerciseService {
 
   Future<String?> _getJwtCookie() async {
     final cookie = await _storage.read(key: 'jwt_cookie');
-    print('🍪 Retrieved JWT cookie: $cookie');
     return cookie;
   }
 

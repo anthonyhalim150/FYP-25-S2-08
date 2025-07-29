@@ -1,12 +1,12 @@
 const WorkoutSessionModel = require('../models/workoutSessionModel');
-const ExerciseLogModel = require('../models/exerciseLogsModel');
+const ExerciseLogsModel = require('../models/exerciseLogsModel');
 
 class WorkoutSessionService {
   static async saveWorkoutSession(sessionData, exerciseLogs) {
     try {
       const sessionId = await WorkoutSessionModel.createSession(sessionData);
       for (const exercise of exerciseLogs) {
-        await ExerciseLogModel.logExercise(sessionId, exercise);
+        await ExerciseLogsModel.logExercise(sessionId, exercise);
       }
       return sessionId;
     } catch (error) {
@@ -18,7 +18,7 @@ class WorkoutSessionService {
     try {
       const sessions = await WorkoutSessionModel.getSessionsByUserId(userId);
       for (const session of sessions) {
-        session.exercises = await ExerciseLogModel.getExerciseLogsBySessionId(session.session_id);
+        session.exercises = await ExerciseLogsModel.getExerciseLogsBySessionId(session.session_id);
       }
       return sessions;
     } catch (error) {
