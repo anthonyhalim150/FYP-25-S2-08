@@ -35,20 +35,16 @@ class AnalysisScreen extends StatelessWidget {
       "Pace": workout.contains("HIIT") ? "Very Fast" : null,
       "Calories per min": (calories / (int.tryParse(duration.split(" ").first) ?? 1)).toStringAsFixed(1),
     };
-
     String statString = stats.entries
         .where((e) => e.value != null && e.value.toString().isNotEmpty)
         .map((e) => "${e.key}: ${e.value}")
         .join("\n");
-
     String text =
         "🏋️ Workout: $workout\n📅 Date: $date\n⏱ Duration: $duration\n🔥 Calories: $calories kcal\n"
         "⬆️ Intensity: $intensity\n$statString";
-
     if (notes != null && notes!.trim().isNotEmpty) {
       text += "\n📝 Notes: ${notes!}";
     }
-
     text += "\n\nShared via MyWorkoutApp 💪";
     return text;
   }
@@ -56,6 +52,8 @@ class AnalysisScreen extends StatelessWidget {
   // Share dialog with editable message
   void _showShareEditDialog(BuildContext context, String initialText) {
     final controller = TextEditingController(text: initialText);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     showModalBottomSheet(
       context: context,
@@ -65,7 +63,6 @@ class AnalysisScreen extends StatelessWidget {
       isScrollControlled: true,
       builder: (context) {
         final padding = MediaQuery.of(context).viewInsets;
-
         return Padding(
           padding: padding,
           child: Column(
@@ -76,14 +73,14 @@ class AnalysisScreen extends StatelessWidget {
                 width: 50,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: colorScheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Edit your share message',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Padding(
@@ -92,10 +89,16 @@ class AnalysisScreen extends StatelessWidget {
                   controller: controller,
                   maxLines: 8,
                   minLines: 4,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(13)),
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: BorderSide(color: colorScheme.outline),
+                    ),
                   ),
                 ),
               ),
@@ -106,11 +109,12 @@ class AnalysisScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF071655),
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
-                    icon: const Icon(Icons.share),
-                    label: const Text("Share"),
+                    icon: Icon(Icons.share, color: colorScheme.onPrimary),
+                    label: Text("Share", style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary)),
                     onPressed: () {
                       final msg = controller.text.trim();
                       if (msg.isNotEmpty) {
@@ -131,6 +135,8 @@ class AnalysisScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final stats = extraStats ?? {
       "Average Heart Rate": "123 bpm",
       "Peak Heart Rate": "143 bpm",
@@ -143,21 +149,19 @@ class AnalysisScreen extends StatelessWidget {
     };
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFCF2),
-
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.amber,
+        backgroundColor: colorScheme.secondary,
         elevation: 0,
-        title: const Text(
+        title: Text(
           "Workout Analysis",
-          style: TextStyle(
-            color: Colors.black,
+          style: textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSecondary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: colorScheme.onSecondary),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
         child: Column(
@@ -168,8 +172,8 @@ class AnalysisScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.purple[100],
-                  child: Icon(icon, color: const Color(0xFF071655), size: 32),
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: Icon(icon, color: colorScheme.onPrimaryContainer, size: 32),
                   radius: 32,
                 ),
                 const SizedBox(width: 18),
@@ -179,16 +183,19 @@ class AnalysisScreen extends StatelessWidget {
                     children: [
                       Text(
                         workout,
-                        style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                        style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.calendar_today, size: 14, color: Colors.grey[700]),
+                          Icon(Icons.calendar_today, size: 14, color: colorScheme.onSurface.withOpacity(0.7)),
                           const SizedBox(width: 5),
                           Text(
                             date,
-                            style: const TextStyle(fontSize: 13, color: Colors.black54),
+                            style: textTheme.labelLarge?.copyWith(
+                              fontSize: 13,
+                              color: colorScheme.onSurface.withOpacity(0.7),
+                            ),
                           ),
                         ],
                       ),
@@ -197,25 +204,20 @@ class AnalysisScreen extends StatelessWidget {
                 )
               ],
             ),
-
             const SizedBox(height: 25),
-
             // Top Summary Cards
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _statCard(Icons.timer, "Duration", duration),
-                _statCard(Icons.local_fire_department, "Calories", "$calories kcal"),
-                _statCard(Icons.trending_up, "Intensity", intensity),
+                _statCard(context, Icons.timer, "Duration", duration),
+                _statCard(context, Icons.local_fire_department, "Calories", "$calories kcal"),
+                _statCard(context, Icons.trending_up, "Intensity", intensity),
               ],
             ),
-
             const SizedBox(height: 28),
-
-            // Detailed Stats
-            const Text(
+            Text(
               "Detailed Stats",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             ...stats.entries
@@ -227,61 +229,58 @@ class AnalysisScreen extends StatelessWidget {
                   Expanded(
                       child: Text(
                         e.key,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 14),
+                        style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                       )),
                   Text(
                     e.value.toString(),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF071655),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
-                  )
+                  ),
                 ],
               ),
             )),
-
-            // Notes section
             if (notes != null && notes!.isNotEmpty) ...[
               const SizedBox(height: 22),
-              const Text(
+              Text(
                 "Session Notes",
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 notes!,
-                style: const TextStyle(
-                    fontStyle: FontStyle.italic, fontSize: 15),
+                style: textTheme.bodyLarge?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: colorScheme.onSurface.withOpacity(0.8),
+                ),
               ),
             ],
           ],
         ),
       ),
-
-      // Share FAB
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           _showShareEditDialog(context, buildShareContent());
         },
-        icon: const Icon(Icons.share),
-        label: const Text("Share"),
-        backgroundColor: const Color(0xFF071655),
+        icon: Icon(Icons.share, color: colorScheme.onPrimary),
+        label: Text("Share", style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary)),
+        backgroundColor: colorScheme.primary,
       ),
     );
   }
 
-  // Top card component match design
-  Widget _statCard(IconData icon, String label, String value) {
+  Widget _statCard(BuildContext context, IconData icon, String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       width: 95,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(11),
         boxShadow: [
           BoxShadow(
-              color: Colors.grey.withOpacity(0.10),
+              color: colorScheme.shadow.withOpacity(0.10),
               blurRadius: 4,
               offset: const Offset(1, 2))
         ],
@@ -289,21 +288,23 @@ class AnalysisScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 7),
       child: Column(
         children: [
-          Icon(icon, color: Colors.purple[300], size: 28),
+          Icon(icon, color: colorScheme.onSurface, size: 28),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 12,
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.6),
               fontWeight: FontWeight.w300,
             ),
-          )
+          ),
         ],
       ),
     );

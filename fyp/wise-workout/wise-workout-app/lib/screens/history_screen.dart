@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'analysis_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
@@ -48,9 +47,11 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFCF2),
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
+    return Scaffold(
+      backgroundColor: colorScheme.background,
       body: Column(
         children: [
           SafeArea(
@@ -59,21 +60,21 @@ class HistoryScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.amber,
+                  color: colorScheme.secondary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      icon: Icon(Icons.arrow_back, color: colorScheme.onSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                     Expanded(
                       child: Text(
                         'history_title'.tr(),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: colorScheme.onSecondary,
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
@@ -85,14 +86,13 @@ class HistoryScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // 📝 Workout List or Empty State
+          // Workout List or Empty State
           Expanded(
             child: workoutHistory.isEmpty
                 ? Center(
               child: Text(
                 'history_empty_message'.tr(),
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
               ),
             )
                 : ListView.separated(
@@ -101,7 +101,6 @@ class HistoryScreen extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, i) {
                 final entry = workoutHistory[i];
-
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -121,11 +120,11 @@ class HistoryScreen extends StatelessWidget {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.05),
+                          color: colorScheme.shadow.withOpacity(0.05),
                           blurRadius: 6,
                           offset: const Offset(1, 2),
                         ),
@@ -136,7 +135,7 @@ class HistoryScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(entry['icon'] as IconData,
-                            color: const Color(0xFF071655), size: 40),
+                            color: colorScheme.onSurface, size: 40),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
@@ -144,17 +143,17 @@ class HistoryScreen extends StatelessWidget {
                             children: [
                               Text(
                                 entry['date'],
-                                style: const TextStyle(
+                                style: textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF071655),
+                                  color: colorScheme.onSurface,
                                   fontSize: 14,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 entry['workout'],
-                                style: const TextStyle(
-                                  color: Colors.black87,
+                                style: textTheme.bodyLarge?.copyWith(
+                                  color: colorScheme.onSurface,
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -163,47 +162,45 @@ class HistoryScreen extends StatelessWidget {
                               Row(
                                 children: [
                                   Icon(Icons.timer,
-                                      size: 16, color: Colors.grey[600]),
+                                      size: 16, color: colorScheme.onSurface.withOpacity(0.75)),
                                   const SizedBox(width: 4),
                                   Text(
                                     entry['duration'],
-                                    style: const TextStyle(
-                                        color: Colors.grey, fontSize: 13),
+                                    style: textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurface.withOpacity(0.7)),
                                   ),
                                   const SizedBox(width: 15),
                                   Icon(Icons.local_fire_department,
-                                      size: 16, color: Colors.amber),
+                                      size: 16, color: colorScheme.secondary),
                                   const SizedBox(width: 4),
                                   Text(
                                     "${entry['calories']} kcal",
-                                    style: const TextStyle(
-                                        color: Colors.amber,
-                                        fontSize: 13),
+                                    style: textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.secondary),
                                   ),
                                   const SizedBox(width: 15),
                                   Icon(Icons.trending_up,
-                                      size: 16,
-                                      color: Colors.deepPurple),
+                                      size: 16, color: colorScheme.primary),
                                   const SizedBox(width: 4),
                                   Text(
                                     entry['intensity'],
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.deepPurple),
+                                    style: textTheme.bodySmall?.copyWith(
+                                      fontSize: 13,
+                                      color: colorScheme.primary,
+                                    ),
                                   ),
                                 ],
                               ),
                               if (entry['notes'] != null &&
                                   (entry['notes'] as String).isNotEmpty)
                                 Padding(
-                                  padding:
-                                  const EdgeInsets.only(top: 8.0),
+                                  padding: const EdgeInsets.only(top: 8.0),
                                   child: Text(
                                     entry['notes'],
-                                    style: const TextStyle(
+                                    style: textTheme.bodySmall?.copyWith(
                                       fontSize: 13,
                                       fontStyle: FontStyle.italic,
-                                      color: Colors.black54,
+                                      color: colorScheme.onSurface.withOpacity(0.6),
                                     ),
                                   ),
                                 ),
