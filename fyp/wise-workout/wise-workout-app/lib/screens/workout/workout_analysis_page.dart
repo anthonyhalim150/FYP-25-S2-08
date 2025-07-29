@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class WorkoutAnalysisPage extends StatefulWidget {
   const WorkoutAnalysisPage({super.key});
@@ -11,6 +12,128 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     final m = d.inMinutes;
     final s = d.inSeconds.remainder(60);
     return '${m}m ${s}s';
+  }
+
+  String buildShareContent({
+    required String workoutName,
+    required String date,
+    required String duration,
+    required String calories,
+    required String intensity,
+    required int avgHeartRate,
+    required int peakHeartRate,
+    required int steps,
+    required int totalSets,
+    required String repString,
+    required String maxWeight,
+    required String caloriesPerMin,
+    String? notes,
+  }) {
+    String statString = [
+      "Average Heart Rate: $avgHeartRate bpm",
+      "Peak Heart Rate: $peakHeartRate bpm",
+      "Steps: $steps",
+      "Sets: $totalSets",
+      "Reps: $repString",
+      "Max Weight: $maxWeight",
+      "Calories per min: $caloriesPerMin",
+    ].join('\n');
+
+    String text = "🏋️ Workout: $workoutName\n"
+        "📅 Date: $date\n"
+        "⏱ Duration: $duration\n"
+        "🔥 Calories: $calories\n"
+        "⬆️ Intensity: $intensity\n"
+        "$statString";
+
+    if (notes != null && notes.trim().isNotEmpty) {
+      text += "\n📝 Notes: $notes";
+    }
+    text += "\n\nShared via MyWorkoutApp 💪";
+    return text;
+  }
+
+  void _showShareEditDialog(BuildContext context, String initialText) {
+    final controller = TextEditingController(text: initialText);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      isScrollControlled: true,
+      builder: (context) {
+        final padding = MediaQuery.of(context).viewInsets;
+        return Padding(
+          padding: padding,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 18),
+              Container(
+                width: 50,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Edit your share message',
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: TextField(
+                  controller: controller,
+                  maxLines: 8,
+                  minLines: 4,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: BorderSide(color: colorScheme.outline),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                    icon: Icon(Icons.share, color: colorScheme.onPrimary),
+                    label: Text("Share", style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary)),
+                    onPressed: () {
+                      final msg = controller.text.trim();
+                      if (msg.isNotEmpty) {
+                        Share.share(msg, subject: "My Workout Accomplishment!");
+                        Navigator.pop(context);
+                      }
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -38,6 +161,9 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         .fold<num>(0.0, (prev, w) => w > prev ? w : prev)
         .toDouble();
     final double caloriesPerMin = calories / (duration.inMinutes == 0 ? 1 : duration.inMinutes);
+
+    // can customize this
+    final sessionNotes = 'Felt strong! Increased weight 😎';
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -121,7 +247,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Felt strong! Increased weight 😎',
+                  sessionNotes,
                   style: textTheme.bodyMedium,
                 ),
               ),
@@ -174,7 +300,24 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   onPressed: () {
-                    // TODO: Add sharing logic
+                    final workoutName = workout['workoutName'] ?? 'Workout';
+                    final date = DateTime.now().toIso8601String().substring(0, 10);
+                    final initialText = buildShareContent(
+                      workoutName: workoutName,
+                      date: date,
+                      duration: formatDuration(duration),
+                      calories: '${calories.toStringAsFixed(0)} kcal',
+                      intensity: 'Advanced',
+                      avgHeartRate: avgHeartRate,
+                      peakHeartRate: peakHeartRate,
+                      steps: steps,
+                      totalSets: totalSets,
+                      repString: repStrings.join(', '),
+                      maxWeight: '${maxWeight.toStringAsFixed(1)} kg',
+                      caloriesPerMin: caloriesPerMin.toStringAsFixed(1),
+                      notes: sessionNotes,
+                    );
+                    _showShareEditDialog(context, initialText);
                   },
                   icon: Icon(Icons.share, color: colorScheme.onPrimary),
                   label: Text('Share', style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary)),
@@ -228,7 +371,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
             value,
             style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              // Use onSurface for best visibility!
               color: colorScheme.onSurface,
             ),
           ),
