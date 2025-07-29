@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wise_workout_app/widgets/exercise_stats_card.dart';
 import '../../services/health_service.dart';
+import '../../services/api_service.dart';
+import '../buypremium_screen.dart'; // ✅ import premium screen
 
 class DailySummaryPage extends StatefulWidget {
   const DailySummaryPage({super.key});
@@ -19,10 +21,22 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
   int _xpEarned = 0;
   DateTime _selectedDate = DateTime.now();
 
+  bool _isPremiumUser = false; // ✅ premium flag
+
   @override
   void initState() {
     super.initState();
+    _fetchProfile(); // ✅ fetch premium
     _initHealthData(_selectedDate);
+  }
+
+  Future<void> _fetchProfile() async {
+    final profile = await ApiService().getCurrentProfile();
+    if (profile != null) {
+      setState(() {
+        _isPremiumUser = profile['role'] == 'premium';
+      });
+    }
   }
 
   Future<void> _initHealthData(DateTime date) async {
@@ -53,7 +67,6 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     final roundedUp = ((highest + 99) ~/ 100) * 100;
     return roundedUp.toDouble();
   }
-
 
   void _changeDate(int offsetDays) {
     final newDate = _selectedDate.add(Duration(days: offsetDays));
@@ -87,9 +100,19 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today, color: colorScheme.onBackground),
+            icon: Icon(
+              Icons.calendar_today,
+              color: _isPremiumUser ? colorScheme.onBackground : Colors.grey.shade400,
+            ),
             onPressed: () {
-              Navigator.pushNamed(context, '/weekly-monthly-summary');
+              if (_isPremiumUser) {
+                Navigator.pushNamed(context, '/weekly-monthly-summary');
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const BuyPremiumScreen()),
+                );
+              }
             },
           ),
         ],
@@ -101,7 +124,6 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              /// Date Selector with Arrows
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -180,7 +202,7 @@ class _TimeBasedChart extends StatelessWidget {
   final IconData icon;
   final String title;
   final String currentValue;
-  final String avgValue; // still kept for compatibility, not shown
+  final String avgValue;
   final Color barColor;
   final double maxY;
   final List<int> data;

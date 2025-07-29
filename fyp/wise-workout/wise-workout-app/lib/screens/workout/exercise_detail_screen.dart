@@ -2,11 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../model/exercise_model.dart';
 import 'exercise_video_tutorial.dart';
+import '../buypremium_screen.dart';
+import '../../services/api_service.dart';
 
-class ExerciseDetailScreen extends StatelessWidget {
+class ExerciseDetailScreen extends StatefulWidget {
   final Exercise exercise;
 
   const ExerciseDetailScreen({super.key, required this.exercise});
+
+  @override
+  State<ExerciseDetailScreen> createState() => _ExerciseDetailScreenState();
+}
+
+class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
+  bool _isPremiumUser = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    final profile = await ApiService().getCurrentProfile();
+    if (profile != null) {
+      setState(() {
+        _isPremiumUser = profile['role'] == 'premium';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,37 +47,55 @@ class ExerciseDetailScreen extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   Image.asset(
-                    _getExerciseImagePath(exercise.exerciseName),
+                    _getExerciseImagePath(widget.exercise.exerciseName),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Container(
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.fitness_center, size: 100,
-                              color: Colors.grey),
-                        ),
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.fitness_center, size: 100, color: Colors.grey),
+                    ),
                   ),
                   Positioned(
                     bottom: 10,
                     right: 16,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        print('📦 Exercise object being passed: ${exercise.exerciseName}');
-                        print('🎥 YouTube URL: ${exercise.youtubeUrl}');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ExerciseVideoTutorial(exercise: exercise),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            if (_isPremiumUser) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ExerciseVideoTutorial(exercise: widget.exercise),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const BuyPremiumScreen()),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.play_arrow),
+                          label: Text('exercise_play_tutorial').tr(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                            _isPremiumUser ? Colors.amber[700] : Colors.grey[400],
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.play_arrow),
-                      label: Text('exercise_play_tutorial').tr(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber[700],
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
-                      ),
+                        ),
+                        if (!_isPremiumUser)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              "Unlock tutorial with Premium",
+                              style: TextStyle(fontSize: 12, color: Colors.grey[300]),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -75,7 +117,7 @@ class ExerciseDetailScreen extends StatelessWidget {
             Navigator.pushNamed(
               context,
               '/exercise-log',
-              arguments: exercise, // pass Exercise object
+              arguments: widget.exercise, // pass Exercise object
             );
           },
           icon: const Icon(Icons.photo_camera),
@@ -92,6 +134,7 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDetailContent(BuildContext context) {
+    final exercise = widget.exercise;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -114,8 +157,7 @@ class ExerciseDetailScreen extends StatelessWidget {
         ),
 
         const SizedBox(height: 16),
-        if (exercise.exerciseLevel != null &&
-            exercise.exerciseLevel!.isNotEmpty)
+        if (exercise.exerciseLevel != null && exercise.exerciseLevel!.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -125,8 +167,7 @@ class ExerciseDetailScreen extends StatelessWidget {
             ],
           ),
 
-        if (exercise.exerciseEquipment != null &&
-            exercise.exerciseEquipment!.isNotEmpty)
+        if (exercise.exerciseEquipment != null && exercise.exerciseEquipment!.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -164,6 +205,6 @@ class ExerciseDetailScreen extends StatelessWidget {
 
   String _getExerciseImagePath(String exerciseTitle) {
     final formatted = exerciseTitle.toLowerCase().replaceAll(' ', '_');
-    return 'assets/exerciseGif/${formatted}.gif';
+    return 'assets/exerciseGif/$formatted.gif';
   }
 }
