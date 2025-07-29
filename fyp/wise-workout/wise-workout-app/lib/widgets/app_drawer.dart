@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../screens/profile_screen.dart';
-
+import '../screens/workout/daily_summary_page.dart';
 
 class AppDrawer extends StatelessWidget {
   final String userName;
-
   const AppDrawer({
     super.key,
     required this.userName,
@@ -31,11 +30,9 @@ class AppDrawer extends StatelessWidget {
         );
       },
     );
-
     if (shouldLogout == true) {
       const secureStorage = FlutterSecureStorage();
       await secureStorage.delete(key: 'jwt_cookie');
-
       // Delay to allow dialog to close before navigating
       Future.delayed(const Duration(milliseconds: 100), () {
         Navigator.of(context, rootNavigator: true)
@@ -82,6 +79,7 @@ class AppDrawer extends StatelessWidget {
               ],
             ),
           ),
+
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
@@ -101,14 +99,19 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.track_changes),
+            leading: const Icon(Icons.bar_chart),
             title: const Text('Track Workout'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/workout');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const DailySummaryPage()),
+              );
             },
           ),
+
           ListTile(
             leading: const Icon(Icons.fitness_center),
             title: const Text('Workout History'),
