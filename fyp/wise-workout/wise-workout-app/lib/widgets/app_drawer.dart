@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../screens/profile_screen.dart';
+
 
 class AppDrawer extends StatelessWidget {
   final String userName;
@@ -85,7 +87,18 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Settings'),
             onTap: () {
               Navigator.pop(context);
-              // Add settings navigation
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProfileScreen(
+                    userName: userName,
+                    profileImagePath: null,
+                    profileBgPath: null,
+                    xp: 123,
+                    isPremiumUser: false,
+                  ),
+                ),
+              );
             },
           ),
           ListTile(
@@ -101,7 +114,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Workout History'),
             onTap: () {
               Navigator.pop(context);
-              // Add workout history navigation
+              Navigator.pushNamed(context, '/workout-history');
             },
           ),
           ListTile(
