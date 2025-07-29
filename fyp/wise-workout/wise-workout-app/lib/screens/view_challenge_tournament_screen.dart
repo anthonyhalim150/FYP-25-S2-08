@@ -49,9 +49,12 @@ class ViewChallengeTournamentScreen extends StatelessWidget {
             tabs: isPremium
                 ? const [Tab(text: 'Challenge'), Tab(text: 'Tournament')]
                 : const [Tab(text: 'Tournament')],
-            labelColor: Colors.white,
+            labelColor: Colors.black,
             unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.yellow,
+            indicator: BoxDecoration(
+              color: Colors.yellow, // 👈 selected tab background color
+              borderRadius: BorderRadius.circular(20)
+            ),
           ),
         ),
         body: TabBarView(
