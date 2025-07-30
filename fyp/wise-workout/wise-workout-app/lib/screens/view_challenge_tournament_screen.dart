@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 import '../widgets/viewCTwidget.dart';
+import '../services/tournament_service.dart';
 
-class ViewChallengeTournamentScreen extends StatelessWidget {
+class ViewChallengeTournamentScreen extends StatefulWidget {
   final bool isPremium;
   const ViewChallengeTournamentScreen({super.key, required this.isPremium});
+
+  @override
+  State<ViewChallengeTournamentScreen> createState() => _ViewChallengeTournamentScreenState();
+}
+
+class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentScreen> {
+  late Future<List<dynamic>> tournamentsFuture;
+  final TournamentService _tournamentService = TournamentService();
+
+  @override
+  void initState() {
+    super.initState();
+    tournamentsFuture = _tournamentService.getAllTournaments();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,29 +28,8 @@ class ViewChallengeTournamentScreen extends StatelessWidget {
       {'title': 'Jumping Jack Blitz', 'target': '900 jumping jacks', 'duration': '5 days'},
     ];
 
-    final tournaments = [
-      {
-        'title': 'Ultimate Warrior Cup',
-        'description': 'Compete with the best in endurance and power.',
-        'endDate': 'Ends in 4 days',
-        'features': ['🔥 Daily Leaderboards', '🏆 Weekly Rewards', '💪 Muscle Power Rounds']
-      },
-      {
-        'title': 'Speed & Agility Showdown',
-        'description': 'Boost your reaction time and movement speed.',
-        'endDate': 'Ends in 2 days',
-        'features': ['⚡ Sprint Events', '📏 Agility Ladder Test', '⏱️ Time Trials']
-      },
-      {
-        'title': 'Flex Master Tournament',
-        'description': 'Show off your strength and flexibility.',
-        'endDate': 'Ends in 6 days',
-        'features': ['🏋️ Heavy Lifts', '🤸‍♂️ Balance Tasks', '🧘 Flexibility Scoring']
-      },
-    ];
-
     return DefaultTabController(
-      length: isPremium ? 2 : 1,
+      length: widget.isPremium ? 2 : 1,
       child: Scaffold(
         backgroundColor: const Color(0xFF0B1741),
         appBar: AppBar(
@@ -45,6 +39,7 @@ class ViewChallengeTournamentScreen extends StatelessWidget {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
+<<<<<<< Updated upstream
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),
             child: Container(
@@ -73,15 +68,26 @@ class ViewChallengeTournamentScreen extends StatelessWidget {
                 indicatorSize: TabBarIndicatorSize.tab, // 👈 ensure full tab background
               ),
             ),
+=======
+          bottom: TabBar(
+            tabs: widget.isPremium
+                ? const [Tab(text: 'Challenge'), Tab(text: 'Tournament')]
+                : const [Tab(text: 'Tournament')],
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.white70,
+            indicator: BoxDecoration(
+                color: Colors.yellow,
+                borderRadius: BorderRadius.circular(20)),
+>>>>>>> Stashed changes
           ),
         ),
         body: TabBarView(
-          children: isPremium
+          children: widget.isPremium
               ? [
             _buildChallengeList(context, challenges),
-            _buildTournamentList(context, tournaments),
+            _buildTournamentFuture(context),
           ]
-              : [_buildTournamentList(context, tournaments)],
+              : [_buildTournamentFuture(context)],
         ),
       ),
     );
@@ -108,15 +114,44 @@ class ViewChallengeTournamentScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTournamentList(BuildContext context, List<Map<String, dynamic>> tournaments) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: tournaments.length,
-      itemBuilder: (context, index) {
-        final tournament = tournaments[index];
-        return TournamentCard(
-          tournament: tournament,
-          onJoin: () => showTournamentJoinPopup(context, tournament),
+  Widget _buildTournamentFuture(BuildContext context) {
+    return FutureBuilder<List<dynamic>>(
+      future: tournamentsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Failed to load tournaments\n${snapshot.error}',
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+        final tournaments = snapshot.data ?? [];
+        if (tournaments.isEmpty) {
+          return const Center(
+            child: Text('No tournaments found.', style: TextStyle(color: Colors.white)),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: tournaments.length,
+          itemBuilder: (context, index) {
+            final t = tournaments[index];
+            return TournamentCard(
+              tournament: {
+                'title': t['title'],
+                'description': t['description'],
+                'endDate': t['endDate'],
+                // Parsing features to make sure it's List<String>
+                'features': (t['features'] as List).map((e) => e.toString()).toList(),
+              },
+              onJoin: () => showTournamentJoinPopup(context, t),
+            );
+          },
         );
       },
     );
