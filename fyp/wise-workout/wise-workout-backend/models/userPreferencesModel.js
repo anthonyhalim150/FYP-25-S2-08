@@ -51,6 +51,15 @@ class UserPreferencesModel {
     );
     return rows.length > 0;
   }
+
+  static async getPreferences(userId) {
+    const [rows] = await db.execute(
+      'SELECT * FROM user_preferences WHERE user_id = ? LIMIT 1',
+      [userId]
+    );
+    return rows[0] || null;
+  }
+
 }
 
 module.exports = UserPreferencesModel;

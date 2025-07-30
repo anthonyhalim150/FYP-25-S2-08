@@ -3,6 +3,7 @@ import '../../services/workout_category_service.dart'; // Make sure this contain
 import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../fitness_plan_screen.dart'; // Adjust the path as needed!
 
 class WorkoutCategoryDashboard extends StatefulWidget {
   @override
@@ -49,9 +50,19 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 48),
+                IconButton(
+                  icon: Icon(Icons.auto_awesome, color: colorScheme.primary, size: 30),
+                  tooltip: 'AI Fitness Plan',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FitnessPlanScreen()),
+                    );
+                  },
+                ),
               ],
             ),
+
           ),
           // Filter Buttons
           Padding(

@@ -20,6 +20,7 @@ const workoutRoutes = require('./routes/workoutRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const workoutSessionRoutes = require('./routes/workoutSessionRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const db = require('./config/db');
 
 const app = express();
@@ -57,7 +58,7 @@ app.use('/workouts', workoutRoutes);
 app.use('/exercises', exerciseRoutes);
 app.use('/workout-sessions', workoutSessionRoutes);
 app.use('/tournaments', tournamentRoutes);
-
+app.use(aiRoutes);
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))
   .catch(err => console.error('DB connection error:', err));
