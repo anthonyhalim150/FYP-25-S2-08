@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/viewCTwidget.dart';
+import '../widgets/view_challenge_widget.dart';
+import '../widgets/view_tournament_widget.dart';
 import '../services/tournament_service.dart';
 
 class ViewChallengeTournamentScreen extends StatefulWidget {
@@ -14,20 +15,35 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
   late Future<List<dynamic>> tournamentsFuture;
   final TournamentService _tournamentService = TournamentService();
 
+  late List<Map<String, String>> challenges;
+
   @override
   void initState() {
     super.initState();
-    tournamentsFuture = _tournamentService.getAllTournaments();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final challenges = [
+    challenges = [
       {'title': 'Push Up Challenge', 'target': '150 Push Ups', 'duration': '7 days'},
       {'title': 'Squat Challenge', 'target': '1,200 Calories', 'duration': '3 days'},
       {'title': 'Jumping Jack Blitz', 'target': '900 jumping jacks', 'duration': '5 days'},
     ];
+    tournamentsFuture = _tournamentService.getAllTournaments();
+  }
 
+  void editChallenge(int index) async {
+    final updated = await showEditChallengePopup(
+      context,
+      challenges[index]['target']!,
+      challenges[index]['duration']!,
+    );
+    if (updated != null) {
+      setState(() {
+        challenges[index]['target'] = updated['target']!;
+        challenges[index]['duration'] = updated['duration']!;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: widget.isPremium ? 2 : 1,
       child: Scaffold(
@@ -49,13 +65,8 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
               ),
               child: TabBar(
                 tabs: widget.isPremium
-                    ? const [
-                        Tab(text: 'Challenge'),
-                        Tab(text: 'Tournament'),
-                      ]
-                    : const [
-                        Tab(text: 'Tournament'),
-                      ],
+                    ? const [Tab(text: 'Challenge'), Tab(text: 'Tournament')]
+                    : const [Tab(text: 'Tournament')],
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.white,
                 indicator: BoxDecoration(
@@ -72,22 +83,22 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
         body: TabBarView(
           children: widget.isPremium
               ? [
-                  _buildChallengeList(context, challenges),
-                  _buildTournamentFuture(context),
-                ]
-              : [_buildTournamentFuture(context)],
+            buildChallengeTab(context, challenges),
+            buildTournamentTab(context),
+          ]
+              : [buildTournamentTab(context)],
         ),
       ),
     );
   }
 
-  Widget _buildChallengeList(BuildContext context, List<Map<String, String>> challenges) {
+  Widget buildChallengeTab(BuildContext context, List<Map<String, String>> challenges) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: challenges.length,
       itemBuilder: (context, index) {
         final challenge = challenges[index];
-        return ViewCTWidget(
+        return ChallengeCard(
           title: challenge['title']!,
           target: challenge['target']!,
           duration: challenge['duration']!,
@@ -97,12 +108,13 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
             challenge['target']!,
             challenge['duration']!,
           ),
+          onEdit: () => editChallenge(index),
         );
       },
     );
   }
 
-  Widget _buildTournamentFuture(BuildContext context) {
+  Widget buildTournamentTab(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
       future: tournamentsFuture,
       builder: (context, snapshot) {
