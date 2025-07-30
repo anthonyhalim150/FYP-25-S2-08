@@ -193,7 +193,6 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.arrow_back, color: colorScheme.onSurface),
                         const Spacer(),
                         Text(
                           'avatar_title'.tr(),
