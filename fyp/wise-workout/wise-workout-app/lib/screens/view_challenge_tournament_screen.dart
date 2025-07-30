@@ -39,7 +39,6 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
-<<<<<<< Updated upstream
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),
             child: Container(
@@ -49,14 +48,14 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TabBar(
-                tabs: isPremium
+                tabs: widget.isPremium
                     ? const [
-                  Tab(text: 'Challenge'),
-                  Tab(text: 'Tournament'),
-                ]
+                        Tab(text: 'Challenge'),
+                        Tab(text: 'Tournament'),
+                      ]
                     : const [
-                  Tab(text: 'Tournament'),
-                ],
+                        Tab(text: 'Tournament'),
+                      ],
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.white,
                 indicator: BoxDecoration(
@@ -65,28 +64,17 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
                 ),
                 labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-                indicatorSize: TabBarIndicatorSize.tab, // 👈 ensure full tab background
+                indicatorSize: TabBarIndicatorSize.tab,
               ),
             ),
-=======
-          bottom: TabBar(
-            tabs: widget.isPremium
-                ? const [Tab(text: 'Challenge'), Tab(text: 'Tournament')]
-                : const [Tab(text: 'Tournament')],
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.white70,
-            indicator: BoxDecoration(
-                color: Colors.yellow,
-                borderRadius: BorderRadius.circular(20)),
->>>>>>> Stashed changes
           ),
         ),
         body: TabBarView(
           children: widget.isPremium
               ? [
-            _buildChallengeList(context, challenges),
-            _buildTournamentFuture(context),
-          ]
+                  _buildChallengeList(context, challenges),
+                  _buildTournamentFuture(context),
+                ]
               : [_buildTournamentFuture(context)],
         ),
       ),
@@ -146,7 +134,6 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
                 'title': t['title'],
                 'description': t['description'],
                 'endDate': t['endDate'],
-                // Parsing features to make sure it's List<String>
                 'features': (t['features'] as List).map((e) => e.toString()).toList(),
               },
               onJoin: () => showTournamentJoinPopup(context, t),
