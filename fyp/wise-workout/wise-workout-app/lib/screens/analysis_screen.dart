@@ -6,7 +6,7 @@ class AnalysisScreen extends StatelessWidget {
   final String workout;
   final IconData icon;
   final String duration;
-  final int calories;
+  final double calories;
   final String intensity;
   final String? notes;
   final Map<String, dynamic>? extraStats;

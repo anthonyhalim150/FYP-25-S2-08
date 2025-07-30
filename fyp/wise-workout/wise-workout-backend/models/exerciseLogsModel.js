@@ -23,11 +23,28 @@ class ExerciseLogModel {
       ORDER BY created_at ASC`,
       [sessionId]
     );
-    return rows.map(row => ({
-      ...row,
-      sets_data: JSON.parse(row.sets_data)
-    }));
+  
+    return rows.map(row => {
+      let parsedSetsData = [];
+      if (typeof row.sets_data === 'string') {
+        try {
+          parsedSetsData = JSON.parse(row.sets_data);
+        } catch (e) {
+          console.error('Invalid JSON in sets_data for log_id:', row.log_id, 'Value:', row.sets_data);
+          parsedSetsData = [];
+        }
+      } else if (Array.isArray(row.sets_data) || typeof row.sets_data === 'object') {
+        parsedSetsData = row.sets_data;
+      } else {
+        parsedSetsData = [];
+      }
+      return {
+        ...row,
+        sets_data: parsedSetsData
+      };
+    });
   }
+  
 }
 
 module.exports = ExerciseLogModel;

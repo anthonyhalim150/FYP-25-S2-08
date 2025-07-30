@@ -45,7 +45,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   IconData _getIconForWorkout(String? workoutName) {
     if (workoutName == null) return Icons.fitness_center;
-    
+
     final name = workoutName.toLowerCase();
     if (name.contains('yoga') || name.contains('relax')) {
       return Icons.self_improvement;
@@ -60,9 +60,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   String _formatDuration(int? seconds) {
     if (seconds == null) return '0 min';
-    
+
     final minutes = (seconds / 60).round();
     return '$minutes min';
+  }
+
+  double _parseCalories(dynamic rawCalories) {
+    if (rawCalories == null) return 0.0;
+    if (rawCalories is double) return rawCalories;
+    if (rawCalories is int) return rawCalories.toDouble();
+    if (rawCalories is String) return double.tryParse(rawCalories) ?? 0.0;
+    return 0.0;
   }
 
   @override
@@ -140,6 +148,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               separatorBuilder: (_, __) => const SizedBox(height: 12),
                               itemBuilder: (context, i) {
                                 final entry = workoutHistory[i];
+                                final calories = _parseCalories(entry['calories_burned']);
 
                                 return GestureDetector(
                                   onTap: () {
@@ -151,7 +160,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           workout: entry['workout_name'] ?? 'Workout Session',
                                           icon: _getIconForWorkout(entry['workout_name']),
                                           duration: _formatDuration(entry['duration']),
-                                          calories: entry['calories_burned']?.toDouble() ?? 0.0,
+                                          calories: calories,
                                           intensity: 'Moderate', // Default value
                                           notes: entry['notes'] ?? '',
                                         ),
@@ -214,7 +223,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                   const Icon(Icons.local_fire_department, size: 16, color: Colors.amber),
                                                   const SizedBox(width: 4),
                                                   Text(
-                                                    "${entry['calories_burned']?.toDouble() ?? 0} kcal",
+                                                    "${calories.toStringAsFixed(1)} kcal",
                                                     style: const TextStyle(color: Colors.amber, fontSize: 13),
                                                   ),
                                                   const SizedBox(width: 15),
