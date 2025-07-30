@@ -174,6 +174,19 @@ CREATE TABLE workouts (
   FOREIGN KEY (category_key) REFERENCES workout_categories(category_key)  -- Link to category
 );
 
+CREATE TABLE feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  message TEXT DEFAULT NULL,
+  rating INT NOT NULL,
+  liked_features JSON DEFAULT NULL,
+  problems JSON DEFAULT NULL,
+  status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
 
 CREATE TABLE exercises (
   exercise_id INT AUTO_INCREMENT PRIMARY KEY,
