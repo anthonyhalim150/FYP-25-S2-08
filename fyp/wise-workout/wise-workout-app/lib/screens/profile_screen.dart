@@ -307,8 +307,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       subtitle: subtitle != null
           ? Text(subtitle,
-          style:
-          TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant))
           : null,
       trailing: Icon(Icons.arrow_forward_ios,
           size: 16, color: Theme.of(context).iconTheme.color),
@@ -325,51 +325,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            ProfileAvatarSection(
-              profileImg: _profileImagePath,
-              profileBg: _profileBgPath,
-              username: _userName,
-              isPremiumUser: _isPremiumUser,
-              onAvatarTap: () => _showAvatarPopup(context),
-            ),
-            const SizedBox(height: 20),
-            ProfileBadgeCollection(unlockedBadges: _unlockedBadgeIcons),
-            const SizedBox(height: 20),
-            ProfileInfoRow(
-              xp: "$_totalXP XP",
-              level: "Level $_level",
-              progressInLevel: _progressInLevel,
-              xpForThisLevel: _xpForThisLevel,
-            ),
-            const SizedBox(height: 20),
-            ProfileLuckySpinCard(
-              tokens: _tokens,
-              onSpinComplete: (newTokens) => setState(() {
-                _tokens = newTokens;
-              }),
-            ),
-            const SizedBox(height: 20),
-            ProfileMenuList(
-              isPremiumUser: _isPremiumUser,
-              menuItems: [
-                _profileItem(Icons.person, "avatar"),
-                _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
-                _profileItem(Icons.lock, "password"),
-                _profileItem(Icons.watch, "wearable", subtitle: tr('profile_wearable_subtitle')),
-                _profileItem(Icons.history, "workout_history"),
-                _profileItem(Icons.bar_chart, "body_metrics"),
-                _profileItem(Icons.notifications, "notifications"),
-                if (!_isPremiumUser)
-                  _profileItem(Icons.workspace_premium, "premium_plan"),
-                _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
-                _profileItem(Icons.privacy_tip, "privacy_policy"),
-                _profileItem(Icons.palette, "appearance", subtitle: _themeNameFromMode(currentThemeMode)),
-                _profileItem(Icons.star, "feedback"),
-              ],
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ProfileAvatarSection(
+                profileImg: _profileImagePath,
+                profileBg: _profileBgPath,
+                username: _userName,
+                isPremiumUser: _isPremiumUser,
+                onAvatarTap: () => _showAvatarPopup(context),
+              ),
+              const SizedBox(height: 20),
+              ProfileBadgeCollection(unlockedBadges: _unlockedBadgeIcons),
+              const SizedBox(height: 20),
+              ProfileInfoRow(
+                xp: "$_totalXP XP",
+                level: "Level $_level",
+                progressInLevel: _progressInLevel,
+                xpForThisLevel: _xpForThisLevel,
+              ),
+              const SizedBox(height: 20),
+              ProfileLuckySpinCard(
+                tokens: _tokens,
+                onSpinComplete: (newTokens) => setState(() {
+                  _tokens = newTokens;
+                }),
+              ),
+              const SizedBox(height: 20),
+              ProfileMenuList(
+                isPremiumUser: _isPremiumUser,
+                menuItems: [
+                  _profileItem(Icons.person, "avatar"),
+                  _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
+                  _profileItem(Icons.lock, "password"),
+                  _profileItem(Icons.watch, "wearable", subtitle: tr('profile_wearable_subtitle')),
+                  _profileItem(Icons.history, "workout_history"),
+                  _profileItem(Icons.bar_chart, "body_metrics"),
+                  _profileItem(Icons.notifications, "notifications"),
+                  if (!_isPremiumUser)
+                    _profileItem(Icons.workspace_premium, "premium_plan"),
+                  _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
+                  _profileItem(Icons.privacy_tip, "privacy_policy"),
+                  _profileItem(Icons.palette, "appearance", subtitle: _themeNameFromMode(currentThemeMode)),
+                  _profileItem(Icons.star, "feedback"),
+                ],
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(
