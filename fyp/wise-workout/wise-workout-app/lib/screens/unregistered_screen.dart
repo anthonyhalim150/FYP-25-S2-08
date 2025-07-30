@@ -276,7 +276,7 @@ class UnregisteredUserPage extends StatelessWidget {
         currentIndex: 0,
         onTap: (index) {
         },
-        isRegistered: false, // Important!
+        isRegistered: false,
       ),
     );
   }

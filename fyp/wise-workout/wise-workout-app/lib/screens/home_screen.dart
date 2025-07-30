@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../screens/challengeInvitation_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -393,6 +394,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 trailing: const Icon(Icons.notifications_none, color: Colors.white, size: 22),
               ),
+              // Show Challenge Invitations button only for premium users
+              if (_isPremiumUser)
+                buildBlueButton(
+                  context: context,
+                  text: "View Challenge Invitations",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChallengeInvitationScreen(
+                          pendingInvites: [], // Replace with real data later
+                          ongoingChallenges: [], // Replace with real data later
+                        ),
+                      ),
+                    );
+                  },
+                  trailing: const Icon(Icons.emoji_events_outlined, color: Colors.white, size: 22),
+                ),
               const SizedBox(height: 20),
               Container(
                 alignment: Alignment.centerLeft,
