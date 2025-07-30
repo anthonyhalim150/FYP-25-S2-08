@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchProfile();
     _fetchUnlockedBadges();
     _requestNotificationPermission();
-    tournamentsFuture = TournamentService().getTournamentNamesAndEndDates();
+    tournamentsFuture = TournamentService().getTournamentsWithParticipants();
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -414,7 +414,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
@@ -473,6 +472,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return TournamentWidget(
                           tournamentName: t['title'] ?? '',
                           daysLeft: t['endDate'] ?? '',
+                          participants: t['participants'].toString(),
                           cardWidth: 280,
                         );
                       },

@@ -8,7 +8,17 @@ async function getTournamentNamesAndEndDates() {
   return await Tournament.getTournamentNamesAndEndDates();
 }
 
+async function getTournamentsWithParticipantCounts() {
+  return await Tournament.getTournamentsWithParticipantCounts();
+}
+
+async function getTournamentParticipants(tournamentId) {
+  return await Tournament.getTournamentParticipants(tournamentId);
+}
+
 module.exports = {
   fetchAllTournaments,
-  getTournamentNamesAndEndDates
+  getTournamentNamesAndEndDates,
+  getTournamentsWithParticipantCounts,
+  getTournamentParticipants,
 };
