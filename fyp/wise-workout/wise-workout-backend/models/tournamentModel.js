@@ -31,9 +31,27 @@ async function getTournamentParticipants(tournamentId) {
   return rows; // [{ userId, progress }, ...]
 }
 
+// Insert a user into tournament_participants
+async function joinTournament(tournamentId, userId) {
+  // Check if already joined (avoid duplicate records)
+  const [existing] = await db.query(
+    'SELECT id FROM tournament_participants WHERE tournament_id = ? AND user_id = ?',
+    [tournamentId, userId]
+  );
+  if (existing.length > 0) return { status: 'already_joined' };
+
+  // Insert new participant
+  await db.query(
+    'INSERT INTO tournament_participants (tournament_id, user_id, progress) VALUES (?, ?, 0)',
+    [tournamentId, userId]
+  );
+  return { status: 'joined' };
+}
+
 module.exports = {
   getAllTournaments,
   getTournamentNamesAndEndDates,
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
+  joinTournament,
 };

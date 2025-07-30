@@ -70,4 +70,22 @@ class TournamentService {
       throw Exception('Failed to load tournaments with participants');
     }
   }
+
+  Future<String> joinTournament(int tournamentId) async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    final res = await http.post(
+      Uri.parse('$backendUrl/tournaments/$tournamentId/join'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: '{}',
+    );
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+      return decoded['status'];
+    } else {
+      throw Exception('Failed to join tournament');
+    }
+  }
 }

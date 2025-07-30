@@ -6,6 +6,7 @@ class TournamentWidget extends StatelessWidget {
   final String prize;
   final String participants;
   final double cardWidth;
+  final VoidCallback? onJoin;
 
   const TournamentWidget({
     super.key,
@@ -14,13 +15,14 @@ class TournamentWidget extends StatelessWidget {
     this.prize = '',
     this.participants = '',
     this.cardWidth = 300,
+    this.onJoin,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Add navigation/action
+        // Optional: Navigate to details if needed
       },
       child: Container(
         width: cardWidth,
@@ -91,9 +93,7 @@ class TournamentWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                onPressed: () {
-                  // TODO: Add join action
-                },
+                onPressed: onJoin, // <-- This is the join button callback!
                 child: const Text(
                   'Join Now',
                   style: TextStyle(

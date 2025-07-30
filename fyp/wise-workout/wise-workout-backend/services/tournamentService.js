@@ -16,9 +16,14 @@ async function getTournamentParticipants(tournamentId) {
   return await Tournament.getTournamentParticipants(tournamentId);
 }
 
+async function joinTournament(tournamentId, userId) {
+  return await Tournament.joinTournament(tournamentId, userId);
+}
+
 module.exports = {
   fetchAllTournaments,
   getTournamentNamesAndEndDates,
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
+  joinTournament,
 };

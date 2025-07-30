@@ -46,9 +46,26 @@ async function getTournamentParticipants(req, res) {
   }
 }
 
+async function joinTournament(req, res) {
+  try {
+    const tournamentId = req.body.tournamentId || req.params.tournamentId;
+    const userId = req.user?.id || req.body.userId; // From JWT/session or from body
+
+    if (!tournamentId || !userId) {
+      return res.status(400).json({ message: 'Missing tournamentId or userId' });
+    }
+    const result = await tournamentService.joinTournament(tournamentId, userId);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Error joining tournament:', err);
+    res.status(500).json({ message: 'Failed to join tournament.' });
+  }
+}
+
 module.exports = {
   getAllTournaments,
   getAllTournamentNamesAndEndDates,
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
+  joinTournament,
 };

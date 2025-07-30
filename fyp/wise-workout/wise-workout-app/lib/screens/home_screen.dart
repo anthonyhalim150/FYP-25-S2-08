@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/tournament_service.dart';
 import '../widgets/tournament_widget.dart';
@@ -58,6 +59,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchUnlockedBadges();
     _requestNotificationPermission();
     tournamentsFuture = TournamentService().getTournamentsWithParticipants();
+  }
+
+  Future<void> reloadTournaments() async {
+    setState(() {
+      tournamentsFuture = TournamentService().getTournamentsWithParticipants();
+    });
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -474,12 +481,31 @@ class _HomeScreenState extends State<HomeScreen> {
                           daysLeft: t['endDate'] ?? '',
                           participants: t['participants'].toString(),
                           cardWidth: 280,
+                            onJoin: () async {
+                              String status = "";
+                              try {
+                                status = await TournamentService().joinTournament(t['id']);
+                              } catch (e) {
+                                status = '';
+                              }
+                              if (status == "joined") {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Joined tournament!')));
+                                reloadTournaments(); // To update participant count if joined
+                              } else if (status == "already_joined") {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(content: Text('You have already joined this tournament!')));
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(content: Text('Could not join tournament.')));
+                              }
+                            }
                         );
                       },
                     );
                   },
                 ),
               ),
+              // ...rest of UI...
             ],
           ),
         ),
