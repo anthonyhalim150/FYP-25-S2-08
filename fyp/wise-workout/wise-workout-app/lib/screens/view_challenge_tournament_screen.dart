@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/view_challenge_widget.dart';
-import '../widgets/view_tournament_widget.dart';
+import '../widgets/view_tournament_widget.dart'; // contains TournamentCard AND showTournamentJoinPopup
 import '../services/tournament_service.dart';
 
 class ViewChallengeTournamentScreen extends StatefulWidget {
@@ -14,7 +14,6 @@ class ViewChallengeTournamentScreen extends StatefulWidget {
 class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentScreen> {
   late Future<List<dynamic>> tournamentsFuture;
   final TournamentService _tournamentService = TournamentService();
-
   late List<Map<String, String>> challenges;
 
   @override
@@ -26,6 +25,12 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
       {'title': 'Jumping Jack Blitz', 'target': '900 jumping jacks', 'duration': '5 days'},
     ];
     tournamentsFuture = _tournamentService.getAllTournaments();
+  }
+
+  void reloadTournaments() {
+    setState(() {
+      tournamentsFuture = _tournamentService.getAllTournaments();
+    });
   }
 
   void editChallenge(int index) async {
@@ -143,12 +148,45 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
             final t = tournaments[index];
             return TournamentCard(
               tournament: {
+                'id': t['id'],
                 'title': t['title'],
                 'description': t['description'],
                 'endDate': t['endDate'],
                 'features': (t['features'] as List).map((e) => e.toString()).toList(),
               },
-              onJoin: () => showTournamentJoinPopup(context, t),
+              onJoin: () => showTournamentJoinPopup(
+                context,
+                {
+                  'id': t['id'],
+                  'title': t['title'],
+                  'description': t['description'],
+                  'endDate': t['endDate'],
+                  'features': (t['features'] as List).map((e) => e.toString()).toList(),
+                },
+                onJoin: () async {
+                  String status = "";
+                  try {
+                    status = await _tournamentService.joinTournament(t['id']);
+                  } catch (e) {
+                    status = "";
+                  }
+                  if (!mounted) return;
+                  if (status == "joined") {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(const SnackBar(content: Text("Joined tournament!")));
+                    reloadTournaments();
+                  } else if (status == "already_joined") {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(const SnackBar(content: Text("You have already joined this tournament!")));
+                  } else {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(const SnackBar(content: Text("Could not join tournament.")));
+                  }
+                },
+              ),
             );
           },
         );
