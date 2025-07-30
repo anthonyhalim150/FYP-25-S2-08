@@ -275,7 +275,6 @@ class UnregisteredUserPage extends StatelessWidget {
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
-          // You don't need to handle anything here
         },
         isRegistered: false, // Important!
       ),

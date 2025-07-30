@@ -427,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "home_tournament_title".tr(),
+                      _isPremiumUser ? 'Challenge/Tournament' : 'Tournament',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.normal,
                         color: colorScheme.onBackground,
