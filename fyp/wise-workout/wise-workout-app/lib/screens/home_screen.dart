@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:wise_workout_app/widgets/journey_card(removed).dart';
-import 'workout_sample_data.dart';
+import '../services/tournament_service.dart';
+import '../widgets/tournament_widget.dart';
+import '../widgets/app_drawer.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
 import '../services/badge_service.dart';
+import '../widgets/exercise_stats_card.dart';
+import '../widgets/workout_card_home_screen.dart';
+import '../widgets/reminder_widget.dart';
+import '../widgets/bottom_navigation.dart';
 import '../screens/camera/SquatPoseScreen.dart';
 import '../screens/buypremium_screen.dart';
 import '../screens/quest_screen.dart';
-//sub-widgets
-import '../widgets/workout_card_home_screen.dart';
-import '../widgets/tournament_widget.dart';
-import '../widgets/app_drawer.dart';
-import '../widgets/exercise_stats_card.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/reminder_widget.dart';
+import 'workout_sample_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -27,7 +25,6 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
-
   const HomeScreen({
     super.key,
     required this.userName,
@@ -37,7 +34,6 @@ class HomeScreen extends StatefulWidget {
     this.profileIcon,
     this.workoutIcon,
   });
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -48,11 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final int maxSteps = 10000;
   int caloriesBurned = 420;
   int xpEarned = 150;
-
   String? _displayName;
   bool _isPremiumUser = false;
   final BadgeService _badgeService = BadgeService();
   List<String> _unlockedBadges = [];
+  late Future<List<dynamic>> tournamentsFuture;
 
   @override
   void initState() {
@@ -61,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchProfile();
     _fetchUnlockedBadges();
     _requestNotificationPermission();
+    tournamentsFuture = TournamentService().getTournamentNamesAndEndDates();
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -105,8 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
       IconData icon,
       String label,
       String value,
-      )
-  {
+      ) {
     return Column(
       children: [
         Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
@@ -275,6 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+
               // Search Bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -335,7 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   final prefs = await SharedPreferences.getInstance();
                   final lastTime = prefs.getString('reminder_time');
                   final lastDays = prefs.getStringList('reminder_days');
-
                   final result = await ReminderWidget.show(
                     context,
                     initialTime: lastTime,
@@ -345,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (result['clear'] == true) {
                       await prefs.remove('reminder_time');
                       await prefs.remove('reminder_days');
-                      await NotificationService.cancelAllReminders(); 
+                      await NotificationService.cancelAllReminders();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('home_reminder_cleared'.tr())),
                       );
@@ -353,7 +349,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                     final timeString = result['time'] as String;
                     final repeatDays = result['repeat'] as List<String>;
-
                     String fixedTimeString = timeString.replaceAll('.', ':');
                     final timeParts = fixedTimeString.split(RegExp(r'[: ]'));
                     int hour = int.parse(timeParts[0]);
@@ -363,7 +358,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     if ((isPM || isAM) && hour > 12) hour = hour % 12;
                     if (isPM && hour < 12) hour += 12;
                     if (isAM && hour == 12) hour = 0;
-
                     final daysOfWeek = repeatDays.map((d) {
                       switch (d) {
                         case "Monday": return 1;
@@ -376,10 +370,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         default: return 1;
                       }
                     }).toList();
-
                     await prefs.setString('reminder_time', timeString);
                     await prefs.setStringList('reminder_days', repeatDays);
-
                     await NotificationService.scheduleReminder(
                       id: 100,
                       title: "Time to Workout!",
@@ -422,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const SizedBox(height: 20),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
@@ -457,21 +449,35 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 220,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  children: [
-                    const SizedBox(width: 5),
-                    ...sampleTournaments.map((tournament) => TournamentWidget(
-                      tournamentName: tournament.tournamentName,
-                      prize: tournament.prize,
-                      participants: tournament.participants,
-                      daysLeft: tournament.daysLeft,
-                      cardWidth: 280,
-                    )),
-                    const SizedBox(width: 5),
-                  ],
+                child: FutureBuilder<List<dynamic>>(
+                  future: tournamentsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: Colors.red)));
+                    }
+                    final tournaments = snapshot.data ?? [];
+                    if (tournaments.isEmpty) {
+                      return const Center(child: Text('No tournaments available'));
+                    }
+                    return ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      itemCount: tournaments.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        final t = tournaments[index];
+                        return TournamentWidget(
+                          tournamentName: t['title'] ?? '',
+                          daysLeft: t['endDate'] ?? '',
+                          cardWidth: 280,
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],

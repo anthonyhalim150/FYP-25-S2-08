@@ -9,23 +9,18 @@ class TournamentService {
   Future<List<dynamic>> getAllTournaments() async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');
     print('TournamentService: JWT = $jwt');
-
     if (jwt == null) {
       print('TournamentService: No JWT found in secure storage!');
       throw Exception('JWT not found in secure storage');
     }
-
     final url = '$backendUrl/tournaments/all';
     print('TournamentService: Fetching tournaments from $url');
-
     final res = await http.get(
       Uri.parse(url),
       headers: {'Cookie': 'session=$jwt'},
     );
-
     print('TournamentService: Response status: ${res.statusCode}');
     print('TournamentService: Response body: ${res.body}');
-
     if (res.statusCode == 200) {
       final decoded = jsonDecode(res.body);
       print('TournamentService: Decoded tournaments: $decoded');
@@ -33,6 +28,32 @@ class TournamentService {
     } else {
       print('TournamentService: Failed to load tournaments! Status: ${res.statusCode}, Body: ${res.body}');
       throw Exception('Failed to load tournaments');
+    }
+  }
+
+  // Add this:
+  Future<List<dynamic>> getTournamentNamesAndEndDates() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    print('TournamentService: JWT = $jwt');
+    if (jwt == null) {
+      print('TournamentService: No JWT found in secure storage!');
+      throw Exception('JWT not found in secure storage');
+    }
+    final url = '$backendUrl/tournaments/name-enddate';
+    print('TournamentService: Fetching from $url');
+    final res = await http.get(
+      Uri.parse(url),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+    print('TournamentService: Response status: ${res.statusCode}');
+    print('TournamentService: Response body: ${res.body}');
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+      print('TournamentService: Decoded name-enddate: $decoded');
+      return decoded;
+    } else {
+      print('TournamentService: Failed to load name/enddate! Status: ${res.statusCode}, Body: ${res.body}');
+      throw Exception('Failed to load tournament name/enddate');
     }
   }
 }

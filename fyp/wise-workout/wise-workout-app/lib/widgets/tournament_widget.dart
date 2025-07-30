@@ -1,19 +1,18 @@
-// tournament_widget.dart
 import 'package:flutter/material.dart';
 
 class TournamentWidget extends StatelessWidget {
   final String tournamentName;
+  final String daysLeft;
   final String prize;
   final String participants;
-  final String daysLeft;
   final double cardWidth;
 
   const TournamentWidget({
     super.key,
     required this.tournamentName,
-    required this.prize,
-    required this.participants,
     required this.daysLeft,
+    this.prize = '',
+    this.participants = '',
     this.cardWidth = 300,
   });
 
