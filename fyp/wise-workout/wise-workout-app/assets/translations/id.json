@@ -132,6 +132,7 @@
   "account_change_password_button": "Ubah Kata Sandi",
   "account_change_success": "Kata sandi berhasil diubah!",
   "account_current_password_incorrect": "Kata sandi saat ini salah.",
+  "account_forgot_password" : "Lupa Kata Sandi",
 
   "chat_button_challenge": "Tantang",
   "chat_error_load_failed": "Gagal memuat pesan",

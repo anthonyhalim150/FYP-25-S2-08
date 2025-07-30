@@ -132,6 +132,7 @@
   "account_change_password_button": "Change Password",
   "account_change_success": "Password changed successfully!",
   "account_current_password_incorrect": "Current password is incorrect.",
+  "account_forgot_password" : "Forgot Password",
 
   "chat_button_challenge": "Challenge",
   "chat_error_load_failed": "Failed to load messages",

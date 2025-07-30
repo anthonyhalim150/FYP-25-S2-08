@@ -133,6 +133,7 @@
   "account_change_password_button": "更改密码",
   "account_change_success": "密码更改成功！",
   "account_current_password_incorrect": "当前密码错误。",
+  "account_forgot_password" : "忘记密码",
 
   "chat_button_challenge": "挑战",
   "chat_error_load_failed": "加载消息失败",

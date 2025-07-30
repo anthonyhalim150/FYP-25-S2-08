@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile_screen.dart';
+import 'forgot_password_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
@@ -15,7 +15,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _currentController = TextEditingController();
   final _newController = TextEditingController();
   final _confirmController = TextEditingController();
-
   bool _showCurrent = false;
   bool _showNew = false;
   bool _showConfirm = false;
@@ -35,7 +34,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     await Future.delayed(const Duration(seconds: 1));
     if (_currentController.text != 'old123') {
       setState(() {
-        _error = 'account_change_password_error_incorrect'.tr();        _isLoading = false;
+        _error = 'account_change_password_error_incorrect'.tr();
+        _isLoading = false;
       });
       return;
     }
@@ -68,7 +68,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final surface = colorScheme.surface;
     final onSurface = colorScheme.onSurface;
     final errorColor = Theme.of(context).colorScheme.error;
-
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
@@ -232,6 +231,45 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             ),
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Center(
+                            child: TextButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const ForgotPasswordScreen()
+                                  ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.help_outline_rounded,
+                                color: colorScheme.primary,
+                                size: 22,
+                              ),
+                              label: Text(
+                                'account_forgot_password'.tr(),
+                                style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  decoration: TextDecoration.underline,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                splashFactory: InkRipple.splashFactory,
+                                foregroundColor: colorScheme.primary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                backgroundColor: colorScheme.primary.withOpacity(0.07),
+                              ),
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 2),
                       ],
                     ),
@@ -254,7 +292,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     final onSurface = colorScheme.onSurface;
-
     return TextFormField(
       controller: controller,
       obscureText: !showPassword,
