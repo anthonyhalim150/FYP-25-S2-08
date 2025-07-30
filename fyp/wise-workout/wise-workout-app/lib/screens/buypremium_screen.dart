@@ -4,6 +4,7 @@ import '../widgets/plan_cards_widget.dart';
 import '../widgets/benefits_widget.dart';
 import '../widgets/included_widget.dart';
 import '../widgets/money_back_widget.dart';
+import '../services/api_service.dart';
 
 class BuyPremiumScreen extends StatefulWidget {
   const BuyPremiumScreen({Key? key}) : super(key: key);
@@ -12,15 +13,41 @@ class BuyPremiumScreen extends StatefulWidget {
 }
 
 class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
+  final ApiService apiService = ApiService(); // <-- instantiate here
+
   int selectedPlan = 0;
-  int userTokens = 100000;
-  bool isPremium = true;
-  DateTime? premiumExpiry = DateTime.now().add(const Duration(days: 38));
+  int userTokens = 0;
+  bool isPremium = false;
+  DateTime? premiumExpiry;
+  bool loading = true;
+
   final List<Map<String, dynamic>> plans = [
     { 'name': 'Monthly', 'price': '\$2.99', 'period': '/month', 'tokens': 4000, 'durationDays': 30, },
     { 'name': 'Annual', 'price': '\$19.99', 'period': '/year', 'tokens': 19000, 'durationDays': 365, },
     { 'name': 'Lifetime', 'price': '\$49', 'period': '', 'tokens': 99000, 'durationDays': 36500, },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    setState(() { loading = true; });
+    try {
+      final profile = await apiService.getCurrentProfile();
+      setState(() {
+        userTokens = profile['tokens'] ?? 0;
+        isPremium = profile['role'] == 'premium';
+        premiumExpiry = profile['premium_until'] != null
+            ? DateTime.tryParse(profile['premium_until'])
+            : null;
+      });
+    } catch (_) {} finally {
+      setState(() { loading = false; });
+    }
+  }
 
   Future<void> _showBuyWithTokenConfirmation() async {
     final theme = Theme.of(context);
@@ -66,34 +93,79 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
           ),
         ),
       );
-      await Future.delayed(const Duration(seconds: 2));
-      Navigator.of(context, rootNavigator: true).pop();
-      setState(() {
-        userTokens -= neededTokens;
-        isPremium = true;
-        premiumExpiry = DateTime.now().add(Duration(days: durationDays));
-      });
-      String premiumMsg =
-      (durationDays > 3650)
-          ? "Congratulations! You're now a premium user for LIFE."
-          : "Congratulations! You're a premium user for $durationDays days!";
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Success!"),
-          content: Text(premiumMsg, style: theme.textTheme.bodyMedium),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
+      try {
+        final buyResult = await apiService.buyPremiumWithTokens(planName);
+        if (buyResult['success'] == true) {
+          final profile = await apiService.getCurrentProfile();
+          Navigator.of(context, rootNavigator: true).pop();
+          setState(() {
+            userTokens = profile['tokens'] ?? 0;
+            isPremium = profile['role'] == 'premium';
+            premiumExpiry = profile['premium_until'] != null
+                ? DateTime.tryParse(profile['premium_until'])
+                : null;
+          });
+          String premiumMsg =
+          (durationDays > 3650)
+              ? "Congratulations! You're now a premium user for LIFE."
+              : "Congratulations! You're a premium user for $durationDays days!";
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Success!"),
+              content: Text(premiumMsg, style: theme.textTheme.bodyMedium),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK"),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+          );
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Purchase Failed"),
+              content: Text(buyResult['message'].toString(), style: theme.textTheme.bodyMedium),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          );
+        }
+      } catch (e) {
+        Navigator.of(context, rootNavigator: true).pop();
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Purchase Failed"),
+            content: Text(e.toString(), style: theme.textTheme.bodyMedium),
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -101,6 +173,12 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    if (loading) {
+      return Scaffold(
+        backgroundColor: colorScheme.background,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(

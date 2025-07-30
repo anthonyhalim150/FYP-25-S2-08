@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../services/api_service.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String planName;
@@ -9,6 +10,7 @@ class PaymentScreen extends StatefulWidget {
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
 }
+
 class _PaymentScreenState extends State<PaymentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _cardNumController = TextEditingController();
@@ -33,6 +35,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     String previewNumber = cardNumber.isEmpty
         ? '**** **** **** ****'
         : cardNumber.padRight(16, '*').replaceRange(4, 12, ' **** **** ');
+
     return Scaffold(
       appBar: AppBar(
         title: Text('payment_title'.tr()),
@@ -45,7 +48,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              // Card Preview
               Card(
                 color: cs.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -61,9 +63,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           Text(
                             cardType ?? "",
                             style: theme.textTheme.bodyMedium?.copyWith(
-                                color: cs.onPrimary.withOpacity(0.7),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
+                              color: cs.onPrimary.withOpacity(0.7),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                           const Spacer(),
                         ],
@@ -72,8 +75,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Text(
                         previewNumber,
                         style: theme.textTheme.headlineSmall?.copyWith(
-                          color: cs.onPrimary, fontWeight: FontWeight.w600,
-                          fontSize: 22, letterSpacing: 2.0,
+                          color: cs.onPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 22,
+                          letterSpacing: 2.0,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -82,16 +87,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           Text(
                             expiryDate.isEmpty ? 'payment_card_expiry_hint'.tr() : expiryDate,
                             style: theme.textTheme.titleSmall?.copyWith(
-                                color: cs.onPrimary.withOpacity(0.7), fontSize: 16),
+                              color: cs.onPrimary.withOpacity(0.7),
+                              fontSize: 16,
+                            ),
                           ),
                           const Spacer(),
                           Text(
                             cardHolder.isEmpty ? 'payment_card_name_hint'.tr() : cardHolder.toUpperCase(),
                             style: theme.textTheme.titleSmall?.copyWith(
-                                color: cs.onPrimary.withOpacity(0.7), fontSize: 16),
-                          )
+                              color: cs.onPrimary.withOpacity(0.7),
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -117,7 +126,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   cardHolder = value;
                 }),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'payment_error_cardholder'.tr() : null,
+                    value == null || value.isEmpty ? 'payment_error_cardholder'.tr() : null,
                 onSaved: (value) => cardHolder = value!,
               ),
               const SizedBox(height: 16),
@@ -173,7 +182,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       maxLength: 3,
                       keyboardType: TextInputType.number,
                       validator: (value) =>
-                      value == null || value.length != 3 ? 'payment_error_cvv'.tr() : null,
+                          value == null || value.length != 3 ? 'payment_error_cvv'.tr() : null,
                       onSaved: (value) => cvv = value!,
                     ),
                   ),
@@ -188,74 +197,84 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 onPressed: isProcessing
                     ? null
-                    : () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    setState(() {
-                      isProcessing = true;
-                    });
-                    Future.delayed(const Duration(seconds: 2), () {
-                      setState(() {
-                        isProcessing = false;
-                      });
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => AlertDialog(
-                          icon: Icon(Icons.check_circle, color: Colors.green[700], size: 40),
-                          title: Text('payment_success_title'.tr()),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Thank you for purchasing the ${widget.planName} plan.'),
-                              const SizedBox(height: 18),
-                              Row(
+                    : () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          setState(() {
+                            isProcessing = true;
+                          });
+                          String paymentId = DateTime.now().millisecondsSinceEpoch.toString();
+                          final result = await ApiService().buyPremiumWithMoney(widget.planName, paymentId);
+                          setState(() {
+                            isProcessing = false;
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => AlertDialog(
+                              icon: result['success']
+                                  ? Icon(Icons.check_circle, color: Colors.green[700], size: 40)
+                                  : Icon(Icons.error, color: Colors.red[700], size: 40),
+                              title: result['success']
+                                  ? Text('payment_success_title'.tr())
+                                  : Text('Payment Failed'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.verified, color: Colors.green[700], size: 25),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      "You're eligible for a 7-day money back guarantee.",
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: Colors.green[700],
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                  Text(
+                                    result['success']
+                                        ? 'Thank you for purchasing the ${widget.planName} plan.'
+                                        : result['message'] ?? 'Payment failed. Please try again.',
                                   ),
+                                  if (result['success']) ...[
+                                    const SizedBox(height: 18),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.verified, color: Colors.green[700], size: 25),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            "You're eligible for a 7-day money back guarantee.",
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              color: Colors.green[700],
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      "Cancel within 7 days for a full refund.",
+                                      style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ]
                                 ],
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "Cancel within 7 days for a full refund.",
-                                style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: cs.primary,
-                                foregroundColor: cs.onPrimary,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (context) => const HomeScreen(userName: '')),
+                              actions: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: cs.primary,
+                                    foregroundColor: cs.onPrimary,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(builder: (context) => const HomeScreen(userName: '')),
                                       (Route<dynamic> route) => false,
-                                );
-                              },
-                              child: const Text('OK'),
-                            )
-                          ],
-                        ),
-                      );
-                    });
-                  }
-                },
+                                    );
+                                  },
+                                  child: const Text('OK'),
+                                )
+                              ],
+                            ),
+                          );
+                        }
+                      },
                 child: isProcessing
                     ? CircularProgressIndicator(color: cs.onPrimary)
                     : Text('Pay \$${widget.price.toStringAsFixed(2)}',
-                    style: theme.textTheme.titleMedium?.copyWith(color: cs.onPrimary)),
+                        style: theme.textTheme.titleMedium?.copyWith(color: cs.onPrimary)),
               )
             ],
           ),
