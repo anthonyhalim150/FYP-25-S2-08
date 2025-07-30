@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/fitnessai_service.dart'; // Adjust import if needed
+import '../services/fitnessai_service.dart';
+import 'edit_preferences_screen.dart';
 
 class FitnessPlanScreen extends StatefulWidget {
   const FitnessPlanScreen({Key? key}) : super(key: key);
@@ -63,8 +64,33 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Your Fitness Preferences",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.teal)),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    "Your Fitness Preferences",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.teal),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  tooltip: "Edit Preferences",
+                  onPressed: () async {
+                    final updatedPrefs = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditPreferencesScreen(
+                          preferences: Map<String, dynamic>.from(_preferences!),
+                        ),
+                      ),
+                    );
+                    if (updatedPrefs != null) {
+                      await _fetchPlan();
+                    }
+                  },
+                ),
+              ],
+            ),
             const Divider(),
             ..._preferences!.entries.map(
                   (e) => Padding(
@@ -80,6 +106,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
       ),
     );
   }
+
 
   // Optional: Prettier labels for known fields
   String _preferenceLabel(String key) {
@@ -162,12 +189,33 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         title: const Text("AI Fitness Plan"),
         actions: [
           IconButton(
+            icon: const Icon(Icons.edit),
+            tooltip: "Edit Preferences",
+            onPressed: _preferences == null
+                ? null
+                : () async {
+              // Navigate and wait for result
+              final updatedPrefs = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      EditPreferencesScreen(preferences: Map<String, dynamic>.from(_preferences!)),
+                ),
+              );
+              if (updatedPrefs != null) {
+                // After editing and saving, refresh the plan
+                await _fetchPlan();
+              }
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: "Refresh Plan",
             onPressed: _loading ? null : _fetchPlan,
           ),
         ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _loading

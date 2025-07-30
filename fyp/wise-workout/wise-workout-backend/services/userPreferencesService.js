@@ -10,6 +10,10 @@ class UserPreferencesService {
   static async check(userId) {
     return await UserPreferencesModel.hasPreferences(userId);
   }
+
+    static async update(userId, preferences) {
+      return await UserPreferencesModel.updatePreferences(userId, preferences);
+    }
 }
 
 module.exports = UserPreferencesService;

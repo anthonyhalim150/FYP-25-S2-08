@@ -74,4 +74,27 @@ const checkPreferences = async (req, res) => {
   }
 };
 
-module.exports = { submitUserPreferences, checkPreferences };
+const updatePreferences = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const prefs = req.body;
+
+    await UserPreferencesService.update(userId, prefs);
+
+    res.status(200).json({ message: 'Preferences updated successfully' });
+  } catch (err) {
+    console.error("Update preferences error:", err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Add this export:
+module.exports = {
+  submitUserPreferences,
+  checkPreferences,
+  updatePreferences // <-- add this line
+};
+
+//module.exports = { submitUserPreferences, checkPreferences };

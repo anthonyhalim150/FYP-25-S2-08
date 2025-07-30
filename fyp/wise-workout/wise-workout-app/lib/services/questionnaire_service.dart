@@ -27,4 +27,27 @@ class QuestionnaireService {
 
     return response.statusCode == 200;
   }
+
+  static Future<bool> updatePreferences(Map<String, dynamic> prefs) async {
+    final jwt = await storage.read(key: 'jwt_cookie');
+    if (jwt == null) {
+      print('JWT not found in secure storage');
+      return false;
+    }
+
+    final response = await http.put(
+      Uri.parse('$backendUrl/questionnaire/update'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode(prefs),
+    );
+
+    print('Update response status: ${response.statusCode}');
+    print('Update response body: ${response.body}');
+
+    return response.statusCode == 200;
+  }
+
 }

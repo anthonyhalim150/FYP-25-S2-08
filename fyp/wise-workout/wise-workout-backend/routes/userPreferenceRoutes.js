@@ -4,5 +4,6 @@ const userPreferencesController = require('../controllers/userPreferencesControl
 
 router.post('/submit', userPreferencesController.submitUserPreferences);
 router.get('/check', userPreferencesController.checkPreferences);
+router.put('/update', userPreferencesController.updatePreferences);
 
 module.exports = router;
