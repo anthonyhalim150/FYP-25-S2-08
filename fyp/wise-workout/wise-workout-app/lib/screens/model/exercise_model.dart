@@ -12,7 +12,6 @@ class Exercise {
   final String youtubeUrl;
   final int workoutId;
 
-  /// ✅ Add this field
   final double? exerciseWeight;
 
   Exercise({
@@ -28,7 +27,7 @@ class Exercise {
     this.exerciseDuration,
     required this.youtubeUrl,
     required this.workoutId,
-    this.exerciseWeight, // ✅ Add this to the constructor
+    this.exerciseWeight,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) {

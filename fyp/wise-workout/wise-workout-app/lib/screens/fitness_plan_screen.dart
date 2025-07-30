@@ -107,7 +107,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     );
   }
 
-
   // Optional: Prettier labels for known fields
   String _preferenceLabel(String key) {
     switch (key) {
@@ -150,6 +149,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         itemCount: _plan!.length,
         itemBuilder: (context, idx) {
           final dayPlan = _plan![idx];
+          final isRest = dayPlan['rest'] == true;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8),
             elevation: 2,
@@ -159,12 +159,33 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Day ${dayPlan['day']}",
+                    "${dayPlan['day_of_week'] ?? 'Day ' + (dayPlan['day']?.toString() ?? '-')}",
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                   ),
                   const SizedBox(height: 6),
-                  ...((dayPlan['exercises'] as List<dynamic>)
-                      .map((ex) => Text('• $ex', style: const TextStyle(fontSize: 15))).toList()),
+                  if (isRest) ...[
+                    Text(
+                      "Rest Day",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueGrey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ] else ...[
+                    ...((dayPlan['exercises'] ?? []).map<Widget>((ex) {
+                      final name = ex['name'] ?? '';
+                      final sets = ex['sets']?.toString() ?? '-';
+                      final reps = ex['reps']?.toString() ?? '-';
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 1),
+                        child: Text(
+                          '$name  |  Sets: $sets  |  Reps: $reps',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      );
+                    }).toList()),
+                  ],
                   if (dayPlan['notes'] != null && dayPlan['notes'].toString().isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -194,16 +215,13 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
             onPressed: _preferences == null
                 ? null
                 : () async {
-              // Navigate and wait for result
               final updatedPrefs = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      EditPreferencesScreen(preferences: Map<String, dynamic>.from(_preferences!)),
+                  builder: (context) => EditPreferencesScreen(preferences: Map<String, dynamic>.from(_preferences!)),
                 ),
               );
               if (updatedPrefs != null) {
-                // After editing and saving, refresh the plan
                 await _fetchPlan();
               }
             },
@@ -215,7 +233,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
           ),
         ],
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _loading
