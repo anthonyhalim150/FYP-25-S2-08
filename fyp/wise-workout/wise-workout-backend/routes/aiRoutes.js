@@ -2,27 +2,23 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 const UserPreferencesModel = require('../models/userPreferencesModel');
-const ExerciseModel = require('../models/exerciseModel'); // <-- import your exercise model
+const ExerciseModel = require('../models/exerciseModel'); 
 
 const OPENROUTER_KEY = "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";
 
-// POST /ai/fitness-plan
 router.post('/ai/fitness-plan', async (req, res) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    // 1. Fetch user preferences from the DB
     const prefs = await UserPreferencesModel.getPreferences(userId);
     if (!prefs) return res.status(404).json({ message: "Preferences not found" });
 
-    // 2. Fetch all exercises from the DB
     const exercises = await ExerciseModel.getAllExercises();
     if (!exercises || exercises.length === 0) {
       return res.status(404).json({ message: "No exercises found" });
     }
 
-    // 3. Prepare a strict system prompt
 const systemPrompt = `
 You are an expert fitness coach. Create a personalized weekly workout plan based ONLY on the user's preferences and the provided exercise list.
 
@@ -92,8 +88,6 @@ Example output for a 2-day/week plan:
 `;
 
 
-
-    // 4. Prepare user prompt with all preference data and exercises
     const userPrompt = `
 User preferences:
 ${JSON.stringify(prefs, null, 2)}
@@ -102,7 +96,6 @@ Available exercises (use only these!):
 ${JSON.stringify(exercises, null, 2)}
 `;
 
-    // 5. Call Qwen AI via OpenRouter
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
@@ -120,10 +113,8 @@ ${JSON.stringify(exercises, null, 2)}
       }
     );
 
-    // 6. Log Qwen's response to your terminal
     console.log("AI response content:", response.data?.choices?.[0]?.message?.content);
 
-    // 7. Return AI result to frontend
     res.json({
       ai: response.data,
       preferences: prefs,
@@ -131,7 +122,6 @@ ${JSON.stringify(exercises, null, 2)}
     });
 
   } catch (error) {
-    // Log error details to terminal
     console.error("AI API error:", error?.response?.data || error.message);
     res.status(500).json({ error: "Failed to get AI fitness plan" });
   }

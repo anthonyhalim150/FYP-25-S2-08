@@ -28,4 +28,20 @@ class AIFitnessPlanService {
       throw Exception('Failed to fetch AI fitness plan');
     }
   }
+
+  Future<void> savePlanToBackend(List<dynamic> plan) async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    final res = await http.post(
+      Uri.parse('$baseUrl/workout-plans/save-plan'),
+      headers: {
+        'Cookie': 'session=$jwt',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({"plan": plan}),
+    );
+    if (res.statusCode != 200) {
+      throw Exception('Failed to save plan');
+    }
+  }
+
 }

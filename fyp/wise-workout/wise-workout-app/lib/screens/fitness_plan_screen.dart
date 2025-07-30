@@ -107,7 +107,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     );
   }
 
-  // Optional: Prettier labels for known fields
   String _preferenceLabel(String key) {
     switch (key) {
       case 'fitness_goal':
@@ -218,7 +217,10 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
               final updatedPrefs = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditPreferencesScreen(preferences: Map<String, dynamic>.from(_preferences!)),
+                  builder: (context) =>
+                      EditPreferencesScreen(
+                        preferences: Map<String, dynamic>.from(_preferences!),
+                      ),
                 ),
               );
               if (updatedPrefs != null) {
@@ -238,7 +240,8 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-            ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+            ? Center(
+            child: Text(_error!, style: const TextStyle(color: Colors.red)))
             : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -246,9 +249,46 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
             if (_plan != null) ...[
               const Text(
                 "Personalized Plan",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.teal),
+                style: TextStyle(fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.teal),
               ),
               const SizedBox(height: 6),
+              // ---------- Save Button Added Here ----------
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Center(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.save),
+                    label: const Text('Save This Plan'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius
+                          .circular(18)),
+                    ),
+                    onPressed: (_plan == null || _plan!.isEmpty)
+                        ? null
+                        : () async {
+                      setState(() => _loading = true);
+                      try {
+                        await _aiService.savePlanToBackend(_plan!);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Plan saved successfully!')),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${e.toString()}')),
+                        );
+                      } finally {
+                        setState(() => _loading = false);
+                      }
+                    },
+                  ),
+                ),
+              ),
+              // ------------------------------------------
               buildPlanList(),
             ]
           ],
