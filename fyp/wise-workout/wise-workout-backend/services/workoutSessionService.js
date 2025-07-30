@@ -1,6 +1,7 @@
 const WorkoutSessionModel = require('../models/workoutSessionModel');
 const ExerciseLogsModel = require('../models/exerciseLogsModel');
 const BadgeService = require('../services/badgeService');
+const DailyQuestModel = require('../models/dailyQuestModel');
 
 class WorkoutSessionService {
   static async saveWorkoutSession(sessionData, exerciseLogs) {
@@ -11,10 +12,11 @@ class WorkoutSessionService {
       }
 
       const userId = sessionData.userId;
+      const today = new Date().toISOString().slice(0, 10);
 
-      // Count total sessions for this user
+      await DailyQuestModel.markQuestDone(userId, 'ANY_WORKOUT', today);
+
       const sessionCount = await WorkoutSessionModel.countSessionsByUserId(userId);
-      console.log("sessionCount"+ sessionCount);
       if (sessionCount >= 1) {
         await BadgeService.grantBadge(userId, 1); // badgeId 1 = First Workout
       }
