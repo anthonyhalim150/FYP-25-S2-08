@@ -45,15 +45,33 @@ class ViewChallengeTournamentScreen extends StatelessWidget {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
-          bottom: TabBar(
-            tabs: isPremium
-                ? const [Tab(text: 'Challenge'), Tab(text: 'Tournament')]
-                : const [Tab(text: 'Tournament')],
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.white70,
-            indicator: BoxDecoration(
-              color: Colors.yellow, // 👈 selected tab background color
-              borderRadius: BorderRadius.circular(20)
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48.0),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E2B5C),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TabBar(
+                tabs: isPremium
+                    ? const [
+                  Tab(text: 'Challenge'),
+                  Tab(text: 'Tournament'),
+                ]
+                    : const [
+                  Tab(text: 'Tournament'),
+                ],
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.white,
+                indicator: BoxDecoration(
+                  color: Colors.yellow,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+                indicatorSize: TabBarIndicatorSize.tab, // 👈 ensure full tab background
+              ),
             ),
           ),
         ),
