@@ -30,6 +30,22 @@ class WorkoutSessionModel {
     );
     return rows;
   }
+
+  static async countSessionsByUserId(userId) {
+    const [rows] = await db.execute(
+      'SELECT COUNT(*) as session_count FROM workout_sessions WHERE user_id = ?',
+      [userId]
+    );
+    return rows[0].session_count;
+  }
+
+  static async getTotalCaloriesBurnedByUserId(userId) {
+    const [rows] = await db.execute(
+      'SELECT SUM(calories_burned) as total_calories FROM workout_sessions WHERE user_id = ?',
+      [userId]
+    );
+    return rows[0].total_calories || 0;
+  }
 }
 
 module.exports = WorkoutSessionModel;
