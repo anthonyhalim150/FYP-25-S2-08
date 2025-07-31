@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class TournamentWidget extends StatelessWidget {
   final String tournamentName;
   final String daysLeft;
-  final String prize;
   final String participants;
   final double cardWidth;
   final VoidCallback? onJoin;
@@ -12,7 +11,6 @@ class TournamentWidget extends StatelessWidget {
     super.key,
     required this.tournamentName,
     required this.daysLeft,
-    this.prize = '',
     this.participants = '',
     this.cardWidth = 300,
     this.onJoin,
@@ -21,9 +19,7 @@ class TournamentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Optional: Navigate to details if needed
-      },
+      onTap: () {},
       child: Container(
         width: cardWidth,
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
@@ -75,13 +71,8 @@ class TournamentWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildInfoItem(Icons.emoji_events, prize),
-                _buildInfoItem(Icons.people, participants),
-              ],
-            ),
+            // Only participants
+            _buildParticipantsRow(),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
@@ -93,7 +84,7 @@ class TournamentWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                onPressed: onJoin, // <-- This is the join button callback!
+                onPressed: onJoin,
                 child: const Text(
                   'Join Now',
                   style: TextStyle(
@@ -110,16 +101,43 @@ class TournamentWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String text) {
+  Widget _buildParticipantsRow() {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.amber),
-        const SizedBox(width: 4),
+        Icon(Icons.people, size: 18, color: Colors.blue.shade400),
+        const SizedBox(width: 6),
+        Stack(
+          children: [
+            CircleAvatar(
+              radius: 11,
+              backgroundColor: Colors.blue.shade100,
+              child: const Text("A", style: TextStyle(fontSize: 12)),
+            ),
+            Positioned(
+              left: 14,
+              child: CircleAvatar(
+                radius: 11,
+                backgroundColor: Colors.green.shade100,
+                child: const Text("B", style: TextStyle(fontSize: 12)),
+              ),
+            ),
+            Positioned(
+              left: 28,
+              child: CircleAvatar(
+                radius: 11,
+                backgroundColor: Colors.orange.shade100,
+                child: const Text("C", style: TextStyle(fontSize: 12)),
+              ),
+            ),
+          ],
+          clipBehavior: Clip.none,
+        ),
+        const SizedBox(width: 38),
         Text(
-          text,
+          '$participants participants',
           style: const TextStyle(
             fontSize: 13,
-            color: Colors.black54,
+            color: Colors.black87,
             fontWeight: FontWeight.w500,
           ),
         ),

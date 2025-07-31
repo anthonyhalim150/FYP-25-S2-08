@@ -153,6 +153,7 @@ class UnregisteredUserPage extends StatelessWidget {
                   maxSteps: maxSteps,
                   caloriesBurned: caloriesBurned,
                   xpEarned: xpEarned,
+                  exerciseGaugeColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
@@ -259,7 +260,6 @@ class UnregisteredUserPage extends StatelessWidget {
                       context,
                       TournamentWidget(
                         tournamentName: tournament.tournamentName,
-                        prize: tournament.prize,
                         participants: tournament.participants,
                         daysLeft: tournament.daysLeft,
                         cardWidth: 280,

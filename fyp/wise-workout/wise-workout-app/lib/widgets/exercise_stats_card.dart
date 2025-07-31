@@ -6,6 +6,7 @@ class ExerciseStatsCard extends StatelessWidget {
   final int maxSteps;
   final int caloriesBurned;
   final int xpEarned;
+  final Color? exerciseGaugeColor;
 
   const ExerciseStatsCard({
     super.key,
@@ -13,6 +14,7 @@ class ExerciseStatsCard extends StatelessWidget {
     required this.maxSteps,
     required this.caloriesBurned,
     required this.xpEarned,
+    this.exerciseGaugeColor,
   });
 
   Widget _buildStatItem(BuildContext context, IconData icon, String label, String value) {
@@ -71,11 +73,11 @@ class ExerciseStatsCard extends StatelessWidget {
                     width: 300,
                     height: 210,
                     child: ExerciseGauge(
-                      progress: currentSteps / maxSteps,
+                      progress: currentSteps / (maxSteps > 0 ? maxSteps : 1),
                       backgroundColor: colorScheme.surface,
-                      progressColor: colorScheme.primaryContainer,
+                      progressColor: exerciseGaugeColor ?? colorScheme.primaryContainer,
                       onTap: () {
-                        Navigator.pushNamed(context, '/dailySummary'); // Adjust the route if needed
+                        Navigator.pushNamed(context, '/dailySummary');
                       },
                     ),
                   ),

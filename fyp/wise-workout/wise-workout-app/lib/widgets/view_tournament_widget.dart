@@ -142,7 +142,27 @@ void showTournamentJoinPopup(BuildContext context, Map<String, dynamic> tourname
                     )),
                     const SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: onJoin,
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: ctx,
+                          builder: (ctx2) => AlertDialog(
+                            title: const Text('Join Tournament'),
+                            content: const Text('Are you sure you want to join this tournament?'),
+                            actions: [
+                              TextButton(
+                                child: const Text('Cancel'),
+                                onPressed: () => Navigator.of(ctx2).pop(false),
+                              ),
+                              TextButton(
+                                child: const Text('Join'),
+                                onPressed: () => Navigator.of(ctx2).pop(true),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed != true) return;
+                        if (onJoin != null) onJoin!();
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
                         foregroundColor: colorScheme.onPrimary,
