@@ -6,10 +6,10 @@ dotenv.config();
 
 const db = require('./config/db');
 
-
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
-const authenticateUser = require('./middlewares/authMiddleware'); 
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const authenticateUser = require('./middlewares/authMiddleware');
 
 const app = express();
 
@@ -21,13 +21,12 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(authRoutes);
+
 app.use(authenticateUser);
 
-
-
 app.use(userRoutes);
+app.use(feedbackRoutes);
 
-// Test DB connection
 db.query('SELECT DATABASE() AS db_name')
   .then(([rows]) => {
     console.log('Connected to MySQL database:', rows[0].db_name);
