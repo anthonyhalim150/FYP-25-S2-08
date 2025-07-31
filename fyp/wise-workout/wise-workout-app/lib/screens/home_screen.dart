@@ -431,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
 
               SizedBox(
-                height: 220,
+                height: 160,
                 child: FutureBuilder<List<WorkoutCategory>>(
                   future: _categoryFuture,
                   builder: (context, snapshot) {
@@ -451,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: categories.map((cat) => WorkoutCardHomeScreen(
                         imagePath: cat.imageUrl,
                         workoutName: cat.categoryName,
-                        workoutLevel: cat.categoryDescription,
+                        workoutLevel: '',
                         onTap: () {
                           Navigator.push(
                             context,
