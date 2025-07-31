@@ -260,7 +260,6 @@ class UnregisteredUserPage extends StatelessWidget {
                       context,
                       TournamentWidget(
                         tournamentName: tournament.tournamentName,
-                        prize: tournament.prize,
                         participants: tournament.participants,
                         daysLeft: tournament.daysLeft,
                         cardWidth: 280,
