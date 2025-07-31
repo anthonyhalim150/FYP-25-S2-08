@@ -55,16 +55,26 @@ const ViewAUser = ({ user, onClose }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content user-modal-split" onClick={(e) => e.stopPropagation()}>
+      <div
+          className="modal-content user-modal-split"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            backgroundImage: `url(/backgrounds/bg${user.background_id || 1}.jpg)`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
+          }}
+        >
         <button className="modal-close" onClick={onClose}>✕</button>
 
         {/* Left Yellow Panel */}
         <div className="user-info-panel">
           <img
-            src={user.avatar || `/icon-avatar${(user.id % 6 || 6)}.png`}
+            src={`/avatars/avatar${user.avatar_id || 1}.png`}
             alt="User Avatar"
             className="user-avatar-large"
           />
+
           
           <h2>{user.username}</h2>
 
