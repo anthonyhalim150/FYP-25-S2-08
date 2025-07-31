@@ -6,6 +6,8 @@ import '../widgets/app_drawer.dart';
 import '../services/health_service.dart';
 import '../services/api_service.dart';
 import '../services/badge_service.dart';
+import '../services/workout_category_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/exercise_stats_card.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/reminder_widget.dart';
@@ -13,10 +15,9 @@ import '../widgets/bottom_navigation.dart';
 import '../screens/camera/SquatPoseScreen.dart';
 import '../screens/buypremium_screen.dart';
 import '../screens/quest_screen.dart';
+import '../screens/workout/workout_list_page.dart';
 import '../screens/challengeInvitation_screen.dart';
-import '../services/workout_category_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -430,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
 
               SizedBox(
-                height: 147,
+                height: 220,
                 child: FutureBuilder<List<WorkoutCategory>>(
                   future: _categoryFuture,
                   builder: (context, snapshot) {
@@ -451,6 +452,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         imagePath: cat.imageUrl,
                         workoutName: cat.categoryName,
                         workoutLevel: cat.categoryDescription,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WorkoutListPage(categoryKey: cat.categoryKey),
+                            ),
+                          );
+                        },
                       )).toList(),
                     );
                   },
