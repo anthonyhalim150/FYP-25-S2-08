@@ -10,6 +10,7 @@ class ChatScreen extends StatefulWidget {
   final String friendAvatar;
   final String friendBackground;
   final bool isPremium;
+
   const ChatScreen({
     Key? key,
     required this.friendId,
@@ -19,6 +20,7 @@ class ChatScreen extends StatefulWidget {
     required this.friendBackground,
     this.isPremium = false,
   }) : super(key: key);
+
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -146,7 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
       await _messageService.sendMessage(widget.friendId, content);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('chat_error_send_failed'.tr())),
+        SnackBar(content: Text('chat_error_send_failed'.tr())),
       );
     }
   }
@@ -182,7 +184,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final bool isDark = theme.brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: colorScheme.background,
       body: SafeArea(
@@ -277,33 +278,32 @@ class _ChatScreenState extends State<ChatScreen> {
                       myUserId != null && senderId == myUserId;
                   final avatarPath = safeAsset(m['sender_avatar']);
                   final backgroundPath = safeAsset(m['sender_background']);
-
                   return Align(
                     alignment: isSelf
-                        ? Alignment.centerLeft
-                        : Alignment.centerRight,
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: isSelf
-                          ? MainAxisAlignment.start
-                          : MainAxisAlignment.end,
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        if (isSelf)
+                        if (!isSelf)
                           _profileCircle(
                             background: backgroundPath,
                             avatar: avatarPath,
                             size: 40,
                             avatarRadius: 17,
                           ),
-                        if (isSelf) const SizedBox(width: 8),
+                        if (!isSelf) const SizedBox(width: 8),
                         Flexible(
                           child: Container(
                             margin: EdgeInsets.only(
                               top: 10,
                               bottom: 2,
-                              left: isSelf ? 0 : 48,
-                              right: isSelf ? 48 : 0,
+                              left: isSelf ? 48 : 0,
+                              right: isSelf ? 0 : 48,
                             ),
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 16),
@@ -314,9 +314,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               borderRadius: BorderRadius.only(
                                 topLeft: const Radius.circular(14),
                                 topRight: const Radius.circular(14),
-                                bottomLeft: Radius.circular(isSelf ? 2 : 14),
+                                bottomLeft: Radius.circular(isSelf ? 14 : 2),
                                 bottomRight:
-                                Radius.circular(isSelf ? 14 : 2),
+                                Radius.circular(isSelf ? 2 : 14),
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -335,8 +335,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ),
                         ),
-                        if (!isSelf) const SizedBox(width: 8),
-                        if (!isSelf)
+                        if (isSelf) const SizedBox(width: 8),
+                        if (isSelf)
                           _profileCircle(
                             background: backgroundPath,
                             avatar: avatarPath,
