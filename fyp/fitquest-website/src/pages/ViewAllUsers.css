@@ -126,6 +126,11 @@
     color: #d32f2f;
 }
 
+.status-badge.pending {
+    background-color: #9a9a9a;
+    color: #000000;
+}
+
 .tab-count {
   font-size: 0.85rem;
   font-weight: 500;
@@ -147,50 +152,6 @@
   margin-bottom: 1rem;
 }
 
-.unsuspend-btn,
-.suspend-btn,
-.cancel-btn,
-.confirm-btn,
-.create-btn {
-  padding: 0.4rem 3rem;   
-  border-radius: 25px;
-  border: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: center;
-  white-space: nowrap;       
-  cursor: pointer;
-}
-
-.unsuspend-btn {
-    background-color: #000 !important;
-    color: #fff !important;
-    margin-right:1rem;
-}
-
-.suspend-btn {
-  background-color: #e53935 !important;
-  color: #fff !important;
-  margin-right:1rem;
-  /* max-width: 4rem; */
-}
-
-.cancel-btn {
-    background-color: #e0e0e0 !important;
-    color: #333 !important;
-    margin-left: 1rem;
-}
-
-.confirm-btn{
-    background-color: #17c703 !important;
-    color: #ffffff !important;
-}
-
-
-.create-btn{
-    background-color: #008CFF !important;
-    color: #ffffff !important;
-}
 
 .edit-btn {
   background-color: #ffc107;

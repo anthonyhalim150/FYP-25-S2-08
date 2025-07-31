@@ -53,7 +53,7 @@
     gap: 1rem;
     margin-top: 1.5rem;
 }
-
+/* 
 .create-btn,
 .cancel-btn {
     padding: 0.6rem 2rem;
@@ -74,7 +74,7 @@
 .cancel-btn {
     background-color: #e0e0e0;
     color: #333;
-}
+} */
 
 /* Responsive Styles */
 @media (max-width: 768px) {

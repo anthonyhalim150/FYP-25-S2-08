@@ -344,14 +344,15 @@
   margin-top: 2rem;
 }
 
+
 .feedback-tag {
-  /* background-color: #e0e0e0; */
-  border: none;
-  margin: 0.3rem;
-  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  padding: 0.4rem 1rem;
   border-radius: 20px;
-  font-size: 0.8rem;
-  cursor: default;
+  margin-right: 0.5rem;
+  background: #f8f8f8;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .feedback-tag.warning {
