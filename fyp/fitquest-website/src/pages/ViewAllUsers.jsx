@@ -173,7 +173,7 @@ const ViewAllUsers = () => {
                     </td>
                    <td>
                   <button
-                    className={`action-btn ${user.isSuspended ? 'unsuspend' : 'suspend'}`}
+                    className={`suspend-btn ${user.isSuspended ? 'unsuspend' : 'suspend'}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSuspendToggle(user);
