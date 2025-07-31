@@ -4,13 +4,44 @@ class WorkoutCardHomeScreen extends StatelessWidget {
   final String imagePath;
   final String workoutName;
   final String workoutLevel;
-
   const WorkoutCardHomeScreen({
     super.key,
     required this.imagePath,
     required this.workoutName,
     required this.workoutLevel,
   });
+
+  Widget _buildImage(String imagePath) {
+    if (imagePath.startsWith('http') || imagePath.startsWith('https')) {
+      return Image.network(
+        imagePath,
+        height: 83,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Container(height: 83, color: Colors.grey[200], child: Icon(Icons.image_not_supported)),
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            height: 83,
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded / (progress.expectedTotalBytes ?? 1)
+                  : null,
+            ),
+          );
+        },
+      );
+    } else {
+      return Image.asset(
+        imagePath,
+        height: 83,
+        width: double.infinity,
+        fit: BoxFit.cover,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +57,6 @@ class WorkoutCardHomeScreen extends StatelessWidget {
       fontWeight: FontWeight.bold,
       color: colorScheme.onSurfaceVariant,
     );
-
     return Container(
       width: 200,
       margin: const EdgeInsets.only(right: 15),
@@ -46,12 +76,7 @@ class WorkoutCardHomeScreen extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Image.asset(
-              imagePath,
-              height: 83,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: _buildImage(imagePath),
           ),
           const SizedBox(height: 10),
           Padding(

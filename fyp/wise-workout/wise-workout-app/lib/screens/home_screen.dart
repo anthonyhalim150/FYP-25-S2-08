@@ -13,12 +13,13 @@ import '../widgets/bottom_navigation.dart';
 import '../screens/camera/SquatPoseScreen.dart';
 import '../screens/buypremium_screen.dart';
 import '../screens/quest_screen.dart';
-import 'workout_sample_data.dart';
+import '../screens/challengeInvitation_screen.dart';
+import '../services/workout_category_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../screens/challengeInvitation_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -27,6 +28,7 @@ class HomeScreen extends StatefulWidget {
   final Widget? messagesIcon;
   final Widget? profileIcon;
   final Widget? workoutIcon;
+
   const HomeScreen({
     super.key,
     required this.userName,
@@ -52,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> _unlockedBadges = [];
   late Future<List<dynamic>> tournamentsFuture;
 
+  late Future<List<WorkoutCategory>> _categoryFuture;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchUnlockedBadges();
     _requestNotificationPermission();
     tournamentsFuture = TournamentService().getTournamentsWithParticipants();
+    _categoryFuture = WorkoutCategoryService().fetchCategories();
   }
 
   Future<void> reloadTournaments() async {
@@ -77,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
-
   Future<void> fetchTodaySteps() async {
     final connected = await _healthService.connect();
     if (connected) {
@@ -279,7 +283,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-
               // Search Bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -425,20 +428,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+
               SizedBox(
                 height: 147,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  children: sampleWorkouts
-                      .map((workout) => WorkoutCardHomeScreen(
-                    imagePath: workout.imagePath,
-                    workoutName: workout.workoutName,
-                    workoutLevel: workout.workoutLevel,
-                  ))
-                      .toList(),
+                child: FutureBuilder<List<WorkoutCategory>>(
+                  future: _categoryFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Failed to load categories'));
+                    }
+                    final categories = snapshot.data ?? [];
+                    if (categories.isEmpty) {
+                      return Center(child: Text('No workout categories available'));
+                    }
+                    return ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      children: categories.map((cat) => WorkoutCardHomeScreen(
+                        imagePath: cat.imageUrl,
+                        workoutName: cat.categoryName,
+                        workoutLevel: cat.categoryDescription,
+                      )).toList(),
+                    );
+                  },
                 ),
               ),
+
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -519,7 +537,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                             if (confirmed != true) return;
-
                             String status = "";
                             try {
                               status = await TournamentService().joinTournament(t['id']);
