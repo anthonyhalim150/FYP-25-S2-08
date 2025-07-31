@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/questionnaire_service.dart';
 
-// ENUM values from your SQL table
 const genderOptions = ['male', 'female'];
 const workoutDaysOptions = [
   '1-2 times a week',
   '3-4 times a week',
-  '5+ times a week'
+  '5-6 times a week'
 ];
 const workoutTimeOptions = [
   'Quick (e.g. 5 Minutes during Lunch Break)',

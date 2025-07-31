@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'exercise_gauge.dart'; // Make sure this import path is correct
+import 'exercise_gauge.dart';
 
 class ExerciseStatsCard extends StatelessWidget {
   final int currentSteps;
@@ -7,6 +7,7 @@ class ExerciseStatsCard extends StatelessWidget {
   final int caloriesBurned;
   final int xpEarned;
   final Color? exerciseGaugeColor;
+  final VoidCallback? onGaugeTap;
 
   const ExerciseStatsCard({
     super.key,
@@ -15,6 +16,7 @@ class ExerciseStatsCard extends StatelessWidget {
     required this.caloriesBurned,
     required this.xpEarned,
     this.exerciseGaugeColor,
+    this.onGaugeTap,
   });
 
   Widget _buildStatItem(BuildContext context, IconData icon, String label, String value) {
@@ -76,9 +78,7 @@ class ExerciseStatsCard extends StatelessWidget {
                       progress: currentSteps / (maxSteps > 0 ? maxSteps : 1),
                       backgroundColor: colorScheme.surface,
                       progressColor: exerciseGaugeColor ?? colorScheme.primaryContainer,
-                      onTap: () {
-                        Navigator.pushNamed(context, '/dailySummary');
-                      },
+                      onTap: onGaugeTap, // onGaugeTap is null!
                     ),
                   ),
                   Positioned(

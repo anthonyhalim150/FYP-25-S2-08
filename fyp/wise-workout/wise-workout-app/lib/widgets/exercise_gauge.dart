@@ -20,18 +20,26 @@ class ExerciseGauge extends StatelessWidget {
     final Color bgColor = backgroundColor ?? Theme.of(context).colorScheme.surfaceVariant;
     final Color prColor = progressColor ?? Theme.of(context).colorScheme.primary;
 
-    return GestureDetector(
-      onTap: onTap, // 👈 Handles press
-      child: CustomPaint(
-        painter: _SemiCirclePainter(
-          progress: progress.clamp(0.0, 1.0),
-          backgroundColor: bgColor,
-          progressColor: prColor,
-        ),
-        size: const Size(200, 100),
+    Widget customPaint = CustomPaint(
+      painter: _SemiCirclePainter(
+        progress: progress.clamp(0.0, 1.0),
+        backgroundColor: bgColor,
+        progressColor: prColor,
       ),
+      size: const Size(200, 100),
     );
+
+    // Only make it tappable if onTap is provided
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: customPaint,
+      );
+    } else {
+      return customPaint;
+    }
   }
+
 }
 
 class _SemiCirclePainter extends CustomPainter {
