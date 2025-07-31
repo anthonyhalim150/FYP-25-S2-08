@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../services/challenge_service.dart';
 
 class Challenge {
+  final int id;
   final String title;
   final String senderName;
   final String target;
@@ -8,6 +10,7 @@ class Challenge {
   final int daysLeft;
 
   Challenge({
+    required this.id,
     required this.title,
     required this.senderName,
     required this.target,
@@ -17,22 +20,80 @@ class Challenge {
 }
 
 class ChallengeInvitationScreen extends StatefulWidget {
-  final List<Challenge> pendingInvites;
-  final List<Challenge> ongoingChallenges;
-
-  const ChallengeInvitationScreen({
-    super.key,
-    required this.pendingInvites,
-    required this.ongoingChallenges,
-  });
+  const ChallengeInvitationScreen({super.key});
 
   @override
   State<ChallengeInvitationScreen> createState() => _ChallengeInvitationScreenState();
 }
 
 class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
+  final ChallengeService _challengeService = ChallengeService();
+
+  List<Challenge> pendingInvites = [];
+  List<Challenge> ongoingChallenges = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchChallenges();
+  }
+
+  Future<void> fetchChallenges() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final invitationsData = await _challengeService.getInvitations();
+      final acceptedData = await _challengeService.getAcceptedChallenges();
+
+      List<Challenge> fetchedInvites = invitationsData.map<Challenge>((data) {
+        return Challenge(
+          id: data['id'],
+          title: data['type'] ?? 'Challenge',
+          senderName: data['senderName'] ?? 'Unknown',
+          target: data['value'] ?? '',
+          duration: int.tryParse(data['duration']?.toString() ?? '0') ?? 0,
+          daysLeft: 0,
+        );
+      }).toList();
+
+      List<Challenge> fetchedOngoing = acceptedData.map<Challenge>((data) {
+        return Challenge(
+          id: data['id'],
+          title: data['type'] ?? 'Challenge',
+          senderName: data['senderName'] ?? 'Unknown',
+          target: data['value'] ?? '',
+          duration: int.tryParse(data['duration']?.toString() ?? '0') ?? 0,
+          daysLeft: int.tryParse(data['daysLeft']?.toString() ?? '0') ?? 0,
+        );
+      }).toList();
+
+      setState(() {
+        pendingInvites = fetchedInvites;
+        ongoingChallenges = fetchedOngoing;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Failed to fetch challenges: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load challenges: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0B1741),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -54,15 +115,15 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TabBar(
-                tabs: [Tab(text: 'Invitations'), Tab(text: 'Ongoing')],
+                tabs: const [Tab(text: 'Invitations'), Tab(text: 'Ongoing')],
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.white,
                 indicator: BoxDecoration(
                   color: Colors.yellow,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
                 indicatorSize: TabBarIndicatorSize.tab,
               ),
             ),
@@ -79,8 +140,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
   }
 
   Widget buildInvitationsTab(BuildContext context) {
-    final invites = widget.pendingInvites;
-    if (invites.isEmpty) {
+    if (pendingInvites.isEmpty) {
       return const Center(
         child: Text("No pending invitations.", style: TextStyle(color: Colors.white)),
       );
@@ -88,9 +148,9 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: invites.length,
+      itemCount: pendingInvites.length,
       itemBuilder: (context, index) {
-        final challenge = invites[index];
+        final challenge = pendingInvites[index];
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
@@ -144,8 +204,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
   }
 
   Widget buildOngoingTab(BuildContext context) {
-    final ongoing = widget.ongoingChallenges;
-    if (ongoing.isEmpty) {
+    if (ongoingChallenges.isEmpty) {
       return const Center(
         child: Text("No ongoing challenges.", style: TextStyle(color: Colors.white)),
       );
@@ -153,9 +212,9 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: ongoing.length,
+      itemCount: ongoingChallenges.length,
       itemBuilder: (context, index) {
-        final challenge = ongoing[index];
+        final challenge = ongoingChallenges[index];
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
@@ -177,15 +236,31 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
     );
   }
 
-  void acceptChallenge(BuildContext context, Challenge challenge) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Accepted ${challenge.title}')),
-    );
+  void acceptChallenge(BuildContext context, Challenge challenge) async {
+    try {
+      await _challengeService.acceptChallenge(challenge.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Accepted ${challenge.title}')),
+      );
+      await fetchChallenges();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to accept challenge: $e')),
+      );
+    }
   }
 
-  void rejectChallenge(BuildContext context, Challenge challenge) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Rejected ${challenge.title}')),
-    );
+  void rejectChallenge(BuildContext context, Challenge challenge) async {
+    try {
+      await _challengeService.rejectChallenge(challenge.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Rejected ${challenge.title}')),
+      );
+      await fetchChallenges();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to reject challenge: $e')),
+      );
+    }
   }
 }

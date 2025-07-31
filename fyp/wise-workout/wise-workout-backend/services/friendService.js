@@ -41,6 +41,10 @@ class FriendService {
   static async searchUsers(userId, query) {
     return await UserModel.searchUsersWithStatus(query, userId);
   }
+
+  static async getPremiumFriends(userId) {
+    return await FriendModel.getPremiumFriends(userId);
+  }
 }
 
 module.exports = FriendService;

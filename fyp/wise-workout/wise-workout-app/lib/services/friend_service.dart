@@ -39,7 +39,6 @@ class FriendService {
     return jsonDecode(response.body);
   }
 
-
   Future<void> acceptRequest(String friendId) async {
     final jwt = await _getJwtCookie();
     final response = await http.post(
@@ -117,5 +116,21 @@ class FriendService {
     final data = jsonDecode(response.body);
     return List<Map<String, dynamic>>.from(data);
   }
-  
+
+  Future<List<Map<String, dynamic>>> getPremiumFriends() async {
+    final jwt = await _getJwtCookie();  // get jwt token
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/friends/premium'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load premium friends');
+    }
+    final List<dynamic> data = jsonDecode(response.body);
+    return List<Map<String, dynamic>>.from(data);
+  }
 }

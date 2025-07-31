@@ -48,3 +48,9 @@ exports.searchUsers = async (req, res) => {
   const results = await FriendService.searchUsers(userId, query.trim());
   res.json(results);
 };
+
+exports.getPremiumFriends = async (req, res) => {
+  const userId = req.user.id;
+  const premiumFriends = await FriendService.getPremiumFriends(userId);
+  res.json(premiumFriends);
+};

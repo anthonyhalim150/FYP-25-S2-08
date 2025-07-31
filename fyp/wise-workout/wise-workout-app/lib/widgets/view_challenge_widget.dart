@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/friend_service.dart';
+import '../services/challenge_service.dart';
 
 class ChallengeCard extends StatelessWidget {
   final String title;
@@ -115,11 +117,7 @@ void showInviteFriendPopup(
   final colorScheme = Theme.of(context).colorScheme;
   final textTheme = Theme.of(context).textTheme;
 
-  final friends = [
-    {'name': 'Anthony Halim', 'username': '@pitbull101'},
-    {'name': 'Matilda Yeo', 'username': '@matyeo'},
-    {'name': 'Jackson Wang', 'username': '@jackson'},
-  ];
+  final friendService = FriendService();
   final Set<int> selectedIndices = {};
 
   showModalBottomSheet(
@@ -127,121 +125,195 @@ void showInviteFriendPopup(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (BuildContext ctx) {
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => Navigator.of(ctx).pop(),
-        child: GestureDetector(
-          onTap: () {},
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.7,
-            maxChildSize: 0.9,
-            builder: (_, controller) {
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      return FutureBuilder<List<Map<String, dynamic>>>(
+        future: friendService.getPremiumFriends(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Failed to load friends'));
+          }
+
+          final friends = snapshot.data ?? [];
+
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(ctx).pop(),
+            child: GestureDetector(
+              onTap: () {},
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.7,
+                maxChildSize: 0.9,
+                builder: (_, controller) {
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(25)),
                         ),
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceVariant,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Target: $target",
-                                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceVariant,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              Text(
-                                "Duration: $duration",
-                                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: ListView.builder(
-                            controller: controller,
-                            itemCount: friends.length,
-                            itemBuilder: (context, index) {
-                              final friend = friends[index];
-                              final isSelected = selectedIndices.contains(index);
-                              return ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                leading: CircleAvatar(
-                                  backgroundColor: colorScheme.secondary,
-                                  child: Icon(Icons.person, color: colorScheme.onSecondary),
-                                ),
-                                title: Text(
-                                  friend['name']!,
-                                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
-                                ),
-                                subtitle: Text(
-                                  friend['username']!,
-                                  style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                                ),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    isSelected ? Icons.check_circle : Icons.add_circle_outline,
-                                    color: isSelected ? colorScheme.primary : colorScheme.secondary,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Target: $target",
+                                    style:
+                                    textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      if (isSelected) {
-                                        selectedIndices.remove(index);
-                                      } else {
-                                        selectedIndices.add(index);
-                                      }
-                                    });
-                                  },
+                                  Text(
+                                    "Duration: $duration",
+                                    style:
+                                    textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Expanded(
+                              child: ListView.builder(
+                                controller: controller,
+                                itemCount: friends.length,
+                                itemBuilder: (context, index) {
+                                  final friend = friends[index];
+                                  final isSelected = selectedIndices.contains(index);
+
+                                  final backgroundUrl = friend['background_url'] ?? '';
+                                  final avatarUrl = friend['avatar_url'] ?? '';
+
+                                  ImageProvider backgroundImageProvider() {
+                                    if (backgroundUrl.isEmpty) return const AssetImage('assets/background/black.jpg');
+                                    if (backgroundUrl.startsWith('http')) {
+                                      return NetworkImage(backgroundUrl);
+                                    }
+                                    return AssetImage(backgroundUrl);
+                                  }
+
+                                  ImageProvider? avatarImageProvider() {
+                                    if (avatarUrl.isEmpty) return null;
+                                    if (avatarUrl.startsWith('http')) {
+                                      return NetworkImage(avatarUrl);
+                                    }
+                                    return AssetImage(avatarUrl);
+                                  }
+
+                                  return ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: Container(
+                                      width: 44,
+                                      height: 44,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: backgroundImageProvider(),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: CircleAvatar(
+                                          backgroundImage: avatarImageProvider(),
+                                          radius: 18,
+                                          backgroundColor: Colors.transparent,
+                                          child: avatarUrl.isEmpty
+                                              ? Icon(Icons.person,
+                                              color: colorScheme.onSecondary, size: 20)
+                                              : null,
+                                        ),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      friend['name'] ?? '',
+                                      style: textTheme.bodyLarge
+                                          ?.copyWith(color: colorScheme.onSurface),
+                                    ),
+                                    subtitle: Text(
+                                      friend['username'] ?? '',
+                                      style: textTheme.bodySmall
+                                          ?.copyWith(color: colorScheme.onSurfaceVariant),
+                                    ),
+                                    trailing: IconButton(
+                                      icon: Icon(
+                                        isSelected ? Icons.check_circle : Icons.add_circle_outline,
+                                        color: isSelected ? colorScheme.primary : colorScheme.secondary,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          if (isSelected) {
+                                            selectedIndices.remove(index);
+                                          } else {
+                                            selectedIndices.add(index);
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () async {
+                                final challengeService = ChallengeService();
+                                for (int index in selectedIndices) {
+                                  final friend = friends[index];
+                                  await challengeService.sendChallenge(
+                                    receiverId: friend['id'],
+                                    title: title,
+                                    target: target,
+                                    duration: duration,
+                                  );
+                                }
+
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Challenge sent!")),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.secondary,
+                                foregroundColor: colorScheme.onSecondary,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.secondary,
-                            foregroundColor: colorScheme.onSecondary,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                                minimumSize: const Size.fromHeight(48),
+                              ),
+                              child: Text(
+                                "Done",
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSecondary,
+                                ),
+                              ),
                             ),
-                            minimumSize: const Size.fromHeight(48),
-                          ),
-                          child: Text(
-                            "Done",
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSecondary,
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       );
     },
   );
@@ -354,7 +426,7 @@ Future<Map<String, String>?> showEditChallengePopup(
     },
   );
 }
-// Helper to capitalize first letter
+
 extension StringCasingExtension on String {
   String capitalize() => length > 0 ? '${this[0].toUpperCase()}${substring(1)}' : '';
 }

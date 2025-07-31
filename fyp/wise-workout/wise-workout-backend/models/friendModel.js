@@ -69,6 +69,19 @@ class FriendModel {
     return rows;
   }
 
+  static async getPremiumFriends(userId) {
+    const [rows] = await db.execute(
+      `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role,
+              a.image_url as avatar_url, b.image_url as background_url
+       FROM friends f
+       JOIN users u ON u.id = f.friend_id
+       LEFT JOIN avatars a ON u.avatar_id = a.id
+       LEFT JOIN backgrounds b ON u.background_id = b.id
+       WHERE f.user_id = ? AND f.status = "accepted" AND u.role = "premium"`,
+      [userId]
+    );
+    return rows;
+  }
 }
 
 module.exports = FriendModel;

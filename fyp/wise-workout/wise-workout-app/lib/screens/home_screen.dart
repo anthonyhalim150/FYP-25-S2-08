@@ -408,8 +408,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => ChallengeInvitationScreen(
-                          pendingInvites: [], // Replace with real data later
-                          ongoingChallenges: [], // Replace with real data later
                         ),
                       ),
                     );
@@ -570,7 +568,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              // ...rest of UI...
             ],
           ),
         ),
