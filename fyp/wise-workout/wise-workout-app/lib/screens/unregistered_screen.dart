@@ -153,6 +153,7 @@ class UnregisteredUserPage extends StatelessWidget {
                   maxSteps: maxSteps,
                   caloriesBurned: caloriesBurned,
                   xpEarned: xpEarned,
+                  exerciseGaugeColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
