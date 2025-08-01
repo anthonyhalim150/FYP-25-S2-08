@@ -206,6 +206,51 @@ CREATE TABLE exercises (
 );
 
 
+CREATE TABLE tournaments (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  startDate VARCHAR(64),   -- Add this line
+  endDate VARCHAR(64),
+  features TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tournament_participants (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  tournament_id INT NOT NULL,
+  user_id INT NOT NULL,
+  progress INT DEFAULT 0,
+  joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (tournament_id) REFERENCES tournaments(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE workout_sessions (
+  session_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  workout_id INT,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME,
+  duration INT, -- in seconds
+  calories_burned DECIMAL(5,2),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE SET NULL
+);
+
+CREATE TABLE exercise_logs (
+  log_id INT AUTO_INCREMENT PRIMARY KEY,
+  session_id INT NOT NULL,
+  exercise_key VARCHAR(255),
+  exercise_name VARCHAR(255),
+  sets_data JSON, -- Store completed sets data
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (session_id) REFERENCES workout_sessions(session_id) ON DELETE CASCADE,
+  FOREIGN KEY (exercise_key) REFERENCES exercises(exercise_key) ON DELETE SET NULL
+);
+
 INSERT INTO avatars (name, image_url, is_premium)
 VALUES 
   ('free1', 'assets/avatars/free/free1.png', false),
@@ -304,28 +349,26 @@ VALUES
   ('relaxexercises_1', 'Yoga', 'Gentle yoga focusing on flexibility and mindfulness.', 1, 10, 'Hold each pose for 30 seconds, focusing on your breath.', 'Beginner', 'Yoga Mat', 600, 'https://www.youtube.com/watch?v=v7AYKMP6rOE', 9),
   ('relaxexercises_2', 'Stretching', 'Simple stretching routine to improve flexibility and release tension.', 1, 15, 'Hold each stretch for 30 seconds, focusing on deep breathing.', 'Intermediate', 'None', 600, 'https://www.youtube.com/watch?v=6Ib4Un4WnHI', 10);
 
--- New tables for workout sessions
-CREATE TABLE workout_sessions (
-  session_id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  workout_id INT,
-  start_time DATETIME NOT NULL,
-  end_time DATETIME,
-  duration INT, -- in seconds
-  calories_burned DECIMAL(5,2),
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE SET NULL
-);
 
-CREATE TABLE exercise_logs (
-  log_id INT AUTO_INCREMENT PRIMARY KEY,
-  session_id INT NOT NULL,
-  exercise_key VARCHAR(255),
-  exercise_name VARCHAR(255),
-  sets_data JSON, -- Store completed sets data
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (session_id) REFERENCES workout_sessions(session_id) ON DELETE CASCADE,
-  FOREIGN KEY (exercise_key) REFERENCES exercises(exercise_key) ON DELETE SET NULL
+INSERT INTO tournaments (title, description, startDate, endDate, features) VALUES
+(
+  'Ultimate Warrior Cup',
+  'Compete with the best in endurance and power.',
+  '2024-06-03',
+  'Ends in 4 days',
+  '["Daily Leaderboards", "Weekly Rewards", "Muscle Power Rounds"]'
+),
+(
+  'Speed & Agility Showdown',
+  'Boost your reaction time and movement speed.',
+  '2024-06-05',
+  'Ends in 2 days',
+  '["Sprint Events", " Agility Ladder Test", "Time Trials"]'
+),
+(
+  'Flex Master Tournament',
+  'Show off your strength and flexibility.',
+  '2024-06-08',
+  'Ends in 6 days',
+  '["Heavy Lifts", " Balance Tasks", "Flexibility Scoring"]'
 );
