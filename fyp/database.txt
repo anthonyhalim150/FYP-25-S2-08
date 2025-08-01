@@ -287,15 +287,15 @@ VALUES
 
 INSERT INTO prizes (label, type, value) VALUES
 ('10 Tokens', 'tokens', 10),
-('1 Freeze', 'freeze', 1),
+('Nothing', 'none', 0),
 ('50 Tokens', 'tokens', 50),
-('3 Freezes', 'freeze', 3),
-('1 Tokens', 'tokens', 1),
-('1 Avatar', 'avatar', 1),
-('1 Background', 'background', 1),
-('150 Tokens', 'tokens', 150),
-('5 Freezes', 'freeze', 5),
-('1 Day Trial', 'trial', 1);
+('Nothing', 'none', 0),
+('5 Tokens', 'tokens', 5),
+('20 Tokens', 'tokens', 20),
+('30 Tokens', 'tokens', 30),
+('1 Day Trial', 'trial', 1),
+('100 Tokens', 'tokens', 100),
+('Nothing', 'none', 0);
 
 INSERT INTO badges (name, description, icon_url) VALUES
 ('First Workout', 'Complete your first workout session to earn this badge.', 'assets/badges/badge_1.png'),
