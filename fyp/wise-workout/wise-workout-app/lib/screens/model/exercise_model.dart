@@ -30,6 +30,24 @@ class Exercise {
     this.exerciseWeight,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'exerciseId': exerciseId,
+      'exerciseKey': exerciseKey,
+      'exerciseName': exerciseName,
+      'exerciseDescription': exerciseDescription,
+      'exerciseSets': exerciseSets,
+      'exerciseReps': exerciseReps,
+      'exerciseInstructions': exerciseInstructions,
+      'exerciseLevel': exerciseLevel,
+      'exerciseEquipment': exerciseEquipment,
+      'exerciseDuration': exerciseDuration,
+      'youtubeUrl': youtubeUrl,
+      'workoutId': workoutId,
+      'exerciseWeight': exerciseWeight,
+    };
+  }
+
   factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
       exerciseId: json['exerciseId'].toString(),
@@ -49,6 +67,24 @@ class Exercise {
       exerciseWeight: json['exerciseWeight'] != null
           ? double.tryParse(json['exerciseWeight'].toString())
           : null,
+    );
+  }
+
+  factory Exercise.fromAiJson(Map<String, dynamic> json) {
+    return Exercise(
+      exerciseId: '', // or generate a UUID if needed
+      exerciseKey: '',
+      exerciseName: json['name'] ?? '',
+      exerciseDescription: '',
+      exerciseSets: int.tryParse(json['sets'].toString()) ?? 0,
+      exerciseReps: int.tryParse(json['reps'].toString()) ?? 0,
+      exerciseInstructions: '',
+      exerciseLevel: '',
+      exerciseEquipment: '',
+      exerciseDuration: null,
+      youtubeUrl: '',
+      workoutId: 0,
+      exerciseWeight: null,
     );
   }
 }

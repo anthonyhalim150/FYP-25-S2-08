@@ -36,9 +36,11 @@ STRICT RULES:
 - Give priority to exercises the user enjoys.
 - For sets, reps, or weights, always use numbers or text in quotes (e.g. "12", "10 per leg").
 - Output ONLY a valid JSON array of all 7 days of the week, in order (no markdown, no explanation). Each object is either a workout day or a rest day.
+- **At the top of the JSON array, add an object with the key "plan_title" and a short, catchy name for the plan, e.g. { "plan_title": "Beginner Strength & Flexibility" }. The rest of the array should be the 7 days as described above.**
 
 Example output for a 2-day/week plan:
 [
+  { "plan_title": "Beginner Push-Pull Plan" },
   {
     "day_of_week": "Monday",
     "exercises": [

@@ -325,6 +325,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 maxSteps: maxSteps,
                 caloriesBurned: caloriesBurned,
                 xpEarned: xpEarned,
+                onGaugeTap: () {
+                  Navigator.pushNamed(context, '/dailySummary');
+                },
               ),
               const SizedBox(height: 20),
               buildBadgeCollection(context),

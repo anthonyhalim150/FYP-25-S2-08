@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/fitnessai_service.dart';
 import 'edit_preferences_screen.dart';
+import '../screens/model/workout_day_model.dart';
+import '../screens/model/exercise_model.dart';
 
 class FitnessPlanScreen extends StatefulWidget {
   const FitnessPlanScreen({Key? key}) : super(key: key);
@@ -11,6 +13,7 @@ class FitnessPlanScreen extends StatefulWidget {
 class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
   final AIFitnessPlanService _aiService = AIFitnessPlanService();
   bool _loading = false;
+  bool _generatingPlan = false;
   List<dynamic>? _plan;
   Map<String, dynamic>? _preferences;
   String? _error;
@@ -18,14 +21,38 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchPlan();
+    _fetchPreferences();
+  }
+
+  Future<void> _fetchPreferences() async {
+    setState(() {
+      _loading = true;
+      _preferences = null;
+      _plan = null;
+      _error = null;
+    });
+
+    try {
+      // You could make a separate API for only preferences, but here we'll just use the plan fetch and ignore the plan part.
+      final result = await _aiService.fetchPlanFromDB();
+      setState(() {
+        _preferences = result['preferences'];
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   Future<void> _fetchPlan() async {
     setState(() {
-      _loading = true;
+      _generatingPlan = true;
       _plan = null;
-      _preferences = null;
       _error = null;
     });
 
@@ -40,7 +67,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         } else {
           _plan = [];
         }
-        _preferences = result['preferences'];
+        // Don't overwrite preferences here to preserve edited state
       });
     } catch (e) {
       setState(() {
@@ -48,7 +75,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
       });
     } finally {
       setState(() {
-        _loading = false;
+        _generatingPlan = false;
       });
     }
   }
@@ -85,7 +112,10 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                       ),
                     );
                     if (updatedPrefs != null) {
-                      await _fetchPlan();
+                      setState(() {
+                        _preferences = updatedPrefs;
+                        _plan = null; // Clear existing plan if any, since preferences changed
+                      });
                     }
                   },
                 ),
@@ -145,9 +175,9 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     }
     return Expanded(
       child: ListView.builder(
-        itemCount: _plan!.length,
+        itemCount: _plan!.length - 1,
         itemBuilder: (context, idx) {
-          final dayPlan = _plan![idx];
+          final dayPlan = _plan![idx + 1];
           final isRest = dayPlan['rest'] == true;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8),
@@ -202,6 +232,26 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     );
   }
 
+  Widget buildGeneratePlanButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 18, bottom: 24),
+      child: Center(
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.bolt, color: Colors.amber),
+          label: const Text(
+            "Generate AI Fitness Plan",
+            style: TextStyle(fontSize: 18),
+          ),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          ),
+          onPressed: _generatingPlan ? null : _fetchPlan,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -224,14 +274,17 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                 ),
               );
               if (updatedPrefs != null) {
-                await _fetchPlan();
+                setState(() {
+                  _preferences = updatedPrefs;
+                  _plan = null;
+                });
               }
             },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: "Refresh Plan",
-            onPressed: _loading ? null : _fetchPlan,
+            onPressed: _loading ? null : _fetchPreferences,
           ),
         ],
       ),
@@ -240,21 +293,27 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-            ? Center(
-            child: Text(_error!, style: const TextStyle(color: Colors.red)))
+            ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
             : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_preferences != null) buildPreferencesCard(),
-            if (_plan != null) ...[
-              const Text(
-                "Personalized Plan",
-                style: TextStyle(fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.teal),
+            if (_preferences != null && (_plan == null || _plan!.isEmpty))
+              buildGeneratePlanButton(),
+            if (_plan != null && _plan!.isNotEmpty) ...[
+              Text(
+                _plan![0]['plan_title'] != null
+                    ? _plan![0]['plan_title']
+                    : 'Personalized Plan',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  color: Colors.teal,
+                  letterSpacing: 0.5,
+                ),
+                textAlign: TextAlign.left,
               ),
               const SizedBox(height: 6),
-              // ---------- Save Button Added Here ----------
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Center(
@@ -264,15 +323,27 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 32, vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius
-                          .circular(18)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     ),
                     onPressed: (_plan == null || _plan!.isEmpty)
                         ? null
                         : () async {
                       setState(() => _loading = true);
                       try {
-                        await _aiService.savePlanToBackend(_plan!);
+                        final String planTitle = _plan![0]['plan_title'];
+                        final List<dynamic> planDaysJson = _plan!.sublist(1);
+
+                        final List<WorkoutDay> workoutDays = planDaysJson.map<WorkoutDay>((dayJson) {
+                          final exercises = (dayJson['exercises'] as List?)?.map<Exercise>((e) => Exercise.fromAiJson(e)).toList() ?? [];
+                          return WorkoutDay(
+                            dayOfWeek: dayJson['day_of_week'],
+                            exercises: exercises,
+                            notes: dayJson['notes'] ?? '',
+                          );
+                        }).toList();
+
+                        await _aiService.savePlanToBackend(planTitle, workoutDays);
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text('Plan saved successfully!')),
@@ -288,7 +359,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                   ),
                 ),
               ),
-              // ------------------------------------------
               buildPlanList(),
             ]
           ],
