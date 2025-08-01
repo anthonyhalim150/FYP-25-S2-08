@@ -9,10 +9,11 @@ const workoutDaysOptions = [
 ];
 const workoutTimeOptions = [
   'Quick (e.g. 5 Minutes during Lunch Break)',
-  'Short (10-15 Minutes)',
-  'Medium (15-20 Minutes)',
+  'Short (10-20 Minutes)',
+  'Medium (25-45 Minutes)',
   'Long (1 Hour or more)'
 ];
+
 const equipmentOptions = ['Body Weight', 'With Equipment', 'Both'];
 const fitnessGoalOptions = [
   'Lose Weight',
@@ -56,13 +57,13 @@ class _EditPreferencesScreenState extends State<EditPreferencesScreen> {
   void initState() {
     super.initState();
     final p = widget.preferences;
-    gender = p['gender'] ?? genderOptions.first;
-    workoutDays = p['workout_days'] ?? workoutDaysOptions.first;
-    workoutTime = p['workout_time'] ?? workoutTimeOptions.first;
-    equipment = p['equipment_pref'] ?? equipmentOptions.first;
-    fitnessGoal = p['fitness_goal'] ?? fitnessGoalOptions.first;
-    fitnessLevel = p['fitness_level'] ?? fitnessLevelOptions.first;
-    enjoyedWorkout = p['enjoyed_workouts'] ?? enjoyedWorkoutOptions.first;
+    gender = genderOptions.contains(p['gender']) ? p['gender'] : genderOptions.first;
+    workoutDays = workoutDaysOptions.contains(p['workout_days']) ? p['workout_days'] : workoutDaysOptions.first;
+    workoutTime = workoutTimeOptions.contains(p['workout_time']) ? p['workout_time'] : workoutTimeOptions.first;
+    equipment = equipmentOptions.contains(p['equipment_pref']) ? p['equipment_pref'] : equipmentOptions.first;
+    fitnessGoal = fitnessGoalOptions.contains(p['fitness_goal']) ? p['fitness_goal'] : fitnessGoalOptions.first;
+    fitnessLevel = fitnessLevelOptions.contains(p['fitness_level']) ? p['fitness_level'] : fitnessLevelOptions.first;
+    enjoyedWorkout = enjoyedWorkoutOptions.contains(p['enjoyed_workouts']) ? p['enjoyed_workouts'] : enjoyedWorkoutOptions.first;
     injury = p['injury'] ?? '';
     heightController = TextEditingController(text: (p['height_cm']?.toString() ?? '170'));
     weightController = TextEditingController(text: (p['weight_kg']?.toString() ?? '70'));

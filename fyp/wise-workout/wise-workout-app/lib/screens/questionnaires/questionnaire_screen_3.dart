@@ -20,8 +20,8 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
   int selectedIndex = -1;
   final List<String> options = [
     'Quick (e.g. 5 Minutes during Lunch Break)',
-    'Short (10-15 Minutes)',
-    'Medium (15-20 Minutes)',
+    'Short (10-20 Minutes)',
+    'Medium (25-45 Minutes)',
     'Long (1 Hour or more)',
   ];
 

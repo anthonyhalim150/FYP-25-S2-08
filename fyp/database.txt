@@ -50,8 +50,8 @@ CREATE TABLE user_preferences (
   workout_days VARCHAR(50) DEFAULT NULL,
   workout_time ENUM(
     'Quick (e.g. 5 Minutes during Lunch Break)',
-    'Short (10-15 Minutes)',
-    'Medium (15-20 Minutes)',
+    'Short (10-20 Minutes)',
+    'Medium (25-45 Minutes)',
     'Long (1 Hour or more)'
   ) NOT NULL,
   equipment_pref ENUM('Body Weight', 'With Equipment', 'Both') NOT NULL,

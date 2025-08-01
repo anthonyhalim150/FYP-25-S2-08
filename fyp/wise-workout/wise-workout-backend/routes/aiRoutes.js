@@ -19,76 +19,47 @@ router.post('/ai/fitness-plan', async (req, res) => {
       return res.status(404).json({ message: "No exercises found" });
     }
 
-const systemPrompt = `
-You are an expert fitness coach. Create a personalized weekly workout plan based ONLY on the user's preferences and the provided exercise list.
+    // --- THE NEW SYSTEM PROMPT FOR 30 DAYS & WORKOUT_TIME LOGIC ---
+    const systemPrompt = `
+You are an expert fitness coach. Create a personalized 30-day workout plan based ONLY on the user's preferences and the provided exercise list.
 
 STRICT RULES:
 - Use only the exercises from the provided list. Never invent or use exercises not in the list.
-- The workout frequency (number of days per week) MUST match the user's preference, always using the higher number if a range is given (e.g., "1-2 times a week" = 2 days, "3-4 times a week" = 4 days, "5+ times a week" = 5 days).
-- Assign real days of the week for each workout, and make sure workout days are spread out through the week. Insert REST days between workout days (do not schedule workouts on consecutive days unless necessary).
-- For each workout day, include AT LEAST 4 different exercises.
-- Each workout day must include:
-  - "day_of_week": e.g. "Monday"
-  - "exercises": an array, where each exercise includes: { "name": "...", "sets": X, "reps": "..." }
+- For each day, the number of exercises must match the user's "workout_time" preference:
+  - If "Quick (e.g. 5 Minutes during Lunch Break)" → include only 1 exercise for that day.
+  - If "Short (10-20 Minutes)" → include 2 exercises.
+  - If "Medium (25-45 Minutes)" → include 4 exercises.
+  - If "Long (1 Hour or more)" → include 6 exercises.
+- Each day must include:
+  - "day_of_month": 1 to 30 (for each day, incrementing)
+  - "exercises": an array of the correct number of exercises, where each exercise includes: { "name": "...", "sets": X, "reps": "..." }
   - "notes": a short, motivating message or any important instruction (optional).
-- For days with no workouts, include an entry with "day_of_week": "<Day>", "rest": true, and a motivating "notes" field such as "Rest and recover today."
+- You MUST generate exactly 30 days. Each object in the array is a day.
+- For rest days, include: "day_of_month": <day>, "rest": true, and a motivating "notes" field (e.g., "Rest and recover today.")
 - Select exercises that fit the user's equipment preference, goal, fitness level, and avoid exercises related to the user's injuries.
 - Give priority to exercises the user enjoys.
 - For sets, reps, or weights, always use numbers or text in quotes (e.g. "12", "10 per leg").
-- Output ONLY a valid JSON array of all 7 days of the week, in order (no markdown, no explanation). Each object is either a workout day or a rest day.
-- **At the top of the JSON array, add an object with the key "plan_title" and a short, catchy name for the plan, e.g. { "plan_title": "Beginner Strength & Flexibility" }. The rest of the array should be the 7 days as described above.**
+- Output ONLY a valid JSON array of 31 objects (first object is plan_title, next 30 are the 30 days), in order (no markdown, no explanation).
+- At the top of the JSON array, add an object with the key "plan_title" and a short, catchy name for the plan, e.g. { "plan_title": "30-Day Full Body Challenge" }. The rest of the array should be the 30 days as described above.
 
-Example output for a 2-day/week plan:
+Example output for a 2-day plan:
 [
-  { "plan_title": "Beginner Push-Pull Plan" },
+  { "plan_title": "30-Day Energy Boost" },
   {
-    "day_of_week": "Monday",
+    "day_of_month": 1,
     "exercises": [
-      { "name": "Incline Push Up", "sets": 3, "reps": "10" },
-      { "name": "Tricep Dips", "sets": 3, "reps": "15" },
-      { "name": "Chest Fly", "sets": 3, "reps": "12" },
-      { "name": "Plank", "sets": 3, "reps": "1 min" }
+      { "name": "Incline Push Up", "sets": 3, "reps": "10" }
     ],
-    "notes": "Focus on slow and controlled movements."
+    "notes": "Start strong and stay motivated!"
   },
   {
-    "day_of_week": "Tuesday",
+    "day_of_month": 2,
     "rest": true,
-    "notes": "Rest and recover today!"
-  },
-  {
-    "day_of_week": "Wednesday",
-    "rest": true,
-    "notes": "Use this day to stretch and hydrate."
-  },
-  {
-    "day_of_week": "Thursday",
-    "exercises": [
-      { "name": "Squats", "sets": 3, "reps": "15" },
-      { "name": "Lunges", "sets": 3, "reps": "12 per leg" },
-      { "name": "Glute Bridge", "sets": 3, "reps": "15" },
-      { "name": "Russian Twist", "sets": 3, "reps": "20" }
-    ],
-    "notes": "Keep your core engaged."
-  },
-  {
-    "day_of_week": "Friday",
-    "rest": true,
-    "notes": "Active rest: Take a walk or do some yoga."
-  },
-  {
-    "day_of_week": "Saturday",
-    "rest": true,
-    "notes": "Enjoy your rest day!"
-  },
-  {
-    "day_of_week": "Sunday",
-    "rest": true,
-    "notes": "Prepare for the upcoming week."
+    "notes": "Rest and recover today."
   }
+  // ... up to day 30
 ]
-`;
-
+    `;
 
     const userPrompt = `
 User preferences:
@@ -101,7 +72,7 @@ ${JSON.stringify(exercises, null, 2)}
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: "openai/gpt-3.5-turbo",
+        model: "z-ai/glm-4.5-air:free",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
