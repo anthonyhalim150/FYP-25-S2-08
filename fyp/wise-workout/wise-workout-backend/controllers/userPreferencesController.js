@@ -90,11 +90,26 @@ const updatePreferences = async (req, res) => {
   }
 };
 
+const getUserPreferences = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const prefs = await UserPreferencesService.getPreferences(userId);
+    if (!prefs) return res.status(404).json({ message: "Preferences not found" });
+
+    res.json({ preferences: prefs });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Add this export:
 module.exports = {
   submitUserPreferences,
   checkPreferences,
-  updatePreferences // <-- add this line
+  updatePreferences,
+  getUserPreferences
 };
 
 //module.exports = { submitUserPreferences, checkPreferences };

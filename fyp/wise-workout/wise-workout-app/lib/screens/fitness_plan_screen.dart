@@ -33,10 +33,9 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     });
 
     try {
-      // You could make a separate API for only preferences, but here we'll just use the plan fetch and ignore the plan part.
-      final result = await _aiService.fetchPlanFromDB();
+      final prefs = await _aiService.fetchPreferencesOnly(); // or UserPreferencesService
       setState(() {
-        _preferences = result['preferences'];
+        _preferences = prefs;
       });
     } catch (e) {
       setState(() {
@@ -48,6 +47,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
       });
     }
   }
+
 
   Future<void> _fetchPlan() async {
     setState(() {
@@ -188,7 +188,9 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${dayPlan['day_of_week'] ?? 'Day ' + (dayPlan['day']?.toString() ?? '-')}",
+                    dayPlan['day_of_month'] != null
+                        ? "Day ${dayPlan['day_of_month']}"
+                        : (dayPlan['day_of_week'] ?? (dayPlan['day'] != null ? "Day ${dayPlan['day']}" : '-')),
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                   ),
                   const SizedBox(height: 6),
@@ -334,13 +336,17 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                         final List<dynamic> planDaysJson = _plan!.sublist(1);
 
                         final List<WorkoutDay> workoutDays = planDaysJson.map<WorkoutDay>((dayJson) {
-                          final exercises = (dayJson['exercises'] as List?)?.map<Exercise>((e) => Exercise.fromAiJson(e)).toList() ?? [];
+                          final exercises = (dayJson['exercises'] as List?)
+                              ?.map<Exercise>((e) => Exercise.fromAiJson(e))
+                              .toList() ?? [];
                           return WorkoutDay(
-                            dayOfWeek: dayJson['day_of_week'],
+                            dayOfMonth: dayJson['day_of_month'],
                             exercises: exercises,
                             notes: dayJson['notes'] ?? '',
+                            isRest: dayJson['rest'] ?? false,
                           );
                         }).toList();
+
 
                         await _aiService.savePlanToBackend(planTitle, workoutDays);
 

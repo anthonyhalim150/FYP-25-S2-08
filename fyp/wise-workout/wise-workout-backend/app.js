@@ -24,6 +24,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const challengeRoutes = require('./routes/challengeRoutes');
 const workoutPlanRoutes = require('./routes/workoutPlanRoutes');
+const userPreferenceRoutes = require('./routes/userPreferenceRoutes');
 const db = require('./config/db');
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/tournaments', tournamentRoutes);
 app.use('/feedback', feedbackRoutes);
 app.use('/challenges', challengeRoutes);
 app.use('/workout-plans', workoutPlanRoutes);
+app.use('/user/preferences', userPreferenceRoutes);
 app.use(aiRoutes);
 db.query('SELECT 1')
   .then(() => console.log('Connected to MySQL database.'))
