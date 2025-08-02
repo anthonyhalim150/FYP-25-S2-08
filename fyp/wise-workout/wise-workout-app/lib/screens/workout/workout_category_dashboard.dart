@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../services/workout_category_service.dart'; // Make sure this contains both model and service
+import '../../services/workout_category_service.dart';
 import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../fitness_plan_screen.dart'; // Adjust the path as needed!
+import '../fitness_plan_screen.dart';
+import '../buypremium_screen.dart';
+import '../../services/api_service.dart';
 
 class WorkoutCategoryDashboard extends StatefulWidget {
   @override
@@ -15,16 +17,31 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
   String? _selectedCategory;
   late Future<List<WorkoutCategory>> _categoryFuture;
   List<WorkoutCategory> _allCategories = [];
+  bool _isPremiumUser = false;
+
   @override
   void initState() {
     super.initState();
     _categoryFuture = WorkoutCategoryService().fetchCategories();
+    _fetchProfile();
   }
+
   void _filterByCategory(String? categoryKey) {
     setState(() {
       _selectedCategory = categoryKey;
     });
   }
+
+  Future<void> _fetchProfile() async {
+    final profile = await ApiService().getCurrentProfile();
+    if (profile != null) {
+      setState(() {
+        _isPremiumUser = profile['role'] == 'premium';
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -33,36 +50,54 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          // App Bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          // Custom header (no shadow, just margin/padding)
+          Container(
+            padding: const EdgeInsets.only(
+              top: 32, // Adjust for status bar if needed
+              left: 8,
+              right: 8,
+              bottom: 10,
+            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Row(
               children: [
                 IconButton(
                   icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
                   onPressed: () => Navigator.pop(context),
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
                       tr('workout_categories_title'),
-                      style: textTheme.titleLarge?.copyWith(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.auto_awesome, color: colorScheme.primary, size: 30),
-                  tooltip: 'AI Fitness Plan',
+                  icon: Icon(
+                    Icons.auto_awesome,
+                    color: colorScheme.primary.withOpacity(0.55), // 55% opacity, tweak as you like!
+                    size: 28,
+                  ),
+                  tooltip: tr('ai_fitness_plan_tooltip'),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FitnessPlanScreen()),
-                    );
+                    if (_isPremiumUser) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => FitnessPlanScreen()),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BuyPremiumScreen()),
+                      );
+                    }
                   },
                 ),
+
               ],
             ),
-
           ),
           // Filter Buttons
           Padding(
@@ -82,7 +117,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      // "All" button
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: ElevatedButton(
@@ -107,7 +141,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                           ),
                         ),
                       ),
-                      // Dynamic category buttons
                       ..._allCategories.map((category) {
                         final isSelected = _selectedCategory == category.categoryKey;
                         return Padding(
@@ -161,9 +194,7 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 }
                 final filteredCategories = _selectedCategory == null
                     ? snapshot.data!
-                    : snapshot.data!
-                    .where((c) => c.categoryKey == _selectedCategory)
-                    .toList();
+                    : snapshot.data!.where((c) => c.categoryKey == _selectedCategory).toList();
                 return ListView.builder(
                   itemCount: filteredCategories.length,
                   itemBuilder: (context, index) {

@@ -16,7 +16,7 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
   String? _error;
   List<dynamic> _days = [];
   DateTime _currentMonth = DateTime.now();
-  int? _selectedDayOfMonth; // 1-based
+  DateTime? _selectedDate; // Now tracks selected date
   Map<String, dynamic>? _selectedDayData;
 
   @override
@@ -46,16 +46,38 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
 
       setState(() {
         _days = daysList ?? [];
-        // select today by default if available
-        final today = DateTime.now().day;
-        if (_days.any((d) => d['day_of_month'] == today)) {
-          _selectedDayOfMonth = today;
-        } else {
-          _selectedDayOfMonth = 1;
+
+        // 1. Get created_at from result and parse as DateTime
+        final createdAtString = result['created_at'];
+        DateTime planStartDate;
+        try {
+          planStartDate = DateTime.parse(createdAtString);
+        } catch (e) {
+          planStartDate = DateTime.now();
         }
-        _selectedDayData = _days.firstWhere(
-                (d) => d['day_of_month'] == _selectedDayOfMonth,
-            orElse: () => null);
+
+        // 2. Attach a real date to each plan day
+        for (int i = 0; i < _days.length; i++) {
+          _days[i]['calendar_date'] = planStartDate.add(Duration(days: i));
+        }
+
+        // 3. Select today's plan day if available, or first available
+        final today = DateTime.now();
+        final planTodayIdx = _days.indexWhere(
+              (d) =>
+          d['calendar_date'] != null &&
+              (d['calendar_date'] as DateTime).year == today.year &&
+              (d['calendar_date'] as DateTime).month == today.month &&
+              (d['calendar_date'] as DateTime).day == today.day,
+        );
+
+        if (planTodayIdx != -1) {
+          _selectedDate = (_days[planTodayIdx]['calendar_date'] as DateTime);
+          _selectedDayData = _days[planTodayIdx];
+        } else {
+          _selectedDate = _days.isNotEmpty ? (_days.first['calendar_date'] as DateTime) : null;
+          _selectedDayData = _days.isNotEmpty ? _days.first : null;
+        }
       });
     } catch (e) {
       setState(() {
@@ -74,18 +96,21 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
         _currentMonth.year,
         _currentMonth.month + direction,
       );
-      // Optionally, reset selection
-      _selectedDayOfMonth = null;
-      _selectedDayData = null;
+      // Optionally, reset selection (here we keep selection for UX)
     });
   }
 
-  void _onSelectDay(int? dayNum) {
+  void _onSelectDay(DateTime cellDate) {
     setState(() {
-      _selectedDayOfMonth = dayNum;
+      _selectedDate = cellDate;
       _selectedDayData = _days.firstWhere(
-              (d) => d['day_of_month'] == dayNum,
-          orElse: () => null);
+            (d) =>
+        d['calendar_date'] != null &&
+            (d['calendar_date'] as DateTime).year == cellDate.year &&
+            (d['calendar_date'] as DateTime).month == cellDate.month &&
+            (d['calendar_date'] as DateTime).day == cellDate.day,
+        orElse: () => null,
+      );
     });
   }
 
@@ -100,11 +125,11 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Calendar", style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         foregroundColor: Colors.black,
         centerTitle: true,
         actions: [
@@ -132,7 +157,7 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    // You could show a month picker here if needed
+                    // Optionally: add month picker here
                   },
                   child: Text(
                     DateFormat.yMMMM().format(_currentMonth),
@@ -156,8 +181,7 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
                   .map((d) => Expanded(
-                child: Center(
-                    child: Text(d, style: TextStyle(fontWeight: FontWeight.bold))),
+                child: Center(child: Text(d, style: TextStyle(fontWeight: FontWeight.bold))),
               ))
                   .toList(),
             ),
@@ -176,21 +200,32 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                 itemCount: calendarDays.length,
                 itemBuilder: (context, index) {
                   final dayNum = calendarDays[index];
-                  final planDay = _days.firstWhere(
-                          (d) =>
-                      d['day_of_month'] == dayNum &&
-                          d['day_of_month'] <= daysInMonth,
-                      orElse: () => null);
+                  final cellDate = dayNum == null
+                      ? null
+                      : DateTime(_currentMonth.year, _currentMonth.month, dayNum);
 
-                  final isSelected = dayNum == _selectedDayOfMonth;
+                  final planDay = cellDate == null
+                      ? null
+                      : _days.firstWhere(
+                        (d) =>
+                    d['calendar_date'] != null &&
+                        (d['calendar_date'] as DateTime).year == cellDate.year &&
+                        (d['calendar_date'] as DateTime).month == cellDate.month &&
+                        (d['calendar_date'] as DateTime).day == cellDate.day,
+                    orElse: () => null,
+                  );
+
+                  final isSelected = cellDate != null &&
+                      _selectedDate != null &&
+                      cellDate.year == _selectedDate!.year &&
+                      cellDate.month == _selectedDate!.month &&
+                      cellDate.day == _selectedDate!.day;
                   final isRestDay = planDay?['rest'] == true;
 
                   return dayNum == null
                       ? const SizedBox.shrink()
                       : GestureDetector(
-                    onTap: planDay != null
-                        ? () => _onSelectDay(dayNum)
-                        : null,
+                    onTap: planDay != null ? () => _onSelectDay(cellDate!) : null,
                     child: Container(
                       decoration: BoxDecoration(
                         color: isSelected
@@ -198,8 +233,7 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                         border: isSelected
-                            ? Border.all(
-                            color: const Color(0xFF7B2FF2), width: 2)
+                            ? Border.all(color: const Color(0xFF7B2FF2), width: 2)
                             : null,
                       ),
                       child: Center(
@@ -260,10 +294,12 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  "Activities for ${DateFormat.MMMM().format(_currentMonth)} ${_selectedDayData!['day_of_month']}",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+                // Display plan day number if you want
+                if (_selectedDayData != null && _selectedDate != null)
+                  Text(
+                    "Activities for Day ${_days.indexOf(_selectedDayData!) + 1} (${DateFormat('MMMM d').format(_selectedDate!)})",
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
                 const SizedBox(height: 6),
                 if (_selectedDayData?['rest'] == true)
                   Padding(
