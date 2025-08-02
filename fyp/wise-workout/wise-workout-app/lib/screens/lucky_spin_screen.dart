@@ -22,12 +22,12 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
   bool canSpinFree = false;
   Duration remainingTime = Duration.zero;
   Timer? countdownTimer;
-  int tokenCount = 0;
+  late int tokenCount;
 
   @override
   void initState() {
     super.initState();
-    tokenCount = widget.tokens; 
+    tokenCount = widget.tokens;
     loadPrizesAndStatus();
   }
 
@@ -166,163 +166,165 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
         child: items.isEmpty
             ? const Center(child: CircularProgressIndicator(color: Colors.amber))
             : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(tokenCount),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'lucky_spin_title'.tr(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 48),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2.0, bottom: 14.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.monetization_on, color: Colors.amber, size: 28),
-                        const SizedBox(width: 8),
-                        Text(
-                          'lucky_spin_tokens'.tr(args: ['$tokenCount']),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'lucky_spin_instruction'.tr(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 14),
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          height: 310,
-                          width: 310,
-                          child: FortuneWheel(
-                            selected: controller.stream,
-                            animateFirst: false,
-                            items: [
-                              for (final item in items)
-                                FortuneItem(
-                                  child: Text(
-                                    item,
-                                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                                  ),
-                                  style: FortuneItemStyle(
-                                    color: items.indexOf(item) % 2 == 0
-                                        ? const Color(0xFF3A5AD9)
-                                        : const Color(0xFF7BB3FF),
-                                    borderColor: Colors.white,
-                                    borderWidth: 3,
-                                  ),
-                                ),
-                            ],
-                            indicators: <FortuneIndicator>[
-                              FortuneIndicator(
-                                alignment: Alignment.topCenter,
-                                child: TriangleIndicator(
-                                  color: Colors.amber[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: 90,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xffFFD700),
-                                Color(0xffFFFACD),
-                                Color(0xffFFA500),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.20),
-                                blurRadius: 12,
-                              ),
-                            ],
-                            border: Border.all(color: Colors.white, width: 3),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  if (prizeLabel != null)
-                    Text(
-                      'lucky_spin_win_message'.tr(args: [prizeLabel!]),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(tokenCount),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'lucky_spin_title'.tr(),
+                      style: TextStyle(
                         color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  if (prizeLabel != null) const SizedBox(height: 18),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 14),
-                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: canSpinFree ? () => spin() : null,
-                    child: Text('lucky_spin_button_free'.tr()),
                   ),
-                  if (!canSpinFree && remainingTime.inSeconds > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        'lucky_spin_next_spin'.tr(args: [formatDuration(remainingTime)]),
-                        style: const TextStyle(color: Colors.white70),
-                      ),
+                ),
+                const SizedBox(width: 48),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 2.0, bottom: 14.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.monetization_on, color: Colors.amber, size: 28),
+                  const SizedBox(width: 8),
+                  Text(
+                    'lucky_spin_tokens'.tr(args: ['$tokenCount']),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF172A74),
-                      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
-                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: () => spin(useTokens: true),
-                    child: Text('lucky_spin_button_token'.tr()),
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'lucky_spin_instruction'.tr(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 14),
+            Center(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    height: 310,
+                    width: 310,
+                    child: FortuneWheel(
+                      selected: controller.stream,
+                      animateFirst: false,
+                      items: [
+                        for (final item in items)
+                          FortuneItem(
+                            child: Text(
+                              item,
+                              style: const TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                            style: FortuneItemStyle(
+                              color: items.indexOf(item) % 2 == 0
+                                  ? const Color(0xFF3A5AD9)
+                                  : const Color(0xFF7BB3FF),
+                              borderColor: Colors.white,
+                              borderWidth: 3,
+                            ),
+                          ),
+                      ],
+                      indicators: <FortuneIndicator>[
+                        FortuneIndicator(
+                          alignment: Alignment.topCenter,
+                          child: TriangleIndicator(
+                            color: Colors.amber[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xffFFD700),
+                          Color(0xffFFFACD),
+                          Color(0xffFFA500),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.20),
+                          blurRadius: 12,
+                        ),
+                      ],
+                      border: Border.all(color: Colors.white, width: 3),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            if (prizeLabel != null)
+              Text(
+                prizeLabel!.trim().toLowerCase() == 'nothing'
+                    ? 'lucky_spin_better_luck'.tr()
+                    : 'lucky_spin_win_message'.tr(args: [prizeLabel!]),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            if (prizeLabel != null) const SizedBox(height: 18),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: q48, vertical: 14),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: canSpinFree ? () => spin() : null,
+              child: Text('lucky_spin_button_free'.tr()),
+            ),
+            if (!canSpinFree && remainingTime.inSeconds > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  'lucky_spin_next_spin'.tr(args: [formatDuration(remainingTime)]),
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF172A74),
+                padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () => spin(useTokens: true),
+              child: Text('lucky_spin_button_token'.tr()),
+            ),
+          ],
+        ),
       ),
     );
   }
