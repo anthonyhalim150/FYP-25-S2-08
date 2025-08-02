@@ -67,6 +67,27 @@ class AIFitnessPlanService {
     }
   }
 
+  Future<Map<String, dynamic>> fetchSavedPlanFromBackend() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    final res = await http.get(
+      Uri.parse('$baseUrl/workout-plans/my-plans'),
+      headers: {
+        'Cookie': 'session=$jwt',
+        'Content-Type': 'application/json',
+      },
+    );
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      // data: List of plans!
+      return {
+        'plan': data, // <-- This is a List!
+      };
+    } else {
+      throw Exception('Failed to fetch saved plan');
+    }
+  }
+
+
 }
 
 extension AIFitnessPlanParsing on AIFitnessPlanService {

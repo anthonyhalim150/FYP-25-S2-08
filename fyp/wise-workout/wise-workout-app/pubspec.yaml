@@ -35,6 +35,7 @@ dependencies:
   image: ^4.1.3
   video_player: ^2.8.0
   chewie: ^1.11.3
+  syncfusion_flutter_calendar: ^30.1.42
 
   flutter_facebook_auth: ^7.1.2
 
