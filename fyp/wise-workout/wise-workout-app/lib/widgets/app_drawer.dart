@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../screens/profile_screen.dart';
 import '../screens/workout/daily_summary_page.dart';
+import '../screens/workout/fitness_plan_calendar.dart';
 
 class AppDrawer extends StatelessWidget {
   final String userName;
@@ -111,6 +112,16 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
+
+          ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: const Text('Fitness Plan Calendar'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/calendar');
+            },
+          ),
+
 
           ListTile(
             leading: const Icon(Icons.fitness_center),

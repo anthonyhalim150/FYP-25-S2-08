@@ -128,4 +128,35 @@ class ExerciseService {
       rethrow;
     }
   }
+
+  Future<List<Exercise>> fetchExercisesByNames(List<String> names) async {
+    final jwt = await _getJwtCookie();
+    final url = Uri.parse('$baseUrl/exercises/by-names');
+    print('📡 Fetching exercises by names → $url');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'session=$jwt',
+        },
+        body: jsonEncode({'names': names}),
+      );
+
+      print('🔵 Status Code: ${response.statusCode}');
+      print('📩 Body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch exercises by name');
+      }
+
+      final data = jsonDecode(response.body);
+      return List<Exercise>.from(data.map((item) => Exercise.fromJson(item)));
+    } catch (e) {
+      print('❌ fetchExercisesByNames ERROR: $e');
+      rethrow;
+    }
+  }
+
 }

@@ -4,12 +4,10 @@ import '../../screens/model/exercise_model.dart';
 class ExerciseTile extends StatelessWidget {
   final Exercise exercise;
   final VoidCallback onTap;
-  final VoidCallback onPlayPressed;
   const ExerciseTile({
     super.key,
     required this.exercise,
     required this.onTap,
-    required this.onPlayPressed,
   });
 
   @override

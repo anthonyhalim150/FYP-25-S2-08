@@ -77,7 +77,9 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                 IconButton(
                   icon: Icon(
                     Icons.auto_awesome,
-                    color: colorScheme.primary.withOpacity(0.55), // 55% opacity, tweak as you like!
+                    color: _isPremiumUser
+                        ? colorScheme.primary // normal for premium
+                        : colorScheme.primary.withOpacity(0.45), // translucent for non-premium
                     size: 28,
                   ),
                   tooltip: tr('ai_fitness_plan_tooltip'),
@@ -95,7 +97,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                     }
                   },
                 ),
-
               ],
             ),
           ),

@@ -223,9 +223,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
                               '/exercise-detail',
                               arguments: exercise,
                             );
-                          },
-                          onPlayPressed: () {},
-                        ),
+                          },),
                       )),
                     ],
                   ),

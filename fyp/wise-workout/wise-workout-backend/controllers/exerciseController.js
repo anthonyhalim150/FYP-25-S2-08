@@ -10,3 +10,17 @@ exports.getExercisesByWorkout = async (req, res) => {
   console.log('📤 Returning exercises:', exercises);
   res.json(exercises);
 };
+
+exports.getExercisesByNames = async (req, res) => {
+  const { names } = req.body;
+  if (!Array.isArray(names) || names.length === 0) {
+    return res.status(400).json({ message: 'names must be a non-empty array' });
+  }
+  try {
+    const exercises = await ExerciseService.getExercisesByNames(names);
+    res.json(exercises);
+  } catch (err) {
+    console.error('❌ getExercisesByNames ERROR:', err);
+    res.status(500).json({ message: 'Failed to fetch exercises by names' });
+  }
+};

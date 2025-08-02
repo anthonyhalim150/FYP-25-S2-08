@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/fitnessai_service.dart';
 import 'dart:convert';
+import '../workout/exercise_list_from_ai_page.dart';
+
 
 class CalendarPlanScreen extends StatefulWidget {
   const CalendarPlanScreen({super.key});
@@ -318,6 +320,28 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                         style: const TextStyle(fontSize: 15),
                       ),
                     )),
+                    if ((_selectedDayData!['exercises'] as List).isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.list_alt),
+                          label: const Text('View Exercise Details'),
+                          onPressed: () {
+                            final exerciseNames = (_selectedDayData!['exercises'] as List)
+                                .map<String>((ex) => (ex['name'] ?? ex['exerciseName']) as String)
+                                .toList();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ExerciseListFromAIPage(
+                                  exerciseNames: exerciseNames,
+                                  dayLabel: "Day ${_days.indexOf(_selectedDayData!) + 1} Exercises",
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     if (_selectedDayData?['notes'] != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
