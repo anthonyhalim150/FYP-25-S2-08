@@ -2,6 +2,7 @@ const db = require('../config/db');
 
 class WorkoutPlanModel {
   static async saveWorkoutPlan(userId, planTitle, daysJson) {
+    await db.execute('DELETE FROM workout_plans WHERE user_id = ?', [userId]);
     const [result] = await db.execute(
       `INSERT INTO workout_plans (user_id, plan_title, days_json, created_at)
        VALUES (?, ?, ?, NOW())`,

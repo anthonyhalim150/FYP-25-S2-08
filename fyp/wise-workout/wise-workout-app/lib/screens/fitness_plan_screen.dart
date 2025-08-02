@@ -284,12 +284,15 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: "Refresh Plan",
-            onPressed: _loading ? null : _fetchPreferences,
+            icon: const Icon(Icons.calendar_today), // <- Calendar Icon
+            tooltip: "View Calendar",
+            onPressed: () {
+              Navigator.pushNamed(context, '/calendar');
+            },
           ),
         ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _loading

@@ -1,10 +1,10 @@
 import 'exercise_model.dart';
 
 class WorkoutDay {
-  final int dayOfMonth; // e.g. 1-30
+  final int dayOfMonth;
   final List<Exercise> exercises;
   final String notes;
-  final bool isRest; // optional: to support rest days
+  final bool isRest;
 
   WorkoutDay({
     required this.dayOfMonth,
@@ -29,7 +29,6 @@ class WorkoutDay {
     isRest: json['rest'] ?? false,
   );
 
-  // If you're also parsing AI JSON directly:
   factory WorkoutDay.fromAiJson(Map<String, dynamic> json) => WorkoutDay(
     dayOfMonth: json['day_of_month'],
     exercises: (json['exercises'] as List? ?? [])
