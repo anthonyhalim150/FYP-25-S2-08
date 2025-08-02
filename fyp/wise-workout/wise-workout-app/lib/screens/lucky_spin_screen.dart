@@ -298,7 +298,7 @@ class _LuckySpinScreenState extends State<LuckySpinScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: q48, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 14),
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: canSpinFree ? () => spin() : null,
