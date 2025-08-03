@@ -5,6 +5,20 @@ import '../styles/Styles.css';
 const ViewAUser = ({ user, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
+
+  if (!user) return null;
+  console.log('Avatar ID:', user.avatar_id);
+console.log('User Role:', user.role);
+
+
+const avatarFolder = user?.role === 'premium' ? 'premium' : 'free';
+const avatarId = user?.avatar_id || 1;
+const avatarPath = `/${avatarFolder}/${avatarFolder}${avatarId}.png`;
+
+const bgId = user?.background_id || 1;
+const bgPath = `/background/bg${bgId}.jpg`;
+
+
   
   if (!user) return null;
 
@@ -70,12 +84,11 @@ const ViewAUser = ({ user, onClose }) => {
         {/* Left Yellow Panel */}
         <div className="user-info-panel">
           <img
-            src={`/avatars/avatar${user.avatar_id || 1}.png`}
+            src={avatarPath}
             alt="User Avatar"
             className="user-avatar-large"
           />
 
-          
           <h2>{user.username}</h2>
 
           <p><strong>First Name:</strong> {isEditing ? (

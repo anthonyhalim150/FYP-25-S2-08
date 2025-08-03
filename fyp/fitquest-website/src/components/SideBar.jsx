@@ -25,6 +25,7 @@ const SideBar = () => {
           <Link to="/All-Users">All Users</Link>
           <Link to="/All-Tournaments">All Tournaments</Link>
           <Link to="/All-Feedbacks">All Feedbacks</Link>
+          <Link to="/Subcriptions">Subcriptions</Link>
 
           <div className="sidebar-logout">
             <button className="sidebar-nav-link" onClick={handleLogoutClick}>

@@ -23,6 +23,16 @@ class UserModel {
     return rows[0] || null;
   }
 
+  static async findPremiumUsers() {
+    const [rows] = await pool.query(`
+      SELECT username, email, plan, join_date
+      FROM users
+      WHERE role = 'premium'
+    `);
+    return rows;
+  }
+
+
   static async verifyLogin(email, password) {
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ? AND method = "database"',

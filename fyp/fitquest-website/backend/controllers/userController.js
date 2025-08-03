@@ -16,6 +16,14 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch users' });
   }
 };
+exports.getPremiumUsers = async(req, res) => {
+  try {
+    const premiumUsers = await UserService.getPremiumUsers();
+    res.status(200).json(premiumUsers);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch premium users', error: err.message });
+  }
+}
 exports.suspendUser = async (req, res) => {
   try {
     const userId = req.params.id;

@@ -9,9 +9,15 @@ class UserService {
     ]);
     return { total, active, premium };
   }
+  
   static async getAllUsers() {
     return await UserModel.findAllWithPreferences();
   }
+
+  static async getPremiumUsers() {
+  return await UserModel.findPremiumUsers();
+  }
+
   static async suspendUser(userId) {
     await UserModel.suspendUser(userId);
   }

@@ -28,45 +28,43 @@ const ViewAllTournaments = () => {
       <div className="admin-container">
         <div className="user-content">
          <div className="user-header-row">
-  <h2>All Tournaments</h2>
-  <div className="header-row">
-    <div className="search-bar-container">
-      <input
-        className="search-bar"
-        type="text"
-        placeholder="Search tournaments..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <button className="search-icon-btn">
-        <img src="/icon-search.png" alt="Search" />
-      </button>
-    </div>
+            <h2>All Tournaments</h2>
+            <div className="header-row">
+              <div className="search-bar-container">
+                <input
+                  className="search-bar"
+                  type="text"
+                  placeholder="Search tournaments..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="search-icon-btn">
+                  <img src="/icon-search.png" alt="Search" />
+                </button>
+              </div>
 
-  </div>
-</div>
+            </div>
+          </div>
 
-<div className="tab-and-create-row">
-  <div className="user-tabs-container">
-    {['All', 'Ongoing', 'Completed'].map((tab) => (
-      <div
-        key={tab}
-        className={`user-tab ${selectedTab === tab ? 'active' : ''}`}
-        onClick={() => setSelectedTab(tab)}
-      >
-        {tab}
-      </div>
-    ))}
-  </div>
-  <button
-    className="create-btn"
-    onClick={() => window.location.href = '/create-tournament'}
-  >
-    + Create New Tournament
-  </button>
-</div>
-
-
+          <div className="tab-and-create-row">
+            <div className="user-tabs-container">
+              {['All', 'Ongoing', 'Completed'].map((tab) => (
+                <div
+                  key={tab}
+                  className={`user-tab ${selectedTab === tab ? 'active' : ''}`}
+                  onClick={() => setSelectedTab(tab)}
+                >
+                  {tab}
+                </div>
+              ))}
+            </div>
+            <button
+              className="create-btn"
+              onClick={() => window.location.href = '/create-tournament'}
+            >
+              + Create New Tournament
+            </button>
+          </div>
 
           <table className="tournament-table">
             <thead>

@@ -34,8 +34,15 @@ const ViewAllUsers = () => {
   const filteredUsers = users.filter((user) => {
     if (selectedTab === 'Suspended' && !user.isSuspended) return false;
     if (selectedTab === 'Active' && user.isSuspended) return false;
-    return user.username.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const username = user.username || '';
+    const email = user.email || '';
+    return (
+      username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
+
 
   const userTabCounts = {
     All: users.length,

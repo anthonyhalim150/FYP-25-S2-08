@@ -9,6 +9,7 @@ import ViewAllFeedbacks from './pages/ViewAllFeedbacks';
 import ViewAllTournaments from './pages/ViewAllTournaments';
 import ViewATournament from './components/ViewATournament';
 import CreateTournament from './components/CreateTournament';
+import Subscriptions from './pages/Subscriptions';
 
 import PageLayout from '../src/components/PageLayout';
 
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/All-Tournaments" element={<PageLayout><ViewAllTournaments /></PageLayout>} />
         <Route path="/create-tournament" element={<PageLayout><CreateTournament /></PageLayout>} />
         <Route path="/View-Tournament" element={<PageLayout><ViewATournament /></PageLayout>} />
+        <Route path="/Subcriptions" element={<PageLayout><Subscriptions/></PageLayout>}/>
       </Routes>
     </Router>
   );
