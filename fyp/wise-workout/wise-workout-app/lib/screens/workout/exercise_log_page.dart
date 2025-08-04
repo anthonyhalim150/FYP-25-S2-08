@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../model/exercise_model.dart';
 import '../../widgets/exercise_timer.dart';
 import '../../services/workout_session_service.dart';
+import '../../widgets/inline_exercise_timer.dart';
 
 class ExerciseLogPage extends StatefulWidget {
   final Exercise exercise;
@@ -13,13 +14,15 @@ class ExerciseLogPage extends StatefulWidget {
 }
 
 class _ExerciseLogPageState extends State<ExerciseLogPage> {
-  late List<Map<String, dynamic>> sets;
+  List<Map<String, dynamic>> sets = [];
   final CountDownController _restTimerController = CountDownController();
+  List<bool> isSetTiming = [];
 
   @override
   void initState() {
     super.initState();
-    sets = List.generate(widget.exercise.exerciseSets, (index) {
+    int numSets = widget.exercise.exerciseSets > 0 ? widget.exercise.exerciseSets : 0;
+    sets = List.generate(numSets, (index) {
       return {
         'set': index + 1,
         'weight': widget.exercise.exerciseWeight ?? 0.0,
@@ -27,22 +30,17 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
         'finished': false,
       };
     });
+    isSetTiming = List.generate(numSets, (index) => false);
   }
 
   void _saveLogToSession() {
-    // If no sets are marked as finished, automatically mark all sets that have reps > 0 as finished
     List<Map<String, dynamic>> completedSets = sets.where((set) => set['finished'] == true).toList();
-    
-    // If no sets are explicitly marked as finished, check if user entered reps
     if (completedSets.isEmpty) {
       completedSets = sets.where((set) => set['reps'] != null && set['reps'] > 0).toList();
-      // Mark these sets as finished for saving purposes
       for (var set in completedSets) {
         set['finished'] = true;
       }
     }
-    
-    print('DEBUG: Completed sets for ${widget.exercise.exerciseName}: $completedSets');
     if (completedSets.isNotEmpty) {
       final exerciseLog = {
         'exerciseId': widget.exercise.exerciseId,
@@ -50,10 +48,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
         'exerciseName': widget.exercise.exerciseName,
         'sets': completedSets,
       };
-      print('DEBUG: Adding exercise log: $exerciseLog');
       WorkoutSessionService().addExerciseLog(exerciseLog);
-    } else {
-      print('DEBUG: No completed sets for ${widget.exercise.exerciseName}, not adding to session');
     }
   }
 
@@ -65,6 +60,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
         'reps': widget.exercise.exerciseReps,
         'finished': false,
       });
+      isSetTiming.add(false);
     });
   }
 
@@ -179,7 +175,14 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Table(
+              child: sets.isEmpty
+                  ? Center(
+                child: Text(
+                  'No sets defined for this exercise.',
+                  style: textTheme.bodyLarge,
+                ),
+              )
+                  : Table(
                 columnWidths: const {
                   0: FlexColumnWidth(1.2),
                   1: FlexColumnWidth(2),
@@ -237,27 +240,75 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                             ),
                           ),
                         ),
+                        // -- UNIFIED ACTION COLUMN --
                         Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              if (sets[index]['finished'] != true) {
-                                setState(() => sets[index]['finished'] = true);
-                                ExerciseTimer.showRestTimer(context, _restTimerController);
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12.0),
-                              child: Icon(
-                                sets[index]['finished'] == true
-                                    ? Icons.check_circle
-                                    : Icons.check_circle_outline,
-                                color: sets[index]['finished'] == true
-                                    ? colorScheme.tertiary
-                                    : colorScheme.outline,
+                          child: SizedBox(
+                            height: 40,
+                            child: widget.exercise.exerciseDuration != null
+                                ? (isSetTiming.length > index && isSetTiming[index])
+                                ? Center(
+                              child: InlineExerciseTimer(
+                                duration: widget.exercise.exerciseDuration!,
+                                onCompleted: () {
+                                  setState(() {
+                                    sets[index]['finished'] = true;
+                                    isSetTiming[index] = false;
+                                  });
+                                },
+                              ),
+                            )
+                                : Center(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: sets[index]['finished'] == true
+                                      ? colorScheme.tertiary
+                                      : colorScheme.primary,
+                                  foregroundColor: colorScheme.onPrimary,
+                                  minimumSize: const Size(36, 36),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                                ),
+                                onPressed: sets[index]['finished'] == true
+                                    ? null
+                                    : () {
+                                  setState(() {
+                                    if (isSetTiming.length <= index) {
+                                      isSetTiming.addAll(List.filled(index + 1 - isSetTiming.length, false));
+                                    }
+                                    isSetTiming[index] = true;
+                                  });
+                                },
+                                child: Text(
+                                  sets[index]['finished'] == true
+                                      ? '✓'
+                                      : 'start'.tr(),
+                                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            )
+                                : Center(
+                              child: IconButton(
+                                icon: Icon(
+                                  sets[index]['finished'] == true
+                                      ? Icons.check_circle
+                                      : Icons.check_circle_outline,
+                                  color: sets[index]['finished'] == true
+                                      ? colorScheme.tertiary
+                                      : colorScheme.outline,
+                                  size: 32,
+                                ),
+                                onPressed: sets[index]['finished'] == true
+                                    ? null
+                                    : () {
+                                  setState(() => sets[index]['finished'] = true);
+                                  ExerciseTimer.showRestTimer(context, _restTimerController);
+                                },
                               ),
                             ),
                           ),
                         ),
+                        // -- END ACTION COLUMN --
                       ],
                     ),
                 ],

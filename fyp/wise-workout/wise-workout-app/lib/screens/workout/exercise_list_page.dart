@@ -63,12 +63,13 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
   void _endWorkout() async {
     final duration = _sessionService.elapsed;
-    // Make a deep copy of the exercises list before clearing the session
     final exercises = _sessionService.loggedExercises.map((exercise) {
+        print('DEBUG: Exercise fetched - ${exercise['exerciseName']}, calories_burnt_per_rep: ${exercise['calories_burnt_per_rep']}');
       return {
         'exerciseId': exercise['exerciseId'],
         'exerciseKey': exercise['exerciseKey'],
         'exerciseName': exercise['exerciseName'],
+        'calories_burnt_per_rep': exercise['calories_burnt_per_rep'], // <-- ADD THIS
         'sets': List<Map<String, dynamic>>.from(exercise['sets'].map((set) {
           return {
             'set': set['set'],
@@ -91,7 +92,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
       },
       'exercises': exercises,
       'duration': duration,
-      'calories': _calculateCalories(duration),
+      'calories': _calculateCalories(exercises),
     };
     print('DEBUG: Workout result being passed: $workoutResult');
     await Navigator.pushReplacement(
@@ -108,9 +109,15 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
     return "${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}";
   }
 
-  double _calculateCalories(Duration duration) {
-    final minutes = duration.inMinutes;
-    return 6.5 * minutes;
+  double _calculateCalories(List exercises) {
+    double totalCalories = 0.0;
+    for (var exercise in exercises) {
+      final sets = exercise['sets'] as List? ?? [];
+      final caloriesPerRep = (exercise['calories_burnt_per_rep'] as num?)?.toDouble() ?? 0.0;
+      final totalReps = sets.fold<int>(0, (sum, set) => sum + (set['reps'] as int? ?? 0));
+      totalCalories += totalReps * caloriesPerRep;
+    }
+    return totalCalories;
   }
 
   @override

@@ -102,8 +102,7 @@ flutter:
     - assets/exerciseGif/push_up.gif
     - assets/exerciseGif/squat.gif
     - assets/workoutImages/dumbbell_strength.jpg
-    - assets/workoutImages/evening_wind_down_yoga.jpg
-    - assets/workoutImages/leg_day_power_burn.jpg
+    - assets/workoutImages/evening_unwind.jpg
     - assets/workoutImages/morning_flow_yoga.jpg
     - assets/workoutImages/power_vinyasa.jpg
     - assets/workoutImages/bodyweight_leg_blast.jpg
@@ -115,6 +114,11 @@ flutter:
     - assets/workoutImages/upper_body_blast.jpg
     - assets/workoutImages/total_body_core_circuit.jpg
     - assets/workoutImages/calisthenics.jpg
+    - assets/workoutImages/endurance_circuit.jpg
+    - assets/workoutImages/hiit_fat_burner.jpg
+    - assets/workoutImages/quick_cardio_blast.jpg
+    - assets/workoutImages/leg_day_burn.jpg
+    - assets/workoutImages/beginner_leg_routine.jpg
     - assets/workoutCategory/cardio.jpg
     - assets/workoutCategory/leg.jpg
     - assets/workoutCategory/push.jpg

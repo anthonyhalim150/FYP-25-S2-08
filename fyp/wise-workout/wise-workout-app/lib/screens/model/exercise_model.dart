@@ -11,8 +11,8 @@ class Exercise {
   final int? exerciseDuration;
   final String youtubeUrl;
   final int workoutId;
-
   final double? exerciseWeight;
+  final double? caloriesBurntPerRep;
 
   Exercise({
     required this.exerciseId,
@@ -28,6 +28,7 @@ class Exercise {
     required this.youtubeUrl,
     required this.workoutId,
     this.exerciseWeight,
+    this.caloriesBurntPerRep,
   });
 
   Map<String, dynamic> toJson() {
@@ -45,6 +46,7 @@ class Exercise {
       'youtubeUrl': youtubeUrl,
       'workoutId': workoutId,
       'exerciseWeight': exerciseWeight,
+      'caloriesBurntPerRep': caloriesBurntPerRep,
     };
   }
 
@@ -67,12 +69,15 @@ class Exercise {
       exerciseWeight: json['exerciseWeight'] != null
           ? double.tryParse(json['exerciseWeight'].toString())
           : null,
+      caloriesBurntPerRep: json['caloriesBurntPerRep'] != null
+          ? double.tryParse(json['caloriesBurntPerRep'].toString())
+          : null,
     );
   }
 
   factory Exercise.fromAiJson(Map<String, dynamic> json) {
     return Exercise(
-      exerciseId: '', // or generate a UUID if needed
+      exerciseId: '',
       exerciseKey: '',
       exerciseName: json['name'] ?? '',
       exerciseDescription: '',
@@ -85,6 +90,9 @@ class Exercise {
       youtubeUrl: '',
       workoutId: 0,
       exerciseWeight: null,
+      caloriesBurntPerRep: json['caloriesBurntPerRep'] != null
+          ? double.tryParse(json['caloriesBurntPerRep'].toString())
+          : null,
     );
   }
 }

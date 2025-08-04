@@ -104,7 +104,6 @@ class WorkoutService {
     }
   }
 
-  /// Fetch user's workout sessions
   Future<List<dynamic>> fetchUserWorkoutSessions() async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workout-sessions/sessions');

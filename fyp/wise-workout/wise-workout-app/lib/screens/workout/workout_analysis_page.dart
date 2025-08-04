@@ -39,29 +39,38 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     }
   }
 
+  /// Calculate total calories based on sets × reps × calories_burnt_per_rep from the backend
+  double calculateTotalCalories(List exercises) {
+    double totalCalories = 0.0;
+    for (var exercise in exercises) {
+      final sets = exercise['sets'] as List? ?? [];
+      final caloriesPerRep = (exercise['calories_burnt_per_rep'] as num?)?.toDouble() ?? 0.0;
+      final totalReps = sets.fold<int>(0, (sum, set) => sum + (set['reps'] as int? ?? 0));
+      totalCalories += totalReps * caloriesPerRep;
+    }
+    return totalCalories;
+  }
+
   Future<void> _saveWorkoutSession() async {
     try {
-      final sessionService = WorkoutSessionService();
       final workoutService = WorkoutService();
-        
-  
+
       final args = ModalRoute.of(context)!.settings.arguments as Map;
       final Map<String, dynamic> workout = args['workout'];
       final List exercises = args['exercises'];
       final Duration duration = args['duration'];
-      final double calories = args['calories'];
-      
-      
+      // Calculate using backend-provided calories_burnt_per_rep
+      final double calories = calculateTotalCalories(exercises);
+
       final List<Map<String, dynamic>> formattedExercises = exercises.map((exercise) {
         return {
           'exerciseKey': exercise['exerciseKey'] ?? exercise['exercise_name']?.toString().toLowerCase().replaceAll(' ', '_'),
           'exerciseName': exercise['exerciseName'] ?? exercise['exercise_name'],
           'setsData': exercise['sets'] ?? [],
+          'calories_burnt_per_rep': exercise['calories_burnt_per_rep'], // keep the backend value
         };
       }).toList();
-      
-      
-   
+
       await workoutService.saveWorkoutSession(
         workoutId: workout['workoutId'],
         startTime: _workoutStartTime,
@@ -70,12 +79,10 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         caloriesBurned: calories,
         exercises: formattedExercises,
       );
-      
+
       print('✅ Workout session saved successfully to database');
     } catch (e) {
       print('❌ Error saving workout session: $e');
- 
-     // Show error in a safe way
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -217,7 +224,9 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     final Map<String, dynamic> workout = args['workout'];
     final List exercises = args['exercises'];
     final Duration duration = args['duration'];
-    final double calories = args['calories'];
+
+    // 1. Calculate total calories using ONLY what was fetched from backend
+    final double calories = calculateTotalCalories(exercises);
 
     // Optional mock stats (you can replace later)
     final int avgHeartRate = 123;
@@ -232,10 +241,13 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         .whereType<num>()
         .fold<num>(0.0, (prev, w) => w > prev ? w : prev)
         .toDouble();
-    final double caloriesPerMin = calories / (duration.inMinutes == 0 ? 1 : duration.inMinutes);
 
-    // can customize this
     final sessionNotes = 'Felt strong! Increased weight 😎';
+
+    final double durationInMinutes = duration.inSeconds / 60.0;
+    final double caloriesPerMin = (durationInMinutes > 0)
+        ? (calories / durationInMinutes)
+        : 0.0;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -276,7 +288,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                         style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        DateTime.now().toIso8601String().substring(0, 10), // Replace with saved date if available
+                        DateTime.now().toIso8601String().substring(0, 10),
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -304,7 +316,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                 _statRow(context, 'Sets', '$totalSets'),
                 _statRow(context, 'Reps', repStrings.join(', ')),
                 _statRow(context, 'Max Weight', '${maxWeight.toStringAsFixed(1)} kg'),
-                _statRow(context, 'Calories per min', caloriesPerMin.toStringAsFixed(1)),
+                _statRow(context, 'Calories per min', caloriesPerMin.toStringAsFixed(2)),
               ]),
               const SizedBox(height: 24),
               // Session Notes (optional)
