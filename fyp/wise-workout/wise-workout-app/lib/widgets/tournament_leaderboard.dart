@@ -86,7 +86,7 @@ class _TournamentLeaderboardWidgetState
     await _fetchLeaderboardForCurrent();
   }
 
-  void _promptJoinChallenge(String title) {
+  void _promptJoinChallenge(String title, int tournamentId) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -98,10 +98,23 @@ class _TournamentLeaderboardWidgetState
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text("Joined $title")));
+              try {
+                final status = await _service.joinTournament(tournamentId);
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(
+                        status == 'already_joined'
+                            ? "You have already joined $title"
+                            : "Joined $title!"))
+                );
+                // You may refresh leaderboard or participants count
+                await _fetchLeaderboardForCurrent();
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Failed to join $title"))
+                );
+              }
             },
             child: const Text("Join"),
           ),
@@ -128,7 +141,6 @@ class _TournamentLeaderboardWidgetState
     final tournament = tournaments[currentIndex];
     final title = tournament['title'] ?? 'Tournament';
 
-    // Prepare podium/others for rendering
     List<dynamic> podium = leaderboard.length >= 3
         ? leaderboard.sublist(0, 3)
         : leaderboard;
@@ -151,7 +163,7 @@ class _TournamentLeaderboardWidgetState
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  color: Colors.white, // Always white
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -179,7 +191,7 @@ class _TournamentLeaderboardWidgetState
               if (podium.length > i) {
                 return _buildPodium(podium[i], i + 1, theme);
               }
-              // In case less than 3 participant: empty slot
+              // For less than 3 participants: show empty space
               return Container(width: 40, height: 80);
             }),
           ),
@@ -196,9 +208,9 @@ class _TournamentLeaderboardWidgetState
               ),
               elevation: 6,
             ),
-            onPressed: () => _promptJoinChallenge(title),
+            onPressed: () => _promptJoinChallenge(title, tournament['id']),
             child: const Text(
-              'Join Challenge',
+              'Join Tournament',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -214,14 +226,21 @@ class _TournamentLeaderboardWidgetState
             child: ListView(
               children: others.asMap().entries.map<Widget>((e) {
                 final idx = e.key;
-                final entry = e.value;
+                final entry = Map<String, dynamic>.from(e.value);
                 return ListTile(
-                  leading: Text(
-                    '${idx + 4}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${idx + 4}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      _buildAvatarWithBackground(entry, 32),
+                    ],
                   ),
                   title: Text(
                     entry['username'] ?? '',
@@ -242,6 +261,7 @@ class _TournamentLeaderboardWidgetState
     );
   }
 
+  // Podium uses avatar+background widget
   Widget _buildPodium(Map entry, int rank, ThemeData theme) {
     Color podiumColor;
     double height;
@@ -267,11 +287,7 @@ class _TournamentLeaderboardWidgetState
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        CircleAvatar(
-          radius: 24,
-          child: Text(username.isNotEmpty ? username[0] : '?', style: const TextStyle(fontSize: 20)),
-          backgroundColor: Colors.grey[200],
-        ),
+        _buildAvatarWithBackground(entry, 48),
         const SizedBox(height: 6),
         Container(
           width: 40,
@@ -304,5 +320,46 @@ class _TournamentLeaderboardWidgetState
             style: const TextStyle(color: Colors.white, fontSize: 12)),
       ],
     );
+  }
+
+  Widget _buildAvatarWithBackground(Map<dynamic, dynamic> user, double size) {
+    final avatarUrl = (user['avatar_url'] == null || user['avatar_url'].toString().isEmpty)
+        ? 'assets/background/black.jpg'
+        : user['avatar_url'];
+    final backgroundUrl = (user['background_url'] == null || user['background_url'].toString().isEmpty)
+        ? 'assets/background/black.jpg'
+        : user['background_url'];
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          ClipOval(
+            child: Image(
+              image: _getImageProvider(backgroundUrl),
+              fit: BoxFit.cover,
+              width: size,
+              height: size,
+            ),
+          ),
+          CircleAvatar(
+            radius: size * 0.5,
+            backgroundImage: _getImageProvider(avatarUrl),
+            backgroundColor: Colors.transparent,
+          ),
+        ],
+      ),
+    );
+  }
+
+  ImageProvider _getImageProvider(dynamic url) {
+    if (url == null || url.toString().isEmpty) {
+      return const AssetImage('assets/background/black.jpg');
+    }
+    if (url.toString().startsWith('http')) {
+      return NetworkImage(url.toString());
+    }
+    return AssetImage(url.toString());
   }
 }
