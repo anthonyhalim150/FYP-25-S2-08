@@ -12,7 +12,7 @@ class Exercise {
   final String youtubeUrl;
   final int workoutId;
   final double? exerciseWeight;
-  final double? caloriesBurntPerRep;
+  final double? calories_burnt_per_rep;
 
   Exercise({
     required this.exerciseId,
@@ -28,7 +28,7 @@ class Exercise {
     required this.youtubeUrl,
     required this.workoutId,
     this.exerciseWeight,
-    this.caloriesBurntPerRep,
+    this.calories_burnt_per_rep,
   });
 
   Map<String, dynamic> toJson() {
@@ -46,7 +46,7 @@ class Exercise {
       'youtubeUrl': youtubeUrl,
       'workoutId': workoutId,
       'exerciseWeight': exerciseWeight,
-      'caloriesBurntPerRep': caloriesBurntPerRep,
+      'caloriesBurntPerRep': calories_burnt_per_rep,
     };
   }
 
@@ -69,8 +69,8 @@ class Exercise {
       exerciseWeight: json['exerciseWeight'] != null
           ? double.tryParse(json['exerciseWeight'].toString())
           : null,
-      caloriesBurntPerRep: json['caloriesBurntPerRep'] != null
-          ? double.tryParse(json['caloriesBurntPerRep'].toString())
+      calories_burnt_per_rep: json['calories_burnt_per_rep'] != null
+          ? double.tryParse(json['calories_burnt_per_rep'].toString())
           : null,
     );
   }
@@ -90,7 +90,7 @@ class Exercise {
       youtubeUrl: '',
       workoutId: 0,
       exerciseWeight: null,
-      caloriesBurntPerRep: json['caloriesBurntPerRep'] != null
+      calories_burnt_per_rep: json['caloriesBurntPerRep'] != null
           ? double.tryParse(json['caloriesBurntPerRep'].toString())
           : null,
     );

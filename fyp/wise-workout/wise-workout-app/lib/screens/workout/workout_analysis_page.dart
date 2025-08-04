@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../services/workout_service.dart';
 import '../../services/workout_session_service.dart';
+import '../../services/health_service.dart'; // <--- Import your health service
 
 class WorkoutAnalysisPage extends StatefulWidget {
   const WorkoutAnalysisPage({super.key});
@@ -19,27 +20,46 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
   DateTime _workoutStartTime = DateTime.now();
   bool _hasSaved = false;
 
+  int? avgHeartRate;
+  int? peakHeartRate;
+  bool _isHeartRateLoading = true;
+
   @override
   void initState() {
     super.initState();
     _workoutStartTime = DateTime.now().subtract(Duration(
       seconds: WorkoutSessionService().elapsed.inSeconds,
     ));
+    _fetchHeartRate();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Only save once when the widget is first built
-    if (!_hasSaved) {
-      _hasSaved = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _saveWorkoutSession();
+  void _fetchHeartRate() async {
+    setState(() => _isHeartRateLoading = true);
+
+    final start = _workoutStartTime;
+    final end = DateTime.now();
+    final healthService = HealthService();
+
+    final heartRatePoints = await healthService.getHeartRateDataInRange(start, end);
+
+    if (heartRatePoints.isNotEmpty) {
+      final values = heartRatePoints.map((e) => (e.value as num).toDouble()).toList();
+      final avg = (values.reduce((a, b) => a + b) / values.length).round();
+      final peak = values.reduce((a, b) => a > b ? a : b).round();
+      setState(() {
+        avgHeartRate = avg;
+        peakHeartRate = peak;
+        _isHeartRateLoading = false;
+      });
+    } else {
+      setState(() {
+        avgHeartRate = null;
+        peakHeartRate = null;
+        _isHeartRateLoading = false;
       });
     }
   }
 
-  /// Calculate total calories based on sets × reps × calories_burnt_per_rep from the backend
   double calculateTotalCalories(List exercises) {
     double totalCalories = 0.0;
     for (var exercise in exercises) {
@@ -59,7 +79,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
       final Map<String, dynamic> workout = args['workout'];
       final List exercises = args['exercises'];
       final Duration duration = args['duration'];
-      // Calculate using backend-provided calories_burnt_per_rep
       final double calories = calculateTotalCalories(exercises);
 
       final List<Map<String, dynamic>> formattedExercises = exercises.map((exercise) {
@@ -67,7 +86,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
           'exerciseKey': exercise['exerciseKey'] ?? exercise['exercise_name']?.toString().toLowerCase().replaceAll(' ', '_'),
           'exerciseName': exercise['exerciseName'] ?? exercise['exercise_name'],
           'setsData': exercise['sets'] ?? [],
-          'calories_burnt_per_rep': exercise['calories_burnt_per_rep'], // keep the backend value
+          'calories_burnt_per_rep': exercise['calories_burnt_per_rep'],
         };
       }).toList();
 
@@ -101,9 +120,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     required String intensity,
     required int avgHeartRate,
     required int peakHeartRate,
-    required int steps,
     required int totalSets,
-    required String repString,
     required String maxWeight,
     required String caloriesPerMin,
     String? notes,
@@ -111,9 +128,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     String statString = [
       "Average Heart Rate: $avgHeartRate bpm",
       "Peak Heart Rate: $peakHeartRate bpm",
-      "Steps: $steps",
       "Sets: $totalSets",
-      "Reps: $repString",
       "Max Weight: $maxWeight",
       "Calories per min: $caloriesPerMin",
     ].join('\n');
@@ -225,16 +240,14 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     final List exercises = args['exercises'];
     final Duration duration = args['duration'];
 
-    // 1. Calculate total calories using ONLY what was fetched from backend
     final double calories = calculateTotalCalories(exercises);
+    final int totalReps = exercises
+        .expand((e) => (e['sets'] as List).map((s) => s['reps'] as int? ?? 0))
+        .fold(0, (sum, r) => sum + r);
 
-    // Optional mock stats (you can replace later)
-    final int avgHeartRate = 123;
-    final int peakHeartRate = 143;
-    final int steps = 1245;
-    final List<int> allReps = exercises.expand((e) => (e['sets'] as List).map((s) => s['reps'])).cast<int>().toList();
-    final List<String> repStrings = allReps.map((r) => r.toString()).toList();
-    final int totalSets = allReps.length;
+    final int totalSets = exercises.fold(
+        0, (sum, e) => sum + ((e['sets'] as List?)?.length ?? 0)
+    );
     final double maxWeight = exercises
         .expand((e) => (e['sets'] as List))
         .map((s) => s['weight'])
@@ -245,7 +258,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     final sessionNotes = 'Felt strong! Increased weight 😎';
 
     final double durationInMinutes = duration.inSeconds / 60.0;
-    final double caloriesPerMin = (durationInMinutes > 0)
+    final double caloriesPerMin = (durationInMinutes >= 1)
         ? (calories / durationInMinutes)
         : 0.0;
 
@@ -310,11 +323,22 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               const SizedBox(height: 24),
               // Detailed Stats
               _statsSection(context, [
-                _statRow(context, 'Average Heart Rate', '$avgHeartRate bpm'),
-                _statRow(context, 'Peak Heart Rate', '$peakHeartRate bpm'),
-                _statRow(context, 'Steps', '$steps'),
+                _statRow(
+                  context,
+                  'Average Heart Rate',
+                  _isHeartRateLoading
+                      ? 'Loading...'
+                      : (avgHeartRate != null ? '$avgHeartRate bpm' : 'N/A'),
+                ),
+                _statRow(
+                  context,
+                  'Peak Heart Rate',
+                  _isHeartRateLoading
+                      ? 'Loading...'
+                      : (peakHeartRate != null ? '$peakHeartRate bpm' : 'N/A'),
+                ),
                 _statRow(context, 'Sets', '$totalSets'),
-                _statRow(context, 'Reps', repStrings.join(', ')),
+                _statRow(context, 'Total Reps', totalReps.toString()),
                 _statRow(context, 'Max Weight', '${maxWeight.toStringAsFixed(1)} kg'),
                 _statRow(context, 'Calories per min', caloriesPerMin.toStringAsFixed(2)),
               ]),
@@ -392,11 +416,9 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                       duration: formatDuration(duration),
                       calories: '${calories.toStringAsFixed(0)} kcal',
                       intensity: 'Advanced',
-                      avgHeartRate: avgHeartRate,
-                      peakHeartRate: peakHeartRate,
-                      steps: steps,
+                      avgHeartRate: avgHeartRate ?? 0,
+                      peakHeartRate: peakHeartRate ?? 0,
                       totalSets: totalSets,
-                      repString: repStrings.join(', '),
                       maxWeight: '${maxWeight.toStringAsFixed(1)} kg',
                       caloriesPerMin: caloriesPerMin.toStringAsFixed(1),
                       notes: sessionNotes,

@@ -15,7 +15,8 @@ class ExerciseModel {
         exercise_equipment AS exerciseEquipment,
         exercise_duration AS exerciseDuration,
         youtube_url AS youtubeUrl,
-        workout_id AS workoutId
+        workout_id AS workoutId,
+        calories_burnt_per_rep AS calories_burnt_per_rep
       FROM exercises
       WHERE workout_id = ?
     `, [workoutId]);

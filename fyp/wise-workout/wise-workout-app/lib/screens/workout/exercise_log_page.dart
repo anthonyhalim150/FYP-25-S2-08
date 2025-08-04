@@ -47,6 +47,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
         'exerciseKey': widget.exercise.exerciseKey,
         'exerciseName': widget.exercise.exerciseName,
         'sets': completedSets,
+        'calories_burnt_per_rep': widget.exercise.calories_burnt_per_rep ?? 0.0,
       };
       WorkoutSessionService().addExerciseLog(exerciseLog);
     }

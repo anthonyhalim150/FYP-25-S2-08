@@ -39,6 +39,21 @@ class HealthService {
     }
   }
 
+  Future<List<HealthDataPoint>> getHeartRateDataInRange(DateTime start, DateTime end) async {
+    try {
+      final data = await _health.getHealthDataFromTypes(
+        types: [HealthDataType.HEART_RATE],
+        startTime: start,
+        endTime: end,
+      );
+      return data;
+    } catch (e) {
+      print("Error fetching heart rate data: $e");
+      return [];
+    }
+  }
+
+
   Future<int> getTodayCalories() async {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
