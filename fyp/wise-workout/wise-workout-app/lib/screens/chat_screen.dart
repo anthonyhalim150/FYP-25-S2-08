@@ -232,31 +232,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       ],
                     ),
                   ),
-                  if (widget.isPremium)
-                    ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(Icons.add, size: 15, color: colorScheme.onSecondary),
-                      label: Text(
-                        'chat_button_challenge'.tr(),
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: colorScheme.onSecondary,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: colorScheme.onSecondary,
-                        backgroundColor: colorScheme.secondary,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 8),
-                        minimumSize: const Size(0, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                      ),
-                    ),
                 ],
               ),
             ),
