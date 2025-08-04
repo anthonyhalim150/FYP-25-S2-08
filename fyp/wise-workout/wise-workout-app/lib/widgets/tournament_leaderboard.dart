@@ -155,7 +155,7 @@ class _TournamentLeaderboardWidgetState
           children: [
             IconButton(
               onPressed: () => _changeChallenge(-1),
-              icon: Icon(Icons.chevron_left, color: textColor),
+              icon: Icon(Icons.chevron_left, color: Colors.white),
             ),
             Flexible(
               child: Text(
@@ -170,7 +170,7 @@ class _TournamentLeaderboardWidgetState
             ),
             IconButton(
               onPressed: () => _changeChallenge(1),
-              icon: Icon(Icons.chevron_right, color: textColor),
+              icon: Icon(Icons.chevron_right, color: Colors.white),
             ),
           ],
         ),
