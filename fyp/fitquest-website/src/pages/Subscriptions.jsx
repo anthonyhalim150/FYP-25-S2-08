@@ -1,14 +1,14 @@
-// Subscriptions.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import './Subscriptions.css';
 import { PieChart, Pie, Cell } from 'recharts';
 import PageLayout from '../components/PageLayout';
+import ViewASubscription from '../components/ViewASubscription';
 
 const planData = [
-  { name: 'Monthly Plan', value: 3, color: '#d7b3f6', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 30 },
-  { name: 'Yearly Plan', value: 4, color: '#ffe299', price: 19.99, border: '#d6bb60', tooltipX: -20, tooltipY: 5, tokens: 120 },
-  { name: 'Lifetime Plan', value: 5, color: '#00113d', price: 49.0, border: '#333', tooltipX: 100, tooltipY: 180, tokens: 999 },
+  { name: 'Monthly Plan', value: 3, color: '#D2B3DB', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 30 },
+  { name: 'Yearly Plan', value: 4, color: '#ffcb05', price: 19.99, border: '#d6bb60', tooltipX: -20, tooltipY: 5, tokens: 120 },
+  { name: 'Lifetime Plan', value: 5, color: '#00113d', price: 49.0, border: '#333', tooltipX: 200, tooltipY: 180, tokens: 999 },
 ];
 
 const dummyPremiumUsers = [
@@ -25,6 +25,7 @@ const Subscriptions = () => {
   const [premiumUsers, setPremiumUsers] = useState(dummyPremiumUsers);
   const [selectedTab, setSelectedTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
   const chartRef = useRef(null);
 
   const filteredUsers = premiumUsers.filter((user) => {
@@ -46,20 +47,20 @@ const Subscriptions = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (chartRef.current && !chartRef.current.contains(event.target)) {
+        setHoveredPlan(null);
         setSelectedPlan(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const activeTooltip = planData.find(p => p.name === hoveredPlan);
 
   return (
     <PageLayout>
-      <div className="user-content">
-      <div className="user-header">
-        <h2>Subscriptions</h2>
+      <div className="user-content" style={{ position: 'relative' }}>
+        <h1 className="header-title">Subscriptions</h1>
         <div className="top-section">
           <div className="chart-container wide-chart center-chart" ref={chartRef}>
             <PieChart width={190} height={190}>
@@ -70,9 +71,10 @@ const Subscriptions = () => {
                 innerRadius={60}
                 outerRadius={90}
                 dataKey="value"
-                onClick={(e) => setSelectedPlan(e.name)}
+                onClick={(e) => {
+                  setSelectedPlan(e.name);
+                }}
                 isAnimationActive={false}
-                onMouseLeave={() => setHoveredPlan(null)}
               >
                 {planData.map((entry, index) => (
                   <Cell
@@ -86,6 +88,19 @@ const Subscriptions = () => {
                 ))}
               </Pie>
             </PieChart>
+            {hoveredPlan && activeTooltip && (
+              <div
+                className="custom-tooltip"
+                style={{
+                  top: `${activeTooltip.tooltipY}px`,
+                  left: `${activeTooltip.tooltipX}px`,
+                }}
+              >
+                <p><strong>{activeTooltip.name}</strong></p>
+                <p>{activeTooltip.tokens} Tokens</p>
+                <p>${activeTooltip.price}</p>
+              </div>
+            )}
           </div>
 
           <div className="plans-widget full-height">
@@ -95,7 +110,6 @@ const Subscriptions = () => {
                 className={`plan-card equal-height ${selectedPlan === plan.name ? 'highlight-' + plan.name.replace(' ', '-').toLowerCase() : ''}`}
                 onClick={() => setSelectedPlan(plan.name)}
                 onMouseEnter={() => setHoveredPlan(plan.name)}
-                onMouseLeave={() => setHoveredPlan(null)}
               >
                 <div className="plan-card-row">
                   <div className="plan-card-left">
@@ -123,6 +137,7 @@ const Subscriptions = () => {
         </div>
 
         <div className="premium-users-section">
+          <div className="user-header">
             <h2>Premium Users</h2>
             <div className="header-row">
               <div className="user-tabs-container">
@@ -165,7 +180,7 @@ const Subscriptions = () => {
             </thead>
             <tbody>
               {filteredUsers.map((user, index) => (
-                <tr key={index}>
+                <tr key={index} onClick={() => setSelectedUser(user)} style={{ cursor:'pointer'}}>
                   <td>{index + 1}</td>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
@@ -179,6 +194,11 @@ const Subscriptions = () => {
           </table>
         </div>
       </div>
+
+      {selectedUser && (
+        <ViewASubscription user={selectedUser} onClose={() => setSelectedUser(null)} />
+      )}
+
     </PageLayout>
   );
 };

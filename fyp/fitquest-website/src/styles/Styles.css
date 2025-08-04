@@ -842,8 +842,11 @@ header nav a {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
+  padding-bottom:3rem;
   z-index: 10000;
 }
+
 .banner-overlay {
   position: absolute;
   bottom: 0;
