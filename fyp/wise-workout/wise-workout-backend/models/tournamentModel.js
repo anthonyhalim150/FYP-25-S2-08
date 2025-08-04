@@ -25,10 +25,19 @@ async function getTournamentsWithParticipantCounts() {
 // Get participants and progress for a tournament
 async function getTournamentParticipants(tournamentId) {
   const [rows] = await db.query(
-    'SELECT user_id AS userId, progress FROM tournament_participants WHERE tournament_id = ?',
+    `
+    SELECT
+      tp.user_id AS userId,
+      u.username AS username,
+      tp.progress
+    FROM tournament_participants tp
+    JOIN users u ON tp.user_id = u.id
+    WHERE tp.tournament_id = ?
+    ORDER BY tp.progress DESC, tp.joined_at ASC
+    `,
     [tournamentId]
   );
-  return rows; // [{ userId, progress }, ...]
+  return rows; // [{ userId, username, progress }, ...]
 }
 
 // Insert a user into tournament_participants

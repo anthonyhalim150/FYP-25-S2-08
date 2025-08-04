@@ -88,4 +88,17 @@ class TournamentService {
       throw Exception('Failed to join tournament');
     }
   }
+
+  Future<List<dynamic>> getLeaderboard(int tournamentId) async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    final res = await http.get(
+      Uri.parse('$backendUrl/tournaments/$tournamentId/participants'),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body);
+    } else {
+      throw Exception('Failed to load leaderboard');
+    }
+  }
 }
