@@ -6,21 +6,23 @@ const ViewAUser = ({ user, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
 
-  if (!user) return null;
-  console.log('Avatar ID:', user.avatar_id);
-console.log('User Role:', user.role);
+ 
 
+  const avatarFolder = user?.role === 'premium' ? 'premium' : 'free';
+  const avatarId = user?.avatar_id || 1;
+  const avatarPath = `/${avatarFolder}/${avatarFolder}${avatarId}.png`;
 
-const avatarFolder = user?.role === 'premium' ? 'premium' : 'free';
-const avatarId = user?.avatar_id || 1;
-const avatarPath = `/${avatarFolder}/${avatarFolder}${avatarId}.png`;
-
-const bgId = user?.background_id || 1;
-const bgPath = `/background/bg${bgId}.jpg`;
-
+  const bgId = user?.background_id || 1;
+  const defaultBgPath = `/background/bg${bgId}.jpg`;
+  const fallbackBgPath = `/background/bg${bgId}.png`;
+  const [bgPath, setBgPath] = useState(defaultBgPath);
 
   
   if (!user) return null;
+ if (!user) return null;
+  console.log('Avatar ID:', user.avatar_id);
+  console.log('User Role:', user.role);
+
 
   const handleSave = async () => {
     const fieldsToCheck = ['first_name', 'last_name', 'dob', 'email', 'account', 'level'];
@@ -83,11 +85,12 @@ const bgPath = `/background/bg${bgId}.jpg`;
 
         {/* Left Yellow Panel */}
         <div className="user-info-panel">
-          <img
-            src={avatarPath}
-            alt="User Avatar"
-            className="user-avatar-large"
-          />
+           <img
+              src={bgPath}
+              onError={() => setBgPath(fallbackBgPath)}
+              style={{ display: 'none' }}
+              alt="background preload"
+            />
 
           <h2>{user.username}</h2>
 

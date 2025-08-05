@@ -78,8 +78,8 @@ class _QuestScreenState extends State<QuestScreen> {
 
     final cardColor = done ? colorScheme.primaryContainer : colorScheme.surface;
     final textColor = done ? colorScheme.onPrimaryContainer : colorScheme.onSurface;
-    final buttonBg = colorScheme.primary;
-    final buttonFg = colorScheme.onPrimary;
+    final buttonBg = colorScheme.secondary;
+    final buttonFg = colorScheme.onSecondary;
     final checkIconColor = colorScheme.secondary;
     final claimIconColor = colorScheme.secondary;
     final claimAllIconColor = colorScheme.secondary;
