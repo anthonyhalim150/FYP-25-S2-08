@@ -46,16 +46,16 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
       setState(() => _isLoading = false);
       return;
     }
-    final steps = await _healthService.getTodaySteps();
-    final hourlySteps = await _healthService.getHourlyStepsForToday();
-    final hourlyCalories = await _healthService.getHourlyCaloriesForToday();
-    final calories = await _healthService.getTodayCalories();
+    final steps = await _healthService.getStepsForDate(date);
+    final hourlySteps = await _healthService.getHourlyStepsForDate(date);
+    final hourlyCalories = await _healthService.getHourlyCaloriesForDate(date);
+    final calories = await _healthService.getCaloriesForDate(date);
     setState(() {
       _selectedDate = date;
       _currentSteps = steps;
       _hourlySteps = hourlySteps;
       _hourlyCalories = hourlyCalories;
-      _caloriesBurned = hourlyCalories.fold(0, (prev, c) => prev + c);
+      _caloriesBurned = calories;
       _xpEarned = (_currentSteps / 100).round();
       _isLoading = false;
     });
