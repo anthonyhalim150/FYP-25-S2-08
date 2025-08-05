@@ -50,7 +50,17 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
       _averageCalories = caloriesData.isNotEmpty ? (caloriesData.reduce((a, b) => a + b) ~/ caloriesData.length) : 0;
       _isLoading = false;
     });
+
   }
+
+  double _calculateAdaptiveMaxY(List<int> data, double defaultMax, {double step = 2000, double headroom = 1.1, double maxCap = 50000}) {
+    if (data.isEmpty) return defaultMax;
+    final highest = data.reduce((a, b) => a > b ? a : b);
+    if (highest <= defaultMax) return defaultMax;
+    final roundedUp = (((highest * headroom) / step).ceil()) * step;
+    return roundedUp > maxCap ? maxCap : roundedUp;
+  }
+
 
   Widget _buildToggleTabs(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -252,7 +262,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       currentValue: "$_totalSteps",
                       avgValue: "$_averageSteps",
                       barColor: colorScheme.primary,
-                      maxY: 10000,
+                      maxY: _calculateAdaptiveMaxY(_stepsData, 10000), // <-- adaptive
                       data: _stepsData,
                     ),
                     const SizedBox(height: 20),
@@ -262,7 +272,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       currentValue: "$_totalCalories kcal",
                       avgValue: "$_averageCalories kcal",
                       barColor: colorScheme.secondary,
-                      maxY: 300,
+                      maxY: _calculateAdaptiveMaxY(_caloriesData, 300, step: 100, maxCap: 2000), // <-- adaptive for calories
                       data: _caloriesData,
                     ),
                   ],

@@ -9,6 +9,7 @@ class TimeBasedChart extends StatelessWidget {
   final Color barColor;
   final double maxY;
   final List<int> data;
+  final double? maxYOverride;
 
   const TimeBasedChart({
     super.key,
@@ -19,14 +20,34 @@ class TimeBasedChart extends StatelessWidget {
     required this.barColor,
     required this.maxY,
     required this.data,
+    this.maxYOverride,
   });
+
+  double _calculateAdaptiveMaxY(List<int> data, {double minY = 10000, double headroom = 1.1, double step = 2000, double maxCap = 50000}) {
+    if (data.isEmpty) return minY;
+    final highest = data.reduce((a, b) => a > b ? a : b);
+    if (highest < minY) return minY;
+    // Add headroom and round up to step
+    final roundedUp = (((highest * headroom) / step).ceil()) * step;
+    return roundedUp > maxCap ? maxCap : roundedUp;
+  }
+
+  String _formatYAxis(double value) {
+    if (value >= 10000) {
+      return '${(value ~/ 1000)}k';
+    }
+    return value.toInt().toString();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final maxY = maxYOverride ?? _calculateAdaptiveMaxY(data);
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: barColor, width: 2),
       ),
@@ -47,13 +68,13 @@ class TimeBasedChart extends StatelessWidget {
               Column(
                 children: [
                   Text(currentValue, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text("Current", style: TextStyle(color: Colors.grey[600])),
+                  Text("Current", style: TextStyle(color: Colors.grey[600], fontSize: 11)),
                 ],
               ),
               Column(
                 children: [
                   Text(avgValue, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text("Daily avg", style: TextStyle(color: Colors.grey[600])),
+                  Text("Daily avg", style: TextStyle(color: Colors.grey[600], fontSize: 11)),
                 ],
               ),
             ],
@@ -69,12 +90,16 @@ class TimeBasedChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, _) {
+                        // Show label every 2nd bar: "0", "2", "4", ..., or adjust as needed
                         if (value.toInt() % 2 == 0) {
-                          return Text("${value.toInt()}", style: const TextStyle(fontSize: 10));
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text("${value.toInt()}", style: const TextStyle(fontSize: 10)),
+                          );
                         }
                         return const SizedBox.shrink();
                       },
-                      reservedSize: 28,
+                      reservedSize: 20,
                     ),
                   ),
                   leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -82,8 +107,11 @@ class TimeBasedChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       interval: maxY / 3,
-                      getTitlesWidget: (value, _) => Text("${value.toInt()}", style: const TextStyle(fontSize: 10)),
-                      reservedSize: 30,
+                      getTitlesWidget: (value, _) => Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(_formatYAxis(value), style: const TextStyle(fontSize: 10)),
+                      ),
+                      reservedSize: 34,
                     ),
                   ),
                   topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -97,7 +125,7 @@ class TimeBasedChart extends StatelessWidget {
                         color: barColor,
                         width: 6,
                         borderRadius: BorderRadius.circular(4),
-                      )
+                      ),
                     ],
                   );
                 }),

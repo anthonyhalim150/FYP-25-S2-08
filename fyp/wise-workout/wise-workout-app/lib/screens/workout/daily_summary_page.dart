@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:wise_workout_app/widgets/exercise_stats_card.dart';
 import '../../services/health_service.dart';
 import '../../services/api_service.dart';
-import '../buypremium_screen.dart'; // ✅ import premium screen
+import '../buypremium_screen.dart';
 
 class DailySummaryPage extends StatefulWidget {
   const DailySummaryPage({super.key});
@@ -61,12 +61,13 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     });
   }
 
-  double _calculateAdaptiveMaxY(List<int> data, double defaultMax) {
+  double _calculateAdaptiveMaxY(List<int> data, double minDefault) {
     final highest = data.reduce((a, b) => a > b ? a : b);
-    if (highest <= defaultMax) return defaultMax;
-    final roundedUp = ((highest + 99) ~/ 100) * 100;
+    if (highest <= minDefault) return minDefault.toDouble();
+    final roundedUp = (((highest * 1.1) / 1000).ceil()) * 1000;
     return roundedUp.toDouble();
   }
+
 
   void _changeDate(int offsetDays) {
     final newDate = _selectedDate.add(Duration(days: offsetDays));
@@ -158,7 +159,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 currentValue: _currentSteps.toString(),
                 avgValue: "9,121",
                 barColor: colorScheme.primary,
-                maxY: _calculateAdaptiveMaxY(_hourlySteps, 10000),
+                maxY: _calculateAdaptiveMaxY(_hourlySteps, 3000),
                 data: _hourlySteps,
               ),
               const SizedBox(height: 20),
