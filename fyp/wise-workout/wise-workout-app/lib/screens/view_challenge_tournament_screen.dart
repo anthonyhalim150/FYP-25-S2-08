@@ -21,8 +21,8 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
     super.initState();
     challenges = [
       {'title': 'Push Up Challenge', 'target': '150 Push Ups', 'duration': '7 days'},
-      {'title': 'Squat Challenge', 'target': ' 75 Squat', 'duration': '3 days'},
-      {'title': 'Jumping Jack Blitz', 'target': '900 jumping jacks', 'duration': '5 days'},
+      {'title': 'Squat Challenge', 'target': '75 Squat', 'duration': '3 days'},
+      {'title': 'Jumping Jack Blitz', 'target': '100 jumping jacks', 'duration': '5 days'},
     ];
     tournamentsFuture = _tournamentService.getAllTournaments();
   }

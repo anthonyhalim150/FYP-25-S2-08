@@ -1,24 +1,26 @@
-const Challenge = require('../models/challengeModel');
+// services/challengeService.js
+const ChallengeModel = require('../models/challengeModel');
 
-async function sendChallenge(senderId, receiverId, title, target, duration) {
-  return await Challenge.createChallenge(senderId, receiverId, title, target, duration);
-}
+const ChallengeService = {
+  getInvitations: async (userId) => {
+    return await ChallengeModel.getPendingInvites(userId);
+  },
 
-async function getAcceptedChallenges(userId) {
-  return await challenge.getAcceptedChallenges(userId);
-}
+  getAcceptedChallenges: async (userId) => {
+    return await ChallengeModel.getAcceptedChallenges(userId);
+  },
 
-async function getReceivedChallenges(userId) {
-  return await Challenge.getReceivedChallenges(userId);
-}
+  acceptChallenge: async (inviteId) => {
+    return await ChallengeModel.updateInviteStatus(inviteId, 'accepted');
+  },
 
-async function respondChallenge(challengeId, status) {
-  return await Challenge.updateChallengeStatus(challengeId, status);
-}
+  rejectChallenge: async (inviteId) => {
+    return await ChallengeModel.updateInviteStatus(inviteId, 'rejected');
+  },
 
-module.exports = {
-  sendChallenge,
-  getAcceptedChallenges,
-  getReceivedChallenges,
-  respondChallenge,
+  sendChallenge: async ({ senderId, receiverId, title, target, duration }) => {
+    return await ChallengeModel.createChallengeAndInvite(senderId, receiverId, title, target, duration);
+  }
 };
+
+module.exports = ChallengeService;

@@ -278,7 +278,7 @@ void showInviteFriendPopup(
                                     receiverId: friend['id'],
                                     title: title,
                                     target: target,
-                                    duration: duration,
+                                    duration: int.parse(duration.split(' ').first),
                                   );
                                 }
 
@@ -355,10 +355,23 @@ Future<Map<String, String>?> showEditChallengePopup(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextField(
-                      controller: targetAmountController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Target Amount'),
+                    child: SizedBox(
+                      width: 100, // fixed width for nicer layout
+                      child: TextField(
+                        controller: targetAmountController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Target Amount',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        maxLength: 5, // limit input length
+                        buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -381,10 +394,23 @@ Future<Map<String, String>?> showEditChallengePopup(
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextField(
-                      controller: durationAmountController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Duration'),
+                    child: SizedBox(
+                      width: 100, // fixed width
+                      child: TextField(
+                        controller: durationAmountController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Duration',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        maxLength: 3, // limit input length
+                        buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),

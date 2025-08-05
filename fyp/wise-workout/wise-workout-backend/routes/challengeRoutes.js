@@ -1,10 +1,12 @@
+// routes/challengeRoutes.js
 const express = require('express');
 const router = express.Router();
-const challengeController = require('../controllers/challengeController');
+const ChallengeController = require('../controllers/challengeController');
 
-router.post('/send', challengeController.sendChallenge);
-router.get('/accepted', challengeController.getAcceptedChallenges);
-router.get('/received' , challengeController.getReceivedChallenges);
-router.post('/respond', challengeController.respondChallenge);
+router.get('/invitations', ChallengeController.getInvitations);
+router.get('/accepted', ChallengeController.getAcceptedChallenges);
+router.post('/:id/accept', ChallengeController.acceptChallenge);
+router.post('/:id/reject', ChallengeController.rejectChallenge);
+router.post('/send', ChallengeController.sendChallenge);
 
 module.exports = router;

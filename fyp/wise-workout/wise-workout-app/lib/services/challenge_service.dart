@@ -10,81 +10,11 @@ class ChallengeService {
     return await _storage.read(key: 'jwt_cookie');
   }
 
-  // Fetch list of challenges received (pending invitations)
-  Future<List<dynamic>> getInvitations() async {
-    final jwt = await _getJwtCookie();
-    final response = await http.get(
-      Uri.parse('$baseUrl/challenges/received'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to fetch invitations');
-    }
-    return jsonDecode(response.body);
-  }
-
-  // Fetch list of accepted challenges
-  Future<List<dynamic>> getAcceptedChallenges() async {
-    final jwt = await _getJwtCookie();
-    final response = await http.get(
-      Uri.parse('$baseUrl/challenges/accepted'), // You'll need to implement this route/backend
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to fetch accepted challenges');
-    }
-    return jsonDecode(response.body);
-  }
-
-  // Accept a challenge invite
-  Future<void> acceptChallenge(int challengeId) async {
-    final jwt = await _getJwtCookie();
-    final response = await http.post(
-      Uri.parse('$baseUrl/challenges/respond'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-      body: jsonEncode({
-        'challengeId': challengeId,
-        'action': 'accept',
-      }),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to accept challenge');
-    }
-  }
-
-  // Reject a challenge invite
-  Future<void> rejectChallenge(int challengeId) async {
-    final jwt = await _getJwtCookie();
-    final response = await http.post(
-      Uri.parse('$baseUrl/challenges/respond'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-      body: jsonEncode({
-        'challengeId': challengeId,
-        'action': 'reject',
-      }),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to reject challenge');
-    }
-  }
-
   Future<void> sendChallenge({
-    required int receiverId, // <- use int, not String
+    required int receiverId,
     required String title,
     required String target,
-    required String duration,
+    required int duration,
   }) async {
     final jwt = await _getJwtCookie();
     final response = await http.post(
@@ -100,46 +30,64 @@ class ChallengeService {
         'duration': duration,
       }),
     );
-
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
   }
 
-  Future<List<dynamic>> getReceivedChallenges() async {
+  Future<List<Map<String, dynamic>>> getInvitations() async {
     final jwt = await _getJwtCookie();
     final response = await http.get(
-      Uri.parse('$baseUrl/challenges/received'),
+      Uri.parse('$baseUrl/challenges/invitations'),
       headers: {
         'Content-Type': 'application/json',
         'Cookie': 'session=$jwt',
       },
     );
-
     if (response.statusCode != 200) {
-      throw Exception('Failed to fetch challenges');
+      throw Exception('Failed to load invitations');
     }
-
-    return jsonDecode(response.body);
+    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
   }
 
-  Future<void> respondToChallenge({
-    required int challengeId,
-    required String action, // 'accept' or 'reject'
-  }) async {
+  Future<List<Map<String, dynamic>>> getAcceptedChallenges() async {
     final jwt = await _getJwtCookie();
-    final response = await http.post(
-      Uri.parse('$baseUrl/challenges/respond'),
+    final response = await http.get(
+      Uri.parse('$baseUrl/challenges/accepted'),
       headers: {
         'Content-Type': 'application/json',
         'Cookie': 'session=$jwt',
       },
-      body: jsonEncode({
-        'challengeId': challengeId,
-        'action': action,
-      }),
     );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load accepted challenges');
+    }
+    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+  }
 
+  Future<void> acceptChallenge(int challengeId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.post(
+      Uri.parse('$baseUrl/challenges/$challengeId/accept'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
+  Future<void> rejectChallenge(int challengeId) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.post(
+      Uri.parse('$baseUrl/challenges/$challengeId/reject'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
