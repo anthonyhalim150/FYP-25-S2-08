@@ -133,20 +133,24 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-              child: Row(
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Spacer(),
-                  Text(
-                    'avatar_title'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ),
-                  const Spacer(flex: 2),
+                  Center(
+                    child: Text(
+                      'avatar_title'.tr(),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -193,14 +197,16 @@ class _CreateAvatarScreenState extends State<CreateAvatarScreen> {
                   children: [
                     Row(
                       children: [
-                        const Spacer(),
-                        Text(
-                          'avatar_title'.tr(),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              'avatar_title'.tr(),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                        const Spacer(),
                         GestureDetector(
                           onTap: _editBackground,
                           child: Icon(
