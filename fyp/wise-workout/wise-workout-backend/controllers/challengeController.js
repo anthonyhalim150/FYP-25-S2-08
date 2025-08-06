@@ -73,6 +73,17 @@ const ChallengeController = {
       console.error('Error sending challenge:', err);
       res.status(500).json({ message: 'Error sending challenge', error: err.message });
     }
+  },
+  getFriendsToChallenge: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { title } = req.query;
+      if (!title) return res.status(400).json({ message: 'Missing challenge title' });
+      const friends = await ChallengeService.getFriendsToChallenge(userId, title);
+      res.status(200).json(friends);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching friends to challenge', error: err.message });
+    }
   }
 };
 

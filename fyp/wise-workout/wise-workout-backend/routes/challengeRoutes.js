@@ -8,5 +8,6 @@ router.get('/accepted', ChallengeController.getAcceptedChallenges);
 router.post('/:id/accept', ChallengeController.acceptChallenge);
 router.post('/:id/reject', ChallengeController.rejectChallenge);
 router.post('/send', ChallengeController.sendChallenge);
+router.get('/friends-to-challenge', ChallengeController.getFriendsToChallenge);
 
 module.exports = router;

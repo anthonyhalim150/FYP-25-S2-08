@@ -126,7 +126,7 @@ void showInviteFriendPopup(
     backgroundColor: Colors.transparent,
     builder: (BuildContext ctx) {
       return FutureBuilder<List<Map<String, dynamic>>>(
-        future: friendService.getPremiumFriends(),
+        future: friendService.getFriendsToChallenge(title),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

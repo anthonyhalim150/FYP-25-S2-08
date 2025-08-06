@@ -20,7 +20,10 @@ const ChallengeService = {
 
   sendChallenge: async ({ senderId, receiverId, title, target, duration }) => {
     return await ChallengeModel.createChallengeAndInvite(senderId, receiverId, title, target, duration);
-  }
+  },
+  getFriendsToChallenge: async (userId, title) => {
+    return await ChallengeModel.getPremiumFriendsToChallenge(userId, title);
+  } 
 };
 
 module.exports = ChallengeService;
