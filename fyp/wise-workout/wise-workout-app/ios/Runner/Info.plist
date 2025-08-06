@@ -7,7 +7,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to the camera for squat detection.</string>
 	<key>CFBundleDisplayName</key>
-	<string>Wise Workout App</string>
+	<string>FitQuest</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

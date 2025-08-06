@@ -15,7 +15,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="true" />
 
     <application
-        android:label="wise_workout_app"
+        android:label="FitQuest"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
