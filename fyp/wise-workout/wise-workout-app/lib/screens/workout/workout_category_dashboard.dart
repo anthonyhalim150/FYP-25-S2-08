@@ -3,7 +3,7 @@ import '../../services/workout_category_service.dart';
 import '../../widgets/bottom_navigation.dart';
 import '../../widgets/workout_card_dashboard.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../fitness_plan_screen.dart';
+import 'fitness_plan_screen.dart';
 import '../buypremium_screen.dart';
 import '../../services/api_service.dart';
 

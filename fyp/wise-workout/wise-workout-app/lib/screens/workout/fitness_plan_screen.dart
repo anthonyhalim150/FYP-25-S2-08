@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import '../services/fitnessai_service.dart';
-import 'edit_preferences_screen.dart';
-import '../screens/model/workout_day_model.dart';
-import '../screens/model/exercise_model.dart';
+import '../../services/fitnessai_service.dart';
+import '../edit_preferences_screen.dart';
+import '../model/workout_day_model.dart';
+import '../model/exercise_model.dart';
+import 'edit_workout_plan.dart';  // Import the EditWorkoutPlanPage
 
 class FitnessPlanScreen extends StatefulWidget {
   const FitnessPlanScreen({Key? key}) : super(key: key);
+
   @override
   State<FitnessPlanScreen> createState() => _FitnessPlanScreenState();
 }
@@ -14,6 +16,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
   final AIFitnessPlanService _aiService = AIFitnessPlanService();
   bool _loading = false;
   bool _generatingPlan = false;
+  bool _isPlanSaved = false;  // Track if the plan is saved
   List<dynamic>? _plan;
   Map<String, dynamic>? _preferences;
   String? _error;
@@ -47,7 +50,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
       });
     }
   }
-
 
   Future<void> _fetchPlan() async {
     setState(() {
@@ -269,10 +271,9 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
               final updatedPrefs = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      EditPreferencesScreen(
-                        preferences: Map<String, dynamic>.from(_preferences!),
-                      ),
+                  builder: (context) => EditPreferencesScreen(
+                    preferences: Map<String, dynamic>.from(_preferences!),
+                  ),
                 ),
               );
               if (updatedPrefs != null) {
@@ -322,49 +323,71 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Center(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.save),
-                    label: const Text('Save This Plan'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                    ),
-                    onPressed: (_plan == null || _plan!.isEmpty)
-                        ? null
-                        : () async {
-                      setState(() => _loading = true);
-                      try {
-                        final String planTitle = _plan![0]['plan_title'];
-                        final List<dynamic> planDaysJson = _plan!.sublist(1);
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.save),
+                        label: const Text('Save This Plan'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        ),
+                        onPressed: (_plan == null || _plan!.isEmpty)
+                            ? null
+                            : () async {
+                          setState(() => _loading = true);
+                          try {
+                            final String planTitle = _plan![0]['plan_title'];
+                            final List<dynamic> planDaysJson = _plan!.sublist(1);
 
-                        final List<WorkoutDay> workoutDays = planDaysJson.map<WorkoutDay>((dayJson) {
-                          final exercises = (dayJson['exercises'] as List?)
-                              ?.map<Exercise>((e) => Exercise.fromAiJson(e))
-                              .toList() ?? [];
-                          return WorkoutDay(
-                            dayOfMonth: dayJson['day_of_month'],
-                            exercises: exercises,
-                            notes: dayJson['notes'] ?? '',
-                            isRest: dayJson['rest'] ?? false,
-                          );
-                        }).toList();
+                            final List<WorkoutDay> workoutDays = planDaysJson.map<WorkoutDay>((dayJson) {
+                              final exercises = (dayJson['exercises'] as List?)
+                                  ?.map<Exercise>((e) => Exercise.fromAiJson(e))
+                                  .toList() ?? [];
+                              return WorkoutDay(
+                                dayOfMonth: dayJson['day_of_month'],
+                                exercises: exercises,
+                                notes: dayJson['notes'] ?? '',
+                                isRest: dayJson['rest'] ?? false,
+                              );
+                            }).toList();
 
+                            // Simulate saving the plan to backend or local storage
+                            await _aiService.savePlanToBackend(planTitle, workoutDays);
 
-                        await _aiService.savePlanToBackend(planTitle, workoutDays);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Plan saved successfully!')),
+                            );
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Plan saved successfully!')),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error: ${e.toString()}')),
-                        );
-                      } finally {
-                        setState(() => _loading = false);
-                      }
-                    },
+                            setState(() {
+                              _isPlanSaved = true;  // Set flag to show edit button
+                            });
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${e.toString()}')),
+                            );
+                          } finally {
+                            setState(() => _loading = false);
+                          }
+                        },
+                      ),
+                      if (_isPlanSaved) ...[
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.edit),
+                          label: const Text('Edit Plan'),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/edit-workout-plan',
+                              arguments: _plan!,
+                            );
+                          },
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
