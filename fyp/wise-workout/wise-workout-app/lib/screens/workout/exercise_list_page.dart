@@ -69,7 +69,7 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
         'exerciseId': exercise['exerciseId'],
         'exerciseKey': exercise['exerciseKey'],
         'exerciseName': exercise['exerciseName'],
-        'calories_burnt_per_rep': exercise['calories_burnt_per_rep'], // <-- ADD THIS
+        'calories_burnt_per_rep': exercise['calories_burnt_per_rep'],
         'sets': List<Map<String, dynamic>>.from(exercise['sets'].map((set) {
           return {
             'set': set['set'],

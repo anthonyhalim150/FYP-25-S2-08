@@ -70,7 +70,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
         } else {
           _plan = [];
         }
-        // Don't overwrite preferences here to preserve edited state
       });
     } catch (e) {
       setState(() {
