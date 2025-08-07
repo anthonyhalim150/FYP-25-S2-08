@@ -8,6 +8,10 @@ class ExerciseService {
   static async getExercisesByNames(names) {
     return await ExerciseModel.getExercisesByNames(names);
   }
+
+  static async getAllExercises() {
+    return await ExerciseModel.getAllExercises();
+  }
 }
 
 module.exports = ExerciseService;

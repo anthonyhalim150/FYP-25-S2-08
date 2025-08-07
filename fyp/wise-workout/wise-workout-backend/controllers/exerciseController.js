@@ -24,3 +24,16 @@ exports.getExercisesByNames = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch exercises by names' });
   }
 };
+
+exports.getAllExercises = async (req, res) => {
+    console.log('📥 [GET] /exercises - Fetching all exercises');
+
+    try {
+      const exercises = await ExerciseService.getAllExercises();
+      console.log(`📤 Returning ${exercises.length} exercises`);
+      res.json(exercises);
+    } catch (err) {
+      console.error('❌ getAllExercises ERROR:', err);
+      res.status(500).json({ message: 'Failed to fetch all exercises' });
+    }
+};
