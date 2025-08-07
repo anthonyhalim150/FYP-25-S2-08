@@ -4,6 +4,7 @@ import '../edit_preferences_screen.dart';
 import '../model/workout_day_model.dart';
 import '../model/exercise_model.dart';
 import 'edit_workout_plan.dart';  // Import the EditWorkoutPlanPage
+import 'workout_plan_screen.dart';  // Import the WorkoutPlanScreen
 
 class FitnessPlanScreen extends StatefulWidget {
   const FitnessPlanScreen({Key? key}) : super(key: key);
@@ -379,13 +380,16 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                           icon: const Icon(Icons.edit),
                           label: const Text('Edit Plan'),
                           onPressed: () {
-                            Navigator.pushNamed(
+                            // Navigate to the WorkoutPlanScreen and pass the plan data
+                            Navigator.push(
                               context,
-                              '/edit-workout-plan',
-                              arguments: _plan!,
+                              MaterialPageRoute(
+                                builder: (context) => WorkoutPlanScreen(plan: _plan!),  // Pass the plan to the WorkoutPlanScreen
+                              ),
                             );
                           },
                         ),
+
                       ],
                     ],
                   ),
