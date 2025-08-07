@@ -4,7 +4,6 @@ import '../../services/fitnessai_service.dart';
 import 'dart:convert';
 import '../workout/exercise_list_from_ai_page.dart';
 
-
 class CalendarPlanScreen extends StatefulWidget {
   const CalendarPlanScreen({super.key});
 
@@ -18,8 +17,9 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
   String? _error;
   List<dynamic> _days = [];
   DateTime _currentMonth = DateTime.now();
-  DateTime? _selectedDate; // Now tracks selected date
+  DateTime? _selectedDate;
   Map<String, dynamic>? _selectedDayData;
+  DateTime? _planStartDate; // Track the plan's start date separately
 
   @override
   void initState() {
@@ -44,42 +44,48 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
         if (daysList is String) {
           daysList = daysList.isNotEmpty ? jsonDecode(daysList) as List : [];
         }
+
+        // Parse the created_at date
+        final createdAtString = firstPlan['created_at'];
+        try {
+          _planStartDate = DateTime.parse(createdAtString);
+        } catch (e) {
+          _planStartDate = DateTime.now();
+        }
       }
 
       setState(() {
         _days = daysList ?? [];
 
-        // 1. Get created_at from result and parse as DateTime
-        final createdAtString = result['created_at'];
-        DateTime planStartDate;
-        try {
-          planStartDate = DateTime.parse(createdAtString);
-        } catch (e) {
-          planStartDate = DateTime.now();
+        // Attach real dates to each plan day based on the plan's start date
+        if (_planStartDate != null) {
+          for (int i = 0; i < _days.length; i++) {
+            _days[i]['calendar_date'] = _planStartDate!.add(Duration(days: i));
+          }
         }
 
-        // 2. Attach a real date to each plan day
-        for (int i = 0; i < _days.length; i++) {
-          _days[i]['calendar_date'] = planStartDate.add(Duration(days: i));
-        }
-
-        // 3. Select today's plan day if available, or first available
+        // Select today's plan day if available, or first available
         final today = DateTime.now();
         final planTodayIdx = _days.indexWhere(
               (d) =>
           d['calendar_date'] != null &&
-              (d['calendar_date'] as DateTime).year == today.year &&
-              (d['calendar_date'] as DateTime).month == today.month &&
-              (d['calendar_date'] as DateTime).day == today.day,
+              DateUtils.isSameDay(d['calendar_date'], today),
         );
 
         if (planTodayIdx != -1) {
-          _selectedDate = (_days[planTodayIdx]['calendar_date'] as DateTime);
+          _selectedDate = _days[planTodayIdx]['calendar_date'];
           _selectedDayData = _days[planTodayIdx];
+        } else if (_days.isNotEmpty) {
+          _selectedDate = _days.first['calendar_date'];
+          _selectedDayData = _days.first;
         } else {
-          _selectedDate = _days.isNotEmpty ? (_days.first['calendar_date'] as DateTime) : null;
-          _selectedDayData = _days.isNotEmpty ? _days.first : null;
+          _selectedDate = null;
+          _selectedDayData = null;
         }
+
+        // Set current month to the month of the selected date or plan start date
+        _currentMonth = _selectedDate ?? _planStartDate ?? DateTime.now();
+        _currentMonth = DateTime(_currentMonth.year, _currentMonth.month);
       });
     } catch (e) {
       setState(() {
@@ -98,7 +104,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
         _currentMonth.year,
         _currentMonth.month + direction,
       );
-      // Optionally, reset selection (here we keep selection for UX)
     });
   }
 
@@ -108,9 +113,7 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
       _selectedDayData = _days.firstWhere(
             (d) =>
         d['calendar_date'] != null &&
-            (d['calendar_date'] as DateTime).year == cellDate.year &&
-            (d['calendar_date'] as DateTime).month == cellDate.month &&
-            (d['calendar_date'] as DateTime).day == cellDate.day,
+            DateUtils.isSameDay(d['calendar_date'], cellDate),
         orElse: () => null,
       );
     });
@@ -120,7 +123,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
   Widget build(BuildContext context) {
     final daysInMonth = DateUtils.getDaysInMonth(_currentMonth.year, _currentMonth.month);
     final firstWeekday = DateTime(_currentMonth.year, _currentMonth.month, 1).weekday;
-    // Days array: pad empty days for first week, then 1..daysInMonth
     final calendarDays = [
       ...List.filled(firstWeekday - 1, null),
       ...List.generate(daysInMonth, (i) => i + 1)
@@ -211,18 +213,18 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                       : _days.firstWhere(
                         (d) =>
                     d['calendar_date'] != null &&
-                        (d['calendar_date'] as DateTime).year == cellDate.year &&
-                        (d['calendar_date'] as DateTime).month == cellDate.month &&
-                        (d['calendar_date'] as DateTime).day == cellDate.day,
+                        DateUtils.isSameDay(d['calendar_date'], cellDate),
                     orElse: () => null,
                   );
 
                   final isSelected = cellDate != null &&
                       _selectedDate != null &&
-                      cellDate.year == _selectedDate!.year &&
-                      cellDate.month == _selectedDate!.month &&
-                      cellDate.day == _selectedDate!.day;
+                      DateUtils.isSameDay(cellDate, _selectedDate!);
                   final isRestDay = planDay?['rest'] == true;
+                  final isPastDate = cellDate != null &&
+                      _planStartDate != null &&
+                      cellDate.isBefore(DateTime.now()) &&
+                      !DateUtils.isSameDay(cellDate, DateTime.now());
 
                   return dayNum == null
                       ? const SizedBox.shrink()
@@ -249,6 +251,8 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                                     ? Colors.white
                                     : planDay == null
                                     ? Colors.grey[350]
+                                    : isPastDate
+                                    ? Colors.grey
                                     : isRestDay
                                     ? Colors.blueGrey
                                     : Colors.black,
@@ -296,7 +300,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Display plan day number if you want
                 if (_selectedDayData != null && _selectedDate != null)
                   Text(
                     "Activities for Day ${_days.indexOf(_selectedDayData!) + 1} (${DateFormat('MMMM d').format(_selectedDate!)})",
