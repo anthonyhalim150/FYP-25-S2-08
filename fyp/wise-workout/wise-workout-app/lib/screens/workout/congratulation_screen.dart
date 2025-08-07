@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CongratulationScreen extends StatefulWidget {
   final Map<String, dynamic> workoutResult;
@@ -46,8 +47,8 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
       cc.error,
       cc.primaryContainer,
       cc.secondaryContainer,
-      Colors.amber, // fallback/confetti
-      Colors.teal,  // fallback/confetti
+      Colors.amber,
+      Colors.teal,
     ];
 
     return Scaffold(
@@ -70,7 +71,7 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "🎉 Congratulations! 🎉",
+                  "congratulations_title".tr(),
                   style: tt.headlineSmall?.copyWith(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -80,7 +81,7 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "You’ve completed your workout!",
+                  "congratulations_subtitle".tr(),
                   style: tt.titleMedium?.copyWith(
                     color: cc.onBackground,
                   ),
@@ -88,7 +89,7 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Loading summary...",
+                  "congratulations_loading".tr(),
                   style: tt.bodyMedium?.copyWith(color: cc.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),

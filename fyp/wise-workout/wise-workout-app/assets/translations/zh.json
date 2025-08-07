@@ -294,5 +294,28 @@
   "unreg_dialog_title": "创建账户",
   "unreg_dialog_message": "请登录或创建账户以查看更多内容",
   "unreg_dialog_later": "稍后",
-  "unreg_dialog_register": "注册"
+  "unreg_dialog_register": "注册",
+
+  "exercise_list_no_exercises_found": "未找到任何练习。",
+  "congratulations_title": "🎉 恭喜你！🎉",
+  "congratulations_subtitle": "你已完成你的锻炼！",
+  "congratulations_loading": "正在加载总结...",
+
+  "daily_summary_title": "每日活动",
+  "steps_chart_title": "步数",
+  "calories_chart_title": "卡路里",
+  "current_label": "当前",
+  "month_1": "一月",
+  "month_2": "二月",
+  "month_3": "三月",
+  "month_4": "四月",
+  "month_5": "五月",
+  "month_6": "六月",
+  "month_7": "七月",
+  "month_8": "八月",
+  "month_9": "九月",
+  "month_10": "十月",
+  "month_11": "十一月",
+  "month_12": "十二月"
+
 }

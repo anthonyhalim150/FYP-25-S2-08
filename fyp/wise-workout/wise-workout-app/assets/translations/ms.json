@@ -295,5 +295,28 @@
   "unreg_dialog_title": "Cipta Akaun",
   "unreg_dialog_message": "Sila log masuk atau cipta akaun untuk melihat lebih banyak",
   "unreg_dialog_later": "Nanti",
-  "unreg_dialog_register": "Daftar"
+  "unreg_dialog_register": "Daftar",
+
+  "exercise_list_no_exercises_found": "Tiada latihan ditemui.",
+
+  "congratulations_title": "🎉 Tahniah! 🎉",
+  "congratulations_subtitle": "Anda telah berjaya menyelesaikan senaman anda!",
+  "congratulations_loading": "Memuatkan ringkasan...",
+
+  "daily_summary_title": "Aktiviti Harian",
+  "steps_chart_title": "Langkah",
+  "calories_chart_title": "Kalori",
+  "current_label": "Semasa",
+  "month_1": "Januari",
+  "month_2": "Februari",
+  "month_3": "Mac",
+  "month_4": "April",
+  "month_5": "Mei",
+  "month_6": "Jun",
+  "month_7": "Julai",
+  "month_8": "Ogos",
+  "month_9": "September",
+  "month_10": "Oktober",
+  "month_11": "November",
+  "month_12": "Disember"
 }

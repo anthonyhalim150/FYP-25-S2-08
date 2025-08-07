@@ -3,9 +3,7 @@ import '../../services/fitnessai_service.dart';
 import '../edit_preferences_screen.dart';
 import '../model/workout_day_model.dart';
 import '../model/exercise_model.dart';
-import 'edit_workout_plan.dart';  // Import the EditWorkoutPlanPage
-import 'workout_plan_screen.dart';  // Import the WorkoutPlanScreen
-
+import 'workout_plan_screen.dart';
 class FitnessPlanScreen extends StatefulWidget {
   const FitnessPlanScreen({Key? key}) : super(key: key);
 
@@ -17,7 +15,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
   final AIFitnessPlanService _aiService = AIFitnessPlanService();
   bool _loading = false;
   bool _generatingPlan = false;
-  bool _isPlanSaved = false;  // Track if the plan is saved
+  bool _isPlanSaved = false;
   List<dynamic>? _plan;
   Map<String, dynamic>? _preferences;
   String? _error;

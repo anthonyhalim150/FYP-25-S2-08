@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/fitnessai_service.dart';
 import '../../services/exercise_service.dart';
 import '../model/exercise_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class WorkoutPlanScreen extends StatefulWidget {
   final List<dynamic> plan;
@@ -64,20 +65,20 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Save Changes'),
-          content: const Text('Do you want to save the changes to your workout plan?'),
+          title: Text('exercise_list_end_title'.tr()),
+          content: Text(tr('exercise_list_end_confirm')),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Discard Changes'),
+              child: Text(tr('cancel')),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-              child: const Text('Save Changes'),
+              child: Text(tr('end')),
             ),
           ],
         );
+
       },
     );
   }
@@ -141,7 +142,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       return;
     }
 
-    // Convert rest day to exercise day if needed
     final dayPlan = _plan[dayIndex + 1];
     if (dayPlan['rest'] == true) {
       _convertRestDayToExerciseDay(dayIndex);
@@ -150,7 +150,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     _showExerciseSelectionDialog(dayIndex);
   }
 
-  // Dialog to select an exercise from all available exercises
   void _showExerciseSelectionDialog(int dayIndex) {
     String searchQuery = '';
     List<Exercise> filteredExercises = _allExercises;
@@ -240,7 +239,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     );
   }
 
-  // Dialog to input sets and reps for selected exercise
   void _showSetRepsDialog(int dayIndex, Exercise exercise) {
     final TextEditingController setsController = TextEditingController(text: '3');
     final TextEditingController repsController = TextEditingController(text: '10');
@@ -320,7 +318,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     );
   }
 
-  // Add exercise to specific day
   void _addExerciseToDay(int dayIndex, Exercise exercise, int sets, int reps) {
     setState(() {
       final dayPlan = _plan[dayIndex + 1]; // +1 because first item is plan title
@@ -349,7 +346,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     );
   }
 
-  // Remove exercise from day
   void _removeExercise(int dayIndex, int exerciseIndex) {
     showDialog(
       context: context,
@@ -434,7 +430,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       final dayPlan = _plan[i];
       final exercises = dayPlan['exercises'] as List? ?? [];
 
-      // If day is not marked as rest but has no exercises, convert to rest day
       if (dayPlan['rest'] != true && exercises.isEmpty) {
         dayPlan['rest'] = true;
         print('✅ Converted empty Day ${dayPlan['day'] ?? dayPlan['day_of_month']} to rest day');
@@ -801,7 +796,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                 : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header with title and editing indicator
                 Row(
                   children: [
                     Expanded(
@@ -833,7 +827,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                   ],
                 ),
 
-                // Changes indicator
                 if (_hasChanges)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
@@ -873,8 +866,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                       ],
                     ),
                   ),
-
-                // Workout plan list
                 buildPlanList(),
               ],
             ),

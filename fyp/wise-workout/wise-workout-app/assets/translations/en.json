@@ -306,5 +306,35 @@
   "wearable_connect_health_failure": "Failed to connect to Health Connect",
   "wearable_connection_failed": "Connection failed. Please try again.",
   "wearable_disconnect_success": "Disconnected from {}",
-  "wearable_disconnect_failed": "Disconnection failed"
+  "wearable_disconnect_failed": "Disconnection failed",
+
+  "exercise_list_already_started": "Exercise session already started.",
+  "exercise_list_end_title": "End Workout Session",
+  "exercise_list_end_confirm": "Are you sure you want to end this session?",
+  "cancel": "Cancel",
+  "end": "End",
+  "exercise_list_start": "Start Workout",
+  "exercise_list_no_exercises_found": "No exercises found.",
+
+  "congratulations_title": "🎉 Congratulations! 🎉",
+  "congratulations_subtitle": "You’ve completed your workout!",
+  "congratulations_loading": "Loading summary...",
+
+  "daily_summary_title": "Daily Activity",
+  "steps_chart_title": "Steps",
+  "calories_chart_title": "Calories",
+  "current_label": "Current",
+  "month_1": "January",
+  "month_2": "February",
+  "month_3": "March",
+  "month_4": "April",
+  "month_5": "May",
+  "month_6": "June",
+  "month_7": "July",
+  "month_8": "August",
+  "month_9": "September",
+  "month_10": "October",
+  "month_11": "November",
+  "month_12": "December"
+
 }

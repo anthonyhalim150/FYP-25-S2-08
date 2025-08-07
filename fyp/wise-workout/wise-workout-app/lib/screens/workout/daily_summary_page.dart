@@ -4,6 +4,7 @@ import 'package:wise_workout_app/widgets/exercise_stats_card.dart';
 import '../../services/health_service.dart';
 import '../../services/api_service.dart';
 import '../buypremium_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DailySummaryPage extends StatefulWidget {
   const DailySummaryPage({super.key});
@@ -96,7 +97,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
         backgroundColor: colorScheme.background,
         elevation: 0,
         leading: BackButton(color: colorScheme.onBackground),
-        title: Text("Daily Activity",
+        title: Text("daily_summary_title".tr(),
             style: textTheme.titleLarge?.copyWith(color: colorScheme.onBackground)),
         centerTitle: true,
         actions: [
@@ -155,9 +156,8 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
               const SizedBox(height: 20),
               _TimeBasedChart(
                 icon: Icons.directions_walk,
-                title: "Steps",
+                title: "steps_chart_title".tr(),
                 currentValue: _currentSteps.toString(),
-                avgValue: "9,121",
                 barColor: colorScheme.primary,
                 maxY: _calculateAdaptiveMaxY(_hourlySteps, 3000),
                 data: _hourlySteps,
@@ -165,9 +165,8 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
               const SizedBox(height: 20),
               _TimeBasedChart(
                 icon: Icons.local_fire_department,
-                title: "Calories",
+                title: "calories_chart_title".tr(),
                 currentValue: _caloriesBurned.toString(),
-                avgValue: "234",
                 barColor: colorScheme.secondary,
                 maxY: _calculateAdaptiveMaxY(_hourlyCalories, 300),
                 data: _hourlyCalories,
@@ -181,21 +180,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
   }
 
   String _monthName(int month) {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    return months[month - 1];
+    return "month_$month".tr();
   }
 }
 
@@ -203,7 +188,6 @@ class _TimeBasedChart extends StatelessWidget {
   final IconData icon;
   final String title;
   final String currentValue;
-  final String avgValue;
   final Color barColor;
   final double maxY;
   final List<int> data;
@@ -212,7 +196,6 @@ class _TimeBasedChart extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.currentValue,
-    required this.avgValue,
     required this.barColor,
     required this.maxY,
     required this.data,
@@ -256,7 +239,7 @@ class _TimeBasedChart extends StatelessWidget {
                   currentValue,
                   style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                Text("Current", style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
+                Text("current_label".tr(), style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
