@@ -352,7 +352,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       final workoutDays = _aiService.parsePlanToModels(_plan);
       final createdAt = DateTime.now().toIso8601String();
 
-      await _aiService.savePlanToBackend(_planTitle, workoutDays, createdAt);
+      await _aiService.savePlanToBackend(_planTitle, workoutDays);
 
       setState(() {
         _hasChanges = false;
