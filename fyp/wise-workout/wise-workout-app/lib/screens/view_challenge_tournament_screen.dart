@@ -33,17 +33,31 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
   }
 
   void editChallenge(int index, Map<String, dynamic> originalChallenge) async {
+    // Get current duration and unit from challenge (default to days if missing)
+    String currentDurationValue = originalChallenge['duration']?.toString() ?? '';
+    String currentDurationUnit = originalChallenge['duration_unit']?.toString() ?? 'days';
+    // For backward compat, parse from legacy string
+    final unitReg = RegExp(r'(days|weeks|months)');
+    if (currentDurationValue.contains(' ')) {
+      final parts = currentDurationValue.split(' ');
+      currentDurationValue = parts[0];
+      if (parts.length > 1) currentDurationUnit = parts[1];
+    }
     final updated = await showEditChallengePopup(
       context,
       originalChallenge['value'],
-      '${originalChallenge['duration']} days',
+      '$currentDurationValue $currentDurationUnit',
     );
     if (updated != null) {
       setState(() {
         if (editableChallenges != null && index < editableChallenges!.length) {
+          // Parse amount and unit from returned duration
+          final durParts = updated['duration']?.split(' ') ?? [];
+          final durValue = durParts.isNotEmpty ? int.tryParse(durParts[0]) : null;
+          final durUnit = durParts.length > 1 ? durParts[1] : 'days';
           editableChallenges![index]['value'] = updated['target'];
-          editableChallenges![index]['duration'] = int.tryParse(
-              RegExp(r'\d+').firstMatch(updated['duration'] ?? '')?.group(0) ?? '') ?? editableChallenges![index]['duration'];
+          editableChallenges![index]['duration'] = durValue ?? editableChallenges![index]['duration'];
+          editableChallenges![index]['duration_unit'] = durUnit;
         }
       });
     }
@@ -117,8 +131,11 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
         }
         List<Map<String, dynamic>> challenges = snapshot.data ?? [];
         if (editableChallenges == null) {
-          // Make a deep copy for editing
-          editableChallenges = challenges.map((e) => Map<String, dynamic>.from(e)).toList();
+          editableChallenges = challenges.map((e) {
+            final Map<String, dynamic> map = Map<String, dynamic>.from(e);
+            map['duration_unit'] ??= 'days';
+            return map;
+          }).toList();
         }
         if (editableChallenges!.isEmpty) {
           return const Center(
@@ -130,15 +147,16 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
           itemCount: editableChallenges!.length,
           itemBuilder: (context, index) {
             final challenge = editableChallenges![index];
+            final unit = challenge['duration_unit'] ?? 'days';
             return ChallengeCard(
               title: challenge['type'],
               target: challenge['value'],
-              duration: '${challenge['duration']} days',
+              duration: '${challenge['duration']} $unit',
               onInvite: () => showInviteFriendPopup(
                 context,
                 challenge['type'],
                 challenge['value'],
-                '${challenge['duration']} days',
+                '${challenge['duration']} $unit',
               ),
               onEdit: () => editChallenge(index, challenge),
             );

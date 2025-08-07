@@ -29,21 +29,29 @@ class ChallengeService {
     required int receiverId,
     required String title,
     required String target,
-    required int duration,
+    int? customDurationValue,
+    String? customDurationUnit,
   }) async {
     final jwt = await _getJwtCookie();
+    final Map<String, dynamic> body = {
+      'receiverId': receiverId,
+      'title': title,
+      'target': target,
+      'customDurationValue': customDurationValue,
+      'customDurationUnit': customDurationUnit,
+    };
+    body.removeWhere((key, value) => value == null);
+    print(target);
+    print(customDurationValue);
+    print(customDurationUnit);
+
     final response = await http.post(
       Uri.parse('$baseUrl/challenges/send'),
       headers: {
         'Content-Type': 'application/json',
         'Cookie': 'session=$jwt',
       },
-      body: jsonEncode({
-        'receiverId': receiverId,
-        'title': title,
-        'target': target,
-        'duration': duration,
-      }),
+      body: jsonEncode(body),
     );
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);

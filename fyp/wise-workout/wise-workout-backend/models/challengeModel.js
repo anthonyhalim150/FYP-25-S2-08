@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 const ChallengeModel = {
   getAllChallenges: async () => {
-    const [rows] = await db.execute('SELECT id, type, value, duration FROM challenges');
+    const [rows] = await db.execute('SELECT id, type, value, unit, duration FROM challenges');
     return rows;
   },
 

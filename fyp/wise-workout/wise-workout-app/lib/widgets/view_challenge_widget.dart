@@ -274,11 +274,16 @@ void showInviteFriendPopup(
                                 final challengeService = ChallengeService();
                                 for (int index in selectedIndices) {
                                   final friend = friends[index];
+                                  final durationParts = duration.split(' ');
+                                  final customDurationValue = int.tryParse(durationParts[0]) ?? 0;
+                                  final customDurationUnit = durationParts.length > 1 ? durationParts[1].toLowerCase() : 'days';
+
                                   await challengeService.sendChallenge(
                                     receiverId: friend['id'],
                                     title: title,
                                     target: target,
-                                    duration: int.parse(duration.split(' ').first),
+                                    customDurationValue: customDurationValue,
+                                    customDurationUnit: customDurationUnit,
                                   );
                                 }
 
@@ -318,18 +323,15 @@ void showInviteFriendPopup(
     },
   );
 }
-
 Future<Map<String, String>?> showEditChallengePopup(
-    BuildContext context,
-    String currentTarget,
-    String currentDuration,
-    ) async {
-  // Parse target into amount + unit (e.g. "150 Push Ups")
+  BuildContext context,
+  String currentTarget,
+  String currentDuration,
+) async {
   final targetParts = currentTarget.split(' ');
   String targetAmount = targetParts.isNotEmpty ? targetParts[0] : '';
   String targetUnit = targetParts.length > 1 ? targetParts.sublist(1).join(' ') : '';
 
-  // Parse duration into number + unit (e.g. "7 days")
   final durationParts = currentDuration.split(' ');
   String durationAmount = durationParts.isNotEmpty ? durationParts[0] : '';
   String durationUnit = durationParts.length > 1 ? durationParts[1].toLowerCase() : 'days';
@@ -338,116 +340,121 @@ Future<Map<String, String>?> showEditChallengePopup(
   final durationAmountController = TextEditingController(text: durationAmount);
 
   final durationUnits = ['days', 'weeks', 'months'];
-
   String selectedDurationUnit = durationUnits.contains(durationUnit) ? durationUnit : durationUnits[0];
 
   return showDialog<Map<String, String>>(
     context: context,
     builder: (context) {
-      return AlertDialog(
-        title: const Text('Edit Challenge'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Target amount input with fixed unit label
-              Row(
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Edit Challenge'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: SizedBox(
-                      width: 100, // fixed width for nicer layout
-                      child: TextField(
-                        controller: targetAmountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Target Amount',
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
+                  // Target amount input with fixed unit label
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: SizedBox(
+                          width: 100,
+                          child: TextField(
+                            controller: targetAmountController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Target Amount',
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            maxLength: 5,
+                            buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
-                        maxLength: 5, // limit input length
-                        buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            targetUnit,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Text(
-                        targetUnit,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                  const SizedBox(height: 20),
+
+                  // Duration amount input + duration unit dropdown
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: SizedBox(
+                          width: 100,
+                          child: TextField(
+                            controller: durationAmountController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Duration',
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            maxLength: 3,
+                            buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 3,
+                        child: DropdownButtonFormField<String>(
+                          value: selectedDurationUnit,
+                          decoration: const InputDecoration(labelText: 'Duration Unit'),
+                          items: durationUnits
+                              .map((unit) => DropdownMenuItem(value: unit, child: Text(unit.capitalize())))
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                selectedDurationUnit = value;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // Duration amount input + duration unit dropdown
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: SizedBox(
-                      width: 100, // fixed width
-                      child: TextField(
-                        controller: durationAmountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Duration',
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        ),
-                        maxLength: 3, // limit input length
-                        buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 3,
-                    child: DropdownButtonFormField<String>(
-                      value: selectedDurationUnit,
-                      decoration: const InputDecoration(labelText: 'Duration Unit'),
-                      items: durationUnits
-                          .map((unit) => DropdownMenuItem(value: unit, child: Text(unit.capitalize())))
-                          .toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          selectedDurationUnit = value;
-                        }
-                      },
-                    ),
-                  ),
-                ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final newTarget = '${targetAmountController.text.trim()} $targetUnit';
+                  final newDuration = '${durationAmountController.text.trim()} $selectedDurationUnit';
+                  Navigator.pop(context, {'target': newTarget, 'duration': newDuration});
+                },
+                child: const Text('Save'),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final newTarget = '${targetAmountController.text.trim()} $targetUnit';
-              final newDuration = '${durationAmountController.text.trim()} $selectedDurationUnit';
-              Navigator.pop(context, {'target': newTarget, 'duration': newDuration});
-            },
-            child: const Text('Save'),
-          ),
-        ],
+          );
+        }
       );
     },
   );

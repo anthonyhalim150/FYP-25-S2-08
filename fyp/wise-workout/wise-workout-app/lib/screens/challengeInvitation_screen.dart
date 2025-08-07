@@ -6,7 +6,8 @@ class Challenge {
   final String title;
   final String senderName;
   final String target;
-  final int duration; // in days
+  final int duration;
+  final String durationUnit;
   final int daysLeft;
 
   Challenge({
@@ -15,6 +16,7 @@ class Challenge {
     required this.senderName,
     required this.target,
     required this.duration,
+    this.durationUnit = 'days',
     this.daysLeft = 0,
   });
 }
@@ -52,8 +54,10 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
           id: data['id'],
           title: data['type'] ?? 'Challenge',
           senderName: data['senderName'] ?? 'Unknown',
-          target: data['value'] ?? '',
-          duration: int.tryParse(data['duration']?.toString() ?? '0') ?? 0,
+          target: data['custom_value'] ?? data['value'] ?? '',
+          duration: int.tryParse(data['custom_duration_value']?.toString() ?? '') ??
+                   int.tryParse(data['duration']?.toString() ?? '') ?? 0,
+          durationUnit: data['custom_duration_unit'] ?? 'days',
           daysLeft: 0,
         );
       }).toList();
@@ -63,8 +67,10 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
           id: data['id'],
           title: data['type'] ?? 'Challenge',
           senderName: data['senderName'] ?? 'Unknown',
-          target: data['value'] ?? '',
-          duration: int.tryParse(data['duration']?.toString() ?? '0') ?? 0,
+          target: data['custom_value'] ?? data['value'] ?? '',
+          duration: int.tryParse(data['custom_duration_value']?.toString() ?? '') ??
+                   int.tryParse(data['duration']?.toString() ?? '') ?? 0,
+          durationUnit: data['custom_duration_unit'] ?? 'days',
           daysLeft: int.tryParse(data['daysLeft']?.toString() ?? '0') ?? 0,
         );
       }).toList();
@@ -165,7 +171,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text('Target: ${challenge.target}'),
-              Text('Duration: ${challenge.duration} days'),
+              Text('Duration: ${challenge.duration} ${challenge.durationUnit}'),
               const SizedBox(height: 12),
               Row(
                 children: [

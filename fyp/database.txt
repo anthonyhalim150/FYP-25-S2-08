@@ -116,9 +116,10 @@ CREATE TABLE friends (
 -- challenge templates (what challenge can be issued)
 CREATE TABLE challenges (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  type VARCHAR(50) NOT NULL,
-  value VARCHAR(255) NOT NULL,
-  duration INT NOT NULL,
+  type VARCHAR(50) NOT NULL,         -- e.g., 'Push Up Challenge'
+  value INT NOT NULL,                -- e.g., 150
+  unit VARCHAR(32) NOT NULL,         -- e.g., 'Push Ups'
+  duration INT NOT NULL,             -- Default duration (in days/weeks/whatever you use)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -132,9 +133,9 @@ CREATE TABLE challenge_invites (
   accepted_at DATETIME DEFAULT NULL,
   expires_at DATETIME DEFAULT NULL,
   completed_at DATETIME DEFAULT NULL,
-  custom_value VARCHAR(255) DEFAULT NULL,            -- user-customized challenge goal (optional)
-  custom_duration_value INT DEFAULT NULL,            -- per-invite duration value (optional)
-  custom_duration_unit VARCHAR(16) DEFAULT NULL,     -- per-invite duration unit (optional)
+  custom_value INT DEFAULT NULL,           -- Custom target value, if set
+  custom_duration_value INT DEFAULT NULL,  -- Custom duration, if set
+  custom_duration_unit VARCHAR(16) DEFAULT NULL, -- e.g., 'days', 'weeks'
   FOREIGN KEY (challenge_id) REFERENCES challenges(id),
   FOREIGN KEY (sender_id) REFERENCES users(id),
   FOREIGN KEY (receiver_id) REFERENCES users(id)
@@ -418,8 +419,8 @@ INSERT INTO tournaments (title, description, startDate, endDate, features) VALUE
   '["Heavy Lifts", " Balance Tasks", "Flexibility Scoring"]'
 );
 
-INSERT INTO challenges (type, value, duration)
+INSERT INTO challenges (type, value, unit, duration)
 VALUES
-  ('Push Up Challenge', '150 Push Ups', 7),
-  ('Squat Challenge', '75 Squat', 3),
-  ('Jumping Jack Blitz', '100 jumping jacks', 5);
+  ('Push Up Challenge', 150, 'Push Ups', 7),
+  ('Squat Challenge', 75, 'Squats', 3),
+  ('Jumping Jack Blitz', 100, 'Jumping Jacks', 5);
