@@ -49,18 +49,87 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     }
   }
 
-  // Toggle between edit and view mode
-  void _toggleEditMode() {
+  void _toggleEditMode() async {
+    if (_isEditing && _hasChanges) {
+      // Save changes immediately when exiting edit mode
+      await _savePlanToDatabase();
+    }
     setState(() {
       _isEditing = !_isEditing;
-      if (!_isEditing && _hasChanges) {
-        // Show save confirmation dialog when exiting edit mode with changes
-        _showSaveConfirmationDialog();
-      }
     });
   }
 
-  // Show exercise selection dialog
+  Future<bool?> _showSaveConfirmationDialog() async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Save Changes'),
+          content: const Text('Do you want to save the changes to your workout plan?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Discard Changes'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+              child: const Text('Save Changes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _convertRestDayToExerciseDay(int dayIndex) {
+    setState(() {
+      final dayPlan = _plan[dayIndex + 1];
+      dayPlan['rest'] = false;
+      dayPlan['exercises'] = [];
+      _hasChanges = true;
+    });
+  }
+
+  void _convertToRestDay(int dayIndex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Convert to Rest Day'),
+          content: const Text('Are you sure you want to convert this day to a rest day? All exercises will be removed.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() {
+                  final dayPlan = _plan[dayIndex + 1];
+                  dayPlan['rest'] = true;
+                  dayPlan['exercises'] = [];
+                  _hasChanges = true;
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Day converted to rest day successfully!'),
+                    backgroundColor: Colors.blue,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              child: const Text('Convert to Rest Day'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _addExercise(int dayIndex) {
     if (_allExercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -71,6 +140,13 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       );
       return;
     }
+
+    // Convert rest day to exercise day if needed
+    final dayPlan = _plan[dayIndex + 1];
+    if (dayPlan['rest'] == true) {
+      _convertRestDayToExerciseDay(dayIndex);
+    }
+
     _showExerciseSelectionDialog(dayIndex);
   }
 
@@ -315,39 +391,12 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     );
   }
 
-  void _showSaveConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Save Changes'),
-          content: const Text('Do you want to save the changes to your workout plan?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                setState(() => _hasChanges = false);
-              },
-              child: const Text('Discard Changes'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _savePlanToDatabase();
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-              child: const Text('Save Changes'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
-  // Save plan to database
   Future<void> _savePlanToDatabase() async {
     try {
       setState(() => _loading = true);
+
+      _processEmptyExerciseDays();
 
       final workoutDays = _aiService.parsePlanToModels(_plan);
       final createdAt = DateTime.now().toIso8601String();
@@ -380,6 +429,19 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     }
   }
 
+  void _processEmptyExerciseDays() {
+    for (int i = 1; i < _plan.length; i++) { // Start from 1 to skip plan title
+      final dayPlan = _plan[i];
+      final exercises = dayPlan['exercises'] as List? ?? [];
+
+      // If day is not marked as rest but has no exercises, convert to rest day
+      if (dayPlan['rest'] != true && exercises.isEmpty) {
+        dayPlan['rest'] = true;
+        print('✅ Converted empty Day ${dayPlan['day'] ?? dayPlan['day_of_month']} to rest day');
+      }
+    }
+  }
+
   Widget _buildEditableExerciseCard(int dayIndex) {
     final dayPlan = _plan[dayIndex + 1];
     final isRest = dayPlan['rest'] == true;
@@ -407,17 +469,37 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                     color: Colors.orangeAccent,
                   ),
                 ),
-                if (_isEditing && !isRest)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                      onPressed: () => _addExercise(dayIndex),
-                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                    ),
+                if (_isEditing)
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.add, color: Colors.green, size: 20),
+                          onPressed: () => _addExercise(dayIndex),
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                          tooltip: isRest ? 'Convert to Exercise Day' : 'Add Exercise',
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Convert to rest day button (only show for exercise days with exercises)
+                      if (!isRest && exercises.isNotEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.orange[100],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.bed, color: Colors.orange, size: 20),
+                            onPressed: () => _convertToRestDay(dayIndex),
+                            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                            tooltip: 'Convert to Rest Day',
+                          ),
+                        ),
+                    ],
                   ),
               ],
             ),
@@ -431,14 +513,29 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  "🛌 Rest Day",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
+                child: Column(
+                  children: [
+                    const Text(
+                      "🛌 Rest Day",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueGrey,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (_isEditing) ...[
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Tap + to add exercises and convert to workout day",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ] else ...[
@@ -460,7 +557,34 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                         style: TextButton.styleFrom(foregroundColor: Colors.teal),
                         child: const Text('Add First Exercise'),
                       ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Empty days will be converted to rest days when saved',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
+                  ),
+                )
+              else if (exercises.isEmpty && !_isEditing)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "No exercises planned for this day",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 )
               else
@@ -598,9 +722,8 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (_hasChanges) {
-          _showSaveConfirmationDialog();
-          return false;
+        if (_hasChanges && _isEditing) {
+          await _savePlanToDatabase();
         }
         return true;
       },
@@ -611,25 +734,17 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
           foregroundColor: Colors.white,
           elevation: 0,
           actions: [
-            if (_hasChanges)
-              Container(
-                margin: const EdgeInsets.only(right: 8),
-                child: const Icon(Icons.circle, color: Colors.orange, size: 12),
-              ),
-
-            IconButton(
-              icon: Icon(_isEditing ? Icons.check : Icons.edit),
-              onPressed: _loadingExercises ? null : _toggleEditMode,
-              tooltip: _isEditing ? 'Finish Editing' : 'Edit Plan',
-            ),
-
-            if (_hasChanges && !_loading)
+              if (_hasChanges)
+                Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  child: const Icon(Icons.circle, color: Colors.orange, size: 12),
+                ),
               IconButton(
-                icon: const Icon(Icons.save),
-                onPressed: _savePlanToDatabase,
-                tooltip: 'Save Changes',
+                icon: Icon(_isEditing ? Icons.save : Icons.edit),
+                onPressed: _loadingExercises ? null : _toggleEditMode,
+                tooltip: _isEditing ? 'Save Changes' : 'Edit Plan',
               ),
-          ],
+            ],
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -751,7 +866,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            '${_allExercises.length} exercises available to add',
+                            '${_allExercises.length} exercises available • Empty days will become rest days when saved',
                             style: const TextStyle(color: Colors.teal),
                           ),
                         ),
