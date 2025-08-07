@@ -1,4 +1,3 @@
-// models/challengeModel.js
 const db = require('../config/db');
 
 const ChallengeModel = {
@@ -6,10 +5,10 @@ const ChallengeModel = {
     const [rows] = await db.execute('SELECT id, type, value, duration FROM challenges');
     return rows;
   },
-  // Get all pending challenge invites for a user
+
   getPendingInvites: async (userId) => {
     const [rows] = await db.execute(
-      `SELECT ci.id, c.type, c.value, c.duration, u.username as senderName
+      `SELECT ci.id, c.type, c.value, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit, u.username as senderName
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id
        JOIN users u ON ci.sender_id = u.id
@@ -19,11 +18,10 @@ const ChallengeModel = {
     return rows;
   },
 
-  // Get all accepted challenges for a user with daysLeft calculation
   getAcceptedChallenges: async (userId) => {
     const [rows] = await db.execute(
-      `SELECT ci.id, c.type, c.value, c.duration,
-              DATEDIFF(DATE_ADD(ci.updated_at, INTERVAL c.duration DAY), NOW()) AS daysLeft,
+      `SELECT ci.id, c.type, c.value, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit,
+              DATEDIFF(ci.expires_at, NOW()) AS daysLeft,
               u.username as senderName
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id
@@ -34,43 +32,53 @@ const ChallengeModel = {
     return rows;
   },
 
-  // Update the status of a challenge invite (accept or reject)
   updateInviteStatus: async (inviteId, status) => {
+    if (status === 'accepted') {
+      const [inviteRows] = await db.execute(
+        `SELECT ci.id, ci.custom_duration_value, ci.custom_duration_unit, c.duration
+         FROM challenge_invites ci
+         JOIN challenges c ON ci.challenge_id = c.id
+         WHERE ci.id = ?`,
+        [inviteId]
+      );
+      if (inviteRows.length === 0) throw new Error('Invite not found');
+      const invite = inviteRows[0];
+      const acceptedAt = new Date();
+      const durationToAdd = invite.custom_duration_value || invite.duration;
+      const expiresAt = new Date(acceptedAt.getTime() + durationToAdd * 24 * 60 * 60 * 1000);
+      const [result] = await db.execute(
+        'UPDATE challenge_invites SET status = ?, accepted_at = ?, expires_at = ? WHERE id = ?',
+        [status, acceptedAt, expiresAt, inviteId]
+      );
+      return result;
+    } else {
+      const [result] = await db.execute(
+        'UPDATE challenge_invites SET status = ? WHERE id = ?',
+        [status, inviteId]
+      );
+      return result;
+    }
+  },
+
+  createChallengeInvite: async (challengeId, senderId, receiverId, customValue, customDurationValue, customDurationUnit) => {
     const [result] = await db.execute(
-      'UPDATE challenge_invites SET status = ?, updated_at = NOW() WHERE id = ?',
-      [status, inviteId]
+      `INSERT INTO challenge_invites
+        (challenge_id, sender_id, receiver_id, custom_value, custom_duration_value, custom_duration_unit)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [challengeId, senderId, receiverId, customValue, customDurationValue, customDurationUnit]
     );
     return result;
   },
 
-  createChallengeAndInvite: async (senderId, receiverId, title, target, duration) => {
-    const connection = await db.getConnection();
-    try {
-      await connection.beginTransaction();
-
-      // Insert challenge into `challenges`
-      const [challengeResult] = await connection.execute(
-        'INSERT INTO challenges (type, value, duration) VALUES (?, ?, ?)',
-        [title, target, duration]
-      );
-
-      const challengeId = challengeResult.insertId;
-
-      // Insert into `challenge_invites`
-      const [inviteResult] = await connection.execute(
-        'INSERT INTO challenge_invites (challenge_id, sender_id, receiver_id) VALUES (?, ?, ?)',
-        [challengeId, senderId, receiverId]
-      );
-
-      await connection.commit();
-      return challengeId;
-    } catch (err) {
-      await connection.rollback();
-      throw err;
-    } finally {
-      connection.release();
-    }
+  findChallengeIdByTitle: async (title) => {
+    const [rows] = await db.execute(
+      'SELECT id FROM challenges WHERE type = ?',
+      [title]
+    );
+    if (rows.length === 0) throw new Error('Challenge template not found');
+    return rows[0].id;
   },
+
   getPremiumFriendsToChallenge: async (userId, title) => {
     const [rows] = await db.execute(
       `SELECT u.id, u.username, u.firstName, u.lastName, u.email, u.role,
@@ -95,8 +103,7 @@ const ChallengeModel = {
       [userId, userId, title]
     );
     return rows;
-  }  
-  
+  }
 };
 
 module.exports = ChallengeModel;

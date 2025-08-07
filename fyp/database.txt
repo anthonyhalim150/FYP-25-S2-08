@@ -122,7 +122,6 @@ CREATE TABLE challenges (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- challenge invites (instance between two users)
 CREATE TABLE challenge_invites (
   id INT AUTO_INCREMENT PRIMARY KEY,
   challenge_id INT NOT NULL,
@@ -133,12 +132,14 @@ CREATE TABLE challenge_invites (
   accepted_at DATETIME DEFAULT NULL,
   expires_at DATETIME DEFAULT NULL,
   completed_at DATETIME DEFAULT NULL,
+  custom_value VARCHAR(255) DEFAULT NULL,            -- user-customized challenge goal (optional)
+  custom_duration_value INT DEFAULT NULL,            -- per-invite duration value (optional)
+  custom_duration_unit VARCHAR(16) DEFAULT NULL,     -- per-invite duration unit (optional)
   FOREIGN KEY (challenge_id) REFERENCES challenges(id),
   FOREIGN KEY (sender_id) REFERENCES users(id),
   FOREIGN KEY (receiver_id) REFERENCES users(id)
 );
 
--- tracks receiver's progress on each invite
 CREATE TABLE challenge_progress (
   id INT AUTO_INCREMENT PRIMARY KEY,
   challenge_invite_id INT NOT NULL,

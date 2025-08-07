@@ -1,4 +1,3 @@
-// services/challengeService.js
 const ChallengeModel = require('../models/challengeModel');
 
 const ChallengeService = {
@@ -22,11 +21,12 @@ const ChallengeService = {
   },
 
   sendChallenge: async ({ senderId, receiverId, title, target, duration }) => {
-    return await ChallengeModel.createChallengeAndInvite(senderId, receiverId, title, target, duration);
+    const challengeId = await ChallengeModel.findChallengeIdByTitle(title);
+    return await ChallengeModel.createChallengeInvite(challengeId, senderId, receiverId, target, duration);
   },
   getFriendsToChallenge: async (userId, title) => {
     return await ChallengeModel.getPremiumFriendsToChallenge(userId, title);
-  } 
+  }
 };
 
 module.exports = ChallengeService;
