@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../services/fitnessai_service.dart';
 import '../../services/exercise_service.dart';
 import '../model/exercise_model.dart';
-import '../model/workout_day_model.dart';
 
 class WorkoutPlanScreen extends StatefulWidget {
   final List<dynamic> plan;
@@ -297,7 +296,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                     dayPlan['exercises'].removeAt(exerciseIndex);
                     _hasChanges = true;
 
-                    // Show success message
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('${removedExercise['name']} removed successfully!'),
@@ -317,7 +315,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     );
   }
 
-  // Show save confirmation dialog
   void _showSaveConfirmationDialog() {
     showDialog(
       context: context,
@@ -352,15 +349,14 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     try {
       setState(() => _loading = true);
 
-      // Convert the plan to WorkoutDay models
       final workoutDays = _aiService.parsePlanToModels(_plan);
+      final createdAt = DateTime.now().toIso8601String();
 
-      // Save to backend
-      await _aiService.savePlanToBackend(_planTitle, workoutDays);
+      await _aiService.savePlanToBackend(_planTitle, workoutDays, createdAt);
 
       setState(() {
         _hasChanges = false;
-        _isEditing = false; // Exit edit mode after saving
+        _isEditing = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -371,7 +367,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
         ),
       );
     } catch (e) {
-      print('❌ Error saving plan: $e');
+      print(' Error saving plan: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to save plan: ${e.toString()}'),
@@ -384,7 +380,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     }
   }
 
-  // Build individual exercise card with edit functionality
   Widget _buildEditableExerciseCard(int dayIndex) {
     final dayPlan = _plan[dayIndex + 1];
     final isRest = dayPlan['rest'] == true;
@@ -399,7 +394,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Day header with add button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -410,13 +404,13 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
-                    color: Colors.teal,
+                    color: Colors.orangeAccent,
                   ),
                 ),
                 if (_isEditing && !isRest)
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.teal,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
@@ -429,7 +423,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
             ),
             const SizedBox(height: 12),
 
-            // Rest day or exercises
             if (isRest) ...[
               Container(
                 width: double.infinity,
@@ -530,7 +523,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                 }).toList(),
             ],
 
-            // Notes section
             if (dayPlan['notes'] != null && dayPlan['notes'].toString().isNotEmpty)
               Container(
                 margin: const EdgeInsets.only(top: 12),
@@ -563,7 +555,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     );
   }
 
-  // Build the workout plan list
   Widget buildPlanList() {
     if (_plan.isEmpty || _plan.length <= 1) {
       return Expanded(
@@ -616,25 +607,22 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Workout Plan"),
-          backgroundColor: Colors.teal,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           foregroundColor: Colors.white,
           elevation: 0,
           actions: [
-            // Unsaved changes indicator
             if (_hasChanges)
               Container(
                 margin: const EdgeInsets.only(right: 8),
                 child: const Icon(Icons.circle, color: Colors.orange, size: 12),
               ),
 
-            // Edit toggle button
             IconButton(
               icon: Icon(_isEditing ? Icons.check : Icons.edit),
               onPressed: _loadingExercises ? null : _toggleEditMode,
               tooltip: _isEditing ? 'Finish Editing' : 'Edit Plan',
             ),
 
-            // Save button (only visible when there are changes)
             if (_hasChanges && !_loading)
               IconButton(
                 icon: const Icon(Icons.save),
@@ -648,7 +636,10 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.teal[50]!, Colors.white],
+              colors: [
+                Theme.of(context).scaffoldBackgroundColor,
+                Theme.of(context).scaffoldBackgroundColor,
+              ],
               stops: const [0.0, 0.3],
             ),
           ),
@@ -704,7 +695,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
-                          color: Colors.teal,
+                          color: Colors.orangeAccent,
                         ),
                       ),
                     ),
