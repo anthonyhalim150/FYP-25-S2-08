@@ -8,7 +8,7 @@ const ChallengeModel = {
 
   getPendingInvites: async (userId) => {
     const [rows] = await db.execute(
-      `SELECT ci.id, c.type, c.value, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit, u.username as senderName
+      `SELECT ci.id, c.type, c.value, c.unit, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit, u.username as senderName
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id
        JOIN users u ON ci.sender_id = u.id
@@ -20,7 +20,7 @@ const ChallengeModel = {
 
   getAcceptedChallenges: async (userId) => {
     const [rows] = await db.execute(
-      `SELECT ci.id, c.type, c.value, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit,
+      `SELECT ci.id, c.type, c.value, c.unit, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit,
               DATEDIFF(ci.expires_at, NOW()) AS daysLeft,
               u.username as senderName
        FROM challenge_invites ci
@@ -44,6 +44,7 @@ const ChallengeModel = {
       if (inviteRows.length === 0) throw new Error('Invite not found');
       const invite = inviteRows[0];
       const acceptedAt = new Date();
+      // TODO: handle custom_duration_unit (for now, still in days)
       const durationToAdd = invite.custom_duration_value || invite.duration;
       const expiresAt = new Date(acceptedAt.getTime() + durationToAdd * 24 * 60 * 60 * 1000);
       const [result] = await db.execute(
@@ -60,7 +61,14 @@ const ChallengeModel = {
     }
   },
 
-  createChallengeInvite: async (challengeId, senderId, receiverId, customValue, customDurationValue, customDurationUnit) => {
+  createChallengeInvite: async (
+    challengeId,
+    senderId,
+    receiverId,
+    customValue,
+    customDurationValue,
+    customDurationUnit
+  ) => {
     const [result] = await db.execute(
       `INSERT INTO challenge_invites
         (challenge_id, sender_id, receiver_id, custom_value, custom_duration_value, custom_duration_unit)

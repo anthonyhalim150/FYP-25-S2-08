@@ -5,7 +5,8 @@ class Challenge {
   final int id;
   final String title;
   final String senderName;
-  final String target;
+  final int target; // Always INT
+  final String unit; // Always present
   final int duration;
   final String durationUnit;
   final int daysLeft;
@@ -15,10 +16,13 @@ class Challenge {
     required this.title,
     required this.senderName,
     required this.target,
+    required this.unit,
     required this.duration,
     this.durationUnit = 'days',
     this.daysLeft = 0,
   });
+
+  String get targetDisplay => "$target $unit";
 }
 
 class ChallengeInvitationScreen extends StatefulWidget {
@@ -50,28 +54,38 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
       final acceptedData = await _challengeService.getAcceptedChallenges();
 
       List<Challenge> fetchedInvites = invitationsData.map<Challenge>((data) {
+        // Fallback to template if custom not set
+        final int target = data['custom_value'] ?? data['value'] ?? 0;
+        final String unit = data['unit'] ?? '';
+        final int duration = data['custom_duration_value'] ?? data['duration'] ?? 0;
+        final String durationUnit = data['custom_duration_unit'] ?? 'days';
         return Challenge(
           id: data['id'],
           title: data['type'] ?? 'Challenge',
           senderName: data['senderName'] ?? 'Unknown',
-          target: data['custom_value'] ?? data['value'] ?? '',
-          duration: int.tryParse(data['custom_duration_value']?.toString() ?? '') ??
-                   int.tryParse(data['duration']?.toString() ?? '') ?? 0,
-          durationUnit: data['custom_duration_unit'] ?? 'days',
+          target: target,
+          unit: unit,
+          duration: duration,
+          durationUnit: durationUnit,
           daysLeft: 0,
         );
       }).toList();
 
       List<Challenge> fetchedOngoing = acceptedData.map<Challenge>((data) {
+        final int target = data['custom_value'] ?? data['value'] ?? 0;
+        final String unit = data['unit'] ?? '';
+        final int duration = data['custom_duration_value'] ?? data['duration'] ?? 0;
+        final String durationUnit = data['custom_duration_unit'] ?? 'days';
+        final int daysLeft = data['daysLeft'] ?? 0;
         return Challenge(
           id: data['id'],
           title: data['type'] ?? 'Challenge',
           senderName: data['senderName'] ?? 'Unknown',
-          target: data['custom_value'] ?? data['value'] ?? '',
-          duration: int.tryParse(data['custom_duration_value']?.toString() ?? '') ??
-                   int.tryParse(data['duration']?.toString() ?? '') ?? 0,
-          durationUnit: data['custom_duration_unit'] ?? 'days',
-          daysLeft: int.tryParse(data['daysLeft']?.toString() ?? '0') ?? 0,
+          target: target,
+          unit: unit,
+          duration: duration,
+          durationUnit: durationUnit,
+          daysLeft: daysLeft,
         );
       }).toList();
 
@@ -170,7 +184,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
               Text('${challenge.senderName} invited you',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('Target: ${challenge.target}'),
+              Text('Target: ${challenge.targetDisplay}'),
               Text('Duration: ${challenge.duration} ${challenge.durationUnit}'),
               const SizedBox(height: 12),
               Row(
@@ -233,7 +247,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
             children: [
               Text(challenge.title, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('Target: ${challenge.target}'),
+              Text('Target: ${challenge.targetDisplay}'),
               Text('${challenge.daysLeft} days left'),
             ],
           ),

@@ -28,7 +28,7 @@ class ChallengeService {
   Future<void> sendChallenge({
     required int receiverId,
     required String title,
-    required String target,
+    required int customValue,
     int? customDurationValue,
     String? customDurationUnit,
   }) async {
@@ -36,14 +36,11 @@ class ChallengeService {
     final Map<String, dynamic> body = {
       'receiverId': receiverId,
       'title': title,
-      'target': target,
+      'customValue': customValue,
       'customDurationValue': customDurationValue,
       'customDurationUnit': customDurationUnit,
     };
     body.removeWhere((key, value) => value == null);
-    print(target);
-    print(customDurationValue);
-    print(customDurationUnit);
 
     final response = await http.post(
       Uri.parse('$baseUrl/challenges/send'),

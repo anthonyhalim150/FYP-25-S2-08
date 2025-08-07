@@ -33,29 +33,33 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
   }
 
   void editChallenge(int index, Map<String, dynamic> originalChallenge) async {
-    // Get current duration and unit from challenge (default to days if missing)
     String currentDurationValue = originalChallenge['duration']?.toString() ?? '';
     String currentDurationUnit = originalChallenge['duration_unit']?.toString() ?? 'days';
-    // For backward compat, parse from legacy string
-    final unitReg = RegExp(r'(days|weeks|months)');
     if (currentDurationValue.contains(' ')) {
       final parts = currentDurationValue.split(' ');
       currentDurationValue = parts[0];
       if (parts.length > 1) currentDurationUnit = parts[1];
     }
+    // Show edit dialog with value/unit separated
     final updated = await showEditChallengePopup(
       context,
-      originalChallenge['value'],
+      "${originalChallenge['value']} ${originalChallenge['unit']}", // Pass as "150 Push Ups"
       '$currentDurationValue $currentDurationUnit',
     );
     if (updated != null) {
       setState(() {
         if (editableChallenges != null && index < editableChallenges!.length) {
-          // Parse amount and unit from returned duration
           final durParts = updated['duration']?.split(' ') ?? [];
           final durValue = durParts.isNotEmpty ? int.tryParse(durParts[0]) : null;
           final durUnit = durParts.length > 1 ? durParts[1] : 'days';
-          editableChallenges![index]['value'] = updated['target'];
+
+          // Parse the new value/unit from the edited string
+          final targetParts = updated['target']?.split(' ') ?? [];
+          final targetValue = targetParts.isNotEmpty ? int.tryParse(targetParts[0]) ?? 0 : 0;
+          final targetUnit = targetParts.length > 1 ? targetParts.sublist(1).join(' ') : '';
+
+          editableChallenges![index]['value'] = targetValue;
+          editableChallenges![index]['unit'] = targetUnit;
           editableChallenges![index]['duration'] = durValue ?? editableChallenges![index]['duration'];
           editableChallenges![index]['duration_unit'] = durUnit;
         }
@@ -150,12 +154,12 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
             final unit = challenge['duration_unit'] ?? 'days';
             return ChallengeCard(
               title: challenge['type'],
-              target: challenge['value'],
+              target: "${challenge['value']} ${challenge['unit']}", // Always show as e.g. "150 Push Ups"
               duration: '${challenge['duration']} $unit',
               onInvite: () => showInviteFriendPopup(
                 context,
                 challenge['type'],
-                challenge['value'],
+                "${challenge['value']} ${challenge['unit']}",
                 '${challenge['duration']} $unit',
               ),
               onEdit: () => editChallenge(index, challenge),

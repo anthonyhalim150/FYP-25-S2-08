@@ -20,10 +20,18 @@ const ChallengeService = {
     return await ChallengeModel.updateInviteStatus(inviteId, 'rejected');
   },
 
-  sendChallenge: async ({ senderId, receiverId, title, target, duration }) => {
+  sendChallenge: async ({ senderId, receiverId, title, customValue, customDurationValue, customDurationUnit }) => {
     const challengeId = await ChallengeModel.findChallengeIdByTitle(title);
-    return await ChallengeModel.createChallengeInvite(challengeId, senderId, receiverId, target, duration);
+    return await ChallengeModel.createChallengeInvite(
+      challengeId,
+      senderId,
+      receiverId,
+      customValue,         
+      customDurationValue,     
+      customDurationUnit   
+    );
   },
+  
   getFriendsToChallenge: async (userId, title) => {
     return await ChallengeModel.getPremiumFriendsToChallenge(userId, title);
   }

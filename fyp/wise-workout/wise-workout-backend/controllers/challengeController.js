@@ -60,27 +60,28 @@ const ChallengeController = {
   sendChallenge: async (req, res) => {
     try {
       const senderId = req.user.id;
-      const { receiverId, title, target, duration } = req.body;
+      const { receiverId, title, customValue, customDurationValue, customDurationUnit } = req.body;
+  
 
-      // Validate
-      if (!receiverId || !title || !target || !duration) {
+      if (!receiverId || !title || customValue == null) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
-
+  
       const challengeId = await ChallengeService.sendChallenge({
         senderId,
         receiverId,
         title,
-        target,
-        duration
+        customValue,
+        customDurationValue,
+        customDurationUnit
       });
-
+  
       res.status(200).json({ message: 'Challenge sent', challengeId });
     } catch (err) {
       console.error('Error sending challenge:', err);
       res.status(500).json({ message: 'Error sending challenge', error: err.message });
     }
-  },
+  },  
   getFriendsToChallenge: async (req, res) => {
     try {
       const userId = req.user.id;

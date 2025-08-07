@@ -278,10 +278,13 @@ void showInviteFriendPopup(
                                   final customDurationValue = int.tryParse(durationParts[0]) ?? 0;
                                   final customDurationUnit = durationParts.length > 1 ? durationParts[1].toLowerCase() : 'days';
 
+                                  final targetParts = target.split(' ');
+                                  final customValue = int.tryParse(targetParts[0]) ?? 0;
+
                                   await challengeService.sendChallenge(
                                     receiverId: friend['id'],
                                     title: title,
-                                    target: target,
+                                    customValue: customValue,
                                     customDurationValue: customDurationValue,
                                     customDurationUnit: customDurationUnit,
                                   );
