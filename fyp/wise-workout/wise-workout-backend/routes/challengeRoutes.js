@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const ChallengeController = require('../controllers/challengeController');
 
+router.get('/list', ChallengeController.getAllChallenges);
 router.get('/invitations', ChallengeController.getInvitations);
 router.get('/accepted', ChallengeController.getAcceptedChallenges);
 router.post('/:id/accept', ChallengeController.acceptChallenge);

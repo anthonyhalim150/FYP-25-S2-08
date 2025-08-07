@@ -2,6 +2,9 @@
 const ChallengeModel = require('../models/challengeModel');
 
 const ChallengeService = {
+  getAllChallenges: async () => {
+    return await ChallengeModel.getAllChallenges();
+  },
   getInvitations: async (userId) => {
     return await ChallengeModel.getPendingInvites(userId);
   },

@@ -113,15 +113,16 @@ CREATE TABLE friends (
   FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- challenge templates (what challenge can be issued)
 CREATE TABLE challenges (
   id INT AUTO_INCREMENT PRIMARY KEY,
   type VARCHAR(50) NOT NULL,
   value VARCHAR(255) NOT NULL,
-  duration INT NOT NULL, -- in days
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  duration INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- challenge invites (instance between two users)
 CREATE TABLE challenge_invites (
   id INT AUTO_INCREMENT PRIMARY KEY,
   challenge_id INT NOT NULL,
@@ -129,11 +130,25 @@ CREATE TABLE challenge_invites (
   receiver_id INT NOT NULL,
   status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  accepted_at DATETIME DEFAULT NULL,
+  expires_at DATETIME DEFAULT NULL,
+  completed_at DATETIME DEFAULT NULL,
   FOREIGN KEY (challenge_id) REFERENCES challenges(id),
   FOREIGN KEY (sender_id) REFERENCES users(id),
   FOREIGN KEY (receiver_id) REFERENCES users(id)
 );
+
+-- tracks receiver's progress on each invite
+CREATE TABLE challenge_progress (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  challenge_invite_id INT NOT NULL,
+  user_id INT NOT NULL,
+  progress_value INT DEFAULT 0,
+  last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (challenge_invite_id) REFERENCES challenge_invites(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 
 CREATE TABLE badges (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -401,3 +416,9 @@ INSERT INTO tournaments (title, description, startDate, endDate, features) VALUE
   'Ends in 6 days',
   '["Heavy Lifts", " Balance Tasks", "Flexibility Scoring"]'
 );
+
+INSERT INTO challenges (type, value, duration)
+VALUES
+  ('Push Up Challenge', '150 Push Ups', 7),
+  ('Squat Challenge', '75 Squat', 3),
+  ('Jumping Jack Blitz', '100 jumping jacks', 5);

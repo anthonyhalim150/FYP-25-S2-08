@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/view_challenge_widget.dart';
-import '../widgets/view_tournament_widget.dart'; // contains TournamentCard AND showTournamentJoinPopup
+import '../widgets/view_tournament_widget.dart';
 import '../services/tournament_service.dart';
+import '../services/challenge_service.dart';
 
 class ViewChallengeTournamentScreen extends StatefulWidget {
   final bool isPremium;
@@ -13,17 +14,15 @@ class ViewChallengeTournamentScreen extends StatefulWidget {
 
 class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentScreen> {
   late Future<List<dynamic>> tournamentsFuture;
+  late Future<List<Map<String, dynamic>>> challengesFuture;
   final TournamentService _tournamentService = TournamentService();
-  late List<Map<String, String>> challenges;
+  final ChallengeService _challengeService = ChallengeService();
+  List<Map<String, dynamic>>? editableChallenges;
 
   @override
   void initState() {
     super.initState();
-    challenges = [
-      {'title': 'Push Up Challenge', 'target': '150 Push Ups', 'duration': '7 days'},
-      {'title': 'Squat Challenge', 'target': '75 Squat', 'duration': '3 days'},
-      {'title': 'Jumping Jack Blitz', 'target': '100 jumping jacks', 'duration': '5 days'},
-    ];
+    challengesFuture = _challengeService.getAllChallenges();
     tournamentsFuture = _tournamentService.getAllTournaments();
   }
 
@@ -33,16 +32,19 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
     });
   }
 
-  void editChallenge(int index) async {
+  void editChallenge(int index, Map<String, dynamic> originalChallenge) async {
     final updated = await showEditChallengePopup(
       context,
-      challenges[index]['target']!,
-      challenges[index]['duration']!,
+      originalChallenge['value'],
+      '${originalChallenge['duration']} days',
     );
     if (updated != null) {
       setState(() {
-        challenges[index]['target'] = updated['target']!;
-        challenges[index]['duration'] = updated['duration']!;
+        if (editableChallenges != null && index < editableChallenges!.length) {
+          editableChallenges![index]['value'] = updated['target'];
+          editableChallenges![index]['duration'] = int.tryParse(
+              RegExp(r'\d+').firstMatch(updated['duration'] ?? '')?.group(0) ?? '') ?? editableChallenges![index]['duration'];
+        }
       });
     }
   }
@@ -88,32 +90,59 @@ class _ViewChallengeTournamentScreenState extends State<ViewChallengeTournamentS
         body: TabBarView(
           children: widget.isPremium
               ? [
-            buildChallengeTab(context, challenges),
-            buildTournamentTab(context),
-          ]
+                  buildChallengeTab(context),
+                  buildTournamentTab(context),
+                ]
               : [buildTournamentTab(context)],
         ),
       ),
     );
   }
 
-  Widget buildChallengeTab(BuildContext context, List<Map<String, String>> challenges) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: challenges.length,
-      itemBuilder: (context, index) {
-        final challenge = challenges[index];
-        return ChallengeCard(
-          title: challenge['title']!,
-          target: challenge['target']!,
-          duration: challenge['duration']!,
-          onInvite: () => showInviteFriendPopup(
-            context,
-            challenge['title']!,
-            challenge['target']!,
-            challenge['duration']!,
-          ),
-          onEdit: () => editChallenge(index),
+  Widget buildChallengeTab(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: challengesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Failed to load challenges\n${snapshot.error}',
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+        List<Map<String, dynamic>> challenges = snapshot.data ?? [];
+        if (editableChallenges == null) {
+          // Make a deep copy for editing
+          editableChallenges = challenges.map((e) => Map<String, dynamic>.from(e)).toList();
+        }
+        if (editableChallenges!.isEmpty) {
+          return const Center(
+            child: Text('No challenges found.', style: TextStyle(color: Colors.white)),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: editableChallenges!.length,
+          itemBuilder: (context, index) {
+            final challenge = editableChallenges![index];
+            return ChallengeCard(
+              title: challenge['type'],
+              target: challenge['value'],
+              duration: '${challenge['duration']} days',
+              onInvite: () => showInviteFriendPopup(
+                context,
+                challenge['type'],
+                challenge['value'],
+                '${challenge['duration']} days',
+              ),
+              onEdit: () => editChallenge(index, challenge),
+            );
+          },
         );
       },
     );

@@ -117,7 +117,7 @@ void showInviteFriendPopup(
   final colorScheme = Theme.of(context).colorScheme;
   final textTheme = Theme.of(context).textTheme;
 
-  final friendService = FriendService();
+  final challengeService = ChallengeService();
   final Set<int> selectedIndices = {};
 
   showModalBottomSheet(
@@ -126,7 +126,7 @@ void showInviteFriendPopup(
     backgroundColor: Colors.transparent,
     builder: (BuildContext ctx) {
       return FutureBuilder<List<Map<String, dynamic>>>(
-        future: friendService.getFriendsToChallenge(title),
+        future: challengeService.getFriendsToChallenge(title),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

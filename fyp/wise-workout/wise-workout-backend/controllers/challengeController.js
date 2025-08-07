@@ -2,7 +2,14 @@
 const ChallengeService = require('../services/challengeService');
 
 const ChallengeController = {
-  // Get pending invites for the logged-in user
+  getAllChallenges: async (req, res) => {
+    try {
+      const challenges = await ChallengeService.getAllChallenges();
+      res.status(200).json(challenges);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching challenges', error: err.message });
+    }
+  },
   getInvitations: async (req, res) => {
     try {
       const userId = req.user.id;

@@ -133,19 +133,5 @@ class FriendService {
     final List<dynamic> data = jsonDecode(response.body);
     return List<Map<String, dynamic>>.from(data);
   }
-  Future<List<Map<String, dynamic>>> getFriendsToChallenge(String title) async {
-    final jwt = await _getJwtCookie();
-    final response = await http.get(
-      Uri.parse('$baseUrl/challenges/friends-to-challenge?title=${Uri.encodeComponent(title)}'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt',
-      },
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load friends to challenge');
-    }
-    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-  }
 
 }

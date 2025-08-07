@@ -2,6 +2,10 @@
 const db = require('../config/db');
 
 const ChallengeModel = {
+  getAllChallenges: async () => {
+    const [rows] = await db.execute('SELECT id, type, value, duration FROM challenges');
+    return rows;
+  },
   // Get all pending challenge invites for a user
   getPendingInvites: async (userId) => {
     const [rows] = await db.execute(
@@ -83,12 +87,15 @@ const ChallengeModel = {
            FROM challenge_invites ci
            JOIN challenges c ON ci.challenge_id = c.id
            WHERE ci.sender_id = ? AND c.type = ?
-             AND (ci.status = 'pending' OR (ci.status = 'accepted' AND DATEDIFF(DATE_ADD(ci.updated_at, INTERVAL c.duration DAY), NOW()) > 0))
+             AND (
+               ci.status = 'pending'
+               OR (ci.status = 'accepted' AND ci.expires_at > NOW())
+             )
          )`,
       [userId, userId, title]
     );
     return rows;
-  }
+  }  
   
 };
 

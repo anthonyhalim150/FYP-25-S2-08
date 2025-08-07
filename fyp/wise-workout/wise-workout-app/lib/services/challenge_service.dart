@@ -10,6 +10,21 @@ class ChallengeService {
     return await _storage.read(key: 'jwt_cookie');
   }
 
+  Future<List<Map<String, dynamic>>> getAllChallenges() async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/challenges/list'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load challenges');
+    }
+    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+  }
+
   Future<void> sendChallenge({
     required int receiverId,
     required String title,
@@ -91,5 +106,20 @@ class ChallengeService {
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['message']);
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getFriendsToChallenge(String title) async {
+    final jwt = await _getJwtCookie();
+    final response = await http.get(
+      Uri.parse('$baseUrl/challenges/friends-to-challenge?title=${Uri.encodeComponent(title)}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load friends to challenge');
+    }
+    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
   }
 }
