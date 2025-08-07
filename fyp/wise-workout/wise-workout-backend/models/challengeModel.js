@@ -44,9 +44,13 @@ const ChallengeModel = {
       if (inviteRows.length === 0) throw new Error('Invite not found');
       const invite = inviteRows[0];
       const acceptedAt = new Date();
-      // TODO: handle custom_duration_unit (for now, still in days)
-      const durationToAdd = invite.custom_duration_value || invite.duration;
-      const expiresAt = new Date(acceptedAt.getTime() + durationToAdd * 24 * 60 * 60 * 1000);
+      let durationValue = invite.custom_duration_value || invite.duration;
+      let unit = (invite.custom_duration_unit || 'days').toLowerCase();
+      let durationMs;
+      if (unit === 'weeks') durationMs = durationValue * 7 * 24 * 60 * 60 * 1000;
+      else if (unit === 'months') durationMs = durationValue * 30 * 24 * 60 * 60 * 1000;
+      else durationMs = durationValue * 24 * 60 * 60 * 1000;
+      const expiresAt = new Date(acceptedAt.getTime() + durationMs);
       const [result] = await db.execute(
         'UPDATE challenge_invites SET status = ?, accepted_at = ?, expires_at = ? WHERE id = ?',
         [status, acceptedAt, expiresAt, inviteId]
@@ -60,7 +64,6 @@ const ChallengeModel = {
       return result;
     }
   },
-
   createChallengeInvite: async (
     challengeId,
     senderId,
