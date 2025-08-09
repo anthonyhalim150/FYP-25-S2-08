@@ -37,6 +37,7 @@ const ChallengeService = {
       }
       await ChallengeInvitesModel.markInviteAccepted(inviteId, now, expiresAt);
       await ChallengeProgressModel.insertInitialProgress(inviteId, invite.receiver_id);
+      await ChallengeProgressModel.insertInitialProgress(inviteId, invite.sender_id);
       await conn.commit();
     } catch (e) {
       await conn.rollback();

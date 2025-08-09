@@ -14,27 +14,38 @@ const ChallengeInvitesModel = {
   },
   getAcceptedChallenges: async (userId) => {
     const [rows] = await db.execute(
-      `SELECT ci.id, c.type, c.value, c.unit, c.duration, ci.custom_value, ci.custom_duration_value, ci.custom_duration_unit,
-              DATEDIFF(ci.expires_at, NOW()) AS daysLeft,
-              u.username as senderName
+      `SELECT
+         ci.id,
+         c.type,
+         c.value,
+         c.unit,
+         c.duration,
+         ci.custom_value,
+         ci.custom_duration_value,
+         ci.custom_duration_unit,
+         GREATEST(0, DATEDIFF(ci.expires_at, NOW())) AS daysLeft,
+         CASE WHEN ci.sender_id = ? THEN r.username ELSE s.username END AS opponentName
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id
-       JOIN users u ON ci.sender_id = u.id
-       WHERE ci.receiver_id = ? AND ci.status = 'accepted'`,
-      [userId]
+       JOIN users s ON s.id = ci.sender_id
+       JOIN users r ON r.id = ci.receiver_id
+       WHERE (ci.receiver_id = ? OR ci.sender_id = ?)
+         AND ci.status = 'accepted'
+         AND (ci.expires_at IS NULL OR ci.expires_at > NOW())`,
+      [userId, userId, userId]
     );
     return rows;
-  },
+  },  
   getInviteForAcceptance: async (inviteId) => {
     const [rows] = await db.execute(
-      `SELECT ci.id, ci.receiver_id, ci.custom_duration_value, ci.custom_duration_unit, c.duration
+      `SELECT ci.id, ci.sender_id, ci.receiver_id, ci.custom_duration_value, ci.custom_duration_unit, c.duration
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id
        WHERE ci.id = ? FOR UPDATE`,
       [inviteId]
     );
     return rows[0] || null;
-  },
+  },  
   markInviteAccepted: async (inviteId, acceptedAt, expiresAt) => {
     const [r] = await db.execute(
       'UPDATE challenge_invites SET status = ?, accepted_at = ?, expires_at = ? WHERE id = ?',
