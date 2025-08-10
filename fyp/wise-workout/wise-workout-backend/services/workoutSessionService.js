@@ -4,27 +4,38 @@ const BadgeService = require('../services/badgeService');
 const DailyQuestModel = require('../models/dailyQuestModel');
 const ChallengeInvitesModel = require('../models/challengeInvitesModel');
 const ChallengeProgressModel = require('../models/challengeProgressModel');
+const TournamentModel = require('../models/tournamentModel');
 
 class WorkoutSessionService {
   static async saveWorkoutSession(sessionData, exerciseLogs) {
     try {
       const sessionId = await WorkoutSessionModel.createSession(sessionData);
+
       for (const exercise of exerciseLogs) {
         await ExerciseLogsModel.logExercise(sessionId, exercise);
       }
 
       const userId = sessionData.userId;
       const today = new Date().toISOString().slice(0, 10);
+
       await DailyQuestModel.markQuestDone(userId, 'ANY_WORKOUT', today);
 
       const sessionCount = await WorkoutSessionModel.countSessionsByUserId(userId);
       if (sessionCount >= 1) await BadgeService.grantBadge(userId, 1);
       if (sessionCount >= 10) await BadgeService.grantBadge(userId, 3);
       if (sessionCount >= 50) await BadgeService.grantBadge(userId, 10);
+
       const totalCalories = await WorkoutSessionModel.getTotalCaloriesBurnedByUserId(userId);
       if (totalCalories >= 1000) await BadgeService.grantBadge(userId, 4);
 
-      const lower = s => (s || '').toLowerCase();
+      const norm = s =>
+        (s || '')
+          .toString()
+          .toLowerCase()
+          .replace(/[-_]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
       const sumReps = arr => {
         if (!arr || !Array.isArray(arr)) return 0;
         let t = 0;
@@ -35,21 +46,30 @@ class WorkoutSessionService {
         return t;
       };
 
+      // compute reps for targeted exercises
       let pushUps = 0;
       let squats = 0;
       let jumpingJacks = 0;
+
       for (const ex of exerciseLogs || []) {
-        const name = lower(ex.exercise_name || ex.exerciseName);
+        const name = norm(ex.exercise_name || ex.exerciseName);
         const reps = sumReps(ex.sets_data || ex.setsData);
-        if (name.includes('push up')) pushUps += reps;
-        else if (name.includes('squat')) squats += reps;
-        else if (name.includes('jumping jack')) jumpingJacks += reps;
+
+        if (/push ?ups?/.test(name)) {
+          pushUps += reps; // push-up, pushup, push ups
+        } else if (/squats?/.test(name)) {
+          squats += reps; // squat, squats
+        } else if (/jump(ing)? ?jacks?/.test(name)) {
+          jumpingJacks += reps; // jumping jack(s)
+        }
       }
 
-      const invites = await ChallengeInvitesModel.getActiveAcceptedInvitesForUser(userId);
       const caloriesThisSession = Number(sessionData.caloriesBurned || 0);
+
+      // Update Challenges
+      const invites = await ChallengeInvitesModel.getActiveAcceptedInvitesForUser(userId);
       for (const inv of invites) {
-        const unit = lower(inv.unit);
+        const unit = norm(inv.unit);
         let delta = 0;
         if (unit.includes('push up')) delta = pushUps;
         else if (unit.includes('squat')) delta = squats;
@@ -57,6 +77,28 @@ class WorkoutSessionService {
         else if (unit.includes('calorie')) delta = Math.max(0, Math.round(caloriesThisSession));
         if (delta > 0) {
           await ChallengeProgressModel.incrementProgress(inv.invite_id, userId, delta);
+        }
+      }
+
+      // update only the mapped tournaments
+      const joined = await TournamentModel.getJoinedTournamentsByUser(userId);
+      for (const t of joined) {
+        const title = norm(t.title);
+        let delta = 0;
+
+        if (title.includes('ultimate warrior cup')) {
+          // Push-ups only
+          delta = pushUps;
+        } else if (title.includes('speed & agility showdown')) {
+          // Squats only
+          delta = squats;
+        } else if (title.includes('flex master tournament')) {
+          // Jumping jacks only
+          delta = jumpingJacks;
+        }
+
+        if (delta > 0) {
+          await TournamentModel.incrementTournamentProgress(t.tournament_id, userId, delta);
         }
       }
 

@@ -48,19 +48,38 @@ async function getTournamentParticipants(tournamentId) {
 
 // Insert a user into tournament_participants
 async function joinTournament(tournamentId, userId) {
-  // Check if already joined (avoid duplicate records)
   const [existing] = await db.query(
     'SELECT id FROM tournament_participants WHERE tournament_id = ? AND user_id = ?',
     [tournamentId, userId]
   );
   if (existing.length > 0) return { status: 'already_joined' };
 
-  // Insert new participant
   await db.query(
     'INSERT INTO tournament_participants (tournament_id, user_id, progress) VALUES (?, ?, 0)',
     [tournamentId, userId]
   );
   return { status: 'joined' };
+}
+
+// tournaments the user has joined (id + title)
+async function getJoinedTournamentsByUser(userId) {
+  const sql = `
+    SELECT t.id AS tournament_id, t.title
+    FROM tournaments t
+    INNER JOIN tournament_participants tp ON tp.tournament_id = t.id
+    WHERE tp.user_id = ?
+  `;
+  const [rows] = await db.execute(sql, [userId]);
+  return rows; // [{ tournament_id, title }, ...]
+}
+
+// Increment progress for a participant
+async function incrementTournamentProgress(tournamentId, userId, delta) {
+  const [r] = await db.execute(
+    'UPDATE tournament_participants SET progress = progress + ? WHERE tournament_id = ? AND user_id = ?',
+    [delta, tournamentId, userId]
+  );
+  return r;
 }
 
 module.exports = {
@@ -69,4 +88,6 @@ module.exports = {
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
   joinTournament,
+  getJoinedTournamentsByUser,     // NEW export
+  incrementTournamentProgress,
 };
