@@ -17,7 +17,7 @@ const ViewATournament = ({ tournament, onClose }) => {
         <button className="modal-close" onClick={onClose}>✕</button>
         <h2 className="pixel-font">{isEditing ? 'Edit Tournament' : 'View Tournament'}</h2>
 
-        <label>Title*</label>
+        <label>Title</label>
         {isEditing ? (
           <input
             type="text"
@@ -30,7 +30,7 @@ const ViewATournament = ({ tournament, onClose }) => {
           <p>{tournament.title}</p>
         )}
 
-       <label>Description*</label>
+       <label>Description</label>
       {isEditing ? (
         <textarea
           value={editedTournament.description}
@@ -43,7 +43,7 @@ const ViewATournament = ({ tournament, onClose }) => {
         <p>{tournament.description}</p>
       )}
 
-        <label>Date*</label>
+        <label>Date</label>
 
         <div className="date-group-row">
           <span>Start date</span>
@@ -97,7 +97,7 @@ const ViewATournament = ({ tournament, onClose }) => {
 
         <div className="form-row-2col">
           <div className="form-group-col">
-            <label>Workout Category*</label>
+            <label>Workout Category</label>
             {isEditing ? (
               <select
                 value={editedTournament.category}
@@ -117,7 +117,7 @@ const ViewATournament = ({ tournament, onClose }) => {
           </div>
 
           <div className="form-group-col">
-            <label>Reward*</label>
+            <label>Reward</label>
             {isEditing ? (
               <select
                 value={editedTournament.prize}

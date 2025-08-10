@@ -10,11 +10,11 @@ const dummyTournaments = [
   { id: 't004', number: 4, title: 'CoreClash', startDate: 'Jun 10, 2025', endDate: 'Jun 30, 2025', duration: '20 days', prize: 'Band', status: 'ongoing' },
   { id: 't005', number: 5, title: 'Stretch Surge', startDate: 'Jun 10, 2025', endDate: 'Jul 1, 2025', duration: '22 days', prize: 'Yoga Mat', status: 'ongoing' },
 ];
-
 const ViewAllTournaments = () => {
   const [selectedTournament, setSelectedTournament] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState('All');
+  const [isEditing, setIsEditing] = useState(false);
 
   const filteredTournaments = dummyTournaments.filter((t) => {
     const matchesSearch = t.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -27,7 +27,7 @@ const ViewAllTournaments = () => {
     <PageLayout>
       <div className="admin-container">
         <div className="user-content">
-         <div className="user-header-row">
+          <div className="user-header-row">
             <h2>All Tournaments</h2>
             <div className="header-row">
               <div className="search-bar-container">
@@ -42,7 +42,6 @@ const ViewAllTournaments = () => {
                   <img src="/icon-search.png" alt="Search" />
                 </button>
               </div>
-
             </div>
           </div>
 
@@ -92,7 +91,15 @@ const ViewAllTournaments = () => {
                     </span>
                   </td>
                   <td>
-                    <button className="edit-btn">Edit</button>
+                  <button
+                      className="edit-btn"
+                      onClick={() => {
+                        setSelectedTournament(tour);
+                        setIsEditing(false); // Change to false, so it's in "View" mode
+                      }}
+                    >
+                     View
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -105,6 +112,8 @@ const ViewAllTournaments = () => {
                 <ViewATournament
                   tournament={selectedTournament}
                   onClose={() => setSelectedTournament(null)}
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing} // Pass down the setter function
                 />
               </div>
             </div>

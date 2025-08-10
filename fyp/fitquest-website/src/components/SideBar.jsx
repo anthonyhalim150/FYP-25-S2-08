@@ -37,7 +37,7 @@ const SideBar = () => {
         </nav>
       </div>
 
-      {showLogoutConfirm && (
+     {showLogoutConfirm && (
         <div className="modal-overlay" onClick={() => setShowLogoutConfirm(false)}>
           <div className="logout-confirm-modal" onClick={(e) => e.stopPropagation()}>
             <p>Are you sure you want to logout?</p>
@@ -45,7 +45,7 @@ const SideBar = () => {
               <button className="cancel-btn" onClick={() => setShowLogoutConfirm(false)}>
                 Cancel
               </button>
-              <button className="logout-confirm-btn" onClick={handleLogout}>
+              <button className="suspend-btn" onClick={handleLogout}> {/* This matches the Cancel button styling */}
                 Logout
               </button>
             </div>

@@ -115,19 +115,6 @@ header nav a {
   max-width: 25px;
   max-height: 30px;
 }
-/* 
-.save-btn{
-  background-color: #ffd900;
-  color: rgb(0, 0, 0);
-  padding: 0.6rem 2.5rem;
-  font-size: 0.95rem;
-  border-radius: 30px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-} */
-
 
 .close-btn {
   margin-top: 1rem;
