@@ -74,12 +74,28 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                     ),
                   ),
                 ),
+                // My Workout Plans icon
+                IconButton(
+                  icon: Icon(
+                    Icons.list_alt_rounded,
+                    color: colorScheme.primary,
+                    size: 28,
+                  ),
+                  tooltip: tr('my_workout_plans_tooltip'), // add to localization
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/workout-plans-screen', // must be registered in routes
+                    );
+                  },
+                ),
+                // AI Fitness Plan sparkle icon
                 IconButton(
                   icon: Icon(
                     Icons.auto_awesome,
                     color: _isPremiumUser
-                        ? colorScheme.primary // normal for premium
-                        : colorScheme.primary.withOpacity(0.45), // translucent for non-premium
+                        ? colorScheme.primary
+                        : colorScheme.primary.withOpacity(0.45),
                     size: 28,
                   ),
                   tooltip: tr('ai_fitness_plan_tooltip'),

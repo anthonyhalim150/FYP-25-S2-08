@@ -47,6 +47,7 @@ import 'screens/workout/exercise_log_page.dart';
 import 'screens/workout/daily_summary_page.dart';
 import 'screens/workout/weekly_monthly_summary.dart';
 import 'screens/workout/fitness_plan_calendar.dart';
+import 'screens/workout/workout_plans_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -131,6 +132,7 @@ class WiseWorkoutApp extends StatelessWidget {
         '/dailySummary': (context) => const DailySummaryPage(),
         '/weekly-monthly-summary': (context) => const WeeklyMonthlySummaryPage(),
         '/calendar': (context) => const CalendarPlanScreen(),
+        '/workout-plans-screen': (context) => const WorkoutPlansScreen(),
       },
         onGenerateRoute: (settings) {
           if (settings.name == '/workout-list-page') {

@@ -252,6 +252,24 @@ CREATE TABLE workout_plans (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE user_workout_plan (
+  plan_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  plan_title VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE user_workout_plan_items (
+  item_id INT AUTO_INCREMENT PRIMARY KEY,
+  plan_id INT NOT NULL,
+  exercise_name VARCHAR(255) NOT NULL,
+  exercise_reps INT DEFAULT NULL,
+  exercise_sets INT DEFAULT NULL,
+  exercise_duration INT DEFAULT NULL,
+  FOREIGN KEY (plan_id) REFERENCES user_workout_plan(plan_id) ON DELETE CASCADE
+);
+
 CREATE TABLE tournaments (
   id INT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(255) NOT NULL,
