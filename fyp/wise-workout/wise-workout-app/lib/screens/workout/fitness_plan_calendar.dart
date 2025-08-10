@@ -19,7 +19,7 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
   DateTime _currentMonth = DateTime.now();
   DateTime? _selectedDate;
   Map<String, dynamic>? _selectedDayData;
-  DateTime? _planStartDate; // Track the plan's start date separately
+  DateTime? _planStartDate;
 
   @override
   void initState() {
@@ -45,7 +45,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
           daysList = daysList.isNotEmpty ? jsonDecode(daysList) as List : [];
         }
 
-        // Parse the created_at date
         final createdAtString = firstPlan['created_at'];
         try {
           _planStartDate = DateTime.parse(createdAtString);
@@ -57,14 +56,12 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
       setState(() {
         _days = daysList ?? [];
 
-        // Attach real dates to each plan day based on the plan's start date
         if (_planStartDate != null) {
           for (int i = 0; i < _days.length; i++) {
             _days[i]['calendar_date'] = _planStartDate!.add(Duration(days: i));
           }
         }
 
-        // Select today's plan day if available, or first available
         final today = DateTime.now();
         final planTodayIdx = _days.indexWhere(
               (d) =>
@@ -83,7 +80,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
           _selectedDayData = null;
         }
 
-        // Set current month to the month of the selected date or plan start date
         _currentMonth = _selectedDate ?? _planStartDate ?? DateTime.now();
         _currentMonth = DateTime(_currentMonth.year, _currentMonth.month);
       });
@@ -149,7 +145,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
           ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
           : Column(
         children: [
-          // Month navigation header
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -161,7 +156,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    // Optionally: add month picker here
                   },
                   child: Text(
                     DateFormat.yMMMM().format(_currentMonth),
@@ -178,7 +172,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
               ],
             ),
           ),
-          // Days of week
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -190,7 +183,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
                   .toList(),
             ),
           ),
-          // Calendar grid
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -279,7 +271,6 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
               ),
             ),
           ),
-          // Activities for selected day
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),

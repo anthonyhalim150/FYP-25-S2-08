@@ -108,7 +108,6 @@ class _WorkoutListPageState extends State<WorkoutListPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Search Bar
                       TextField(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),

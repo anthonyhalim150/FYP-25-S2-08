@@ -133,7 +133,6 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
             future: _exercisesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                // USING THEMED COLOR
                 return Center(
                   child: CircularProgressIndicator(
                     color: colorScheme.primary,

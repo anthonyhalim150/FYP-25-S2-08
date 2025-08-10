@@ -24,7 +24,7 @@ class _WorkoutSummaryPageState extends State<WorkoutSummaryPage> {
         title: const Text("Summary", style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
-            onPressed: () {}, // TODO: implement calendar picker
+            onPressed: () {},
             icon: const Icon(Icons.calendar_today, color: Colors.black),
           )
         ],
@@ -33,7 +33,6 @@ class _WorkoutSummaryPageState extends State<WorkoutSummaryPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            /// 🟨 Tab Toggle (Daily, Weekly, Monthly)
             Container(
               height: 40,
               decoration: BoxDecoration(
@@ -70,7 +69,6 @@ class _WorkoutSummaryPageState extends State<WorkoutSummaryPage> {
 
             const SizedBox(height: 16),
 
-            /// 📅 Date Range (can be dynamic)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -84,7 +82,6 @@ class _WorkoutSummaryPageState extends State<WorkoutSummaryPage> {
 
             const SizedBox(height: 16),
 
-            /// 📊 Summary Cards (replace with real charts later)
             _buildSummaryCard(
               icon: Icons.directions_walk,
               title: "Steps",
@@ -150,7 +147,7 @@ class _WorkoutSummaryPageState extends State<WorkoutSummaryPage> {
           const SizedBox(height: 12),
           Container(
             height: 100,
-            color: Colors.grey[100], // Placeholder for chart
+            color: Colors.grey[100],
             alignment: Alignment.center,
             child: Text("Insert ${title.toLowerCase()} chart here", style: const TextStyle(color: Colors.grey)),
           )

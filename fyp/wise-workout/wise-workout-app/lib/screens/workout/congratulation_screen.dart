@@ -19,7 +19,6 @@ class _CongratulationScreenState extends State<CongratulationScreen> {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     _confettiController.play();
-    // Auto-navigate after delay
     Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         Navigator.pushReplacementNamed(

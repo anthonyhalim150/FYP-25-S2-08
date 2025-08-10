@@ -119,7 +119,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             Navigator.pushNamed(
               context,
               '/exercise-log',
-              arguments: widget.exercise, // pass Exercise object
+              arguments: widget.exercise,
             );
           },
           icon: const Icon(Icons.photo_camera),
@@ -199,7 +199,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         fontWeight: FontWeight.bold,
         decoration: TextDecoration.underline,
         fontSize: 16,
-        // No color override here!
       ),
     );
   }

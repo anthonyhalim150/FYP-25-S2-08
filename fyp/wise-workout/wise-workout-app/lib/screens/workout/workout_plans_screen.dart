@@ -383,7 +383,7 @@ class _PlanItemsSheetState extends State<_PlanItemsSheet> {
                         : () {
                       final exerciseNames = _items.map((e) => e.exerciseName).toList();
 
-                      Navigator.pop(context); // close the sheet first
+                      Navigator.pop(context);
                       Navigator.pushNamed(
                         context,
                         '/workout-plan-exercise-list',

@@ -5,8 +5,8 @@ class WorkoutPlan {
   final int userId;
   final String planTitle;
   final DateTime? createdAt;
-  final int? itemsCount; // list endpoint
-  final List<WorkoutPlanItem>? items; // detail endpoint
+  final int? itemsCount;
+  final List<WorkoutPlanItem>? items;
 
   WorkoutPlan({
     required this.planId,

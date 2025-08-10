@@ -37,7 +37,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Only save once when the widget is first built
     if (!_hasSaved) {
       _hasSaved = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -132,10 +131,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         exercises: formattedExercises,
       );
 
-      // Optional toast/log
-      // print('✅ Workout session saved successfully to database');
     } catch (e) {
-      // print('❌ Error saving workout session: $e');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -309,7 +305,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              // Header
               Row(
                 children: [
                   IconButton(
@@ -327,7 +322,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               ),
               const SizedBox(height: 16),
 
-              // Workout Name + Date + Icon
               Row(
                 children: [
                   CircleAvatar(
@@ -357,7 +351,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               ),
               const SizedBox(height: 24),
 
-              // Top Summary Cards
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -366,12 +359,11 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                   _summaryCard(context, Icons.local_fire_department,
                       '${calories.toStringAsFixed(0)} kcal', 'Calories'),
                   _summaryCard(context, Icons.fitness_center, 'Advanced',
-                      'Intensity'), // placeholder
+                      'Intensity'),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Detailed Stats
               _statsSection(context, [
                 _statRow(
                   context,
@@ -396,7 +388,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               ]),
               const SizedBox(height: 24),
 
-              // Session Notes
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -415,7 +406,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               ),
               const SizedBox(height: 24),
 
-              // Exercises performed
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -458,7 +448,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                 ),
               ),
 
-              // Share button
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: ElevatedButton.icon(

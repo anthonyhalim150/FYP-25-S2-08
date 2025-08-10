@@ -262,7 +262,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       currentValue: "$_totalSteps",
                       avgValue: "$_averageSteps",
                       barColor: colorScheme.primary,
-                      maxY: _calculateAdaptiveMaxY(_stepsData, 10000), // <-- adaptive
+                      maxY: _calculateAdaptiveMaxY(_stepsData, 10000),
                       data: _stepsData,
                     ),
                     const SizedBox(height: 20),
@@ -272,7 +272,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       currentValue: "$_totalCalories kcal",
                       avgValue: "$_averageCalories kcal",
                       barColor: colorScheme.secondary,
-                      maxY: _calculateAdaptiveMaxY(_caloriesData, 300, step: 100, maxCap: 2000), // <-- adaptive for calories
+                      maxY: _calculateAdaptiveMaxY(_caloriesData, 300, step: 100, maxCap: 2000),
                       data: _caloriesData,
                     ),
                   ],

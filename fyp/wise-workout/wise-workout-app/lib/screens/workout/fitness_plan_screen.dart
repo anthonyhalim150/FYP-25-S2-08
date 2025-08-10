@@ -35,7 +35,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     });
 
     try {
-      final prefs = await _aiService.fetchPreferencesOnly(); // or UserPreferencesService
+      final prefs = await _aiService.fetchPreferencesOnly();
       setState(() {
         _preferences = prefs;
       });
@@ -114,7 +114,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                     if (updatedPrefs != null) {
                       setState(() {
                         _preferences = updatedPrefs;
-                        _plan = null; // Clear existing plan if any, since preferences changed
+                        _plan = null;
                       });
                     }
                   },
@@ -283,7 +283,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.calendar_today), // <- Calendar Icon
+            icon: const Icon(Icons.calendar_today),
             tooltip: "View Calendar",
             onPressed: () {
               Navigator.pushNamed(context, '/calendar');
@@ -352,7 +352,6 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                               );
                             }).toList();
 
-                            // Simulate saving the plan to backend or local storage
                             await _aiService.savePlanToBackend(planTitle, workoutDays);
 
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -360,7 +359,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                             );
 
                             setState(() {
-                              _isPlanSaved = true;  // Set flag to show edit button
+                              _isPlanSaved = true;
                             });
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -377,11 +376,10 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                           icon: const Icon(Icons.edit),
                           label: const Text('Edit Plan'),
                           onPressed: () {
-                            // Navigate to the WorkoutPlanScreen and pass the plan data
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => WorkoutPlanScreen(plan: _plan!),  // Pass the plan to the WorkoutPlanScreen
+                                builder: (context) => WorkoutPlanScreen(plan: _plan!),
                               ),
                             );
                           },

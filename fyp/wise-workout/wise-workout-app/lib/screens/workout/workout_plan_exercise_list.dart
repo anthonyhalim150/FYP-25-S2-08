@@ -98,7 +98,7 @@ class _WorkoutPlanExerciseListState extends State<WorkoutPlanExerciseList> {
     final workoutResult = {
       'workout': {
         'workoutId': null,
-        'workoutName': widget.planTitle, // ← use planTitle here
+        'workoutName': widget.planTitle,
       },
       'exercises': exercises,
       'duration': duration,
@@ -126,8 +126,6 @@ class _WorkoutPlanExerciseListState extends State<WorkoutPlanExerciseList> {
     );
 
     if (confirm == true) {
-      // optional: stop() if your service exposes it
-      // _sessionService.stop();
       _sessionService.clearSession();
 
       await Navigator.pushReplacement(

@@ -241,7 +241,6 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                             ),
                           ),
                         ),
-                        // -- UNIFIED ACTION COLUMN --
                         Center(
                           child: SizedBox(
                             height: 40,
@@ -309,7 +308,6 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                             ),
                           ),
                         ),
-                        // -- END ACTION COLUMN --
                       ],
                     ),
                 ],

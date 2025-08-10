@@ -36,7 +36,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     _fetchAllExercises();
   }
 
-  // Fetch all exercises from database
   Future<void> _fetchAllExercises() async {
     try {
       setState(() => _loadingExercises = true);
@@ -52,7 +51,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
 
   void _toggleEditMode() async {
     if (_isEditing && _hasChanges) {
-      // Save changes immediately when exiting edit mode
       await _savePlanToDatabase();
     }
     setState(() {
@@ -175,7 +173,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                         ),
                       ],
                     ),
-                    // Search bar
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: TextField(
@@ -196,7 +193,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                         },
                       ),
                     ),
-                    // Exercise list
                     Expanded(
                       child: filteredExercises.isEmpty
                           ? const Center(
@@ -320,12 +316,11 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
 
   void _addExerciseToDay(int dayIndex, Exercise exercise, int sets, int reps) {
     setState(() {
-      final dayPlan = _plan[dayIndex + 1]; // +1 because first item is plan title
+      final dayPlan = _plan[dayIndex + 1];
       if (dayPlan['exercises'] == null) {
         dayPlan['exercises'] = [];
       }
 
-      // Add the new exercise
       dayPlan['exercises'].add({
         'name': exercise.exerciseName,
         'sets': sets,
@@ -336,7 +331,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
       _hasChanges = true;
     });
 
-    // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${exercise.exerciseName} added successfully!'),
@@ -426,7 +420,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
   }
 
   void _processEmptyExerciseDays() {
-    for (int i = 1; i < _plan.length; i++) { // Start from 1 to skip plan title
+    for (int i = 1; i < _plan.length; i++) {
       final dayPlan = _plan[i];
       final exercises = dayPlan['exercises'] as List? ?? [];
 
@@ -480,7 +474,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Convert to rest day button (only show for exercise days with exercises)
                       if (!isRest && exercises.isNotEmpty)
                         Container(
                           decoration: BoxDecoration(
@@ -844,7 +837,6 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
 
                 const SizedBox(height: 16),
 
-                // Exercise info for editing mode
                 if (_isEditing && _allExercises.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.all(12),

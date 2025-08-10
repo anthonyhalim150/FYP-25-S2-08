@@ -22,12 +22,12 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
   int _xpEarned = 0;
   DateTime _selectedDate = DateTime.now();
 
-  bool _isPremiumUser = false; // ✅ premium flag
+  bool _isPremiumUser = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchProfile(); // ✅ fetch premium
+    _fetchProfile();
     _initHealthData(_selectedDate);
   }
 

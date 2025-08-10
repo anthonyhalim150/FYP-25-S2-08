@@ -33,11 +33,8 @@ class _ExerciseVideoTutorialState extends State<ExerciseVideoTutorial> {
     );
 
 
-    // Manually load the video after controller creation
     _controller.loadVideoById(videoId: _videoId);
   }
-
-
 
   String _extractYoutubeVideoId(String url) {
     final uri = Uri.tryParse(url);
@@ -48,7 +45,6 @@ class _ExerciseVideoTutorialState extends State<ExerciseVideoTutorial> {
     } else if (uri.host.contains('youtu.be')) {
       return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
     }
-
     return '';
   }
 
@@ -96,12 +92,11 @@ class _ExerciseVideoTutorialState extends State<ExerciseVideoTutorial> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 48), // Placeholder for alignment
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),
 
-              // YouTube Player Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: AspectRatio(
@@ -114,7 +109,6 @@ class _ExerciseVideoTutorialState extends State<ExerciseVideoTutorial> {
 
               const SizedBox(height: 16),
 
-              // Description and Instructions
               Expanded(
                 child: Container(
                   width: double.infinity,

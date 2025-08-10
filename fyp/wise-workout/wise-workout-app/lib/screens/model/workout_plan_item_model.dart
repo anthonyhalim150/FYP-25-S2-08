@@ -4,7 +4,7 @@ class WorkoutPlanItem {
   final String exerciseName;
   final int? exerciseReps;
   final int? exerciseSets;
-  final int? exerciseDuration; // seconds (optional)
+  final int? exerciseDuration;
 
   WorkoutPlanItem({
     this.itemId,

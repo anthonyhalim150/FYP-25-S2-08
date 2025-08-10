@@ -50,10 +50,9 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          // Custom header (no shadow, just margin/padding)
           Container(
             padding: const EdgeInsets.only(
-              top: 32, // Adjust for status bar if needed
+              top: 32,
               left: 8,
               right: 8,
               bottom: 10,
@@ -74,22 +73,29 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                     ),
                   ),
                 ),
-                // My Workout Plans icon
                 IconButton(
                   icon: Icon(
                     Icons.list_alt_rounded,
-                    color: colorScheme.primary,
+                    color: _isPremiumUser
+                        ? colorScheme.primary
+                        : colorScheme.primary.withOpacity(0.45),
                     size: 28,
                   ),
-                  tooltip: tr('my_workout_plans_tooltip'), // add to localization
+                  tooltip: tr('my_workout_plans_tooltip'),
                   onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/workout-plans-screen', // must be registered in routes
-                    );
+                    if (_isPremiumUser) {
+                      Navigator.pushNamed(
+                        context,
+                        '/workout-plans-screen',
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BuyPremiumScreen()),
+                      );
+                    }
                   },
                 ),
-                // AI Fitness Plan sparkle icon
                 IconButton(
                   icon: Icon(
                     Icons.auto_awesome,
@@ -116,7 +122,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
               ],
             ),
           ),
-          // Filter Buttons
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: FutureBuilder<List<WorkoutCategory>>(
@@ -197,7 +202,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
               },
             ),
           ),
-          // Category List
           Expanded(
             child: FutureBuilder<List<WorkoutCategory>>(
               future: _categoryFuture,
