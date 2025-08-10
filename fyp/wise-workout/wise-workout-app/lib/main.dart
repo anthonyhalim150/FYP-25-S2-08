@@ -48,6 +48,7 @@ import 'screens/workout/daily_summary_page.dart';
 import 'screens/workout/weekly_monthly_summary.dart';
 import 'screens/workout/fitness_plan_calendar.dart';
 import 'screens/workout/workout_plans_screen.dart';
+import 'screens/workout/workout_plan_exercise_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -140,6 +141,20 @@ class WiseWorkoutApp extends StatelessWidget {
             final categoryKey = args['categoryKey'];  // Extract categoryKey
             return MaterialPageRoute(
               builder: (_) => WorkoutListPage(categoryKey: categoryKey),
+            );
+          }
+          if (settings.name == '/workout-plan-exercise-list') {
+            final args = settings.arguments as Map<String, dynamic>;
+
+            final title = args['planTitle'] as String;
+            // 👇 pull from arguments and cast safely
+            final names = (args['exerciseNames'] as List).cast<String>();
+
+            return MaterialPageRoute(
+              builder: (_) => WorkoutPlanExerciseList(
+                planTitle: title,
+                exerciseNames: names, // ← this is the value you need here
+              ),
             );
           }
 

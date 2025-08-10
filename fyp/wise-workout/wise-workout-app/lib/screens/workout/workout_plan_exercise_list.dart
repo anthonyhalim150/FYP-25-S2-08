@@ -1,26 +1,28 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../model/exercise_model.dart';
 import '../../services/exercise_service.dart';
 import '../../services/workout_session_service.dart';
 import '../../widgets/exercise_tile.dart';
-import 'congratulation_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:async';
+import 'congratulation_screen.dart';
 
-class ExerciseListFromAIPage extends StatefulWidget {
+
+class WorkoutPlanExerciseList extends StatefulWidget {
+  final String planTitle;
   final List<String> exerciseNames;
-  final String dayLabel;
-  const ExerciseListFromAIPage({
+
+  const WorkoutPlanExerciseList({
     super.key,
+    required this.planTitle,
     required this.exerciseNames,
-    required this.dayLabel,
   });
 
   @override
-  State<ExerciseListFromAIPage> createState() => _ExerciseListFromAIPageState();
+  State<WorkoutPlanExerciseList> createState() => _WorkoutPlanExerciseListState();
 }
 
-class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
+class _WorkoutPlanExerciseListState extends State<WorkoutPlanExerciseList> {
   late Future<List<Exercise>> _exercisesFuture;
   final WorkoutSessionService _sessionService = WorkoutSessionService();
 
@@ -41,7 +43,7 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
     });
 
     _isSessionActive = _sessionService.isActive &&
-        _sessionService.workoutName == widget.dayLabel;
+        _sessionService.workoutName == widget.planTitle;
 
     if (_isSessionActive) {
       _formattedTime = _formatDuration(_sessionService.elapsed);
@@ -55,7 +57,7 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
   }
 
   void _startWorkout() {
-    _sessionService.setWorkoutName(widget.dayLabel);
+    _sessionService.setWorkoutName(widget.planTitle);
 
     if (_sessionService.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -96,7 +98,7 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
     final workoutResult = {
       'workout': {
         'workoutId': null,
-        'workoutName': widget.dayLabel,
+        'workoutName': widget.planTitle, // ← use planTitle here
       },
       'exercises': exercises,
       'duration': duration,
@@ -124,7 +126,10 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
     );
 
     if (confirm == true) {
+      // optional: stop() if your service exposes it
+      // _sessionService.stop();
       _sessionService.clearSession();
+
       await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -135,6 +140,7 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
       setState(() => _isStopping = false);
     }
   }
+
 
   String _formatDuration(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
@@ -192,7 +198,7 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.dayLabel),
+        title: Text(widget.planTitle),
         centerTitle: true,
         actions: [
           if (_isSessionActive) _buildTimerWithStopButton(),
@@ -206,7 +212,7 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No exercises found."));
+            return Center(child: Text("No exercises found in ${widget.planTitle}"));
           }
           final exercises = snapshot.data!;
           return ListView.separated(

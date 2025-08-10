@@ -365,14 +365,38 @@ class _PlanItemsSheetState extends State<_PlanItemsSheet> {
                   ),
                 ),
             const SizedBox(height: 10),
-            Row(children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Close'),
+                  ),
                 ),
-              ),
-            ])
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text('Start workout'),
+                    onPressed: _items.isEmpty
+                        ? null
+                        : () {
+                      final exerciseNames = _items.map((e) => e.exerciseName).toList();
+
+                      Navigator.pop(context); // close the sheet first
+                      Navigator.pushNamed(
+                        context,
+                        '/workout-plan-exercise-list',
+                        arguments: {
+                          'planTitle': widget.title,
+                          'exerciseNames': exerciseNames,
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
