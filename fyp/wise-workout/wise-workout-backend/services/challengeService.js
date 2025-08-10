@@ -66,6 +66,9 @@ const ChallengeService = {
 
   getFriendsToChallenge: async (userId, title) => {
     return await ChallengeInvitesModel.getPremiumFriendsToChallenge(userId, title);
+  },
+  getLeaderboard: async (userId) => {
+    return await ChallengeModel.getLeaderboardsByUser(userId);
   }
 };
 

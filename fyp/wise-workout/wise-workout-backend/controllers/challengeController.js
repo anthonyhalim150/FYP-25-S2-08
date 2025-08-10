@@ -92,7 +92,16 @@ const ChallengeController = {
     } catch (err) {
       res.status(500).json({ message: 'Error fetching friends to challenge', error: err.message });
     }
-  }
+  },
+  getLeaderboard: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const leaderboard = await ChallengeService.getLeaderboard(userId); // now passes userId
+      res.status(200).json(leaderboard);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching leaderboard', error: err.message });
+    }
+  }  
 };
 
 module.exports = ChallengeController;

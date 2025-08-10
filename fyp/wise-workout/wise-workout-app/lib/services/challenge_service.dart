@@ -127,4 +127,15 @@ class ChallengeService {
     }
     return List<Map<String, dynamic>>.from(jsonDecode(response.body));
   }
+  Future<List<Map<String, dynamic>>> getLeaderboard() async {
+    final jwt = await _getJwtCookie();
+    final r = await http.get(
+      Uri.parse('$baseUrl/challenges/leaderboard'),
+      headers: {'Content-Type': 'application/json', 'Cookie': 'session=$jwt'},
+    );
+    if (r.statusCode != 200) {
+      throw Exception('Failed to load leaderboard');
+    }
+    return List<Map<String, dynamic>>.from(jsonDecode(r.body));
+  }
 }
