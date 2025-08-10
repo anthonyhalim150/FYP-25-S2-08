@@ -36,6 +36,18 @@ const ChallengeInvitesModel = {
     );
     return rows;
   },  
+  getActiveAcceptedInvitesForUser: async (userId) => {//This is a more minimal ver, so not all the fields are fetched.
+    const [rows] = await db.execute(
+      `SELECT ci.id AS invite_id, c.type, c.unit
+       FROM challenge_invites ci
+       JOIN challenges c ON c.id = ci.challenge_id
+       WHERE (ci.receiver_id = ? OR ci.sender_id = ?)
+         AND ci.status = 'accepted'
+         AND (ci.expires_at IS NULL OR ci.expires_at > NOW())`,
+      [userId, userId]
+    );
+    return rows;
+  },  
   getInviteForAcceptance: async (inviteId) => {
     const [rows] = await db.execute(
       `SELECT ci.id, ci.sender_id, ci.receiver_id, ci.custom_duration_value, ci.custom_duration_unit, c.duration
