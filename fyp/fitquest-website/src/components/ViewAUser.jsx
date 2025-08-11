@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import '../styles/Styles.css';
 
-// Fetch feedback data from the backend API
 const fetchFeedback = async (userId) => {
   const response = await fetch(`/api/feedbacks?user_id=${userId}`);
   const data = await response.json();
@@ -14,22 +13,16 @@ const ViewAUser = ({ user, onClose }) => {
   const [editedUser, setEditedUser] = useState({ ...user });
   const [feedbackData, setFeedbackData] = useState(null);
 
-  const avatarFolder = user?.role === 'premium' ? 'premium' : 'free';
-  const avatarId = user?.avatar_id || 1;
-  const avatarPath = `/${avatarFolder}/${avatarFolder}${avatarId}.png`;
-
-  const bgId = user?.background_id || 1;
-  const defaultBgPath = `/background/bg${bgId}.jpg`;
-  const fallbackBgPath = `/background/bg${bgId}.png`;
-  const [bgPath, setBgPath] = useState(defaultBgPath);
+  const avatarPath = user?.avatar_url ? `/${user.avatar_url}` : '/assets/avatars/free/free1.png';
+  const [bgPath, setBgPath] = useState(user?.background_url ? `/${user.background_url}` : '/assets/background/bg1.jpg');
 
   useEffect(() => {
     const getFeedback = async () => {
-      const feedback = await fetchFeedback(user.id); // Fetch feedback by user ID
-      setFeedbackData(feedback); // Set the feedback data state
+      const feedback = await fetchFeedback(user.id);
+      setFeedbackData(feedback);
     };
     if (user) {
-      getFeedback(); // Fetch feedback when the user data is loaded
+      getFeedback();
     }
   }, [user]);
 
@@ -66,7 +59,7 @@ const ViewAUser = ({ user, onClose }) => {
     });
 
     if (result.isConfirmed) {
-      console.log('Saved user:', editedUser); // Replace with backend call
+      console.log('Saved user:', editedUser);
       setIsEditing(false);
 
       await Swal.fire({
@@ -80,7 +73,6 @@ const ViewAUser = ({ user, onClose }) => {
     }
   };
 
-  // Extract feedback likes and problems
   const likedFeatures = feedbackData?.liked_features ? JSON.parse(feedbackData.liked_features) : [];
   const problems = feedbackData?.problems ? JSON.parse(feedbackData.problems) : [];
 
@@ -89,23 +81,23 @@ const ViewAUser = ({ user, onClose }) => {
       <div
         className="modal-content user-modal-split"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundImage: `url(/backgrounds/bg${user.background_id || 1}.jpg)`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center'
-        }}
       >
         <button className="modal-close" onClick={onClose}>✕</button>
 
-        {/* Left Yellow Panel */}
         <div className="user-info-panel">
-          <img
-            src={bgPath}
-            onError={() => setBgPath(fallbackBgPath)}
-            style={{ display: 'none' }}
-            alt="background preload"
-          />
+          <div className="avatar-stack">
+            <div
+              className="avatar-bg"
+              style={{ backgroundImage: `url(${bgPath})` }}
+            />
+            <img
+              src={avatarPath}
+              onError={(e) => e.currentTarget.src = '/assets/avatars/free/free1.png'}
+              alt="User Avatar"
+              className="avatar-img"
+            />
+          </div>
+
           <h2>{user.username}</h2>
           <p><strong>First Name:</strong> {isEditing ? (
             <input
@@ -145,30 +137,28 @@ const ViewAUser = ({ user, onClose }) => {
               onChange={(e) => setEditedUser({ ...editedUser, level: e.target.value})} />
             ) : user.level}</p>
 
-        {isEditing ? (
-          <div className="button-row">
-            <button 
-            className="confirm-btn" 
-            onClick={handleSave}>Save</button>
-            <button
-              className="cancel-btn"
-              onClick={() => {
-                setEditedUser({ ...user });
-                setIsEditing(false);
-              }}>Cancel</button>
-          </div>
-        ) : (
-          <div className='button-row center'>
-          <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit</button>
-           <button className={user.isSuspended ? 'unsuspend-btn' : 'suspend-btn'}>
-              {user.isSuspended ? 'Unsuspend' : 'Suspend'}
-            </button>
-          </div>
-        )}
-
+          {isEditing ? (
+            <div className="button-row">
+              <button 
+              className="confirm-btn" 
+              onClick={handleSave}>Save</button>
+              <button
+                className="cancel-btn"
+                onClick={() => {
+                  setEditedUser({ ...user });
+                  setIsEditing(false);
+                }}>Cancel</button>
+            </div>
+          ) : (
+            <div className='button-row center'>
+              <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit</button>
+              <button className={user.isSuspended ? 'unsuspend-btn' : 'suspend-btn'}>
+                {user.isSuspended ? 'Unsuspend' : 'Suspend'}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Right Preferences Panel */}
         <div className="user-preferences-panel">
           <h3>User Preferences</h3>
           <ul>
@@ -180,7 +170,6 @@ const ViewAUser = ({ user, onClose }) => {
           </ul>
         </div>
 
-        {/* Feedback Section Below Rating */}
         <div className="feedback-section">
           <h3>What Users Liked</h3>
           {likedFeatures.length > 0 ? (
@@ -204,7 +193,6 @@ const ViewAUser = ({ user, onClose }) => {
             <p>No issues reported</p>
           )}
         </div>
-
       </div>
     </div>
   );

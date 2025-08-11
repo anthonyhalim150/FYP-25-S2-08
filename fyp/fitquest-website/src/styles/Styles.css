@@ -977,6 +977,36 @@ header nav a {
   object-fit: contain;
   margin-bottom: 1rem;
 }
+.avatar-stack {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin-bottom: 1rem;
+}
+
+.avatar-bg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.avatar-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px; /* slightly larger so less gap */
+  height: 120px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  border: none;
+  box-shadow: 0 0 8px rgba(0,0,0,0.15); /* soft fade edge */
+}
+
+
 
 /* Right Panel: Preferences */
 .user-preferences-panel {
