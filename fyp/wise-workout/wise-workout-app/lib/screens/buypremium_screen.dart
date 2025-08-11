@@ -253,7 +253,7 @@ class _BuyPremiumScreenState extends State<BuyPremiumScreen> {
                     ),
                   );
                 },
-                child: const Text("Start 7-day FREE Trial"),
+                child: const Text("Get Premium Now"),
               ),
             ),
             const SizedBox(height: 10),
