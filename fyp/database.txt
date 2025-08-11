@@ -362,19 +362,18 @@ INSERT INTO prizes (label, type, value) VALUES
 ('100 Tokens', 'tokens', 100),
 ('Nothing', 'none', 0);
 
-INSERT INTO badges (name, description, icon_url) VALUES
-('First Workout', 'Complete your first workout session to earn this badge.', 'assets/badges/badge_1.png'),
-('7-Day Streak', 'Login for 7 consecutive days to earn this badge.', 'assets/badges/badge_2.png'),
-('10 Workouts', 'Complete 10 workout sessions to earn this badge.', 'assets/badges/badge_3.png'),
-('1000 Calories Burned', 'Burn a total of 1000 calories to earn this badge.', 'assets/badges/badge_4.png'),
-('Lucky Starter', 'Complete your first spin to unlock this badge.', 'assets/badges/badge_5.png'),
-('Friend Maker', 'Add your first friend to earn this badge.', 'assets/badges/badge_6.png'),
-('Tournament Winner', 'Win your first tournament to earn this badge.', 'assets/badges/badge_7.png'),
-('Premium Champion', 'Upgrade to premium membership to earn this badge.', 'assets/badges/badge_8.png'),
-('Spin Beginner', 'Spin the lucky spin once to earn this badge.', 'assets/badges/badge_9.png'),
-('50 Workouts', 'Complete 50 workout sessions to earn this badge.', 'assets/badges/badge_10.png'),
-('Spin Champion', 'Spin the lucky spin 30 times to earn this badge.', 'assets/badges/badge_11.png'),
-('30-Day Streak', 'Login for 30 consecutive days to earn this badge.', 'assets/badges/badge_12.png');
+INSERT INTO badges (id, name, description, icon_url) VALUES
+(1, 'First Workout', 'Complete your first workout session to earn this badge.', 'assets/badges/badge_1.png'),
+(2, '7-Day Streak', 'Login for 7 consecutive days to earn this badge.', 'assets/badges/badge_2.png'),
+(3, '10 Workouts', 'Complete 10 workout sessions to earn this badge.', 'assets/badges/badge_3.png'),
+(4, '1000 Calories Burned', 'Burn a total of 1000 calories to earn this badge.', 'assets/badges/badge_4.png'),
+(5, 'Lucky Starter', 'Complete your first spin to unlock this badge.', 'assets/badges/badge_5.png'),
+(6, 'Friend Maker', 'Add your first friend to earn this badge.', 'assets/badges/badge_6.png'),
+(7, 'Tournament Winner', 'Win your first tournament to earn this badge.', 'assets/badges/badge_7.png'),
+(8, 'Premium Champion', 'Upgrade to premium membership to earn this badge.', 'assets/badges/badge_8.png'),
+(10, '50 Workouts', 'Complete 50 workout sessions to earn this badge.', 'assets/badges/badge_10.png'),
+(11, 'Spin Champion', 'Spin the lucky spin 30 times to earn this badge.', 'assets/badges/badge_11.png'),
+(12, '30-Day Streak', 'Login for 30 consecutive days to earn this badge.', 'assets/badges/badge_12.png');
 
 INSERT INTO quests (code, text, xp_reward) VALUES
 ('ANY_WORKOUT', 'Finish any workout', 15),
