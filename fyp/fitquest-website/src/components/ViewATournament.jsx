@@ -1,15 +1,19 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Styles.css';
 import { useNavigate } from 'react-router-dom';
+import { fetchAllExercises } from '../services/exerciseService';
 
+const ViewATournament = ({ tournament, onClose, onUpdate }) => {
+  const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTournament, setEditedTournament] = useState({ ...tournament });
+  const [exercises, setExercises] = useState([]);
 
+  useEffect(() => {
+    fetchAllExercises().then(setExercises).catch(() => {});
+  }, []);
 
-const ViewATournament = ({ tournament, onClose }) => {
-    const navigate = useNavigate();
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedTournament, setEditedTournament] = useState({...tournament });
-
-    if (!tournament) return null;
+  if (!tournament) return null;
 
   return (
     <div className="view-tournament-modal-overlay" onClick={onClose}>
@@ -22,145 +26,150 @@ const ViewATournament = ({ tournament, onClose }) => {
           <input
             type="text"
             value={editedTournament.title}
-            onChange={(e) =>
-              setEditedTournament({ ...editedTournament, title: e.target.value })
-            }
+            onChange={(e) => setEditedTournament({ ...editedTournament, title: e.target.value })}
           />
         ) : (
           <p>{tournament.title}</p>
         )}
 
-       <label>Description</label>
-      {isEditing ? (
-        <textarea
-          value={editedTournament.description}
-          rows={4}
-          onChange={(e) =>
-            setEditedTournament({ ...editedTournament, description: e.target.value })
-          }
-        />
-      ) : (
-        <p>{tournament.description}</p>
-      )}
+        <label>Description</label>
+        {isEditing ? (
+          <textarea
+            value={editedTournament.description}
+            rows={4}
+            onChange={(e) => setEditedTournament({ ...editedTournament, description: e.target.value })}
+          />
+        ) : (
+          <p>{tournament.description}</p>
+        )}
 
         <label>Date</label>
-
         <div className="date-group-row">
           <span>Start date</span>
           <div className="date-time-inputs">
-            { isEditing ? (
-            <>
-            <input 
-            type = "date"
-            value = {editedTournament.startDate}
-            onChange= {(e) => setEditedTournament({...editedTournament, startDate: e.target.value})
-            }/>
-
-            <input 
-            type = "date"
-            value = {editedTournament.startTime || '00:00'}
-            onChange = {(e) => setEditedTournament({...editedTournament, startTime: e.target.value})
-            }/>
-
-            </>
-            ): ( 
-            <p> {`${tournament.startDate} ${tournament.startTime || '00:00' }`}</p>
+            {isEditing ? (
+              <>
+                <input
+                  type="date"
+                  value={editedTournament.startDate?.split('T')[0] || ''}
+                  onChange={(e) => setEditedTournament({ ...editedTournament, startDate: e.target.value })}
+                />
+                <input
+                  type="time"
+                  value={editedTournament.startTime || '00:00'}
+                  onChange={(e) => setEditedTournament({ ...editedTournament, startTime: e.target.value })}
+                />
+              </>
+            ) : (
+              <p>{new Date(tournament.startDate).toLocaleDateString()} {tournament.startTime || '00:00'}</p>
             )}
-
           </div>
         </div>
 
         <div className="date-group-row">
-          <span>End Time</span>
+          <span>End date</span>
           <div className="date-time-inputs">
-            { isEditing ? (
-            <>
-            <input 
-            type = "date"
-            value = {editedTournament.endDate}
-            onChange= {(e) => setEditedTournament({...editedTournament, endDate: e.target.value})
-            }/>
-
-            <input 
-            type = "date"
-            value = {editedTournament.endTime || '00:00'}
-            onChange = {(e) => setEditedTournament({...editedTournament, endTime  : e.target.value})
-            }/>
-
-            </>
-            ): ( 
-            <p> {`${tournament.endDate} ${tournament.endTime || '00:00' }`}</p>
-            )}
-
-          </div>
-        </div>
-
-        <div className="form-row-2col">
-          <div className="form-group-col">
-            <label>Workout Category</label>
             {isEditing ? (
-              <select
-                value={editedTournament.category}
-                onChange={(e) =>
-                  setEditedTournament({ ...editedTournament, category: e.target.value })
-                }
-              >
-                <option value="All Workout">All Workout</option>
-                <option value="Strength">Strength</option>
-                <option value="Cardio">Cardio</option>
-                <option value="Mobility">Mobility</option>
-                <option value="Flexibility">Flexibility</option>
-              </select>
+              <>
+                <input
+                  type="date"
+                  value={editedTournament.endDate?.split('T')[0] || ''}
+                  onChange={(e) => setEditedTournament({ ...editedTournament, endDate: e.target.value })}
+                />
+                <input
+                  type="time"
+                  value={editedTournament.endTime || '00:00'}
+                  onChange={(e) => setEditedTournament({ ...editedTournament, endTime: e.target.value })}
+                />
+              </>
             ) : (
-              <p>{tournament.category || 'All Workout'}</p>
-            )}
-          </div>
-
-          <div className="form-group-col">
-            <label>Reward</label>
-            {isEditing ? (
-              <select
-                value={editedTournament.prize}
-                onChange={(e) =>
-                  setEditedTournament({ ...editedTournament, prize: e.target.value })
-                }
-              >
-                <option value="Reward A">Reward A</option>
-                <option value="Yoga Mat">Yoga Mat</option>
-                <option value="Badge Unlock">Badge Unlock</option>
-                <option value="FitQuest Gym Bag">FitQuest Gym Bag</option>
-                <option value="Summer Edition FitQuest Shirt">Summer Edition FitQuest Shirt</option>
-              </select>
-            ) : (
-              <p>{tournament.prize || 'Reward A'}</p>
+              <p>{new Date(tournament.endDate).toLocaleDateString()} {tournament.endTime || '00:00'}</p>
             )}
           </div>
         </div>
 
-
-       <div className="button-row">
+        <label>Target Exercise</label>
         {isEditing ? (
-          <>
-            <button className="cancel-btn" onClick={() => {
-              setEditedTournament({ ...tournament });
-              setIsEditing(false);
-            }}>
-              Cancel
-            </button>
-            <button className="confirm-btn" onClick={() => {
-              console.log('Saving tournament:', editedTournament);
-              setIsEditing(false);
-            }}>
-              Save
-            </button>
-          </>
+          <select
+            value={editedTournament.target_exercise_pattern || ''}
+            onChange={(e) =>
+              setEditedTournament({ ...editedTournament, target_exercise_pattern: e.target.value })
+            }
+          >
+            <option value="">-- Select an Exercise --</option>
+            {exercises.map((ex) => (
+              <option key={ex.exercise_id} value={ex.exercise_name}>
+                {ex.exercise_name}
+              </option>
+            ))}
+          </select>
         ) : (
-          <button className="edit-btn" onClick={() => setIsEditing(true)}>
-            Edit
-          </button>
+          <p>{tournament.target_exercise_pattern || 'N/A'}</p>
         )}
-      </div>
 
+        <label>Rewards (XP / Tokens)</label>
+        <div className="form-row-3col">
+          {['first', 'second', 'other'].map((pos) => (
+            <div key={pos} className="form-group-col">
+              <span>{pos.charAt(0).toUpperCase() + pos.slice(1)} Place</span>
+              {isEditing ? (
+                <div className="reward-row">
+                  <input
+                    type="number"
+                    className="reward-input"
+                    value={editedTournament[`reward_xp_${pos}`] ?? 0}
+                    onChange={(e) =>
+                      setEditedTournament({ ...editedTournament, [`reward_xp_${pos}`]: Number(e.target.value) })
+                    }
+                  />
+                  <span>XP</span>
+                  <input
+                    type="number"
+                    className="reward-input"
+                    value={editedTournament[`reward_tokens_${pos}`] ?? 0}
+                    onChange={(e) =>
+                      setEditedTournament({ ...editedTournament, [`reward_tokens_${pos}`]: Number(e.target.value) })
+                    }
+                  />
+                  <span>Tokens</span>
+                </div>
+              ) : (
+                <p>
+                  {tournament[`reward_xp_${pos}`]} XP / {tournament[`reward_tokens_${pos}`]} Tokens
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="button-row">
+          {isEditing ? (
+            <>
+              <button
+                className="cancel-btn"
+                onClick={() => {
+                  setEditedTournament({ ...tournament });
+                  setIsEditing(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="confirm-btn"
+                onClick={() => {
+                  setIsEditing(false);
+                  if (onUpdate) onUpdate();
+                }}
+              >
+                Save
+              </button>
+            </>
+          ) : (
+            <button className="edit-btn" onClick={() => setIsEditing(true)}>
+              Edit
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

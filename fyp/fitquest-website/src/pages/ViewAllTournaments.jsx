@@ -11,10 +11,17 @@ const ViewAllTournaments = () => {
   const [selectedTab, setSelectedTab] = useState('All');
   const [isEditing, setIsEditing] = useState(false);
 
+  const loadTournaments = async () => {
+    try {
+      const data = await fetchAllTournaments();
+      setTournaments(data);
+    } catch (err) {
+      console.error('Error fetching tournaments:', err);
+    }
+  };
+
   useEffect(() => {
-    fetchAllTournaments()
-      .then(setTournaments)
-      .catch(err => console.error('Error fetching tournaments:', err));
+    loadTournaments();
   }, []);
 
   const filteredTournaments = tournaments.filter((t) => {
@@ -116,6 +123,7 @@ const ViewAllTournaments = () => {
                   onClose={() => setSelectedTournament(null)}
                   isEditing={isEditing}
                   setIsEditing={setIsEditing}
+                  onUpdate={loadTournaments}
                 />
               </div>
             </div>
