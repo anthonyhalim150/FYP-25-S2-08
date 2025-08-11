@@ -3,12 +3,13 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
+    scopes: ['email', 'profile','https://www.googleapis.com/auth/calendar',],
   );
 
   Future<Map<String, String>?> signInWithGoogle() async {
     try {
       final account = await _googleSignIn.signIn();
+      final authHeaders = await account?.authHeaders;
       if (account == null) return null;
 
       final String email = account.email;

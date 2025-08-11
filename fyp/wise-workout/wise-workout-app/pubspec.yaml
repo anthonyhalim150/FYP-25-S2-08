@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_sign_in: ^6.1.4
+  googleapis: ^11.0.0
   sign_in_with_apple: ^7.0.1
   flutter_local_notifications: ^19.2.1
   timezone: ^0.10.0 
