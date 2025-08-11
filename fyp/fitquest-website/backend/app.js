@@ -9,6 +9,7 @@ const db = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const tournamentRoutes = require('./routes/tournamentRoutes');
 const authenticateUser = require('./middlewares/authMiddleware');
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(authenticateUser);
 
 app.use(userRoutes);
 app.use(feedbackRoutes);
+app.use(tournamentRoutes);
 
 db.query('SELECT DATABASE() AS db_name')
   .then(([rows]) => {
