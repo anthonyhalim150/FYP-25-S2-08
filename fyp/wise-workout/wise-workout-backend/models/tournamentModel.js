@@ -1,28 +1,31 @@
 const db = require('../config/db');
 
 async function getAllTournaments() {
-  const [rows] = await db.query('SELECT * FROM tournaments ORDER BY startDate ASC');
+  const [rows] = await db.query(
+    'SELECT * FROM tournaments WHERE endDate > NOW() ORDER BY startDate ASC'
+  );
   return rows;
 }
 
 async function getTournamentNamesAndEndDates() {
-  const [rows] = await db.query('SELECT id, title, endDate FROM tournaments ORDER BY startDate ASC');
+  const [rows] = await db.query(
+    'SELECT id, title, endDate FROM tournaments WHERE endDate > NOW() ORDER BY startDate ASC'
+  );
   return rows;
 }
 
-// Get ALL tournaments with participant counts
 async function getTournamentsWithParticipantCounts() {
   const [rows] = await db.query(
     `SELECT t.id, t.title, t.endDate, COUNT(tp.id) AS participants
      FROM tournaments t
      LEFT JOIN tournament_participants tp ON t.id = tp.tournament_id
+     WHERE t.endDate > NOW()
      GROUP BY t.id, t.title, t.endDate
      ORDER BY t.startDate ASC`
   );
-  return rows; // [{ id, title, endDate, participants }, ...]
+  return rows;
 }
 
-// Get participants and progress for a tournament
 async function getTournamentParticipants(tournamentId) {
   const sql = `
     SELECT
@@ -46,14 +49,12 @@ async function getTournamentParticipants(tournamentId) {
   return rows;
 }
 
-// Insert a user into tournament_participants
 async function joinTournament(tournamentId, userId) {
   const [existing] = await db.query(
     'SELECT id FROM tournament_participants WHERE tournament_id = ? AND user_id = ?',
     [tournamentId, userId]
   );
   if (existing.length > 0) return { status: 'already_joined' };
-
   await db.query(
     'INSERT INTO tournament_participants (tournament_id, user_id, progress) VALUES (?, ?, 0)',
     [tournamentId, userId]
@@ -61,19 +62,18 @@ async function joinTournament(tournamentId, userId) {
   return { status: 'joined' };
 }
 
-// tournaments the user has joined (id + title)
 async function getJoinedTournamentsByUser(userId) {
   const sql = `
     SELECT t.id AS tournament_id, t.title
     FROM tournaments t
     INNER JOIN tournament_participants tp ON tp.tournament_id = t.id
     WHERE tp.user_id = ?
+      AND t.endDate > NOW()
   `;
   const [rows] = await db.execute(sql, [userId]);
-  return rows; // [{ tournament_id, title }, ...]
+  return rows;
 }
 
-// Increment progress for a participant
 async function incrementTournamentProgress(tournamentId, userId, delta) {
   const [r] = await db.execute(
     'UPDATE tournament_participants SET progress = progress + ? WHERE tournament_id = ? AND user_id = ?',
@@ -88,6 +88,6 @@ module.exports = {
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
   joinTournament,
-  getJoinedTournamentsByUser,     // NEW export
+  getJoinedTournamentsByUser,
   incrementTournamentProgress,
 };

@@ -22,3 +22,14 @@ exports.setFeedbackStatus = async (req, res) => {
     res.status(400).json({ message: 'Failed to update status' });
   }
 };
+exports.getFeedbackSummary = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const summary = await FeedbackService.getFeedbackSummary(limit);
+    res.status(200).json(summary);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Failed to fetch feedback summary' });
+  }
+};
+

@@ -49,6 +49,7 @@ import 'screens/workout/weekly_monthly_summary.dart';
 import 'screens/workout/fitness_plan_calendar.dart';
 import 'screens/workout/workout_plans_screen.dart';
 import 'screens/workout/workout_plan_exercise_list.dart';
+import 'screens/bmi_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -128,6 +129,7 @@ class WiseWorkoutApp extends StatelessWidget {
         '/exercise-detail': (context) => ExerciseDetailScreen(
           exercise: ModalRoute.of(context)!.settings.arguments as Exercise,
         ),
+        '/body-metrics': (context) => BMIScreen(),
         '/workout-analysis': (context) => const WorkoutAnalysisPage(),
         '/language-settings': (context) => const LanguageSettingsScreen(),
         '/dailySummary': (context) => const DailySummaryPage(),

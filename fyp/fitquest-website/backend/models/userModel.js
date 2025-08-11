@@ -86,7 +86,7 @@ class UserModel {
         height_cm: row.height_cm || 'N/A',
         weight_kg: row.weight_kg || 'N/A',
         gender: row.gender || 'N/A',
-        workout_days: row.workout_days || 'N/A',
+        workout_frequency: row.workout_days || 'N/A', 
         workout_time: row.workout_time || 'N/A',
         equipment_pref: row.equipment_pref || 'N/A',
         fitness_goal: row.fitness_goal || 'N/A',
@@ -94,7 +94,7 @@ class UserModel {
         injury: row.injury || 'N/A',
         enjoyed_workouts: row.enjoyed_workouts || 'N/A',
         bmi_value: row.bmi_value || 'N/A'
-      }
+    }    
     }));
   }
   static async suspendUser(userId) {

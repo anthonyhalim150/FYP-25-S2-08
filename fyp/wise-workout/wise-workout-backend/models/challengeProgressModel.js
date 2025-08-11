@@ -15,6 +15,7 @@ const ChallengeProgressModel = {
     );
     return r;
   },
+
 };
 
 module.exports = ChallengeProgressModel;

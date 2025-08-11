@@ -5,11 +5,12 @@ class Challenge {
   final int id;
   final String title;
   final String senderName;
-  final int target; // Always INT
-  final String unit; // Always present
+  final int target;
+  final String unit;
   final int duration;
   final String durationUnit;
   final int daysLeft;
+  final bool isCompleted; 
 
   Challenge({
     required this.id,
@@ -20,6 +21,7 @@ class Challenge {
     required this.duration,
     this.durationUnit = 'days',
     this.daysLeft = 0,
+    this.isCompleted = false,
   });
 
   String get targetDisplay => "$target $unit";
@@ -54,7 +56,6 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
       final acceptedData = await _challengeService.getAcceptedChallenges();
 
       List<Challenge> fetchedInvites = invitationsData.map<Challenge>((data) {
-        // Fallback to template if custom not set
         final int target = data['custom_value'] ?? data['value'] ?? 0;
         final String unit = data['unit'] ?? '';
         final int duration = data['custom_duration_value'] ?? data['duration'] ?? 0;
@@ -67,7 +68,6 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
           unit: unit,
           duration: duration,
           durationUnit: durationUnit,
-          daysLeft: 0,
         );
       }).toList();
 
@@ -77,6 +77,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
         final int duration = data['custom_duration_value'] ?? data['duration'] ?? 0;
         final String durationUnit = data['custom_duration_unit'] ?? 'days';
         final int daysLeft = data['daysLeft'] ?? 0;
+        final bool isCompleted = (data['is_completed'] == 1);
         return Challenge(
           id: data['id'],
           title: data['type'] ?? 'Challenge',
@@ -86,8 +87,17 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
           duration: duration,
           durationUnit: durationUnit,
           daysLeft: daysLeft,
+          isCompleted: isCompleted,
         );
       }).toList();
+
+
+      fetchedOngoing.sort((a, b) {
+        int rankA = a.daysLeft > 0 && !a.isCompleted ? 0 : (a.isCompleted ? 1 : 2);
+        int rankB = b.daysLeft > 0 && !b.isCompleted ? 0 : (b.isCompleted ? 1 : 2);
+        if (rankA != rankB) return rankA.compareTo(rankB);
+        return a.daysLeft.compareTo(b.daysLeft);
+      });
 
       setState(() {
         pendingInvites = fetchedInvites;
@@ -235,6 +245,20 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
       itemCount: ongoingChallenges.length,
       itemBuilder: (context, index) {
         final challenge = ongoingChallenges[index];
+        String statusText;
+        Color statusColor;
+
+        if (challenge.daysLeft > 0 && !challenge.isCompleted) {
+          statusText = 'In Progress';
+          statusColor = Colors.green;
+        } else if (challenge.isCompleted) {
+          statusText = 'Completed';
+          statusColor = Colors.blue;
+        } else {
+          statusText = 'Expired';
+          statusColor = Colors.grey;
+        }
+
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
@@ -248,7 +272,7 @@ class _ChallengeInvitationScreenState extends State<ChallengeInvitationScreen> {
               Text(challenge.title, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text('Target: ${challenge.targetDisplay}'),
-              Text('${challenge.daysLeft} days left'),
+              Text(statusText, style: TextStyle(color: statusColor)),
             ],
           ),
         );

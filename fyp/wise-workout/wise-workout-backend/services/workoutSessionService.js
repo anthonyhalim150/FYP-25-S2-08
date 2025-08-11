@@ -5,6 +5,7 @@ const DailyQuestModel = require('../models/dailyQuestModel');
 const ChallengeInvitesModel = require('../models/challengeInvitesModel');
 const ChallengeProgressModel = require('../models/challengeProgressModel');
 const TournamentModel = require('../models/tournamentModel');
+const ChallengeService = require('../services/challengeService'); 
 
 class WorkoutSessionService {
   static async saveWorkoutSession(sessionData, exerciseLogs) {
@@ -56,11 +57,11 @@ class WorkoutSessionService {
         const reps = sumReps(ex.sets_data || ex.setsData);
 
         if (/push ?ups?/.test(name)) {
-          pushUps += reps; // push-up, pushup, push ups
+          pushUps += reps;
         } else if (/squats?/.test(name)) {
-          squats += reps; // squat, squats
+          squats += reps;
         } else if (/jump(ing)? ?jacks?/.test(name)) {
-          jumpingJacks += reps; // jumping jack(s)
+          jumpingJacks += reps;
         }
       }
 
@@ -75,25 +76,24 @@ class WorkoutSessionService {
         else if (unit.includes('squat')) delta = squats;
         else if (unit.includes('jumping jack')) delta = jumpingJacks;
         else if (unit.includes('calorie')) delta = Math.max(0, Math.round(caloriesThisSession));
+
         if (delta > 0) {
           await ChallengeProgressModel.incrementProgress(inv.invite_id, userId, delta);
+          await ChallengeService.checkAndCompleteChallenge(inv.invite_id); 
         }
       }
 
-      // update only the mapped tournaments
+      // Update Tournaments
       const joined = await TournamentModel.getJoinedTournamentsByUser(userId);
       for (const t of joined) {
         const title = norm(t.title);
         let delta = 0;
 
         if (title.includes('ultimate warrior cup')) {
-          // Push-ups only
           delta = pushUps;
         } else if (title.includes('speed & agility showdown')) {
-          // Squats only
           delta = squats;
         } else if (title.includes('flex master tournament')) {
-          // Jumping jacks only
           delta = jumpingJacks;
         }
 

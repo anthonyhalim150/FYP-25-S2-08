@@ -15,15 +15,22 @@ const ChallengeModel = {
          ci.id AS invite_id,
          c.type, c.value, c.unit, c.duration,
          u.id AS user_id, u.username,
-         CAST(SUM(cp.progress_value) AS UNSIGNED) AS progress,
+         CAST(COALESCE(SUM(cp.progress_value), 0) AS UNSIGNED) AS progress,
          ci.accepted_at,
          ci.expires_at,
-         GREATEST(0, DATEDIFF(ci.expires_at, NOW())) AS days_left,
+         ci.completed_at IS NOT NULL AS is_completed,
+         GREATEST(0, TIMESTAMPDIFF(DAY, NOW(), ci.expires_at)) AS days_left,
          TIMESTAMPDIFF(DAY, ci.accepted_at, ci.expires_at) AS total_days
        FROM challenge_invites ci
-       JOIN challenges c ON ci.challenge_id = c.id
-       JOIN challenge_progress cp ON cp.challenge_invite_id = ci.id
-       JOIN users u ON u.id = cp.user_id
+       JOIN challenges c ON c.id = ci.challenge_id
+       JOIN (
+         SELECT id, sender_id AS user_id FROM challenge_invites
+         UNION ALL
+         SELECT id, receiver_id AS user_id FROM challenge_invites
+       ) p ON p.id = ci.id
+       JOIN users u ON u.id = p.user_id
+       LEFT JOIN challenge_progress cp
+         ON cp.challenge_invite_id = ci.id AND cp.user_id = u.id
        WHERE ci.status = 'accepted'
          AND (ci.sender_id = ? OR ci.receiver_id = ?)
        GROUP BY ci.id, u.id

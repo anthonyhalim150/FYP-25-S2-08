@@ -29,4 +29,16 @@ export async function fetchFeedbacks({ status = "All", search = "" } = {}) {
     }
     return res.json();
   }
+  export async function fetchFeedbackSummary(limit = 10) {
+    const res = await fetch(`http://localhost:8080/admin/feedbacks/summary?limit=${limit}`, {
+      method: "GET",
+      credentials: "include"
+    });
+  
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message);
+    }
+    return res.json();
+  }
   

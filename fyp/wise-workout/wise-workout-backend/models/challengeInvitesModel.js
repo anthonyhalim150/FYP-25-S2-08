@@ -24,6 +24,7 @@ const ChallengeInvitesModel = {
          ci.custom_duration_value,
          ci.custom_duration_unit,
          GREATEST(0, DATEDIFF(ci.expires_at, NOW())) AS daysLeft,
+         ci.completed_at IS NOT NULL AS is_completed,
          CASE WHEN ci.sender_id = ? THEN r.username ELSE s.username END AS opponentName
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id
@@ -36,13 +37,14 @@ const ChallengeInvitesModel = {
     );
     return rows;
   },  
-  getActiveAcceptedInvitesForUser: async (userId) => {//This is a more minimal ver, so not all the fields are fetched.
+  getActiveAcceptedInvitesForUser: async (userId) => {
     const [rows] = await db.execute(
       `SELECT ci.id AS invite_id, c.type, c.unit
        FROM challenge_invites ci
        JOIN challenges c ON c.id = ci.challenge_id
        WHERE (ci.receiver_id = ? OR ci.sender_id = ?)
          AND ci.status = 'accepted'
+         AND ci.completed_at IS NULL
          AND (ci.expires_at IS NULL OR ci.expires_at > NOW())`,
       [userId, userId]
     );
@@ -110,7 +112,25 @@ const ChallengeInvitesModel = {
       [userId, title, userId, userId]
     );
     return rows;
-  }  
+  },
+  markChallengeCompleted: async (inviteId) => {
+    return await db.execute(
+      `UPDATE challenge_invites SET completed_at = NOW() WHERE id = ?`,
+      [inviteId]
+    );
+  },
+  
+  getInviteProgressAndUsers: async (inviteId) => {
+    const [rows] = await db.execute(
+      `SELECT cp.user_id, cp.progress_value, ci.custom_value, c.value
+       FROM challenge_progress cp
+       JOIN challenge_invites ci ON ci.id = cp.challenge_invite_id
+       JOIN challenges c ON c.id = ci.challenge_id
+       WHERE ci.id = ?`,
+      [inviteId]
+    );
+    return rows;
+  }
 };
 
 module.exports = ChallengeInvitesModel;

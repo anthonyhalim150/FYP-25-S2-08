@@ -96,7 +96,7 @@ const ChallengeController = {
   getLeaderboard: async (req, res) => {
     try {
       const userId = req.user.id;
-      const leaderboard = await ChallengeService.getLeaderboard(userId); // now passes userId
+      const leaderboard = await ChallengeService.getLeaderboard(userId); 
       res.status(200).json(leaderboard);
     } catch (err) {
       res.status(500).json({ message: 'Error fetching leaderboard', error: err.message });
