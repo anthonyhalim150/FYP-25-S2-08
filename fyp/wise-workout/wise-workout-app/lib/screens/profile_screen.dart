@@ -256,9 +256,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         case "body_metrics":
           handleTap = () => Navigator.pushNamed(context, '/body-metrics');
           break;
-        case "notifications":
-          handleTap = () => Navigator.pushNamed(context, '/notification-settings');
-          break;
         case "premium_plan":
           handleTap = () => Navigator.pushNamed(context, '/premium-plan');
           break;
@@ -361,7 +358,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _profileItem(Icons.watch, "wearable", subtitle: tr('profile_wearable_subtitle')),
                   _profileItem(Icons.history, "workout_history"),
                   _profileItem(Icons.bar_chart, "body_metrics"),
-                  _profileItem(Icons.notifications, "notifications"),
                   if (!_isPremiumUser)
                     _profileItem(Icons.workspace_premium, "premium_plan"),
                   _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),

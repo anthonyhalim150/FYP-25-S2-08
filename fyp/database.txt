@@ -274,9 +274,10 @@ CREATE TABLE tournaments (
   id INT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
-  startDate VARCHAR(64),   -- Add this line
-  endDate VARCHAR(64),
+  startDate DATETIME,
+  endDate DATETIME,
   features TEXT,
+  rewarded BOOLEAN DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -418,23 +419,23 @@ INSERT INTO tournaments (title, description, startDate, endDate, features) VALUE
 (
   'Ultimate Warrior Cup',
   'Compete with the best in endurance and power.',
-  '2024-06-03',
-  'Ends in 4 days',
+  '2025-08-01 00:00:00',
+  '2025-08-15 23:59:59',
   '["Daily Leaderboards", "Weekly Rewards", "Muscle Power Rounds"]'
 ),
 (
   'Speed & Agility Showdown',
   'Boost your reaction time and movement speed.',
-  '2024-06-05',
-  'Ends in 2 days',
-  '["Sprint Events", " Agility Ladder Test", "Time Trials"]'
+  '2025-08-05 00:00:00',
+  '2025-08-18 23:59:59',
+  '["Sprint Events", "Agility Ladder Test", "Time Trials"]'
 ),
 (
   'Flex Master Tournament',
   'Show off your strength and flexibility.',
-  '2024-06-08',
-  'Ends in 6 days',
-  '["Heavy Lifts", " Balance Tasks", "Flexibility Scoring"]'
+  '2025-08-10 00:00:00',
+  '2025-08-20 23:59:59',
+  '["Heavy Lifts", "Balance Tasks", "Flexibility Scoring"]'
 );
 
 INSERT INTO challenges (type, value, unit, duration)
@@ -442,3 +443,63 @@ VALUES
   ('Push Up Challenge', 150, 'Push Ups', 7),
   ('Squat Challenge', 75, 'Squats', 3),
   ('Jumping Jack Blitz', 100, 'Jumping Jacks', 5);
+
+DROP EVENT IF EXISTS reward_expired_tournaments;
+DELIMITER $$
+
+CREATE EVENT reward_expired_tournaments
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+  -- Reward top 3 + others for each ended tournament that’s not rewarded yet
+  UPDATE users u
+  JOIN (
+    SELECT tp.user_id,
+           t.id AS tournament_id,
+           RANK() OVER (PARTITION BY t.id ORDER BY tp.progress DESC, tp.joined_at ASC) AS rank_pos
+    FROM tournaments t
+    JOIN tournament_participants tp ON t.id = tp.tournament_id
+    WHERE t.endDate < NOW()
+      AND t.rewarded = 0
+  ) ranked ON u.id = ranked.user_id
+  SET 
+    u.xp = u.xp + CASE ranked.rank_pos
+                    WHEN 1 THEN 200
+                    WHEN 2 THEN 100
+                    ELSE 50
+                  END,
+    u.tokens = u.tokens + CASE ranked.rank_pos
+                    WHEN 1 THEN 200
+                    WHEN 2 THEN 100
+                    ELSE 20
+                  END;
+
+  -- Give "Tournament Winner" badge (badge_id = 7) to 1st place winners
+  INSERT IGNORE INTO user_badges (user_id, badge_id, earned_at)
+  SELECT tp.user_id, 7, NOW()
+  FROM tournaments t
+  JOIN tournament_participants tp ON t.id = tp.tournament_id
+  WHERE t.endDate < NOW()
+    AND t.rewarded = 0
+    AND tp.user_id IN (
+      SELECT user_id
+      FROM (
+        SELECT tp2.user_id,
+               RANK() OVER (PARTITION BY t2.id ORDER BY tp2.progress DESC, tp2.joined_at ASC) AS rank_pos
+        FROM tournaments t2
+        JOIN tournament_participants tp2 ON t2.id = tp2.tournament_id
+        WHERE t2.endDate < NOW()
+          AND t2.rewarded = 0
+      ) ranked2
+      WHERE rank_pos = 1
+    );
+
+  -- Mark tournaments as rewarded
+  UPDATE tournaments
+  SET rewarded = 1
+  WHERE endDate < NOW()
+    AND rewarded = 0;
+END$$
+
+DELIMITER ;

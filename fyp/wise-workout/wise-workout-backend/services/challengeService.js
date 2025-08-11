@@ -82,8 +82,8 @@ const ChallengeService = {
     const loser = progressRows.find(p => p.user_id !== winner.user_id);
   
 
-    const winnerXP = 50, loserXP = 20;
-    const winnerTokens = 30, loserTokens = 10;
+    const winnerXP = 150, loserXP = 30;
+    const winnerTokens = 100, loserTokens = 20;
   
  
     await ChallengeInvitesModel.markChallengeCompleted(inviteId);
