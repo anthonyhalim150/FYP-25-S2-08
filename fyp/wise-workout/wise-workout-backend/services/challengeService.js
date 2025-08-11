@@ -2,6 +2,7 @@ const db = require('../config/db');
 const ChallengeModel = require('../models/challengeModel');
 const ChallengeInvitesModel = require('../models/challengeInvitesModel');
 const ChallengeProgressModel = require('../models/challengeProgressModel');
+const UserModel = require('../models/userModel');
 
 const ChallengeService = {
   getAllChallenges: async () => {
@@ -69,7 +70,35 @@ const ChallengeService = {
   },
   getLeaderboard: async (userId) => {
     return await ChallengeModel.getLeaderboardsByUser(userId);
-  }
+  },
+  checkAndCompleteChallenge: async (inviteId) => {
+    const progressRows = await ChallengeInvitesModel.getInviteProgressAndUsers(inviteId);
+    if (!progressRows.length) return;
+  
+    const target = progressRows[0].custom_value || progressRows[0].value;
+    const winner = progressRows.find(p => p.progress_value >= target);
+    if (!winner) return;
+  
+    const loser = progressRows.find(p => p.user_id !== winner.user_id);
+  
+
+    const winnerXP = 50, loserXP = 20;
+    const winnerTokens = 30, loserTokens = 10;
+  
+ 
+    await ChallengeInvitesModel.markChallengeCompleted(inviteId);
+  
+
+    await UserModel.addXP(winner.user_id, winnerXP);
+    await UserModel.applyPrize(winner.user_id, { type: 'tokens', value: winnerTokens });
+  
+    if (loser) {
+      await UserModel.addXP(loser.user_id, loserXP);
+      await UserModel.applyPrize(loser.user_id, { type: 'tokens', value: loserTokens });
+    }
+  },  
+  
+  
 };
 
 module.exports = ChallengeService;

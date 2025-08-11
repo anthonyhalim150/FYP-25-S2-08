@@ -110,7 +110,25 @@ const ChallengeInvitesModel = {
       [userId, title, userId, userId]
     );
     return rows;
-  }  
+  },
+  markChallengeCompleted: async (inviteId) => {
+    return await db.execute(
+      `UPDATE challenge_invites SET completed_at = NOW() WHERE id = ?`,
+      [inviteId]
+    );
+  },
+  
+  getInviteProgressAndUsers: async (inviteId) => {
+    const [rows] = await db.execute(
+      `SELECT cp.user_id, cp.progress_value, ci.custom_value, c.value
+       FROM challenge_progress cp
+       JOIN challenge_invites ci ON ci.id = cp.challenge_invite_id
+       JOIN challenges c ON c.id = ci.challenge_id
+       WHERE ci.id = ?`,
+      [inviteId]
+    );
+    return rows;
+  }
 };
 
 module.exports = ChallengeInvitesModel;
