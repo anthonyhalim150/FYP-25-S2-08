@@ -1,7 +1,9 @@
 const db = require('../config/db');
 
 async function getAllTournaments() {
-  const [rows] = await db.query('SELECT * FROM tournaments ORDER BY startDate ASC');
+  const [rows] = await db.query(
+    'SELECT * FROM tournaments WHERE endDate > NOW() ORDER BY startDate ASC'
+  );
   return rows;
 }
 
@@ -68,9 +70,10 @@ async function getJoinedTournamentsByUser(userId) {
     FROM tournaments t
     INNER JOIN tournament_participants tp ON tp.tournament_id = t.id
     WHERE tp.user_id = ?
+      AND t.endDate > NOW()
   `;
   const [rows] = await db.execute(sql, [userId]);
-  return rows; // [{ tournament_id, title }, ...]
+  return rows;
 }
 
 // Increment progress for a participant
