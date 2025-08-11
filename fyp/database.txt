@@ -464,7 +464,13 @@ BEGIN
   JOIN (
     SELECT tp.user_id,
            t.id AS tournament_id,
-           RANK() OVER (PARTITION BY t.id ORDER BY tp.progress DESC, tp.joined_at ASC) AS rank_pos
+           RANK() OVER (PARTITION BY t.id ORDER BY tp.progress DESC, tp.joined_at ASC) AS rank_pos,
+           t.reward_xp_first,
+           t.reward_xp_second,
+           t.reward_xp_other,
+           t.reward_tokens_first,
+           t.reward_tokens_second,
+           t.reward_tokens_other
     FROM tournaments t
     JOIN tournament_participants tp ON t.id = tp.tournament_id
     WHERE t.endDate < NOW()
@@ -472,14 +478,14 @@ BEGIN
   ) ranked ON u.id = ranked.user_id
   SET 
     u.xp = u.xp + CASE ranked.rank_pos
-                    WHEN 1 THEN 200
-                    WHEN 2 THEN 100
-                    ELSE 50
+                    WHEN 1 THEN ranked.reward_xp_first
+                    WHEN 2 THEN ranked.reward_xp_second
+                    ELSE ranked.reward_xp_other
                   END,
     u.tokens = u.tokens + CASE ranked.rank_pos
-                    WHEN 1 THEN 200
-                    WHEN 2 THEN 100
-                    ELSE 20
+                    WHEN 1 THEN ranked.reward_tokens_first
+                    WHEN 2 THEN ranked.reward_tokens_second
+                    ELSE ranked.reward_tokens_other
                   END;
 
   -- Give "Tournament Winner" badge (badge_id = 7) to 1st place winners

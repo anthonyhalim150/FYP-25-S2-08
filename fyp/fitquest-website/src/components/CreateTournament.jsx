@@ -1,10 +1,29 @@
-import React from 'react';
-import '../styles/Styles.css'; // Import general styles
-import './CreateTournament.css'; // Import CreateTournament-specific styles
+import React, { useState } from 'react';
+import '../styles/Styles.css';
+import './CreateTournament.css';
 import { useNavigate } from 'react-router-dom';
+import { createTournament } from '../services/tournamentService';
 
 const CreateTournament = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    features: [],
+    target_exercise_pattern: ''
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await createTournament(formData);
+      navigate('/All-Tournaments');
+    } catch (err) {
+      console.error('Failed to create tournament', err);
+    }
+  };
 
   return (
     <div className="admin-container">
@@ -14,42 +33,53 @@ const CreateTournament = () => {
             <h2>Create New Tournament</h2>
           </div>
 
-          <form className="create-tournament-form">
+          <form className="create-tournament-form" onSubmit={handleSubmit}>
             <label>Title*</label>
-            <input type="text" placeholder="Enter title here..." required />
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              required
+            />
 
             <label>Description*</label>
-            <textarea placeholder="Enter description here..." rows={4} required />
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={4}
+              required
+            />
 
-            <label>Date*</label>
-            <div className="input-date-time">
-              <input type="date" placeholder="DD/MM/YYYY" required />
-              <input type="time" placeholder="HH:MM" required />
-            </div>
+            <label>Start Date*</label>
+            <input
+              type="datetime-local"
+              value={formData.startDate}
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              required
+            />
 
-            <label>End Date</label>
-            <div className="input-date-time">
-              <input type="date" placeholder="DD/MM/YYYY" />
-              <input type="time" placeholder="HH:MM" />
-            </div>
+            <label>End Date*</label>
+            <input
+              type="datetime-local"
+              value={formData.endDate}
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              required
+            />
 
-            <label>Workout Category*</label>
-            <select required>
-              <option>Select a workout category</option>
-              {/* Add workout categories here */}
-            </select>
-
-            <label>Reward*</label>
-            <select required>
-              <option>Select the reward badge</option>
-              {/* Add reward options here */}
-            </select>
+            <label>Target Exercise Pattern*</label>
+            <input
+              type="text"
+              placeholder="e.g. push up, squat"
+              value={formData.target_exercise_pattern}
+              onChange={(e) => setFormData({ ...formData, target_exercise_pattern: e.target.value })}
+              required
+            />
 
             <div className="button-row">
               <button
                 className="cancel-btn"
                 type="button"
-                onClick={() => navigate('/ViewAllTournaments')}
+                onClick={() => navigate('/All-Tournaments')}
               >
                 Cancel
               </button>

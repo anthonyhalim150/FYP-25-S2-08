@@ -1,25 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ViewAllTournaments.css';
 import ViewATournament from '../components/ViewATournament';
 import PageLayout from '../components/PageLayout';
+import { fetchAllTournaments } from '../services/tournamentService';
 
-const dummyTournaments = [
-  { id: 't001', number: 1, title: 'Summer Fitness ‘25', startDate: 'Jun 10, 2025', endDate: 'Jul 1, 2025', duration: '21 days', prize: 'Shirt', status: 'ongoing' },
-  { id: 't002', number: 2, title: 'HIIT HeatWave', startDate: 'Jun 10, 2025', endDate: 'Jun 20, 2025', duration: '10 days', prize: 'Gym Bag', status: 'completed' },
-  { id: 't003', number: 3, title: 'FitBliz 30-day', startDate: 'Jun 10, 2025', endDate: 'Jul 10, 2025', duration: '30 days', prize: 'Badge', status: 'ongoing' },
-  { id: 't004', number: 4, title: 'CoreClash', startDate: 'Jun 10, 2025', endDate: 'Jun 30, 2025', duration: '20 days', prize: 'Band', status: 'ongoing' },
-  { id: 't005', number: 5, title: 'Stretch Surge', startDate: 'Jun 10, 2025', endDate: 'Jul 1, 2025', duration: '22 days', prize: 'Yoga Mat', status: 'ongoing' },
-];
 const ViewAllTournaments = () => {
+  const [tournaments, setTournaments] = useState([]);
   const [selectedTournament, setSelectedTournament] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState('All');
   const [isEditing, setIsEditing] = useState(false);
 
-  const filteredTournaments = dummyTournaments.filter((t) => {
+  useEffect(() => {
+    fetchAllTournaments()
+      .then(setTournaments)
+      .catch(err => console.error('Error fetching tournaments:', err));
+  }, []);
+
+  const filteredTournaments = tournaments.filter((t) => {
     const matchesSearch = t.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTab =
-      selectedTab === 'All' || t.status.toLowerCase() === selectedTab.toLowerCase();
+      selectedTab === 'All' ||
+      (selectedTab === 'Ongoing' && new Date(t.endDate) > new Date()) ||
+      (selectedTab === 'Completed' && new Date(t.endDate) <= new Date());
     return matchesSearch && matchesTab;
   });
 
@@ -69,36 +72,35 @@ const ViewAllTournaments = () => {
             <thead>
               <tr>
                 <th>No.</th>
-                <th>Tournaments</th>
+                <th>Tournament</th>
                 <th>Start Date</th>
                 <th>End Date</th>
-                <th>Duration</th>
                 <th>Status</th>
                 <th>Manage</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTournaments.map((tour) => (
+              {filteredTournaments.map((tour, index) => (
                 <tr key={tour.id} onClick={() => setSelectedTournament(tour)}>
-                  <td>{tour.number}</td>
+                  <td>{index + 1}</td>
                   <td>{tour.title}</td>
-                  <td>{tour.startDate}</td>
-                  <td>{tour.endDate}</td>
-                  <td>{tour.duration}</td>
+                  <td>{new Date(tour.startDate).toLocaleString()}</td>
+                  <td>{new Date(tour.endDate).toLocaleString()}</td>
                   <td>
-                    <span className={`badge ${tour.status.toLowerCase()}`}>
-                      {tour.status}
+                    <span className={`badge ${new Date(tour.endDate) > new Date() ? 'ongoing' : 'completed'}`}>
+                      {new Date(tour.endDate) > new Date() ? 'Ongoing' : 'Completed'}
                     </span>
                   </td>
                   <td>
-                  <button
+                    <button
                       className="edit-btn"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedTournament(tour);
-                        setIsEditing(false); // Change to false, so it's in "View" mode
+                        setIsEditing(false);
                       }}
                     >
-                     View
+                      View
                     </button>
                   </td>
                 </tr>
@@ -113,7 +115,7 @@ const ViewAllTournaments = () => {
                   tournament={selectedTournament}
                   onClose={() => setSelectedTournament(null)}
                   isEditing={isEditing}
-                  setIsEditing={setIsEditing} // Pass down the setter function
+                  setIsEditing={setIsEditing}
                 />
               </div>
             </div>
