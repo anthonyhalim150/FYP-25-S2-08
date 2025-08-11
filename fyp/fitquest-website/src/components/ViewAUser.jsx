@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import '../styles/Styles.css';
+import { fetchUserFeedback } from '../services/feedbackService';
 
-const fetchFeedback = async (userId) => {
-  const response = await fetch(`/api/feedbacks?user_id=${userId}`);
-  const data = await response.json();
-  return data;
+const parseToArray = (data) => {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return [data];
+  }
 };
 
 const ViewAUser = ({ user, onClose }) => {
@@ -14,12 +19,18 @@ const ViewAUser = ({ user, onClose }) => {
   const [feedbackData, setFeedbackData] = useState(null);
 
   const avatarPath = user?.avatar_url ? `/${user.avatar_url}` : '/assets/avatars/free/free1.png';
-  const [bgPath, setBgPath] = useState(user?.background_url ? `/${user.background_url}` : '/assets/background/bg1.jpg');
+  const [bgPath, setBgPath] = useState(
+    user?.background_url ? `/${user.background_url}` : '/assets/background/bg1.jpg'
+  );
 
   useEffect(() => {
     const getFeedback = async () => {
-      const feedback = await fetchFeedback(user.id);
-      setFeedbackData(feedback);
+      try {
+        const feedback = await fetchUserFeedback(user.id);
+        setFeedbackData(feedback);
+      } catch (err) {
+        console.error('Failed to load feedback:', err);
+      }
     };
     if (user) {
       getFeedback();
@@ -73,8 +84,8 @@ const ViewAUser = ({ user, onClose }) => {
     }
   };
 
-  const likedFeatures = feedbackData?.liked_features ? JSON.parse(feedbackData.liked_features) : [];
-  const problems = feedbackData?.problems ? JSON.parse(feedbackData.problems) : [];
+  const likedFeatures = parseToArray(feedbackData?.liked_features);
+  const problems = parseToArray(feedbackData?.problems);
 
   return (
     <div className="modal-overlay" onClick={onClose}>

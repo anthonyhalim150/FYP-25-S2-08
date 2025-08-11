@@ -18,6 +18,9 @@ function timeSince(date) {
 }
 
 class FeedbackService {
+  static async getUserFeedback(userId) {
+    return await FeedbackModel.findByUserId(userId);
+  }  
   static async getAllFeedbacks(filter) {
     return await FeedbackModel.findAllWithUser(filter);
   }

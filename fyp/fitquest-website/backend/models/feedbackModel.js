@@ -1,6 +1,18 @@
 const db = require('../config/db');
 
 class FeedbackModel {
+  static async findByUserId(userId) {
+    const [rows] = await db.execute(
+      `SELECT liked_features, problems 
+       FROM feedback 
+       WHERE user_id = ? 
+       ORDER BY created_at DESC 
+       LIMIT 1`, 
+      [userId]
+    );
+    return rows[0] || null;
+  }
+  
   static async findAllWithUser({ status = 'All', search = '' } = {}) {
     let query = `
       SELECT f.*, u.username, u.email, u.role, u.avatar_id
