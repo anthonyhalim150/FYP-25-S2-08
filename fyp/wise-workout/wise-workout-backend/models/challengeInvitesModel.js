@@ -36,13 +36,14 @@ const ChallengeInvitesModel = {
     );
     return rows;
   },  
-  getActiveAcceptedInvitesForUser: async (userId) => {//This is a more minimal ver, so not all the fields are fetched.
+  getActiveAcceptedInvitesForUser: async (userId) => {
     const [rows] = await db.execute(
       `SELECT ci.id AS invite_id, c.type, c.unit
        FROM challenge_invites ci
        JOIN challenges c ON c.id = ci.challenge_id
        WHERE (ci.receiver_id = ? OR ci.sender_id = ?)
          AND ci.status = 'accepted'
+         AND ci.completed_at IS NULL
          AND (ci.expires_at IS NULL OR ci.expires_at > NOW())`,
       [userId, userId]
     );

@@ -18,6 +18,7 @@ const ChallengeModel = {
          CAST(COALESCE(SUM(cp.progress_value), 0) AS UNSIGNED) AS progress,
          ci.accepted_at,
          ci.expires_at,
+         ci.completed_at IS NOT NULL AS is_completed,
          GREATEST(0, TIMESTAMPDIFF(DAY, NOW(), ci.expires_at)) AS days_left,
          TIMESTAMPDIFF(DAY, ci.accepted_at, ci.expires_at) AS total_days
        FROM challenge_invites ci

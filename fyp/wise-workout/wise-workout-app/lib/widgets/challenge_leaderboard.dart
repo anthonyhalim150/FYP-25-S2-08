@@ -36,16 +36,18 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
         totalDays: first.totalDays,
         participants: list.map((e) => e.username).toList(),
         values: list.map((e) => e.progress).toList(),
+        isCompleted: first.isCompleted,
       ));
     });
+
+    // Sort: on progress > completed > expired
     groups.sort((a, b) {
-      final aActive = a.daysLeft > 0;
-      final bActive = b.daysLeft > 0;
-      if (aActive && !bActive) return -1;
-      if (!aActive && bActive) return 1;
-      if (aActive && bActive) return a.daysLeft.compareTo(b.daysLeft);
+      int rankA = a.daysLeft > 0 && !a.isCompleted ? 0 : (a.isCompleted ? 1 : 2);
+      int rankB = b.daysLeft > 0 && !b.isCompleted ? 0 : (b.isCompleted ? 1 : 2);
+      if (rankA != rankB) return rankA.compareTo(rankB);
       return a.daysLeft.compareTo(b.daysLeft);
     });
+
     return groups;
   }
 
@@ -74,10 +76,10 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (context, i) {
             final g = groups[i];
-            final isActive = g.daysLeft > 0;
+            final isActive = g.daysLeft > 0 && !g.isCompleted;
             final durationText = isActive
                 ? '${g.daysLeft} day${g.daysLeft == 1 ? '' : 's'} left'
-                : 'Expired';
+                : (g.isCompleted ? 'Completed' : 'Expired');
             return _buildChallengeCard(
               context: context,
               title: g.title,
@@ -86,6 +88,7 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
               participants: g.participants,
               values: g.values,
               isActive: isActive,
+              isCompleted: g.isCompleted,
             );
           },
         );
@@ -101,21 +104,36 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
     required List<String> participants,
     required List<int> values,
     required bool isActive,
+    required bool isCompleted,
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final barMaxHeight = 120.0;
     final maxVal = values.isEmpty ? 0.0 : values.fold<double>(0, (p, n) => n > p ? n.toDouble() : p);
     final safeMax = maxVal.isFinite && maxVal > 0 ? maxVal : 1.0;
+
+    String statusText;
+    Color statusColor;
+    if (isActive) {
+      statusText = '• on progress';
+      statusColor = Colors.green;
+    } else if (isCompleted) {
+      statusText = '• completed';
+      statusColor = Colors.blue;
+    } else {
+      statusText = '• expired';
+      statusColor = Colors.grey;
+    }
+
     return Container(
       decoration: BoxDecoration(color: theme.cardColor, borderRadius: BorderRadius.circular(16)),
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-          Text(isActive ? '• on progress' : '• expired',
+          Text(statusText,
               style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isActive ? Colors.green : Colors.grey,
+                  color: statusColor,
                   fontWeight: FontWeight.w500)),
         ]),
         const SizedBox(height: 6),
@@ -211,6 +229,8 @@ class _LeaderRow {
   final int daysLeft;
   final String username;
   final int progress;
+  final bool isCompleted;
+
   _LeaderRow({
     required this.inviteId,
     required this.type,
@@ -220,25 +240,20 @@ class _LeaderRow {
     required this.daysLeft,
     required this.username,
     required this.progress,
+    required this.isCompleted,
   });
+
   factory _LeaderRow.fromMap(Map<String, dynamic> m) {
-    final inviteId = (m['invite_id'] as num?)?.toInt() ?? 0;
-    final type = (m['type'] ?? '').toString();
-    final value = (m['value'] as num?)?.toInt() ?? 0;
-    final unit = (m['unit'] ?? '').toString();
-    final totalDays = (m['total_days'] as num?)?.toInt() ?? 0;
-    final daysLeft = (m['days_left'] as num?)?.toInt() ?? 0;
-    final username = (m['username'] ?? '').toString();
-    final progress = (m['progress'] as num?)?.toInt() ?? 0;
     return _LeaderRow(
-      inviteId: inviteId,
-      type: type,
-      value: value,
-      unit: unit,
-      totalDays: totalDays,
-      daysLeft: daysLeft,
-      username: username,
-      progress: progress,
+      inviteId: (m['invite_id'] as num?)?.toInt() ?? 0,
+      type: (m['type'] ?? '').toString(),
+      value: (m['value'] as num?)?.toInt() ?? 0,
+      unit: (m['unit'] ?? '').toString(),
+      totalDays: (m['total_days'] as num?)?.toInt() ?? 0,
+      daysLeft: (m['days_left'] as num?)?.toInt() ?? 0,
+      username: (m['username'] ?? '').toString(),
+      progress: (m['progress'] as num?)?.toInt() ?? 0,
+      isCompleted: (m['is_completed'] == 1),
     );
   }
 }
@@ -251,6 +266,8 @@ class _ChallengeGroup {
   final int totalDays;
   final List<String> participants;
   final List<int> values;
+  final bool isCompleted;
+
   _ChallengeGroup({
     required this.inviteId,
     required this.title,
@@ -259,5 +276,6 @@ class _ChallengeGroup {
     required this.totalDays,
     required this.participants,
     required this.values,
+    required this.isCompleted,
   });
 }
