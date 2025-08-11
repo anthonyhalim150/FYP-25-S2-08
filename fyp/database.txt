@@ -278,6 +278,12 @@ CREATE TABLE tournaments (
   endDate DATETIME,
   features TEXT,
   target_exercise_pattern VARCHAR(255) DEFAULT NULL, -- e.g. "push up", "squat", "jumping jack"
+  reward_xp_first INT DEFAULT 200,
+  reward_xp_second INT DEFAULT 100,
+  reward_xp_other INT DEFAULT 50,
+  reward_tokens_first INT DEFAULT 200,
+  reward_tokens_second INT DEFAULT 100,
+  reward_tokens_other INT DEFAULT 20,
   rewarded BOOLEAN DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -450,7 +456,6 @@ VALUES
   ('Push Up Challenge', 150, 'Push Ups', 7),
   ('Squat Challenge', 75, 'Squats', 3),
   ('Jumping Jack Blitz', 100, 'Jumping Jacks', 5);
-
 DROP EVENT IF EXISTS reward_expired_tournaments;
 DELIMITER $$
 
@@ -459,7 +464,8 @@ ON SCHEDULE EVERY 1 DAY
 STARTS CURRENT_TIMESTAMP
 DO
 BEGIN
-  -- Reward top 3 + others for each ended tournament that’s not rewarded yet
+  START TRANSACTION;
+
   UPDATE users u
   JOIN (
     SELECT tp.user_id,
@@ -488,7 +494,6 @@ BEGIN
                     ELSE ranked.reward_tokens_other
                   END;
 
-  -- Give "Tournament Winner" badge (badge_id = 7) to 1st place winners
   INSERT IGNORE INTO user_badges (user_id, badge_id, earned_at)
   SELECT tp.user_id, 7, NOW()
   FROM tournaments t
@@ -508,11 +513,12 @@ BEGIN
       WHERE rank_pos = 1
     );
 
-  -- Mark tournaments as rewarded
   UPDATE tournaments
   SET rewarded = 1
   WHERE endDate < NOW()
     AND rewarded = 0;
+
+  COMMIT;
 END$$
 
 DELIMITER ;

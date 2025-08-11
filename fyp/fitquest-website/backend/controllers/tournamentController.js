@@ -2,7 +2,12 @@ const TournamentService = require('../services/tournamentService');
 
 exports.createTournament = async (req, res) => {
   try {
-    const { title, description, startDate, endDate, features, target_exercise_pattern } = req.body;
+    const {
+      title, description, startDate, endDate, features, target_exercise_pattern,
+      reward_xp_first, reward_xp_second, reward_xp_other,
+      reward_tokens_first, reward_tokens_second, reward_tokens_other
+    } = req.body;
+
     if (!title || !description || !startDate || !endDate || !target_exercise_pattern) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -13,7 +18,9 @@ exports.createTournament = async (req, res) => {
       startDate,
       endDate,
       features: JSON.stringify(features || []),
-      target_exercise_pattern
+      target_exercise_pattern,
+      reward_xp_first, reward_xp_second, reward_xp_other,
+      reward_tokens_first, reward_tokens_second, reward_tokens_other
     });
 
     res.status(201).json(tournament);
@@ -34,15 +41,23 @@ exports.getAllTournaments = async (req, res) => {
 exports.updateTournament = async (req, res) => {
   try {
     const id = req.params.id;
-    const { title, description, startDate, endDate, features, target_exercise_pattern } = req.body;
+    const {
+      title, description, startDate, endDate, features, target_exercise_pattern,
+      reward_xp_first, reward_xp_second, reward_xp_other,
+      reward_tokens_first, reward_tokens_second, reward_tokens_other
+    } = req.body;
+
     await TournamentService.editTournament(id, {
       title,
       description,
       startDate,
       endDate,
       features: JSON.stringify(features || []),
-      target_exercise_pattern
+      target_exercise_pattern,
+      reward_xp_first, reward_xp_second, reward_xp_other,
+      reward_tokens_first, reward_tokens_second, reward_tokens_other
     });
+
     res.status(200).json({ message: 'Tournament updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Failed to update tournament', error: err.message });
