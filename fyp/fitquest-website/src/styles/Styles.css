@@ -1037,3 +1037,20 @@ header nav a {
   display: flex;
   justify-content: space-between;
 }
+
+.prefs-feedback-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.preferences-block,
+.feedback-block {
+  flex: 1;
+}
+
+.preferences-block h3,
+.feedback-block h3 {
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #001f5f;
+}

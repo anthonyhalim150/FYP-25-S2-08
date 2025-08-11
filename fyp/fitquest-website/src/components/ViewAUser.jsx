@@ -95,6 +95,7 @@ const ViewAUser = ({ user, onClose }) => {
       >
         <button className="modal-close" onClick={onClose}>✕</button>
 
+        {/* LEFT PANEL */}
         <div className="user-info-panel">
           <div className="avatar-stack">
             <div
@@ -170,40 +171,50 @@ const ViewAUser = ({ user, onClose }) => {
           )}
         </div>
 
+        {/* RIGHT PANEL */}
         <div className="user-preferences-panel">
-          <h3>User Preferences</h3>
-          <ul>
-            <li><strong>Workout Frequency:</strong> {user.preferences.workout_frequency}</li>
-            <li><strong>Fitness Goal:</strong> {user.preferences.fitness_goal}</li>
-            <li><strong>Workout Time:</strong> {user.preferences.workout_time}</li>
-            <li><strong>Fitness Level:</strong> {user.preferences.fitness_level}</li>
-            <li><strong>Injury:</strong> {user.preferences.injury}</li>
-          </ul>
+          <div className="prefs-feedback-container">
+            
+            {/* Preferences */}
+            <div className="preferences-block">
+              <h3>User Preferences</h3>
+              <ul>
+                <li><strong>Workout Frequency:</strong> {user.preferences.workout_frequency}</li>
+                <li><strong>Fitness Goal:</strong> {user.preferences.fitness_goal}</li>
+                <li><strong>Workout Time:</strong> {user.preferences.workout_time}</li>
+                <li><strong>Fitness Level:</strong> {user.preferences.fitness_level}</li>
+                <li><strong>Injury:</strong> {user.preferences.injury}</li>
+              </ul>
+            </div>
+
+            {/* Feedback */}
+            <div className="feedback-block">
+              <h3>What Users Liked</h3>
+              {likedFeatures.length > 0 ? (
+                <ul>
+                  {likedFeatures.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No features liked</p>
+              )}
+
+              <h3>What Users Didn't Like</h3>
+              {problems.length > 0 ? (
+                <ul>
+                  {problems.map((problem, index) => (
+                    <li key={index}>{problem}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No issues reported</p>
+              )}
+            </div>
+
+          </div>
         </div>
 
-        <div className="feedback-section">
-          <h3>What Users Liked</h3>
-          {likedFeatures.length > 0 ? (
-            <ul>
-              {likedFeatures.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No features liked</p>
-          )}
-
-          <h3>What Users Didn't Like</h3>
-          {problems.length > 0 ? (
-            <ul>
-              {problems.map((problem, index) => (
-                <li key={index}>{problem}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No issues reported</p>
-          )}
-        </div>
       </div>
     </div>
   );
