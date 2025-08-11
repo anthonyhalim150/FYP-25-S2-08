@@ -64,7 +64,7 @@ async function joinTournament(tournamentId, userId) {
 
 async function getJoinedTournamentsByUser(userId) {
   const sql = `
-    SELECT t.id AS tournament_id, t.title
+    SELECT t.id AS tournament_id, t.title, t.target_exercise_pattern
     FROM tournaments t
     INNER JOIN tournament_participants tp ON tp.tournament_id = t.id
     WHERE tp.user_id = ?

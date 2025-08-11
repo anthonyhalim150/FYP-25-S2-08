@@ -47,14 +47,17 @@ class WorkoutSessionService {
         return t;
       };
 
-      // compute reps for targeted exercises
       let pushUps = 0;
       let squats = 0;
       let jumpingJacks = 0;
+      const repsByName = {};
 
       for (const ex of exerciseLogs || []) {
         const name = norm(ex.exercise_name || ex.exerciseName);
         const reps = sumReps(ex.sets_data || ex.setsData);
+
+        if (!repsByName[name]) repsByName[name] = 0;
+        repsByName[name] += reps;
 
         if (/push ?ups?/.test(name)) {
           pushUps += reps;
@@ -65,9 +68,6 @@ class WorkoutSessionService {
         }
       }
 
-      const caloriesThisSession = Number(sessionData.caloriesBurned || 0);
-
-      // Update Challenges
       const invites = await ChallengeInvitesModel.getActiveAcceptedInvitesForUser(userId);
       for (const inv of invites) {
         const unit = norm(inv.unit);
@@ -75,7 +75,6 @@ class WorkoutSessionService {
         if (unit.includes('push up')) delta = pushUps;
         else if (unit.includes('squat')) delta = squats;
         else if (unit.includes('jumping jack')) delta = jumpingJacks;
-        else if (unit.includes('calorie')) delta = Math.max(0, Math.round(caloriesThisSession));
 
         if (delta > 0) {
           await ChallengeProgressModel.incrementProgress(inv.invite_id, userId, delta);
@@ -83,18 +82,15 @@ class WorkoutSessionService {
         }
       }
 
-      // Update Tournaments
       const joined = await TournamentModel.getJoinedTournamentsByUser(userId);
       for (const t of joined) {
-        const title = norm(t.title);
+        const pattern = norm(t.target_exercise_pattern || '');
         let delta = 0;
 
-        if (title.includes('ultimate warrior cup')) {
-          delta = pushUps;
-        } else if (title.includes('speed & agility showdown')) {
-          delta = squats;
-        } else if (title.includes('flex master tournament')) {
-          delta = jumpingJacks;
+        for (const [exerciseName, reps] of Object.entries(repsByName)) {
+          if (exerciseName.includes(pattern)) {
+            delta += reps;
+          }
         }
 
         if (delta > 0) {

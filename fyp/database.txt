@@ -277,9 +277,11 @@ CREATE TABLE tournaments (
   startDate DATETIME,
   endDate DATETIME,
   features TEXT,
+  target_exercise_pattern VARCHAR(255) DEFAULT NULL, -- e.g. "push up", "squat", "jumping jack"
   rewarded BOOLEAN DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE tournament_participants (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -415,27 +417,32 @@ VALUES
   ('relaxexercises_2', 'Stretching', 'Simple stretching routine to improve flexibility and release tension.', 1, 15, 'Hold each stretch for 30 seconds, focusing on deep breathing.', 'Intermediate', 'None', 600, 'https://www.youtube.com/watch?v=6Ib4Un4WnHI', 10);
 
 
-INSERT INTO tournaments (title, description, startDate, endDate, features) VALUES
+INSERT INTO tournaments 
+(title, description, startDate, endDate, features, target_exercise_pattern) 
+VALUES
 (
   'Ultimate Warrior Cup',
   'Compete with the best in endurance and power.',
   '2025-08-01 00:00:00',
   '2025-08-15 23:59:59',
-  '["Daily Leaderboards", "Weekly Rewards", "Muscle Power Rounds"]'
+  '["Daily Leaderboards", "Weekly Rewards", "Muscle Power Rounds"]',
+  'push up'
 ),
 (
   'Speed & Agility Showdown',
   'Boost your reaction time and movement speed.',
   '2025-08-05 00:00:00',
   '2025-08-18 23:59:59',
-  '["Sprint Events", "Agility Ladder Test", "Time Trials"]'
+  '["Sprint Events", "Agility Ladder Test", "Time Trials"]',
+  'squat'
 ),
 (
   'Flex Master Tournament',
   'Show off your strength and flexibility.',
   '2025-08-10 00:00:00',
   '2025-08-20 23:59:59',
-  '["Heavy Lifts", "Balance Tasks", "Flexibility Scoring"]'
+  '["Heavy Lifts", "Balance Tasks", "Flexibility Scoring"]',
+  'jumping jack'
 );
 
 INSERT INTO challenges (type, value, unit, duration)
