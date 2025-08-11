@@ -3,13 +3,13 @@ const tournamentService = require('../services/tournamentService');
 async function getAllTournaments(req, res) {
   try {
     const tournaments = await tournamentService.fetchAllTournaments();
-    tournaments.forEach(t =>
-      t.features = t.features ? JSON.parse(t.features) : []
-    );
+    tournaments.forEach(t => {
+      t.features = t.features || [];
+    });
     res.status(200).json(tournaments);
   } catch (err) {
     console.error('Error fetching tournaments:', err);
-    res.status(500).json({message: 'Failed to retrieve tournaments.'});
+    res.status(500).json({ message: 'Failed to retrieve tournaments.' });
   }
 }
 
@@ -30,7 +30,7 @@ async function getTournamentsWithParticipantCounts(req, res) {
     res.status(200).json(tournaments);
   } catch (err) {
     console.error('Error fetching tournaments with participants:', err);
-    res.status(500).json({message: 'Failed to retrieve tournaments.'});
+    res.status(500).json({ message: 'Failed to retrieve tournaments.' });
   }
 }
 
@@ -42,7 +42,7 @@ async function getTournamentParticipants(req, res) {
     res.status(200).json(participants);
   } catch (err) {
     console.error('Error fetching participants for tournament:', err);
-    res.status(500).json({message: 'Failed to get participants'});
+    res.status(500).json({ message: 'Failed to get participants' });
   }
 }
 

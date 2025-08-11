@@ -276,7 +276,7 @@ CREATE TABLE tournaments (
   description TEXT NOT NULL,
   startDate DATETIME,
   endDate DATETIME,
-  features TEXT,
+  features JSON,
   target_exercise_pattern VARCHAR(255) DEFAULT NULL, -- e.g. "push up", "squat", "jumping jack"
   reward_xp_first INT DEFAULT 200,
   reward_xp_second INT DEFAULT 100,
@@ -430,7 +430,7 @@ VALUES
   'Compete with the best in endurance and power.',
   '2025-08-01 00:00:00',
   '2025-08-15 23:59:59',
-  '["Daily Leaderboards", "Weekly Rewards", "Muscle Power Rounds"]',
+  JSON_ARRAY('Daily Leaderboards', 'Weekly Rewards', 'Muscle Power Rounds'),
   'push up'
 ),
 (
@@ -438,7 +438,7 @@ VALUES
   'Boost your reaction time and movement speed.',
   '2025-08-05 00:00:00',
   '2025-08-18 23:59:59',
-  '["Sprint Events", "Agility Ladder Test", "Time Trials"]',
+  JSON_ARRAY('Sprint Events', 'Agility Ladder Test', 'Time Trials'),
   'squat'
 ),
 (
@@ -446,7 +446,7 @@ VALUES
   'Show off your strength and flexibility.',
   '2025-08-10 00:00:00',
   '2025-08-20 23:59:59',
-  '["Heavy Lifts", "Balance Tasks", "Flexibility Scoring"]',
+  JSON_ARRAY('Heavy Lifts', 'Balance Tasks', 'Flexibility Scoring'),
   'jumping jack'
 );
 

@@ -17,7 +17,7 @@ exports.createTournament = async (req, res) => {
       description,
       startDate,
       endDate,
-      features: JSON.stringify(features || []),
+      features: features || [],
       target_exercise_pattern,
       reward_xp_first, reward_xp_second, reward_xp_other,
       reward_tokens_first, reward_tokens_second, reward_tokens_other
@@ -52,7 +52,7 @@ exports.updateTournament = async (req, res) => {
       description,
       startDate,
       endDate,
-      features: JSON.stringify(features || []),
+      features: features || [],
       target_exercise_pattern,
       reward_xp_first, reward_xp_second, reward_xp_other,
       reward_tokens_first, reward_tokens_second, reward_tokens_other
