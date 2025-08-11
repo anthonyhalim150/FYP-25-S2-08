@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/Styles.css';
 import { useNavigate } from 'react-router-dom';
 import { fetchAllExercises } from '../services/exerciseService';
+import { updateTournament } from '../services/tournamentService';
 
 const ViewATournament = ({ tournament, onClose, onUpdate }) => {
   const navigate = useNavigate();
@@ -14,6 +15,16 @@ const ViewATournament = ({ tournament, onClose, onUpdate }) => {
   }, []);
 
   if (!tournament) return null;
+
+  const handleSave = async () => {
+    try {
+      await updateTournament(tournament.id, editedTournament);
+      if (onUpdate) onUpdate(); 
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Failed to update tournament', err);
+    }
+  };
 
   return (
     <div className="view-tournament-modal-overlay" onClick={onClose}>
@@ -117,18 +128,24 @@ const ViewATournament = ({ tournament, onClose, onUpdate }) => {
                   <input
                     type="number"
                     className="reward-input"
-                    value={editedTournament[`reward_xp_${pos}`] ?? 0}
+                    value={editedTournament[`reward_xp_${pos}`] ?? ''}
                     onChange={(e) =>
-                      setEditedTournament({ ...editedTournament, [`reward_xp_${pos}`]: Number(e.target.value) })
+                      setEditedTournament({
+                        ...editedTournament,
+                        [`reward_xp_${pos}`]: e.target.value === '' ? null : Number(e.target.value)
+                      })
                     }
                   />
                   <span>XP</span>
                   <input
                     type="number"
                     className="reward-input"
-                    value={editedTournament[`reward_tokens_${pos}`] ?? 0}
+                    value={editedTournament[`reward_tokens_${pos}`] ?? ''}
                     onChange={(e) =>
-                      setEditedTournament({ ...editedTournament, [`reward_tokens_${pos}`]: Number(e.target.value) })
+                      setEditedTournament({
+                        ...editedTournament,
+                        [`reward_tokens_${pos}`]: e.target.value === '' ? null : Number(e.target.value)
+                      })
                     }
                   />
                   <span>Tokens</span>
@@ -156,10 +173,7 @@ const ViewATournament = ({ tournament, onClose, onUpdate }) => {
               </button>
               <button
                 className="confirm-btn"
-                onClick={() => {
-                  setIsEditing(false);
-                  if (onUpdate) onUpdate();
-                }}
+                onClick={handleSave}
               >
                 Save
               </button>

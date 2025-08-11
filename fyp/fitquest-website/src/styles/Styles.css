@@ -1057,3 +1057,17 @@ header nav a {
 textarea {
   resize: none;
 }
+.reward-row {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+  margin-bottom: 12px; 
+}
+
+.form-group-col {
+  margin-bottom: 20px;
+}
+
+.reward-input {
+  width: 80px;
+}
