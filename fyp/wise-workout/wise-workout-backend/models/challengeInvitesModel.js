@@ -24,6 +24,7 @@ const ChallengeInvitesModel = {
          ci.custom_duration_value,
          ci.custom_duration_unit,
          GREATEST(0, DATEDIFF(ci.expires_at, NOW())) AS daysLeft,
+         ci.completed_at IS NOT NULL AS is_completed,
          CASE WHEN ci.sender_id = ? THEN r.username ELSE s.username END AS opponentName
        FROM challenge_invites ci
        JOIN challenges c ON ci.challenge_id = c.id

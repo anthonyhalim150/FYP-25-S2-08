@@ -40,7 +40,6 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
       ));
     });
 
-    // Sort: on progress > completed > expired
     groups.sort((a, b) {
       int rankA = a.daysLeft > 0 && !a.isCompleted ? 0 : (a.isCompleted ? 1 : 2);
       int rankB = b.daysLeft > 0 && !b.isCompleted ? 0 : (b.isCompleted ? 1 : 2);
@@ -115,13 +114,13 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
     String statusText;
     Color statusColor;
     if (isActive) {
-      statusText = '• on progress';
+      statusText = '• In Progress';
       statusColor = Colors.green;
     } else if (isCompleted) {
-      statusText = '• completed';
+      statusText = '• Completed';
       statusColor = Colors.blue;
     } else {
-      statusText = '• expired';
+      statusText = '• Expired';
       statusColor = Colors.grey;
     }
 
