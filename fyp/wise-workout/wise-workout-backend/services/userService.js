@@ -87,7 +87,7 @@ class UserService {
         rewardedTokens += lvlObj?.reward_tokens || 0;
       }
       if (rewardedTokens > 0) {
-        await UserModel.applyPrize(userId, { type: 'tokens', value: rewardedTokens });
+        await UserService.applyPrize(userId, { type: 'tokens', value: rewardedTokens });
       }
     }
     const nextLevelObj = await LevelModel.getLevel(newLevel + 1);
@@ -101,6 +101,18 @@ class UserService {
       rewardedTokens
     };
   }
+  static async applyPrize(userId, prize) {
+    if (prize.type === 'tokens') {
+      await UserModel.addTokens(userId, prize.value);
+    } else if (prize.type === 'trial') {
+      let current = await UserModel.getPremiumUntil(userId);
+      const now = new Date();
+      if (!current || current < now) current = now;
+      current.setDate(current.getDate() + prize.value);
+      await UserModel.setPremium(userId, current);
+    }
+  }
+  
 
   static async updateProfile(userId, updates) {
     if (updates.username) {

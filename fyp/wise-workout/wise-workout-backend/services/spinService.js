@@ -1,9 +1,9 @@
 const SpinModel = require('../models/spinModel');
 const PrizeModel = require('../models/prizeModel');
 const UserModel = require('../models/userModel');
+const UserService = require('./userService');
 const DailyQuestModel = require('../models/dailyQuestModel');
 const BadgeService = require('./badgeService');
-
 
 class SpinService {
   static async performSpin(userId, forceSpin = false) {
@@ -27,7 +27,7 @@ class SpinService {
     if (totalSpins === 30) {
       await BadgeService.grantBadge(userId, 11);
     }
-    await UserModel.applyPrize(userId, prize);
+    await UserService.applyPrize(userId, prize);
     const today = new Date().toISOString().slice(0,10);
     await DailyQuestModel.markQuestDone(userId, 'SPIN_LUCKY', today);
 

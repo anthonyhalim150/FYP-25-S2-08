@@ -132,29 +132,20 @@ class UserModel {
     const [rows] = await db.execute(sql, values);
     return rows;
   }
-  static async applyPrize(userId, prize) {
-    if (prize.type === 'tokens') {
-      await db.execute(
-        'UPDATE users SET tokens = tokens + ? WHERE id = ?',
-        [prize.value, userId]
-      );
-    } else if (prize.type === 'trial') {
-      const [rows] = await db.execute(
-        'SELECT premium_until FROM users WHERE id = ?',
-        [userId]
-      );
-      let current = rows[0]?.premium_until ? new Date(rows[0].premium_until) : null;
-      const now = new Date();
-    
-      if (!current || current < now) current = now;
-      current.setDate(current.getDate() + prize.value);
-    
-      await db.execute(
-        'UPDATE users SET role = "premium", premium_until = ? WHERE id = ?',
-        [current, userId]
-      );
-    } 
+  static async addTokens(userId, amount) {
+    await db.execute(
+      'UPDATE users SET tokens = tokens + ? WHERE id = ?',
+      [amount, userId]
+    );
   }
+  
+  static async getPremiumUntil(userId) {
+    const [rows] = await db.execute(
+      'SELECT premium_until FROM users WHERE id = ?',
+      [userId]
+    );
+    return rows[0]?.premium_until ? new Date(rows[0].premium_until) : null;
+  }  
   static async deductTokens(userId, amount) {
     const [result] = await db.execute(
       'UPDATE users SET tokens = tokens - ? WHERE id = ? AND tokens >= ?',
