@@ -1,15 +1,15 @@
 const mysql = require('mysql2/promise');
 
 const db = mysql.createPool({
-  host: 'wise-workout.c9qquugywaez.ap-southeast-2.rds.amazonaws.com',
-  user: 'admin', 
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: 'FYP', 
-  port: 3306,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
   waitForConnections: true,
   connectionLimit: 100,
   queueLimit: 5,
-  dateStrings: true,//this is to avoid conversions btw, since I had a problem where it would shift the timezone
+  dateStrings: true,
 });
 
 module.exports = db;

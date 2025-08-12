@@ -1,2 +1,2 @@
-const PEPPER = 'bangbambambangtony123';
+const PEPPER = process.env.PEPPER;
 module.exports = PEPPER;
