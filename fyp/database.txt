@@ -25,7 +25,7 @@ CREATE TABLE users (
 CREATE TABLE subscription_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    plan ENUM('monthly', 'yearly') NOT NULL,
+    plan ENUM('monthly', 'annual', 'lifetime') NOT NULL,
     method ENUM('money', 'tokens') NOT NULL,
     amount DECIMAL(10, 2) DEFAULT NULL,
     tokens_used INT DEFAULT NULL,
