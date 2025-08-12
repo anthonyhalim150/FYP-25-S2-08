@@ -26,39 +26,54 @@ class WorkoutPlansController {
   Future<List<WorkoutPlanItem>> getPlanItems(int planId) =>
       planService.getPlanItems(planId);
 
+  /// NEW: add by exerciseId (backend only needs exercise_id now)
   Future<int> addItem({
     required int planId,
-    required WorkoutPlanItem item,
+    required int exerciseId,
   }) async {
-    return planService.addOneItem(planId: planId, item: item);
+    return planService.addOneItem(planId: planId, exerciseId: exerciseId);
   }
 
-  /// Fetch all exercises from your backend for the picker
+  /// Fetch all exercises for the picker (must include exercise_id)
   Future<List<_ExerciseLite>> fetchAllExercises() async {
     final exerciseService = ExerciseService();
     final exercises = await exerciseService.fetchAllExercises();
 
     return exercises.map((e) {
-      final d = e as dynamic; // adapt to your Exercise model if available
+      final d = e as dynamic; // adapt to your Exercise model shape
+      final id = d.exerciseId ?? d.id ?? d.exercise_id;
       final name = (d.exerciseName ?? d.name ?? d.exercise_name ?? '').toString();
       final level = d.exerciseLevel?.toString();
       final description =
       (d.exerciseDescription ?? d.description ?? d.exercise_description)?.toString();
-      return _ExerciseLite(name: name, level: level, description: description);
+      return _ExerciseLite(
+        id: (id is int) ? id : int.tryParse(id.toString()) ?? 0,
+        name: name,
+        level: level,
+        description: description,
+      );
     }).toList();
   }
 }
 
 class _ExerciseLite {
+  final int id;         // exercise_id
   final String name;
   final String? level;
   final String? description;
 
-  _ExerciseLite({required this.name, this.level, this.description});
-
+  _ExerciseLite({
+    required this.id,
+    required this.name,
+    this.level,
+    this.description,
+  });
 
   factory _ExerciseLite.fromJson(Map<String, dynamic> json) {
+    final rawId = json['exercise_id'] ?? json['id'] ?? json['exerciseId'];
+    final id = (rawId is int) ? rawId : int.tryParse(rawId.toString()) ?? 0;
     return _ExerciseLite(
+      id: id,
       name: (json['exercise_name'] ?? json['name'] ?? json['title'] ?? '').toString(),
       level: json['exercise_level']?.toString(),
       description: (json['exercise_description'] ?? json['description'])?.toString(),
@@ -176,7 +191,7 @@ class _WorkoutPlansScreenState extends State<WorkoutPlansScreen> {
     if (_listService.error != null) {
       return Padding(
         padding: const EdgeInsets.only(top: 40),
-        child: Center(child: Text('Error: ${_listService.error}', style: TextStyle(color: Colors.red.shade400))),
+        child: Center(child: Text('Error: ${_listService.error}', style: TextStyle(color: Colors.redAccent))),
       );
     }
 
@@ -206,9 +221,7 @@ class _WorkoutPlansScreenState extends State<WorkoutPlansScreen> {
           child: ListTile(
             leading: const Icon(Icons.fitness_center),
             title: Text(p.planTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
-            subtitle: p.createdAt == null
-                ? null
-                : Text('Created ${p.createdAt}'),
+            subtitle: p.createdAt == null ? null : Text('Created ${p.createdAt}'),
             onTap: () => _openPlanItems(planId: p.planId, title: p.planTitle),
             trailing: PopupMenuButton<String>(
               onSelected: (v) async {
@@ -274,8 +287,7 @@ class _WorkoutPlansScreenState extends State<WorkoutPlansScreen> {
           FilledButton.tonal(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
         ],
       ),
-    ) ??
-        false;
+    ) ?? false;
   }
 
   Future<void> _openPlanItems({required int planId, required String title}) async {
@@ -358,7 +370,7 @@ class _PlanItemsSheetState extends State<_PlanItemsSheet> {
                         if (it.exerciseDuration != null) 'Sec: ${it.exerciseDuration}',
                       ].join('  •  ');
                       return ListTile(
-                        title: Text(it.exerciseName),
+                        title: Text(it.exerciseName ?? 'Exercise #${it.exerciseId}'),
                         subtitle: details.isEmpty ? null : Text(details),
                       );
                     },
@@ -381,7 +393,9 @@ class _PlanItemsSheetState extends State<_PlanItemsSheet> {
                     onPressed: _items.isEmpty
                         ? null
                         : () {
-                      final exerciseNames = _items.map((e) => e.exerciseName).toList();
+                      final exerciseNames = _items
+                          .map((e) => e.exerciseName ?? 'Exercise #${e.exerciseId}')
+                          .toList();
 
                       Navigator.pop(context);
                       Navigator.pushNamed(
@@ -449,6 +463,24 @@ class _ExercisePickerSheetState extends State<_ExercisePickerSheet> {
           ? _all
           : _all.where((e) => e.name.toLowerCase().contains(qq)).toList();
     });
+  }
+
+  Future<void> _addExercise(_ExerciseLite ex) async {
+    try {
+      final id = await widget.controller.addItem(
+        planId: widget.planId,
+        exerciseId: ex.id,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Added ${ex.name} (item #$id)')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add: $e')));
+      }
+    }
   }
 
   @override
@@ -536,7 +568,7 @@ class _ExercisePickerSheetState extends State<_ExercisePickerSheet> {
                           : null,
                       trailing: IconButton(
                         icon: const Icon(Icons.add_circle_outline),
-                        onPressed: () => _promptAdd(ex),
+                        onPressed: () => _addExercise(ex),
                       ),
                     );
                   },
@@ -559,92 +591,5 @@ class _ExercisePickerSheetState extends State<_ExercisePickerSheet> {
         ),
       ),
     );
-  }
-
-  Future<void> _promptAdd(_ExerciseLite ex) async {
-    final setsCtrl = TextEditingController(text: '3');
-    final repsCtrl = TextEditingController(text: '10');
-    final durCtrl = TextEditingController(); // seconds
-    final formKey = GlobalKey<FormState>();
-
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Add "${ex.name}"'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: setsCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Sets'),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      if (int.tryParse(v) == null) return 'Invalid';
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: repsCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Reps'),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      if (int.tryParse(v) == null) return 'Invalid';
-                      return null;
-                    },
-                  ),
-                ),
-              ]),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: durCtrl,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Duration (seconds, optional)'),
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return null;
-                  if (int.tryParse(v) == null) return 'Invalid';
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () {
-            if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true);
-          }, child: const Text('Add')),
-        ],
-      ),
-    );
-
-    if (ok != true) return;
-
-    try {
-      final item = WorkoutPlanItem(
-        exerciseName: ex.name,
-        exerciseSets: int.tryParse(setsCtrl.text.trim()),
-        exerciseReps: int.tryParse(repsCtrl.text.trim()),
-        exerciseDuration: int.tryParse(durCtrl.text.trim()),
-      );
-      final id = await widget.controller.addItem(planId: widget.planId, item: item);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Added ${ex.name} (item #$id)')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add: $e')));
-      }
-    }
   }
 }

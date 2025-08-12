@@ -33,29 +33,13 @@ exports.addOneItem = async (req, res) => {
   try {
     const userId = req.user.id || req.user.userId;
     const { planId } = req.params;
+    const { exercise_id } = req.body;
 
-    const {
-      exercise_name,
-      exercise_reps = null,
-      exercise_sets = null,
-      exercise_duration = null,
-      // allow camelCase too (from Flutter)
-      exerciseName,
-      exerciseReps,
-      exerciseSets,
-      exerciseDuration,
-    } = req.body;
-
-    const payload = {
-      exercise_name: exercise_name || exerciseName,
-      exercise_reps: exercise_reps ?? exerciseReps ?? null,
-      exercise_sets: exercise_sets ?? exerciseSets ?? null,
-      exercise_duration: exercise_duration ?? exerciseDuration ?? null,
-    };
-
-    if (!payload.exercise_name) {
-      return res.status(400).json({ message: 'exercise_name is required' });
+    if (!exercise_id) {
+      return res.status(400).json({ message: 'exercise_id is required' });
     }
+
+    const payload = { exercise_id };
 
     const itemId = await UserWorkoutPlanService.addItem(userId, planId, payload);
     if (!itemId) return res.status(404).json({ message: 'Plan not found' });

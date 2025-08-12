@@ -20,11 +20,13 @@ class UserWorkoutPlanModel {
     return result.insertId;
   }
 
+  // ✅ Now joins with exercises table to get all exercise info
   static async getItemsByPlanId(planId) {
     const [rows] = await db.execute(
-      `SELECT exercise_name, exercise_reps, exercise_sets, exercise_duration
-       FROM user_workout_plan_items
-       WHERE plan_id = ?`,
+      `SELECT i.item_id, i.plan_id, e.*
+       FROM user_workout_plan_items i
+       JOIN exercises e ON e.exercise_id = i.exercise_id
+       WHERE i.plan_id = ?`,
       [planId]
     );
     return rows;
@@ -39,6 +41,7 @@ class UserWorkoutPlanModel {
     return result.affectedRows > 0;
   }
 
+  // ✅ Now stores exercise_id instead of name/reps/sets/duration
   static async addItemForUser(userId, planId, item) {
     // ensure plan belongs to user
     const [own] = await db.execute(
@@ -47,17 +50,16 @@ class UserWorkoutPlanModel {
     );
     if (own.length === 0) return null;
 
-    const { exercise_name, exercise_reps, exercise_sets, exercise_duration } = item;
+    const { exercise_id } = item;
+    if (!exercise_id) return null;
 
     const [res] = await db.execute(
-      `INSERT INTO user_workout_plan_items
-       (plan_id, exercise_name, exercise_reps, exercise_sets, exercise_duration)
-       VALUES (?, ?, ?, ?, ?)`,
-      [planId, exercise_name, exercise_reps, exercise_sets, exercise_duration]
+      `INSERT INTO user_workout_plan_items (plan_id, exercise_id)
+       VALUES (?, ?)`,
+      [planId, exercise_id]
     );
     return res.insertId;
   }
-
 }
 
 module.exports = UserWorkoutPlanModel;

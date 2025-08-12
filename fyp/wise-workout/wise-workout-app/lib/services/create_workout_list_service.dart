@@ -1,9 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'create_workout_plan_service.dart';
 
-/// A simple state holder (MVC-friendly) that loads and exposes the user's plans.
-/// You can use this with a StatefulWidget (addListener/removeListener) or a
-/// ChangeNotifierProvider if you prefer Provider/Riverpod later.
 class CreateWorkoutListService extends ChangeNotifier {
   final CreateWorkoutPlanService _planService;
 
@@ -36,38 +33,48 @@ class CreateWorkoutListService extends ChangeNotifier {
 
   Future<void> refresh() => loadPlans();
 
-  /// Convenience passthroughs if you want to manage from this layer:
-
+  /// Create a plan and refresh local cache
   Future<WorkoutPlan> createPlan(String title) async {
     final p = await _planService.createPlan(planTitle: title);
     await loadPlans();
     return p;
   }
 
+  /// Delete a plan and update local list
   Future<void> deletePlan(int planId) async {
     await _planService.deletePlan(planId);
     _plans.removeWhere((p) => p.planId == planId);
     notifyListeners();
   }
 
+  /// Get items for a plan (JOIN result from backend)
   Future<List<WorkoutPlanItem>> getItems(int planId) {
     return _planService.getPlanItems(planId);
   }
 
-  // Optional add item helpers if your backend exposes them
+  // -------------------- Add Items (updated API) --------------------
+
+  /// Add a single exercise to a plan by exerciseId
   Future<int> addOneItem({
     required int planId,
-    required WorkoutPlanItem item,
+    required int exerciseId,
   }) async {
-    final id = await _planService.addOneItem(planId: planId, item: item);
+    final id = await _planService.addOneItem(
+      planId: planId,
+      exerciseId: exerciseId,
+    );
     return id;
   }
 
+  /// Add multiple exercises (list of exerciseIds) to a plan
   Future<int> addItemsBulk({
     required int planId,
-    required List<WorkoutPlanItem> items,
+    required List<int> exerciseIds,
   }) async {
-    final count = await _planService.addItemsBulk(planId: planId, items: items);
+    final count = await _planService.addItemsBulk(
+      planId: planId,
+      exerciseIds: exerciseIds,
+    );
     return count;
   }
 }

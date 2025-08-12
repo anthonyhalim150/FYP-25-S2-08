@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Models
+/// -------------------- Models --------------------
+
 class WorkoutPlan {
   final int planId;
   final String planTitle;
-  final DateTime? createdAt; // backend returns TIMESTAMP; we parse if present
-  final int? itemsCount;     // not required by your endpoints; kept for future
+  final DateTime? createdAt;
+  final int? itemsCount;
 
   WorkoutPlan({
     required this.planId,
@@ -17,7 +18,6 @@ class WorkoutPlan {
   });
 
   factory WorkoutPlan.fromJson(Map<String, dynamic> json) {
-    // Accept snake_case (DB alias) or camelCase (future)
     final id = json['plan_id'] ?? json['planId'];
     final title = json['plan_title'] ?? json['planTitle'];
     final created = json['created_at'] ?? json['createdAt'];
@@ -34,48 +34,94 @@ class WorkoutPlan {
   }
 }
 
+/// Represents an item in a plan. On fetch, backend returns a JOIN:
+/// SELECT i.item_id, i.plan_id, e.*
+/// So we include both linkage fields and exercise details (nullable).
 class WorkoutPlanItem {
-  final String exerciseName;
-  final int? exerciseReps;
+  final int itemId;       // from i.item_id (present on fetch)
+  final int planId;       // from i.plan_id (present on fetch)
+  final int exerciseId;   // from i.exercise_id / e.exercise_id
+
+  // Joined exercise fields (nullable to be forward-compatible)
+  final String? exerciseName;
+  final String? exerciseDescription;
   final int? exerciseSets;
+  final int? exerciseReps;
+  final String? exerciseInstructions;
+  final String? exerciseLevel;
+  final String? exerciseEquipment;
   final int? exerciseDuration;
+  final String? youtubeUrl;
+  final num? caloriesBurntPerRep;
+  final int? workoutId;
 
   WorkoutPlanItem({
-    required this.exerciseName,
-    this.exerciseReps,
+    required this.itemId,
+    required this.planId,
+    required this.exerciseId,
+    this.exerciseName,
+    this.exerciseDescription,
     this.exerciseSets,
+    this.exerciseReps,
+    this.exerciseInstructions,
+    this.exerciseLevel,
+    this.exerciseEquipment,
     this.exerciseDuration,
+    this.youtubeUrl,
+    this.caloriesBurntPerRep,
+    this.workoutId,
   });
 
+  /// Construct from the JOIN result.
   factory WorkoutPlanItem.fromJson(Map<String, dynamic> json) {
+    // linkage fields
+    final itemId = json['item_id'] ?? json['itemId'] ?? 0;
+    final planId = json['plan_id'] ?? json['planId'] ?? 0;
+    final exerciseId = json['exercise_id'] ?? json['exerciseId'] ?? 0;
+
     return WorkoutPlanItem(
-      exerciseName: (json['exercise_name'] ?? json['exerciseName'] ?? '').toString(),
-      exerciseReps: _toIntOrNull(json['exercise_reps'] ?? json['exerciseReps']),
-      exerciseSets: _toIntOrNull(json['exercise_sets'] ?? json['exerciseSets']),
-      exerciseDuration: _toIntOrNull(json['exercise_duration'] ?? json['exerciseDuration']),
+      itemId: itemId is int ? itemId : int.tryParse(itemId.toString()) ?? 0,
+      planId: planId is int ? planId : int.tryParse(planId.toString()) ?? 0,
+      exerciseId: exerciseId is int ? exerciseId : int.tryParse(exerciseId.toString()) ?? 0,
+
+      // exercise fields (joined)
+      exerciseName: _s(json['exercise_name'] ?? json['exerciseName']),
+      exerciseDescription: _s(json['exercise_description'] ?? json['exerciseDescription']),
+      exerciseSets: _i(json['exercise_sets'] ?? json['exerciseSets']),
+      exerciseReps: _i(json['exercise_reps'] ?? json['exerciseReps']),
+      exerciseInstructions: _s(json['exercise_instructions'] ?? json['exerciseInstructions']),
+      exerciseLevel: _s(json['exercise_level'] ?? json['exerciseLevel']),
+      exerciseEquipment: _s(json['exercise_equipment'] ?? json['exerciseEquipment']),
+      exerciseDuration: _i(json['exercise_duration'] ?? json['exerciseDuration']),
+      youtubeUrl: _s(json['youtube_url'] ?? json['youtubeUrl']),
+      caloriesBurntPerRep: _n(json['calories_burnt_per_rep'] ?? json['caloriesBurntPerRep']),
+      workoutId: _i(json['workout_id'] ?? json['workoutId']),
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'exercise_name': exerciseName,
-    if (exerciseReps != null) 'exercise_reps': exerciseReps,
-    if (exerciseSets != null) 'exercise_sets': exerciseSets,
-    if (exerciseDuration != null) 'exercise_duration': exerciseDuration,
+  /// For POST /:planId/item we only send exercise_id.
+  Map<String, dynamic> toCreateJson() => {
+    'exercise_id': exerciseId,
   };
 
-  static int? _toIntOrNull(dynamic v) {
+  static String? _s(dynamic v) => v == null ? null : v.toString();
+  static int? _i(dynamic v) {
     if (v == null) return null;
     if (v is int) return v;
     return int.tryParse(v.toString());
   }
+
+  static num? _n(dynamic v) {
+    if (v == null) return null;
+    if (v is num) return v;
+    return num.tryParse(v.toString());
+  }
 }
 
-class CreateWorkoutPlanService {
-  /// Update this to your API base (emulator localhost for Android)
-  final String baseUrl;
+/// -------------------- Service --------------------
 
-  /// Where your app stores the JWT. Many of your files use 'jwt_cookie'.
-  /// We will send it as Cookie: session=<token> to satisfy your authMiddleware.
+class CreateWorkoutPlanService {
+  final String baseUrl;
   final FlutterSecureStorage _storage;
 
   CreateWorkoutPlanService({
@@ -83,9 +129,7 @@ class CreateWorkoutPlanService {
     FlutterSecureStorage? storage,
   }) : _storage = storage ?? const FlutterSecureStorage();
 
-  // --------------------- Public API ---------------------
-
-  /// 1) Fetch ALL plans for the current user
+  /// 1) Get my plans
   Future<List<WorkoutPlan>> getMyPlans() async {
     final res = await _get('/user-workout-plans');
     final data = _decodeJson(res);
@@ -95,15 +139,13 @@ class CreateWorkoutPlanService {
     throw Exception('Unexpected response format when fetching plans.');
   }
 
-  /// 2) Create a plan (no user_id needed)
+  /// 2) Create a plan
   Future<WorkoutPlan> createPlan({required String planTitle}) async {
     final res = await _post('/user-workout-plans', body: {
       'plan_title': planTitle,
     });
     final data = _decodeJson(res);
-    // backend returns { plan_id, plan_title }
-    final planId = (data['plan_id'] as int?) ??
-        int.tryParse(data['plan_id']?.toString() ?? '');
+    final planId = (data['plan_id'] as int?) ?? int.tryParse('${data['plan_id'] ?? ''}');
     if (planId == null) {
       throw Exception('Plan created but no plan_id returned');
     }
@@ -113,7 +155,7 @@ class CreateWorkoutPlanService {
     );
   }
 
-  /// 3) Get items for a plan by planId
+  /// 3) Get items for a plan (JOIN result)
   Future<List<WorkoutPlanItem>> getPlanItems(int planId) async {
     final res = await _get('/user-workout-plans/$planId/items');
     final data = _decodeJson(res);
@@ -133,36 +175,37 @@ class CreateWorkoutPlanService {
     }
   }
 
-  // ----- Optional: for plus-to-add flow if/when you enable it on backend -----
-
-  /// Add one item to a plan (if your backend exposes POST /:planId/item)
+  /// 5) Add one item (now expects only exercise_id)
   Future<int> addOneItem({
     required int planId,
-    required WorkoutPlanItem item,
+    required int exerciseId,
   }) async {
-    final res = await _post('/user-workout-plans/$planId/item', body: item.toJson());
+    final item = WorkoutPlanItem(itemId: 0, planId: planId, exerciseId: exerciseId);
+    final res = await _post('/user-workout-plans/$planId/item', body: item.toCreateJson());
     final data = _decodeJson(res);
     final itemId = data['item_id'] ?? data['id'];
     if (itemId == null) throw Exception('Item add returned no item_id');
     return (itemId is int) ? itemId : int.parse(itemId.toString());
   }
 
-  /// Add multiple items to a plan (if your backend exposes POST /:planId/items)
+  /// 6) Add multiple items (optional; if backend exposes POST /:planId/items)
+  /// Expects a list of exercise IDs.
   Future<int> addItemsBulk({
     required int planId,
-    required List<WorkoutPlanItem> items,
+    required List<int> exerciseIds,
   }) async {
-    final body = {'items': items.map((e) => e.toJson()).toList()};
+    final body = {
+      'items': exerciseIds.map((id) => {'exercise_id': id}).toList(),
+    };
     final res = await _post('/user-workout-plans/$planId/items', body: body);
     final data = _decodeJson(res);
     final inserted = data['inserted_count'] ?? data['affectedRows'];
     return inserted is int ? inserted : int.tryParse(inserted.toString()) ?? 0;
   }
 
-  // --------------------- HTTP helpers ---------------------
+  // -------------------- HTTP helpers --------------------
 
   Future<String?> _getStoredToken() async {
-    // Many of your services read 'jwt_cookie'. Adjust if your key name differs.
     return _storage.read(key: 'jwt_cookie');
   }
 
@@ -187,8 +230,11 @@ class CreateWorkoutPlanService {
 
   Future<http.Response> _post(String path, {Map<String, dynamic>? body}) async {
     final t = await _getStoredToken();
-    final res = await http.post(_u(path),
-        headers: _headersWithCookie(t), body: jsonEncode(body ?? {}));
+    final res = await http.post(
+      _u(path),
+      headers: _headersWithCookie(t),
+      body: jsonEncode(body ?? {}),
+    );
     _throwIfNotOk(res);
     return res;
   }

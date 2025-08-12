@@ -16,10 +16,10 @@ class UserWorkoutPlanService {
   static async deletePlan(planId, userId) {
     return await UserWorkoutPlanModel.deletePlan(planId, userId);
   }
+
   static async addItem(userId, planId, item) {
     return UserWorkoutPlanModel.addItemForUser(userId, planId, item);
   }
-
 }
 
 module.exports = UserWorkoutPlanService;
