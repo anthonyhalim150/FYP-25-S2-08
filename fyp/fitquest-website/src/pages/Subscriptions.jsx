@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import axios from 'axios';
 import './Subscriptions.css';
 import { PieChart, Pie, Cell } from 'recharts';
 import PageLayout from '../components/PageLayout';
 import ViewASubscription from '../components/ViewASubscription';
+import { fetchAllSubscriptions } from '../services/subscriptionHistoryService';
 
 const planData = [
   { name: 'Monthly Plan', value: 3, color: '#D2B3DB', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 30 },
@@ -11,38 +11,32 @@ const planData = [
   { name: 'Lifetime Plan', value: 5, color: '#00113d', price: 49.0, border: '#333', tooltipX: 200, tooltipY: 180, tokens: 999 },
 ];
 
-const dummyPremiumUsers = [
-  { username: 'cps829', email: 'cps829@gmail.com', plan: 'Trial', joined: 'Jun 10, 2025', expiry: 'Jul 1, 2025', price: '$0.00' },
-  { username: 'anthonyhalim153', email: 'anthonyhalim@gmail.com', plan: 'Monthly', joined: 'Jun 10, 2025', expiry: 'Jun 20, 2025', price: '$2.99' },
-  { username: 'javierreviaj', email: 'javierreviaj@gmail.com', plan: 'Lifetime', joined: 'Jun 10, 2025', expiry: 'Jul 10, 2025', price: '$49' },
-  { username: 'weibingoh', email: 'weibin@goh@gmail.com', plan: 'Yearly', joined: 'Jun 10, 2025', expiry: 'Jun 30, 2025', price: '$19.99' },
-  { username: 'kawaiiineko', email: 'kawaii@gmail.com', plan: 'Lifetime', joined: 'Jun 10, 2025', expiry: 'Jul 1, 2025', price: '$49' },
-];
-
 const Subscriptions = () => {
   const [hoveredPlan, setHoveredPlan] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [premiumUsers, setPremiumUsers] = useState(dummyPremiumUsers);
+  const [premiumUsers, setPremiumUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const chartRef = useRef(null);
 
-  const filteredUsers = premiumUsers.filter((user) => {
-    const planMatch = selectedTab === 'All' || (user.plan && user.plan.toLowerCase() === selectedTab.toLowerCase());
-    const searchMatch =
-      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    return planMatch && searchMatch;
-  });
-
-  const planTabCounts = {
-    All: premiumUsers.length,
-    Lifetime: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'lifetime').length,
-    Yearly: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'yearly').length,
-    Monthly: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'monthly').length,
-    Trial: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'trial').length,
-  };
+  useEffect(() => {
+    const planFilter = selectedTab === 'All' ? 'All' : selectedTab;
+    fetchAllSubscriptions(planFilter, searchTerm)
+      .then(rows => {
+        const mapped = rows.map(r => ({
+          user_id: r.user_id,
+          username: r.username,
+          email: r.email,
+          plan: r.plan ? r.plan.charAt(0).toUpperCase() + r.plan.slice(1) : '',
+          joined: new Date(r.start_date).toLocaleString(),
+          expiry: new Date(r.end_date).toLocaleString(),
+          price: r.method === 'money' ? `$${Number(r.amount || 0).toFixed(2)}` : `${r.tokens_used || 0} Tokens`
+        }));
+        setPremiumUsers(mapped);
+      })
+      .catch(() => setPremiumUsers([]));
+  }, [selectedTab, searchTerm]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -54,6 +48,21 @@ const Subscriptions = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const filteredUsers = premiumUsers.filter((user) => {
+    const planMatch = selectedTab === 'All' || (user.plan && user.plan.toLowerCase() === selectedTab.toLowerCase());
+    const s = searchTerm.toLowerCase();
+    const searchMatch = user.username?.toLowerCase().includes(s) || user.email?.toLowerCase().includes(s);
+    return planMatch && searchMatch;
+  });
+
+  const planTabCounts = {
+    All: premiumUsers.length,
+    Lifetime: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'lifetime').length,
+    Yearly: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'yearly').length,
+    Monthly: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'monthly').length,
+    Trial: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'trial').length,
+  };
 
   const activeTooltip = planData.find(p => p.name === hoveredPlan);
 
