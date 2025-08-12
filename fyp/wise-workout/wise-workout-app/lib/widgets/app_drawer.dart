@@ -131,14 +131,6 @@ class AppDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/workout-history');
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.leaderboard),
-            title: const Text('Achievements'),
-            onTap: () {
-              Navigator.pop(context);
-              // Add achievements navigation
-            },
-          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),

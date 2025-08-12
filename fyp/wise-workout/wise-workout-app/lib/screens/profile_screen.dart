@@ -355,7 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _profileItem(Icons.person, "avatar"),
                   _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
                   _profileItem(Icons.lock, "password"),
-                  _profileItem(Icons.watch, "wearable", subtitle: tr('profile_wearable_subtitle')),
+                  _profileItem(Icons.watch, "wearable",),
                   _profileItem(Icons.history, "workout_history"),
                   _profileItem(Icons.bar_chart, "body_metrics"),
                   if (!_isPremiumUser)

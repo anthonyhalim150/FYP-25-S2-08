@@ -3,6 +3,7 @@ import '../services/challenge_service.dart';
 
 class ChallengeLeaderboardWidget extends StatefulWidget {
   const ChallengeLeaderboardWidget({super.key});
+
   @override
   State<ChallengeLeaderboardWidget> createState() => _ChallengeLeaderboardWidgetState();
 }
@@ -24,6 +25,7 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
       final r = _LeaderRow.fromMap(m);
       byInvite.putIfAbsent(r.inviteId, () => []).add(r);
     }
+
     final groups = <_ChallengeGroup>[];
     byInvite.forEach((inviteId, list) {
       if (list.isEmpty) return;
@@ -60,15 +62,20 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
         }
         if (snap.hasError || snap.data == null) {
           return Center(
-              child: Text('Failed to load leaderboard',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red)));
+            child: Text(
+              'Failed to load leaderboard',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red),
+            ),
+          );
         }
+
         final groups = snap.data!;
         if (groups.isEmpty) {
           return Center(
-              child: Text('No active challenges',
-                  style: Theme.of(context).textTheme.bodyMedium));
+            child: Text('No active challenges', style: Theme.of(context).textTheme.bodyMedium),
+          );
         }
+
         return ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: groups.length,
@@ -79,6 +86,7 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
             final durationText = isActive
                 ? '${g.daysLeft} day${g.daysLeft == 1 ? '' : 's'} left'
                 : (g.isCompleted ? 'Completed' : 'Expired');
+
             return _buildChallengeCard(
               context: context,
               title: g.title,
@@ -127,83 +135,107 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
     return Container(
       decoration: BoxDecoration(color: theme.cardColor, borderRadius: BorderRadius.circular(16)),
       padding: const EdgeInsets.all(16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-          Text(statusText,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                  color: statusColor,
-                  fontWeight: FontWeight.w500)),
-        ]),
-        const SizedBox(height: 6),
-        Text('Target: $target', style: theme.textTheme.bodySmall),
-        Text('Duration: $duration', style: theme.textTheme.bodySmall),
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              statusText,
+              style: theme.textTheme.bodyMedium?.copyWith(color: statusColor, fontWeight: FontWeight.w500),
+            ),
+          ]),
+          const SizedBox(height: 6),
+          Text('Target: $target', style: theme.textTheme.bodySmall),
+          Text('Duration: $duration', style: theme.textTheme.bodySmall),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
               color: isDark ? Colors.grey[800] : const Color(0xFFF7F7F7),
-              borderRadius: BorderRadius.circular(12)),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(participants.length, (index) {
-              final name = participants[index];
-              final raw = index < values.length ? values[index] : 0;
-              final v = raw.toDouble();
-              final ratio = (v / safeMax);
-              final safeRatio = ratio.isFinite && !ratio.isNaN ? ratio.clamp(0.0, 1.0) : 0.0;
-              final fillHeight = barMaxHeight * safeRatio;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    height: barMaxHeight + 24,
-                    child: Stack(alignment: Alignment.bottomCenter, children: [
-                      Container(
-                          width: 36,
-                          height: barMaxHeight,
-                          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(participants.length, (index) {
+                final name = participants[index];
+                final raw = index < values.length ? values[index] : 0;
+                final v = raw.toDouble();
+                final ratio = (v / safeMax);
+                final safeRatio = ratio.isFinite && !ratio.isNaN ? ratio.clamp(0.0, 1.0) : 0.0;
+                final fillHeight = barMaxHeight * safeRatio;
+
+                const minLabelHeight = 28.0;
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      height: barMaxHeight + 24,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          Container(
+                            width: 36,
+                            height: barMaxHeight,
+                            decoration: BoxDecoration(
                               color: _getColor(index).withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(20))),
-                      Container(
-                        width: 36,
-                        height: fillHeight,
-                        decoration: BoxDecoration(
-                            color: _getColor(index),
-                            borderRadius: BorderRadius.circular(20)),
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('$raw',
-                                style: const TextStyle(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          Container(
+                            width: 36,
+                            height: fillHeight,
+                            decoration: BoxDecoration(
+                              color: _getColor(index),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            alignment: Alignment.center,
+                            child: fillHeight >= minLabelHeight
+                                ? Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '$raw',
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold)),
-                            Text('/${maxVal.isFinite ? maxVal.toInt() : 0}',
-                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '/${maxVal.isFinite ? maxVal.toInt() : 0}',
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
-                                    fontWeight: FontWeight.w300)),
-                          ],
-                        ),
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            )
+                                : const SizedBox.shrink(),
+                          ),
+                        ],
                       ),
-                    ]),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
                       width: 60,
-                      child: Text(name,
-                          style: theme.textTheme.bodySmall,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis)),
-                ],
-              );
-            }),
+                      child: Text(
+                        name,
+                        style: theme.textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
@@ -213,7 +245,7 @@ class _ChallengeLeaderboardWidgetState extends State<ChallengeLeaderboardWidget>
       Color(0xFFFFC107),
       Color(0xFFEC407A),
       Color(0xFF7E57C2),
-      Color(0xFF26C6DA)
+      Color(0xFF26C6DA),
     ];
     return colors[index % colors.length];
   }
