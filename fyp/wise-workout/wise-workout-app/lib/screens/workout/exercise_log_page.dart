@@ -79,6 +79,9 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
 
   Future<String?> _showEditDialog(String initial, String label) async {
     final controller = TextEditingController(text: initial);
+    // Select-all so user can just type without deleting
+    controller.selection = TextSelection(baseOffset: 0, extentOffset: initial.length);
+
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return showDialog<String>(
@@ -87,32 +90,23 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
         title: Text('${'edit'.tr()} $label', style: textTheme.titleMedium),
         content: TextField(
           controller: controller,
+          autofocus: true, // <— focus immediately
           keyboardType: TextInputType.number,
-          style: textTheme.bodyLarge?.copyWith(
-            color: colorScheme.onSurface,
-          ),
+          style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
           decoration: InputDecoration(
             hintText: label,
             hintStyle: textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurface.withOpacity(0.6),
             ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: colorScheme.outline),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: colorScheme.primary),
-            ),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: colorScheme.outline)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: colorScheme.primary)),
           ),
+          onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: Text(
-              'save'.tr(),
-              style: textTheme.labelLarge?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-            ),
+            child: Text('save'.tr(), style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurface)),
           ),
         ],
       ),
