@@ -6,9 +6,9 @@ import ViewASubscription from '../components/ViewASubscription';
 import { fetchAllSubscriptions } from '../services/subscriptionHistoryService';
 
 const planData = [
-  { name: 'Monthly Plan', value: 3, color: '#D2B3DB', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 30 },
-  { name: 'Yearly Plan', value: 4, color: '#ffcb05', price: 19.99, border: '#d6bb60', tooltipX: -20, tooltipY: 5, tokens: 120 },
-  { name: 'Lifetime Plan', value: 5, color: '#00113d', price: 49.0, border: '#333', tooltipX: 200, tooltipY: 180, tokens: 999 },
+  { name: 'Monthly Plan', value: 3, color: '#D2B3DB', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 4000 },
+  { name: 'Yearly Plan', value: 4, color: '#ffcb05', price: 19.99, border: '#d6bb60', tooltipX: -20, tooltipY: 5, tokens: 19000 },
+  { name: 'Lifetime Plan', value: 5, color: '#00113d', price: 49.0, border: '#333', tooltipX: 200, tooltipY: 180, tokens: 99000 },
 ];
 
 const Subscriptions = () => {
