@@ -18,16 +18,3 @@ exports.getPublishedFeedback = async (req, res) => {
   const feedback = await FeedbackService.getPublishedFeedback();
   res.json(feedback);
 };
-
-exports.getAllFeedback = async (req, res) => {
-  const feedback = await FeedbackService.getAllFeedback();
-  res.json(feedback);
-};
-
-exports.updateFeedbackStatus = async (req, res) => {
-  const { id, status } = req.body;
-  if (!['accepted', 'rejected', 'pending'].includes(status))
-    return res.status(400).json({ message: 'Invalid status' });
-  await FeedbackService.updateStatus(id, status);
-  res.json({ message: 'Feedback status updated' });
-};

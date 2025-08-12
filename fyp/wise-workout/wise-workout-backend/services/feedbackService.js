@@ -8,14 +8,6 @@ class FeedbackService {
   static async getPublishedFeedback() {
     return await FeedbackModel.getPublishedFeedback();
   }
-
-  static async getAllFeedback() {
-    return await FeedbackModel.getAllFeedback();
-  }
-
-  static async updateStatus(id, status) {
-    await FeedbackModel.updateStatus(id, status);
-  }
 }
 
 module.exports = FeedbackService;

@@ -30,27 +30,6 @@ class FeedbackModel {
       problems: row.problems ? JSON.parse(row.problems) : []
     }));
   }
-
-  static async getAllFeedback() {
-    const [rows] = await db.execute(
-      `SELECT f.*, u.username, u.firstName, u.lastName
-       FROM feedback f
-       JOIN users u ON f.user_id = u.id
-       ORDER BY f.created_at DESC`
-    );
-    return rows.map(row => ({
-      ...row,
-      liked_features: row.liked_features ? JSON.parse(row.liked_features) : [],
-      problems: row.problems ? JSON.parse(row.problems) : []
-    }));
-  }
-
-  static async updateStatus(id, status) {
-    await db.execute(
-      'UPDATE feedback SET status = ? WHERE id = ?',
-      [status, id]
-    );
-  }
 }
 
 module.exports = FeedbackModel;
