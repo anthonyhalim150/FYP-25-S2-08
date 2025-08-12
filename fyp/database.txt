@@ -22,6 +22,19 @@ CREATE TABLE users (
   FOREIGN KEY (avatar_id) REFERENCES avatars(id) ON DELETE SET NULL,
   FOREIGN KEY (background_id) REFERENCES backgrounds(id) ON DELETE SET NULL
 );
+CREATE TABLE subscription_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    plan ENUM('monthly', 'yearly') NOT NULL,
+    method ENUM('money', 'tokens') NOT NULL,
+    amount DECIMAL(10, 2) DEFAULT NULL,
+    tokens_used INT DEFAULT NULL,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE pending_users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,

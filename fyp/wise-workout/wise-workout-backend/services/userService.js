@@ -4,6 +4,7 @@ const BackgroundModel = require('../models/backgroundModel');
 const LevelModel = require('../models/levelModel');
 const BadgeService = require('./badgeService');
 const premiumCosts = require('../config/premiumCosts');
+const SubscriptionHistoryModel = require('../models/subscriptionHistoryModel');
 
 class UserService {
   static async setAvatar(userId, avatarId) {
@@ -148,28 +149,51 @@ class UserService {
   static async buyPremium(userId, plan, method = "money") {
     if (!plan || !premiumCosts[plan]) throw new Error('INVALID_PLAN');
     if (!['money', 'tokens'].includes(method)) throw new Error('INVALID_METHOD');
-    const { tokens: tokenCost, durationDays } = premiumCosts[plan];
+    
+    const { tokens: tokenCost, durationDays, price } = premiumCosts[plan];
     const user = await UserModel.findById(userId);
+    const purchaseDate = new Date();
+
     if (method === 'tokens') {
-      if (tokenCost == null) throw new Error('PLAN_NOT_BUYABLE_WITH_TOKENS');
-      if ((user.tokens ?? 0) < tokenCost) throw new Error('NOT_ENOUGH_TOKENS');
-      const success = await UserModel.deductTokens(userId, tokenCost);
-      if (!success) throw new Error('FAILED_TO_DEDUCT_TOKENS');
+        if (tokenCost == null) throw new Error('PLAN_NOT_BUYABLE_WITH_TOKENS');
+        if ((user.tokens ?? 0) < tokenCost) throw new Error('NOT_ENOUGH_TOKENS');
+        const success = await UserModel.deductTokens(userId, tokenCost);
+        if (!success) throw new Error('FAILED_TO_DEDUCT_TOKENS');
     }
-    const now = new Date();
-    let current = user.premium_until ? new Date(user.premium_until) : now;
-    if (current < now) current = now;
+    let current = user.premium_until ? new Date(user.premium_until) : purchaseDate;
+    if (current < purchaseDate) current = purchaseDate;
     let newExpiry;
     if (durationDays >= 36500) {
-      newExpiry = new Date('2099-12-31T23:59:59Z');
+        newExpiry = new Date('2099-12-31T23:59:59Z');
     } else {
-      current.setDate(current.getDate() + durationDays);
-      newExpiry = current;
+        current.setDate(current.getDate() + durationDays);
+        newExpiry = current;
     }
+
     await UserModel.setPremium(userId, newExpiry);
     await BadgeService.grantBadge(userId, 8);
+
+    // Expiry from THIS purchase only (does not include leftover premium time), so this does not count stacking
+    let purchaseExpiry;
+    if (durationDays >= 36500) {
+        purchaseExpiry = new Date('2099-12-31T23:59:59Z');
+    } else {
+        purchaseExpiry = new Date(purchaseDate);
+        purchaseExpiry.setDate(purchaseExpiry.getDate() + durationDays);
+    }
+
+    await SubscriptionHistoryModel.insert({
+        userId,
+        plan,
+        method,
+        amount: method === 'money' ? price : null,
+        tokensUsed: method === 'tokens' ? tokenCost : null,
+        startDate: purchaseDate,
+        endDate: purchaseExpiry
+    });
+
     return newExpiry;
-  }
+}
 
   static async checkAndDowngradePremium(userId) {
     await UserModel.downgradeToUserIfExpired(userId);
