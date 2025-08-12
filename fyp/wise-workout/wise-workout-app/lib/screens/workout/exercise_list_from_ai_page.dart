@@ -64,12 +64,22 @@ class _ExerciseListFromAIPageState extends State<ExerciseListFromAIPage> {
       return;
     }
 
+    // ⬇️ Save where to return (route + required args)
+    _sessionService.setStartContext(
+      '/exercise-list-from-ai',
+      args: {
+        'exerciseNames': widget.exerciseNames,
+        'dayLabel': widget.dayLabel,
+      },
+    );
+
     _sessionService.start((_) {});
     setState(() {
       _isSessionActive = true;
       _isStopping = false;
     });
   }
+
 
   Future<void> _endWorkout() async {
     if (_isStopping) return;

@@ -52,12 +52,23 @@ class _ExerciseListPageState extends State<ExerciseListPage> {
 
   void _startWorkout() {
     _sessionService.setWorkoutName(widget.workoutName);
+
     if (_sessionService.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(tr('exercise_list_already_started'))),
       );
       return;
     }
+
+    // 👇 Tell the overlay how to navigate back to THIS page
+    _sessionService.setStartContext(
+      '/exercise-list-page', // this matches your onGenerateRoute
+      args: {
+        'workoutId': widget.workoutId,
+        'workoutName': widget.workoutName,
+      },
+    );
+
     _sessionService.start((_) {});
   }
 

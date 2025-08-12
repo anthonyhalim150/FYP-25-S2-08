@@ -49,6 +49,10 @@ import 'screens/workout/weekly_monthly_summary.dart';
 import 'screens/workout/fitness_plan_calendar.dart';
 import 'screens/workout/workout_plans_screen.dart';
 import 'screens/workout/workout_plan_exercise_list.dart';
+import 'widgets/persistent_workout_timer_overlay.dart';
+import 'screens/workout/exercise_list_from_ai_page.dart';
+
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,20 +61,18 @@ void main() async {
 
   final storage = FlutterSecureStorage();
   String? langCode = await storage.read(key: 'language_code');
-  Locale initialLocale = langCode != null
-      ? Locale(langCode)
-      : const Locale('en');
+  Locale initialLocale = langCode != null ? Locale(langCode) : const Locale('en');
 
   runApp(
     EasyLocalization(
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en'),
         Locale('id'),
         Locale('zh'),
         Locale('ms'),
       ],
       path: 'assets/translations',
-      fallbackLocale: Locale('en'),
+      fallbackLocale: const Locale('en'),
       startLocale: initialLocale,
       child: ChangeNotifierProvider(
         create: (_) => ThemeNotifier(),
@@ -105,6 +107,19 @@ class WiseWorkoutApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
+
+      navigatorKey: rootNavigatorKey,
+
+      builder: (context, child) {
+        if (child == null) return const SizedBox.shrink();
+        return Overlay(
+          initialEntries: [
+            OverlayEntry(builder: (_) => child),
+            OverlayEntry(builder: (_) => const PersistentWorkoutTimerOverlay()),
+          ],
+        );
+      },
+
       initialRoute: '/unregistered',
       routes: {
         '/': (context) => LoginScreen(),
@@ -135,43 +150,36 @@ class WiseWorkoutApp extends StatelessWidget {
         '/calendar': (context) => const CalendarPlanScreen(),
         '/workout-plans-screen': (context) => const WorkoutPlansScreen(),
       },
-        onGenerateRoute: (settings) {
-          if (settings.name == '/workout-list-page') {
-            final args = settings.arguments as Map<String, dynamic>;
-            final categoryKey = args['categoryKey'];  // Extract categoryKey
-            return MaterialPageRoute(
-              builder: (_) => WorkoutListPage(categoryKey: categoryKey),
-            );
-          }
-          if (settings.name == '/workout-plan-exercise-list') {
-            final args = settings.arguments as Map<String, dynamic>;
-
-            final title = args['planTitle'] as String;
-            // 👇 pull from arguments and cast safely
-            final names = (args['exerciseNames'] as List).cast<String>();
-
-            return MaterialPageRoute(
-              builder: (_) => WorkoutPlanExerciseList(
-                planTitle: title,
-                exerciseNames: names, // ← this is the value you need here
-              ),
-            );
-          }
-
-          if (settings.name == '/exercise-list-page') {
-            final args = settings.arguments as Map<String, dynamic>;
-            final workoutId = args['workoutId'];  // Extract workoutId
-            final workoutName = args['workoutName'];  // Extract workoutName
-
-            return MaterialPageRoute(
-              builder: (_) => ExerciseListPage(
-                workoutId: workoutId,  // Pass workoutId
-                workoutName: workoutName,
-              ),
-            );
-          }// Fallback for unknown routes
-
-
+      onGenerateRoute: (settings) {
+        if (settings.name == '/workout-list-page') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final categoryKey = args['categoryKey'];
+          return MaterialPageRoute(
+            builder: (_) => WorkoutListPage(categoryKey: categoryKey),
+          );
+        }
+        if (settings.name == '/workout-plan-exercise-list') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final title = args['planTitle'] as String;
+          final names = (args['exerciseNames'] as List).cast<String>();
+          return MaterialPageRoute(
+            builder: (_) => WorkoutPlanExerciseList(
+              planTitle: title,
+              exerciseNames: names,
+            ),
+          );
+        }
+        if (settings.name == '/exercise-list-page') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final workoutId = args['workoutId'];
+          final workoutName = args['workoutName'];
+          return MaterialPageRoute(
+            builder: (_) => ExerciseListPage(
+              workoutId: workoutId,
+              workoutName: workoutName,
+            ),
+          );
+        }
         if (settings.name == '/exercise-log') {
           final Exercise exercise = settings.arguments as Exercise;
           return MaterialPageRoute(
@@ -181,9 +189,20 @@ class WiseWorkoutApp extends StatelessWidget {
         if (settings.name == '/challenge-list') {
           final args = settings.arguments as Map<String, dynamic>;
           final bool isPremium = args['isPremium'] ?? false;
-
           return MaterialPageRoute(
             builder: (_) => ViewChallengeTournamentScreen(isPremium: isPremium),
+          );
+        }
+        if (settings.name == '/exercise-list-from-ai') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final List<String> names = (args['exerciseNames'] as List).cast<String>();
+          final String dayLabel = args['dayLabel'] as String;
+
+          return MaterialPageRoute(
+            builder: (_) => ExerciseListFromAIPage(
+              exerciseNames: names,
+              dayLabel: dayLabel,
+            ),
           );
         }
         return null;

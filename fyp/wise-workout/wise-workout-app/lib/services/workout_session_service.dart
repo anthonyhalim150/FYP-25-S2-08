@@ -2,9 +2,7 @@ import 'dart:async';
 
 class WorkoutSessionService {
   static final WorkoutSessionService _instance = WorkoutSessionService._internal();
-
   factory WorkoutSessionService() => _instance;
-
   WorkoutSessionService._internal();
 
   String? _workoutName;
@@ -16,14 +14,25 @@ class WorkoutSessionService {
   final List<Map<String, dynamic>> _loggedExercises = [];
   final StreamController<Duration> _elapsedController = StreamController.broadcast();
 
+  String? _startRouteName;
+  Map<String, dynamic>? _startRouteArgs;
+
   Stream<Duration> get elapsedStream => _elapsedController.stream;
   bool get isActive => _isActive;
   Duration get elapsed => _elapsed;
   String? get workoutName => _workoutName;
   List<Map<String, dynamic>> get loggedExercises => _loggedExercises;
 
+  String? get startRouteName => _startRouteName;
+  Map<String, dynamic>? get startRouteArgs => _startRouteArgs;
+
   void setWorkoutName(String name) {
     _workoutName = name;
+  }
+
+  void setStartContext(String routeName, {Map<String, dynamic>? args}) {
+    _startRouteName = routeName;
+    _startRouteArgs = args;
   }
 
   void start([void Function(Duration)? onElapsed]) {
@@ -49,6 +58,7 @@ class WorkoutSessionService {
     _timer?.cancel();
     _timer = null;
     _isActive = false;
+    _elapsedController.add(_elapsed);
   }
 
   void clearSession() {
@@ -56,6 +66,11 @@ class WorkoutSessionService {
     _elapsed = Duration.zero;
     _workoutName = null;
     _loggedExercises.clear();
+    _elapsedController.add(_elapsed);
+
+    // ====== NEW: also clear start context ======
+    _startRouteName = null;
+    _startRouteArgs = null;
   }
 
   void dispose() {
