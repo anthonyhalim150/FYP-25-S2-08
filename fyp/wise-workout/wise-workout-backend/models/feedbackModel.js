@@ -26,9 +26,13 @@ class FeedbackModel {
     );
     return rows.map(row => ({
       ...row,
-      liked_features: row.liked_features ? JSON.parse(row.liked_features) : [],
-      problems: row.problems ? JSON.parse(row.problems) : []
-    }));
+      liked_features: Array.isArray(row.liked_features)
+        ? row.liked_features
+        : (row.liked_features ? JSON.parse(row.liked_features) : []),
+      problems: Array.isArray(row.problems)
+        ? row.problems
+        : (row.problems ? JSON.parse(row.problems) : [])
+    }));    
   }
 }
 

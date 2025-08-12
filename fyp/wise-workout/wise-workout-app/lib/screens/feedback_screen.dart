@@ -59,22 +59,44 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
       if (reviews.isNotEmpty) {
         ratingCount = reviews.length;
-        rating = reviews.fold<double>(0.0, (sum, e) => sum + ((e['rating'] ?? 0) as int)) / reviews.length;
+        rating = reviews.fold<double>(
+              0.0,
+              (sum, e) => sum + ((e['rating'] ?? 0) as int),
+            ) / reviews.length;
 
         List<int> starCounts = List.generate(5, (i) => 0);
         for (final r in reviews) {
           final stars = r['rating'] ?? 0;
-          if (stars is int && stars > 0 && stars <= 5) starCounts[5 - stars]++;
+          if (stars is int && stars > 0 && stars <= 5) {
+            starCounts[5 - stars]++;
+          }
         }
 
         if (starCounts.fold<int>(0, (a, b) => a + b) > 0) {
           stats = starCounts.map((e) => e / reviews.length).toList();
         }
 
-        pros = allPros.toSet().toList(); // Unique
-        cons = allCons.toSet().toList(); // Unique
+        // Calculate top 3 pros
+        final prosCount = <String, int>{};
+        for (var p in allPros) {
+          prosCount[p] = (prosCount[p] ?? 0) + 1;
+        }
+        final sortedPros = prosCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        pros = sortedPros.take(3).map((entry) => entry.key).toList();
+
+        // Calculate top 1 con
+        final consCount = <String, int>{};
+        for (var c in allCons) {
+          consCount[c] = (consCount[c] ?? 0) + 1;
+        }
+        final sortedCons = consCount.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        cons = sortedCons.take(1).map((entry) => entry.key).toList();
       }
-    } catch (_) {}
+    } catch (e, stack) {
+      debugPrint('Error loading reviews: $e\n$stack');
+    }
     setState(() {
       loading = false;
     });

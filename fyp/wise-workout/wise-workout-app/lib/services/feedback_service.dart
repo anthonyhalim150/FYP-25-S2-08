@@ -32,14 +32,21 @@ class FeedbackService {
   }
 
   Future<List<Map<String, dynamic>>> fetchPublishedFeedback() async {
+    String? jwt = await storage.read(key: 'jwt_cookie');
     final response = await http.get(
       Uri.parse('$baseUrl/feedback/published'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
     );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return List<Map<String, dynamic>>.from(data);
     } else {
-      throw Exception('Failed to load feedback');
+      throw Exception(
+        'Failed to load feedback (status: ${response.statusCode}, body: ${response.body})',
+      );
     }
   }
 }
