@@ -13,8 +13,8 @@ class LeaderboardPage extends StatefulWidget {
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
-  int _currentIndex = 1; // Bottom Nav Index
-  int _selectedPage = 0; // 0 = Challenge, 1 = Tournament, 2 = Levels
+  int _currentIndex = 1;
+  int _selectedPage = 0;
   late PageController _pageController;
 
   @override
@@ -38,7 +38,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-        break; // Already here
+        break;
       case 3:
         Navigator.pushReplacementNamed(context, '/messages');
         break;
