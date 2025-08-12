@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
+const subscriptionHistoryRoutes = require('./routes/subscriptionHistoryRoutes');
 const authenticateUser = require('./middlewares/authMiddleware');
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(userRoutes);
 app.use(feedbackRoutes);
 app.use(tournamentRoutes);
 app.use(exerciseRoutes);
+app.use(subscriptionHistoryRoutes);
 
 db.query('SELECT DATABASE() AS db_name')
   .then(([rows]) => {
