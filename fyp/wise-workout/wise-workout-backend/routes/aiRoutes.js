@@ -19,47 +19,39 @@ router.post('/ai/fitness-plan', async (req, res) => {
       return res.status(404).json({ message: "No exercises found" });
     }
 
-    // --- THE NEW SYSTEM PROMPT FOR 30 DAYS & WORKOUT_TIME LOGIC ---
-    const systemPrompt = `
-You are an expert fitness coach. Create a personalized 30-day workout plan based ONLY on the user's preferences and the provided exercise list.
+const systemPrompt = `
+You are an expert fitness coach. Create a personalized 30-day workout plan based ONLY on the user's preferences and the provided exercise list, and include a concise progress estimation.
 
-STRICT RULES:
+STRICT RULES FOR THE PLAN:
 - Use only the exercises from the provided list. Never invent or use exercises not in the list.
 - For each day, the number of exercises must match the user's "workout_time" preference:
   - If "Quick (e.g. 5 Minutes during Lunch Break)" → include only 1 exercise for that day.
   - If "Short (10-20 Minutes)" → include 2 exercises.
   - If "Medium (25-45 Minutes)" → include 4 exercises.
   - If "Long (1 Hour or more)" → include 6 exercises.
-- Each day must include:
-  - "day_of_month": 1 to 30 (for each day, incrementing)
-  - "exercises": an array of the correct number of exercises, where each exercise includes: { "name": "...", "sets": X, "reps": "..." }
-  - "notes": a short, motivating message or any important instruction (optional).
-- You MUST generate exactly 30 days. Each object in the array is a day.
-- For rest days, include: "day_of_month": <day>, "rest": true, and a motivating "notes" field (e.g., "Rest and recover today.")
-- Select exercises that fit the user's equipment preference, goal, fitness level, and avoid exercises related to the user's injuries.
-- Give priority to exercises the user enjoys.
-- For sets, reps, or weights, always use numbers or text in quotes (e.g. "12", "10 per leg").
-- Output ONLY a valid JSON array of 31 objects (first object is plan_title, next 30 are the 30 days), in order (no markdown, no explanation).
-- At the top of the JSON array, add an object with the key "plan_title" and a short, catchy name for the plan, e.g. { "plan_title": "30-Day Full Body Challenge" }. The rest of the array should be the 30 days as described above.
+- Each day includes:
+  - "day_of_month": 1 to 30 (incrementing)
+  - "exercises": array of the correct number of exercises, each as { "name": "...", "sets": X, "reps": "..." }
+  - "notes": short, motivating message (optional).
+- Use rest days when appropriate: { "day_of_month": <n>, "rest": true, "notes": "..." }.
+- Match equipment, goal, and level; avoid exercises conflicting with injuries.
+- Prioritize exercises the user enjoys.
+- For sets/reps, use numbers or clear text (e.g., "12", "10 per leg").
 
-Example output for a 2-day plan:
-[
-  { "plan_title": "30-Day Energy Boost" },
-  {
-    "day_of_month": 1,
-    "exercises": [
-      { "name": "Incline Push Up", "sets": 3, "reps": "10" }
-    ],
-    "notes": "Start strong and stay motivated!"
-  },
-  {
-    "day_of_month": 2,
-    "rest": true,
-    "notes": "Rest and recover today."
-  }
-  // ... up to day 30
-]
-    `;
+ESTIMATION & EXPLANATION ("estimation_text"):
+- Summarize expected progress over 30 days assuming ~85–90% adherence.
+- Cover fat/weight-loss potential, endurance/cardio, strength/muscle, mobility/flexibility.
+- 3–6 bullet points + a 1–2 sentence wrap-up.
+- Include a brief note that results vary with nutrition, sleep, and consistency. No medical claims.
+
+OUTPUT FORMAT (IMPORTANT):
+Output ONLY a valid JSON object with exactly these top-level keys:
+{
+  "plan": [ 31 items exactly — first = { "plan_title": "..." }, followed by the 30 day objects ],
+  "estimation_text": "string containing bullets and a short wrap-up"
+}
+No markdown, comments, or extra keys.
+`;
 
     const userPrompt = `
 User preferences:
@@ -72,7 +64,7 @@ ${JSON.stringify(exercises, null, 2)}
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: "z-ai/glm-4.5-air:free",
+        model: "moonshotai/kimi-k2:free",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
@@ -87,6 +79,34 @@ ${JSON.stringify(exercises, null, 2)}
     );
 
     console.log("AI response content:", response.data?.choices?.[0]?.message?.content);
+    let raw = response.data?.choices?.[0]?.message?.content;
+    let result;
+    try {
+      result = JSON.parse(raw);
+    } catch (e) {
+      // If the model returned invalid JSON, bail out clearly
+      return res.status(502).json({ error: "AI returned non-JSON content" });
+    }
+
+    // Normalize: if model still returns an array, wrap it and add a basic estimation.
+    if (Array.isArray(result)) {
+      result = {
+        plan: result,
+        estimation_text: buildFallbackEstimationText(result, prefs)
+      };
+    }
+
+    // Validate minimal structure
+    if (!result || !Array.isArray(result.plan) || typeof result.estimation_text !== 'string') {
+      return res.status(502).json({ error: "AI returned unexpected shape" });
+    }
+
+    return res.json({
+      plan: result.plan,
+      estimation_text: result.estimation_text,
+      preferences: prefs,
+      exercises
+    });
 
     res.json({
       ai: response.data,

@@ -272,6 +272,7 @@ CREATE TABLE workout_plans (
   user_id INT NOT NULL,
   plan_title VARCHAR(255),
   days_json JSON,
+  estimation_text TEXT,
   created_at DATETIME,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
