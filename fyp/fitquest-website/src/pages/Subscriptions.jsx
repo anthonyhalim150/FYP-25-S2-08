@@ -5,10 +5,10 @@ import PageLayout from '../components/PageLayout';
 import ViewASubscription from '../components/ViewASubscription';
 import { fetchAllSubscriptions } from '../services/subscriptionHistoryService';
 
-const planData = [
-  { name: 'Monthly Plan', value: 3, color: '#D2B3DB', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 4000 },
-  { name: 'Yearly Plan', value: 4, color: '#ffcb05', price: 19.99, border: '#d6bb60', tooltipX: -20, tooltipY: 5, tokens: 19000 },
-  { name: 'Lifetime Plan', value: 5, color: '#00113d', price: 49.0, border: '#333', tooltipX: 200, tooltipY: 180, tokens: 99000 },
+const basePlans = [
+  { name: 'Monthly Plan', key: 'monthly', color: '#D2B3DB', price: 2.99, border: '#c09ee3', tooltipX: 240, tooltipY: 5, tokens: 4000 },
+  { name: 'Yearly Plan', key: 'yearly', color: '#ffcb05', price: 19.99, border: '#d6bb60', tooltipX: -20, tooltipY: 5, tokens: 19000 },
+  { name: 'Lifetime Plan', key: 'lifetime', color: '#00113d', price: 49.0, border: '#333', tooltipX: 200, tooltipY: 180, tokens: 99000 }
 ];
 
 const Subscriptions = () => {
@@ -64,7 +64,12 @@ const Subscriptions = () => {
     Trial: premiumUsers.filter((u) => u.plan?.toLowerCase() === 'trial').length,
   };
 
-  const activeTooltip = planData.find(p => p.name === hoveredPlan);
+  const dynamicPlanData = basePlans.map(plan => ({
+    ...plan,
+    value: premiumUsers.filter(u => u.plan?.toLowerCase() === plan.key).length
+  }));
+
+  const activeTooltip = dynamicPlanData.find(p => p.name === hoveredPlan);
 
   return (
     <PageLayout>
@@ -74,7 +79,7 @@ const Subscriptions = () => {
           <div className="chart-container wide-chart center-chart" ref={chartRef}>
             <PieChart width={190} height={190}>
               <Pie
-                data={planData}
+                data={dynamicPlanData}
                 cx={90}
                 cy={90}
                 innerRadius={60}
@@ -85,7 +90,7 @@ const Subscriptions = () => {
                 }}
                 isAnimationActive={false}
               >
-                {planData.map((entry, index) => (
+                {dynamicPlanData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={entry.color}
@@ -113,7 +118,7 @@ const Subscriptions = () => {
           </div>
 
           <div className="plans-widget full-height">
-            {planData.map((plan) => (
+            {dynamicPlanData.map((plan) => (
               <div
                 key={plan.name}
                 className={`plan-card equal-height ${selectedPlan === plan.name ? 'highlight-' + plan.name.replace(' ', '-').toLowerCase() : ''}`}
@@ -207,7 +212,6 @@ const Subscriptions = () => {
       {selectedUser && (
         <ViewASubscription user={selectedUser} onClose={() => setSelectedUser(null)} />
       )}
-
     </PageLayout>
   );
 };
