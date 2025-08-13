@@ -94,3 +94,29 @@ exports.getDailyCaloriesSummaryRange = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getHourlyCaloriesForDate = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    let { date } = req.query; // 'YYYY-MM-DD'
+    if (!date) {
+      return res.status(400).json({ message: "Query param 'date' is required (YYYY-MM-DD)" });
+    }
+
+    const dt = new Date(date);
+    if (isNaN(dt.getTime())) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
+    date = dt.toISOString().slice(0, 10);
+
+    const result = await WorkoutSessionService.getHourlyCaloriesForDate(userId, date);
+    res.json(result); // { date, hourly: [24 numbers] }
+  } catch (err) {
+    console.error('getHourlyCaloriesForDate error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

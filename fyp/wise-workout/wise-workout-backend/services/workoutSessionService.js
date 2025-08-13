@@ -148,6 +148,18 @@ class WorkoutSessionService {
       totalCalories: Number(r.total_calories || 0),
     }));
   }
+
+  static async getHourlyCaloriesForDate(userId, ymd) {
+    const rows = await WorkoutSessionModel.getHourlyCaloriesByUserAndDate(userId, ymd);
+    const hourly = Array(24).fill(0);
+    for (const r of rows) {
+      const h = Number(r.hour);
+      if (h >= 0 && h <= 23) {
+        hourly[h] = Number(r.calories || 0);
+      }
+    }
+    return { date: ymd, hourly };
+  }
 }
 
 module.exports = WorkoutSessionService;

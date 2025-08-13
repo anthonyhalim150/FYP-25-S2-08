@@ -66,6 +66,58 @@ class WorkoutService {
     return Workout.fromJson(item);
   }
 
+  Future<List<double>> fetchHourlyCaloriesForDate(DateTime date, {String? devUserId}) async {
+    final jwt = await _getJwtCookie();
+
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+
+    final qp = devUserId == null ? 'date=$y-$m-$d' : 'date=$y-$m-$d&userId=$devUserId';
+    final url = Uri.parse('$baseUrl/workout-sessions/sessions/hourly-calories?$qp');
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      if (jwt != null) 'Cookie': 'session=$jwt',
+    };
+
+    final res = await http.get(url, headers: headers);
+
+    print('[HourlyCalories] GET $url -> ${res.statusCode}');
+    if (res.statusCode != 200) {
+      print('[HourlyCalories] Body: ${res.body}');
+      return List<double>.filled(24, 0.0, growable: false);
+    }
+
+    final body = json.decode(res.body);
+
+    if (body is Map && body['hourly'] is List) {
+      final List<dynamic> raw = body['hourly'] as List<dynamic>;
+      final hourly = raw.map((e) => (e is num) ? e.toDouble() : 0.0).toList(growable: false);
+      if (hourly.length < 24) {
+        return List<double>.from([...hourly, ...List<double>.filled(24 - hourly.length, 0.0)], growable: false);
+      } else if (hourly.length > 24) {
+        return hourly.sublist(0, 24);
+      }
+      return hourly;
+    }
+
+    if (body is Map && body['hourly'] is Map) {
+      final map = Map<String, dynamic>.from(body['hourly'] as Map);
+      final hourly = List<double>.generate(24, (h) {
+        final keyA = h.toString().padLeft(2, '0');
+        final keyB = h.toString();
+        final v = map.containsKey(keyA) ? map[keyA] : (map.containsKey(keyB) ? map[keyB] : 0);
+        return (v is num) ? v.toDouble() : 0.0;
+      }, growable: false);
+      return hourly;
+    }
+
+    return List<double>.filled(24, 0.0, growable: false);
+  }
+
+
+
 
   Future<void> saveWorkoutSession({
     int? workoutId,

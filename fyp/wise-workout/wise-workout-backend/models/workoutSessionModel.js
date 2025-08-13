@@ -90,6 +90,21 @@ class WorkoutSessionModel {
     );
     return rows;
   }
+
+  static async getHourlyCaloriesByUserAndDate(userId, ymd) {
+    const [rows] = await db.execute(
+      `SELECT
+         HOUR(start_time) AS hour,
+         COALESCE(SUM(calories_burned), 0) AS calories
+       FROM workout_sessions
+       WHERE user_id = ?
+         AND DATE(start_time) = ?
+       GROUP BY HOUR(start_time)
+       ORDER BY hour`,
+      [userId, ymd]
+    );
+    return rows;
+  }
 }
 
 module.exports = WorkoutSessionModel;

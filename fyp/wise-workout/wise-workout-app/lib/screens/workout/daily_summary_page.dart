@@ -18,10 +18,10 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
   bool _isLoading = true;
 
   List<int> _hourlySteps = List.filled(24, 0);
-  List<double> _hourlyCalories = List.filled(24, 0.0); // changed to double
+  List<double> _hourlyCalories = List.filled(24, 0.0);
 
   int _currentSteps = 0;
-  double _caloriesBurned = 0.0; // changed to double
+  double _caloriesBurned = 0.0;
   int _xpEarned = 0;
   DateTime _selectedDate = DateTime.now();
 
@@ -43,60 +43,72 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     }
   }
 
+  List<double> _preferBackendPerHour(List<double> backend, List<double> health) {
+    final out = List<double>.filled(24, 0.0);
+    for (int i = 0; i < 24; i++) {
+      final b = (i < backend.length) ? backend[i] : 0.0;
+      final h = (i < health.length) ? health[i] : 0.0;
+      out[i] = b > 0 ? b : h;
+    }
+    return out;
+  }
+
+  double _sum(List<double> values) {
+    double s = 0;
+    for (final v in values) s += v;
+    return s;
+  }
+
   Future<void> _initHealthData(DateTime date) async {
     setState(() => _isLoading = true);
 
-    // Get backend calories summary
-    double backendCalories = 0.0; // changed to double
-    List<double> backendHourlyCalories = List.filled(24, 0.0); // changed to double
-
+    List<double> backendHourly = List.filled(24, 0.0);
     try {
-      final isToday = date.year == DateTime.now().year &&
-          date.month == DateTime.now().month &&
-          date.day == DateTime.now().day;
-
-      if (isToday) {
-        final summary = await WorkoutService().fetchTodayCaloriesSummary();
-        backendCalories = (summary['totalCalories'] ?? 0).toDouble();
-
-        backendHourlyCalories[DateTime.now().hour] = backendCalories;
-      }
+      backendHourly = await WorkoutService().fetchHourlyCaloriesForDate(date);
     } catch (e) {
-      print('Error fetching backend calories: $e');
     }
 
     final connected = await _healthService.connect();
     if (!connected) {
-      setState(() => _isLoading = false);
+      final merged = backendHourly;
+      setState(() {
+        _selectedDate = date;
+        _hourlyCalories = merged;
+        _caloriesBurned = _sum(merged);
+        _hourlySteps = List<int>.filled(24, 0);
+        _currentSteps = 0;
+        _xpEarned = 0;
+        _isLoading = false;
+      });
       return;
     }
 
+    // 3) Health hourly + steps
     final steps = await _healthService.getStepsForDate(date);
     final hourlySteps = await _healthService.getHourlyStepsForDate(date);
-    final hourlyCaloriesFromHealth =
-    (await _healthService.getHourlyCaloriesForDate(date))
-        .map((e) => e.toDouble()) // ensure double
+    final healthHourly = (await _healthService.getHourlyCaloriesForDate(date))
+        .map((e) => e.toDouble())
         .toList();
-    final healthCalories =
-    (await _healthService.getCaloriesForDate(date)).toDouble();
+
+    // 4) Merge (per-hour)
+    final mergedHourly = _preferBackendPerHour(backendHourly, healthHourly);
+
+    // 5) Recompute the “current calories” from the bars so it matches the chart
+    final totalCalories = _sum(mergedHourly);
 
     setState(() {
       _selectedDate = date;
       _currentSteps = steps;
       _hourlySteps = hourlySteps;
-
-      // Merge: backend calories take priority if available
-      _hourlyCalories = backendHourlyCalories.any((c) => c > 0)
-          ? backendHourlyCalories
-          : hourlyCaloriesFromHealth;
-
-      _caloriesBurned = backendCalories > 0 ? backendCalories : healthCalories;
+      _hourlyCalories = mergedHourly;
+      _caloriesBurned = totalCalories;
       _xpEarned = (_currentSteps / 100).round();
       _isLoading = false;
     });
   }
 
   double _calculateAdaptiveMaxY(List<double> data, double minDefault) {
+    if (data.isEmpty) return minDefault;
     final highest = data.reduce((a, b) => a > b ? a : b);
     if (highest <= minDefault) return minDefault;
     final roundedUp = (((highest * 1.1) / 1000).ceil()) * 1000;
@@ -105,6 +117,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
   void _changeDate(int offsetDays) {
     final newDate = _selectedDate.add(Duration(days: offsetDays));
+    // allow yesterday and earlier; block future
     if (!newDate.isAfter(DateTime.now())) {
       _initHealthData(newDate);
     }
@@ -137,8 +150,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
           IconButton(
             icon: Icon(
               Icons.calendar_today,
-              color:
-              _isPremiumUser ? colorScheme.onBackground : Colors.grey.shade400,
+              color: _isPremiumUser ? colorScheme.onBackground : Colors.grey.shade400,
             ),
             onPressed: () {
               if (_isPremiumUser) {
@@ -164,8 +176,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon:
-                    Icon(Icons.chevron_left, color: colorScheme.primary),
+                    icon: Icon(Icons.chevron_left, color: colorScheme.primary),
                     onPressed: () => _changeDate(-1),
                   ),
                   Text(
@@ -176,8 +187,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                   IconButton(
                     icon: Icon(
                       Icons.chevron_right,
-                      color:
-                      isToday ? Colors.transparent : colorScheme.primary,
+                      color: isToday ? Colors.transparent : colorScheme.primary,
                     ),
                     onPressed: isToday ? null : () => _changeDate(1),
                   ),
@@ -187,8 +197,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
                 maxSteps: 10000,
-                caloriesBurned:
-                double.parse(_caloriesBurned.toStringAsFixed(1)),
+                caloriesBurned: double.parse(_caloriesBurned.toStringAsFixed(1)),
                 xpEarned: _xpEarned,
               ),
               const SizedBox(height: 20),
@@ -198,7 +207,9 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 currentValue: _currentSteps.toString(),
                 barColor: colorScheme.primary,
                 maxY: _calculateAdaptiveMaxY(
-                    _hourlySteps.map((e) => e.toDouble()).toList(), 3000),
+                  _hourlySteps.map((e) => e.toDouble()).toList(),
+                  3000,
+                ),
                 data: _hourlySteps.map((e) => e.toDouble()).toList(),
               ),
               const SizedBox(height: 20),
@@ -207,7 +218,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                 title: "calories_chart_title".tr(),
                 currentValue: _caloriesBurned.toStringAsFixed(1),
                 barColor: colorScheme.secondary,
-                maxY: _calculateAdaptiveMaxY(_hourlyCalories, 300),
+                maxY: _calculateAdaptiveMaxY(_hourlyCalories, 200),
                 data: _hourlyCalories,
               ),
               const SizedBox(height: 40),
@@ -229,7 +240,7 @@ class _TimeBasedChart extends StatelessWidget {
   final String currentValue;
   final Color barColor;
   final double maxY;
-  final List<double> data; // changed to double
+  final List<double> data;
 
   const _TimeBasedChart({
     required this.icon,
@@ -267,9 +278,7 @@ class _TimeBasedChart extends StatelessWidget {
             children: [
               Icon(icon, color: barColor),
               const SizedBox(width: 6),
-              Text(title,
-                  style: textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 12),
@@ -278,12 +287,11 @@ class _TimeBasedChart extends StatelessWidget {
               children: [
                 Text(
                   currentValue,
-                  style: textTheme.headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text("current_label".tr(),
-                    style: textTheme.bodySmall
-                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
+                    style: textTheme.bodySmall,
+                ),
               ],
             ),
           ),
@@ -298,32 +306,25 @@ class _TimeBasedChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, _) {
+                        // label every 6 hours: 0h, 6h, 12h, 18h
                         if (value.toInt() % 6 == 0) {
-                          return Text(
-                            "${value.toInt()}h",
-                            style: textTheme.labelSmall,
-                          );
+                          return Text("${value.toInt()}h", style: textTheme.labelSmall);
                         }
                         return const SizedBox.shrink();
                       },
                       reservedSize: 28,
                     ),
                   ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   rightTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       interval: maxY / 3,
-                      getTitlesWidget: (value, _) => Text(
-                        "${value.toInt()}",
-                        style: textTheme.labelSmall,
-                      ),
+                      getTitlesWidget: (value, _) => Text("${value.toInt()}", style: textTheme.labelSmall),
                       reservedSize: 30,
                     ),
                   ),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 barGroups: List.generate(data.length, (i) {
                   return BarChartGroupData(
@@ -334,12 +335,12 @@ class _TimeBasedChart extends StatelessWidget {
                         color: barColor,
                         width: 6,
                         borderRadius: BorderRadius.circular(4),
-                      )
+                      ),
                     ],
                   );
                 }),
                 maxY: maxY,
-                gridData: FlGridData(show: true, drawVerticalLine: false),
+                gridData: const FlGridData(show: true, drawVerticalLine: false),
                 borderData: FlBorderData(show: false),
               ),
             ),
