@@ -11,6 +11,7 @@ class HealthService {
         HealthDataType.STEPS,
         HealthDataType.HEART_RATE,
         HealthDataType.ACTIVE_ENERGY_BURNED,
+        HealthDataType.TOTAL_CALORIES_BURNED,
       ];
       final permissions = types.map((e) => HealthDataAccess.READ).toList();
 
@@ -38,12 +39,9 @@ class HealthService {
     }
   }
 
-
-// Helper to compare date by year, month, day only.
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
-
 
   Future<List<HealthDataPoint>> getHeartRateDataInRange(DateTime start, DateTime end) async {
     try {
@@ -73,19 +71,23 @@ class HealthService {
     }
   }
 
-
   Future<int> getCaloriesForDate(DateTime date) async {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final isToday = _isSameDay(date, DateTime.now());
     final endOfDay = isToday ? DateTime.now() : startOfDay.add(const Duration(days: 1));
     try {
       final data = await _health.getHealthDataFromTypes(
-        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        types: [
+          HealthDataType.ACTIVE_ENERGY_BURNED,
+          HealthDataType.TOTAL_CALORIES_BURNED
+        ],
         startTime: startOfDay,
         endTime: endOfDay,
       );
       final total = data.fold<double>(0.0, (prev, point) {
-        return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
+        return prev + (point.value is double
+            ? point.value as double
+            : (point.value as int).toDouble());
       });
       return total.round();
     } catch (e) {
@@ -105,7 +107,6 @@ class HealthService {
         startTime: startOfDay,
         endTime: now,
       );
-
       return data;
     } catch (e) {
       print("Error fetching today's heart rate data: $e");
@@ -123,7 +124,7 @@ class HealthService {
       final hourStart = DateTime(date.year, date.month, date.day, hour);
       DateTime hourEnd;
       if (isToday && hour == now.hour) {
-        hourEnd = now; // For the current hour, end at now
+        hourEnd = now;
       } else {
         hourEnd = hourStart.add(const Duration(hours: 1));
       }
@@ -138,7 +139,6 @@ class HealthService {
         hourlySteps[hour] = 0;
       }
     }
-    // No need to fill future hours, List.filled already sets them to 0
     return hourlySteps;
   }
 
@@ -152,7 +152,7 @@ class HealthService {
       final hourStart = DateTime(date.year, date.month, date.day, hour);
       DateTime hourEnd;
       if (isToday && hour == now.hour) {
-        hourEnd = now; // For the current hour, end at now
+        hourEnd = now;
       } else {
         hourEnd = hourStart.add(const Duration(hours: 1));
       }
@@ -162,12 +162,17 @@ class HealthService {
       }
       try {
         final data = await _health.getHealthDataFromTypes(
-          types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+          types: [
+            HealthDataType.ACTIVE_ENERGY_BURNED,
+            HealthDataType.TOTAL_CALORIES_BURNED
+          ],
           startTime: hourStart,
           endTime: hourEnd,
         );
         final sum = data.fold<double>(0.0, (prev, point) {
-          return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
+          return prev + (point.value is double
+              ? point.value as double
+              : (point.value as int).toDouble());
         });
         hourlyCalories[hour] = sum.round();
       } catch (e) {
@@ -190,15 +195,18 @@ class HealthService {
   Future<int> getCaloriesInRange(DateTime start, DateTime end) async {
     try {
       final data = await _health.getHealthDataFromTypes(
-        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        types: [
+          HealthDataType.ACTIVE_ENERGY_BURNED,
+          HealthDataType.TOTAL_CALORIES_BURNED
+        ],
         startTime: start,
         endTime: end,
       );
-
       final total = data.fold<double>(0.0, (prev, point) {
-        return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
+        return prev + (point.value is double
+            ? point.value as double
+            : (point.value as int).toDouble());
       });
-
       return total.round();
     } catch (e) {
       print('Error getting calories in range: $e');
@@ -227,15 +235,18 @@ class HealthService {
       final dayStart = DateTime(start.year, start.month, start.day + i);
       final dayEnd = dayStart.add(const Duration(days: 1));
       final data = await _health.getHealthDataFromTypes(
-        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        types: [
+          HealthDataType.ACTIVE_ENERGY_BURNED,
+          HealthDataType.TOTAL_CALORIES_BURNED
+        ],
         startTime: dayStart,
         endTime: dayEnd,
       );
-
       final total = data.fold<double>(0.0, (prev, point) {
-        return prev + (point.value is double ? point.value as double : (point.value as int).toDouble());
+        return prev + (point.value is double
+            ? point.value as double
+            : (point.value as int).toDouble());
       });
-
       caloriesPerDay.add(total.round());
     }
     return caloriesPerDay;
