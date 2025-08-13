@@ -3,11 +3,13 @@ const AuthService = require('../services/authService');
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const { user, token } = await AuthService.login(email, password);
+    const { user, token, message } = await AuthService.login(email, password);
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: message || 'Invalid email or password' });
     }
+
+    res.clearCookie('session', { httpOnly: true, sameSite: 'lax', secure: false });
 
     res.cookie('session', token, {
       httpOnly: true,
@@ -22,10 +24,11 @@ exports.login = async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
     });
-  } catch (err) {
-    res.status(500).json({ message: "Something went wrong." });
+  } catch {
+    res.status(500).json({ message: 'Something went wrong.' });
   }
 };

@@ -112,6 +112,13 @@ class UserModel {
   static async unsuspendUser(userId) {
     await db.execute('UPDATE users SET isSuspended = 0 WHERE id = ?', [userId]);
   }
+  static async findByIdWithRole(id) {
+    const [rows] = await db.execute(
+      'SELECT id, role FROM users WHERE id = ?',
+      [id]
+    );
+    return rows[0] || null;
+  }  
 }
 
 module.exports = UserModel;
