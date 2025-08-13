@@ -122,4 +122,14 @@ exports.buyPremium = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+exports.getDailyXP = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const date = req.query.date || new Date().toISOString().slice(0, 10);
+    const xp = await UserService.getDailyXP(userId, date);
+    res.status(200).json({ date, xp });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 

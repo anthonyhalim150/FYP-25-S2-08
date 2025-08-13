@@ -119,4 +119,20 @@ class ApiService {
       return {'success': false, 'message': error};
     }
   }
+  Future<int> getDailyXP(String date) async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) throw Exception('JWT not found in secure storage');
+
+    final res = await http.get(
+      Uri.parse('$backendUrl/user/daily-xp?date=$date'),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return data['xp'] ?? 0;
+    } else {
+      throw Exception('Failed to load daily XP');
+    }
+  }
 }

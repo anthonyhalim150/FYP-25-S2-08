@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentSteps = 0;
   final int maxSteps = 10000;
   int caloriesBurned = 0;
-  int xpEarned = 150;
+  int xpEarned = 0;
   String? _displayName;
   bool _isPremiumUser = false;
   final BadgeService _badgeService = BadgeService();
@@ -65,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchUnlockedBadges();
     _requestNotificationPermission();
     _fetchTodayCalories();
+    _fetchTodayXP();
     tournamentsFuture = TournamentService().getTournamentsWithParticipants();
     _categoryFuture = WorkoutCategoryService().fetchCategories();
   }
@@ -86,6 +87,18 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error fetching today calories: $e');
     }
   }
+  Future<void> _fetchTodayXP() async {
+    try {
+      final today = DateTime.now().toIso8601String().substring(0, 10);
+      final xp = await ApiService().getDailyXP(today);
+      setState(() {
+        xpEarned = xp;
+      });
+    } catch (e) {
+      print('Error fetching today XP: $e');
+    }
+  }
+
 
 
   Future<void> _requestNotificationPermission() async {

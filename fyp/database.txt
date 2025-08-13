@@ -22,6 +22,17 @@ CREATE TABLE users (
   FOREIGN KEY (avatar_id) REFERENCES avatars(id) ON DELETE SET NULL,
   FOREIGN KEY (background_id) REFERENCES backgrounds(id) ON DELETE SET NULL
 );
+CREATE TABLE user_xp_daily (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  xp_amount INT NOT NULL DEFAULT 0,
+  date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_user_date (user_id, date),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE subscription_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -529,6 +540,27 @@ BEGIN
     AND rewarded = 0;
 
   COMMIT;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER track_xp_daily
+AFTER UPDATE ON users
+FOR EACH ROW
+BEGIN
+  DECLARE delta INT;
+  SET delta = NEW.xp - OLD.xp;
+  
+  IF delta > 0 THEN
+    INSERT INTO user_xp_daily (user_id, xp_amount, date)
+    VALUES (NEW.id, delta, CURDATE())
+    ON DUPLICATE KEY UPDATE
+      xp_amount = xp_amount + delta,
+      updated_at = CURRENT_TIMESTAMP;
+  END IF;
 END$$
 
 DELIMITER ;

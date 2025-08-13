@@ -5,6 +5,7 @@ const LevelModel = require('../models/levelModel');
 const BadgeService = require('./badgeService');
 const premiumCosts = require('../config/premiumCosts');
 const SubscriptionHistoryModel = require('../models/subscriptionHistoryModel');
+const UserXpDailyModel = require('../models/userXpDailyModel');
 
 class UserService {
   static async setAvatar(userId, avatarId) {
@@ -193,11 +194,16 @@ class UserService {
     });
 
     return newExpiry;
-}
+  }
 
   static async checkAndDowngradePremium(userId) {
     await UserModel.downgradeToUserIfExpired(userId);
   }
+
+  static async getDailyXP(userId, date) {
+    return await UserXpDailyModel.getDailyXP(userId, date);
+  }
+
 }
 
 module.exports = UserService;
