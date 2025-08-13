@@ -4,7 +4,7 @@ import 'exercise_gauge.dart';
 class ExerciseStatsCard extends StatelessWidget {
   final int currentSteps;
   final int maxSteps;
-  final int caloriesBurned;
+  final double caloriesBurned;
   final int xpEarned;
   final Color? exerciseGaugeColor;
   final VoidCallback? onGaugeTap;

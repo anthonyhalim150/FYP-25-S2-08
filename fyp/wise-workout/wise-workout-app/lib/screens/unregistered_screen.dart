@@ -151,7 +151,7 @@ class UnregisteredUserPage extends StatelessWidget {
                 ExerciseStatsCard(
                   currentSteps: currentSteps,
                   maxSteps: maxSteps,
-                  caloriesBurned: caloriesBurned,
+                  caloriesBurned: double.parse(caloriesBurned.toStringAsFixed(1)),
                   xpEarned: xpEarned,
                   exerciseGaugeColor: Colors.white,
                 ),

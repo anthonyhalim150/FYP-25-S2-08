@@ -50,7 +50,6 @@ exports.getUserWorkoutSessions = async (req, res) => {
 exports.getTodayCaloriesSummary = async (req, res) => {
   try {
     const userId = req.user?.id;
-    console.log(`DEBUG: Fetch request for today calories from user ${userId}`);
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
     const { totalCalories, firstStartTime } =

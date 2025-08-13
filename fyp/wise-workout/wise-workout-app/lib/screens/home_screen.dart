@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final HealthService _healthService = HealthService();
   int _currentSteps = 0;
   final int maxSteps = 10000;
-  int caloriesBurned = 0;
+  double caloriesBurned = 0.0;
   int xpEarned = 0;
   String? _displayName;
   bool _isPremiumUser = false;
@@ -76,17 +76,31 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  double _toOneDecimal(dynamic v, {double fallback = 0.0}) {
+    if (v == null) return fallback;
+    if (v is int) return v.toDouble();
+    if (v is double) return double.parse(v.toStringAsFixed(1));
+    if (v is num) return double.parse(v.toDouble().toStringAsFixed(1));
+    if (v is String) {
+      final parsed = num.tryParse(v);
+      if (parsed != null) {
+        return double.parse(parsed.toDouble().toStringAsFixed(1));
+      }
+    }
+    return fallback;
+  }
+
   Future<void> _fetchTodayCalories() async {
     try {
       final summary = await WorkoutService().fetchTodayCaloriesSummary();
-      setState(() {
-        caloriesBurned = summary['totalCalories'];
-      });
-      print('DEBUG: Calories fetched: ${summary['totalCalories']}');
-    } catch (e) {
-      print('Error fetching today calories: $e');
+      final total = _toOneDecimal(summary['totalCalories']);
+      setState(() => caloriesBurned = total);
+      debugPrint('DEBUG: Calories fetched (1 decimal): $total');
+    } catch (e, st) {
+      debugPrint('Error fetching today calories: $e\n$st');
     }
   }
+
   Future<void> _fetchTodayXP() async {
     try {
       final today = DateTime.now().toIso8601String().substring(0, 10);
@@ -350,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ExerciseStatsCard(
                 currentSteps: _currentSteps,
                 maxSteps: maxSteps,
-                caloriesBurned: caloriesBurned,
+                caloriesBurned: double.parse(caloriesBurned.toStringAsFixed(1)),
                 xpEarned: xpEarned,
                 onGaugeTap: () {
                   Navigator.pushNamed(context, '/dailySummary');
