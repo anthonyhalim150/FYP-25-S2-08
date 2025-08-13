@@ -18,6 +18,30 @@ class WorkoutPlanModel {
     );
     return rows;
   }
+
+  static async getLatestWorkoutPlanByUser(userId) {
+    const [rows] = await db.execute(
+      `SELECT id, user_id, plan_title, days_json, created_at
+         FROM workout_plans
+        WHERE user_id = ?
+     ORDER BY created_at DESC, id DESC
+        LIMIT 1`,
+      [userId]
+    );
+    return rows[0] || null;
+  }
+
+  static async getLatestWorkoutPlan(userId) {
+      const [rows] = await db.execute(
+        `SELECT id, user_id, plan_title, days_json, created_at
+           FROM workout_plans
+          WHERE user_id = ?
+       ORDER BY created_at DESC, id DESC
+          LIMIT 1`,
+        [userId]
+      );
+      return rows[0] || null;
+    }
 }
 
 module.exports = WorkoutPlanModel;

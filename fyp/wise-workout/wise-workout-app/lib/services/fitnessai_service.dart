@@ -87,6 +87,73 @@ class AIFitnessPlanService {
     }
   }
 
+  Future<Map<String, dynamic>> fetchLatestSavedPlan() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    final res = await http.get(
+      Uri.parse('$baseUrl/workout-plans/my-plans'),
+      headers: {
+        'Cookie': 'session=$jwt',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('Failed to load saved plans');
+    }
+
+    final data = jsonDecode(res.body);
+    if (data is! List || data.isEmpty) {
+      return {'plan': <dynamic>[]};
+    }
+
+    // pick the newest plan
+    Map<String, dynamic> latest = Map<String, dynamic>.from(data.first);
+    if (data.length > 1) {
+      data.forEach((e) {
+        final m = Map<String, dynamic>.from(e);
+        final cur = latest['created_at']?.toString();
+        final nxt = m['created_at']?.toString();
+        if (cur == null || (nxt != null && nxt.compareTo(cur) > 0)) {
+          latest = m;
+        }
+      });
+    }
+
+    final String title = (latest['plan_title'] ?? 'Personalized Plan').toString();
+
+    // days_json can be String or already-decoded JSON
+    dynamic daysJson = latest['days_json'];
+    if (daysJson is String && daysJson.isNotEmpty) {
+      try {
+        daysJson = jsonDecode(daysJson);
+      } catch (_) {/* keep as is if not JSON */}
+    }
+
+    // Normalize to editor shape
+    final List<dynamic> daysList;
+    if (daysJson is List) {
+      daysList = daysJson;
+    } else if (daysJson is Map && daysJson['days'] is List) {
+      daysList = List<dynamic>.from(daysJson['days']);
+    } else {
+      daysList = <dynamic>[];
+    }
+
+    final List<dynamic> planForEditor = [
+      {'plan_title': title},
+      ...daysList,
+    ];
+
+    return {
+      'plan': planForEditor,
+      'meta': {
+        'id': latest['id'],
+        'created_at': latest['created_at'],
+        'title': title,
+      }
+    };
+  }
+
 
 }
 

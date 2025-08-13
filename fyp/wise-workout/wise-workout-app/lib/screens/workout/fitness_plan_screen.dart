@@ -3,7 +3,8 @@ import '../../services/fitnessai_service.dart';
 import '../edit_preferences_screen.dart';
 import '../model/workout_day_model.dart';
 import '../model/exercise_model.dart';
-import 'workout_plan_screen.dart';
+import 'ai_workout_plan_screen.dart';
+
 class FitnessPlanScreen extends StatefulWidget {
   const FitnessPlanScreen({Key? key}) : super(key: key);
 
@@ -13,10 +14,12 @@ class FitnessPlanScreen extends StatefulWidget {
 
 class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
   final AIFitnessPlanService _aiService = AIFitnessPlanService();
-  bool _loading = false;
-  bool _generatingPlan = false;
+
+  bool _loading = false;            // used for saving and for quick fetches
+  bool _generatingPlan = false;     // used for "Generate AI Fitness Plan"
   bool _isPlanSaved = false;
-  List<dynamic>? _plan;
+
+  List<dynamic>? _plan;             // current plan preview on this page
   Map<String, dynamic>? _preferences;
   String? _error;
 
@@ -25,6 +28,19 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     super.initState();
     _fetchPreferences();
   }
+
+  // -------------------- Helpers --------------------
+
+  /// Normalizes whatever the service returns into the list structure
+  /// your editor expects: [ {plan_title: ...}, day1, day2, ... ].
+  List<dynamic> _normalizeFetchedPlan(dynamic fetchedPlan) {
+    if (fetchedPlan == null) return <dynamic>[];
+    if (fetchedPlan is List) return fetchedPlan;
+    if (fetchedPlan is Map) return <dynamic>[fetchedPlan];
+    return <dynamic>[];
+  }
+
+  // -------------------- Data loads --------------------
 
   Future<void> _fetchPreferences() async {
     setState(() {
@@ -36,20 +52,16 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
 
     try {
       final prefs = await _aiService.fetchPreferencesOnly();
-      setState(() {
-        _preferences = prefs;
-      });
+      setState(() => _preferences = prefs);
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
+      setState(() => _error = e.toString());
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      setState(() => _loading = false);
     }
   }
 
+  /// This is your existing "Generate AI Fitness Plan" loader.
+  /// It uses the same service call and shows it as a preview on this page.
   Future<void> _fetchPlan() async {
     setState(() {
       _generatingPlan = true;
@@ -58,25 +70,42 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     });
 
     try {
-      final result = await _aiService.fetchPlanFromDB();
+      final result = await _aiService.fetchLatestSavedPlan();
       final fetchedPlan = result['plan'];
-      setState(() {
-        if (fetchedPlan is List) {
-          _plan = fetchedPlan;
-        } else if (fetchedPlan is Map) {
-          _plan = [fetchedPlan];
-        } else {
-          _plan = [];
-        }
-      });
+      setState(() => _plan = _normalizeFetchedPlan(fetchedPlan));
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
+      setState(() => _error = e.toString());
     } finally {
-      setState(() {
-        _generatingPlan = false;
-      });
+      setState(() => _generatingPlan = false);
+    }
+  }
+
+  /// NEW: Fetch the latest saved plan from DB and jump straight into the editor.
+  Future<void> _editSavedPlan() async {
+    setState(() => _loading = true);
+    try {
+      final result = await _aiService.fetchLatestSavedPlan(); // uses /workout-plans/latest
+      final planList = (result['plan'] as List?) ?? [];
+      if (planList.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No saved plan found.')),
+        );
+        return;
+      }
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => WorkoutPlanScreen(plan: planList)),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load saved plan: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -195,9 +224,9 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                   ),
                   const SizedBox(height: 6),
                   if (isRest) ...[
-                    Text(
+                    const Text(
                       "Rest Day",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blueGrey,
                         fontSize: 16,
@@ -239,7 +268,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
       padding: const EdgeInsets.only(top: 18, bottom: 24),
       child: Center(
         child: ElevatedButton.icon(
-          icon: const Icon(Icons.bolt, color: Colors.amber),
+          icon: const Icon(Icons.bolt, color: Colors.black54),
           label: const Text(
             "Generate AI Fitness Plan",
             style: TextStyle(fontSize: 18),
@@ -254,12 +283,40 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
     );
   }
 
+  Widget _buildEditSavedPlanButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 24),
+      child: Center(
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.edit, color: Colors.green),
+          label: const Text(
+            "Edit Saved Plan",
+            style: TextStyle(fontSize: 18),
+          ),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          ),
+          onPressed: _loading ? null : _editSavedPlan,
+        ),
+      ),
+    );
+  }
+
+  // -------------------- Build --------------------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("AI Fitness Plan"),
         actions: [
+          // NEW: app bar quick entry to edit saved plan anytime
+          IconButton(
+            icon: const Icon(Icons.edit_note),
+            tooltip: "Edit Saved Plan",
+            onPressed: _loading ? null : _editSavedPlan,
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: "Edit Preferences",
@@ -285,9 +342,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
           IconButton(
             icon: const Icon(Icons.calendar_today),
             tooltip: "View Calendar",
-            onPressed: () {
-              Navigator.pushNamed(context, '/calendar');
-            },
+            onPressed: () => Navigator.pushNamed(context, '/calendar'),
           ),
         ],
       ),
@@ -302,8 +357,13 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_preferences != null) buildPreferencesCard(),
+
+            // NEW: show "Edit Saved Plan" always
+            _buildEditSavedPlanButton(),
+
             if (_preferences != null && (_plan == null || _plan!.isEmpty))
               buildGeneratePlanButton(),
+
             if (_plan != null && _plan!.isNotEmpty) ...[
               Text(
                 _plan![0]['plan_title'] != null
@@ -318,6 +378,8 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                 textAlign: TextAlign.left,
               ),
               const SizedBox(height: 6),
+
+              // Save and edit buttons for the currently previewed plan
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Center(
@@ -328,8 +390,7 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                         icon: const Icon(Icons.save),
                         label: const Text('Save This Plan'),
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         ),
                         onPressed: (_plan == null || _plan!.isEmpty)
@@ -340,10 +401,12 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                             final String planTitle = _plan![0]['plan_title'];
                             final List<dynamic> planDaysJson = _plan!.sublist(1);
 
-                            final List<WorkoutDay> workoutDays = planDaysJson.map<WorkoutDay>((dayJson) {
+                            final List<WorkoutDay> workoutDays =
+                            planDaysJson.map<WorkoutDay>((dayJson) {
                               final exercises = (dayJson['exercises'] as List?)
                                   ?.map<Exercise>((e) => Exercise.fromAiJson(e))
-                                  .toList() ?? [];
+                                  .toList() ??
+                                  [];
                               return WorkoutDay(
                                 dayOfMonth: dayJson['day_of_month'],
                                 exercises: exercises,
@@ -375,16 +438,12 @@ class _FitnessPlanScreenState extends State<FitnessPlanScreen> {
                         ElevatedButton.icon(
                           icon: const Icon(Icons.edit),
                           label: const Text('Edit Plan'),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => WorkoutPlanScreen(plan: _plan!),
-                              ),
-                            );
+                          onPressed: _loading
+                              ? null
+                              : () async {
+                            await _editSavedPlan();
                           },
                         ),
-
                       ],
                     ],
                   ),
