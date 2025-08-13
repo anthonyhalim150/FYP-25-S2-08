@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../services/health_service.dart';
 import '../../widgets/time_based_chart.dart';
 import '../../widgets/week_picker_dialog.dart';
+import '../../services/workout_service.dart';
 
 class WeeklyMonthlySummaryPage extends StatefulWidget {
   const WeeklyMonthlySummaryPage({super.key});
@@ -35,23 +36,62 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
   }
 
+  Future<List<int>> _fetchBackendCaloriesSeries(DateTime start, DateTime end) async {
+    try {
+      final series = await WorkoutService().fetchDailyCaloriesSeries(from: start, to: end);
+      final values = (series['values'] as List).map((e) {
+        if (e is num) return e.round();
+        return int.tryParse('$e') ?? 0;
+      }).toList();
+
+      return List<int>.from(values);
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<void> _fetchSummaryData(DateTime start, DateTime end) async {
     setState(() => _isLoading = true);
+
     final totalSteps = await _healthService.getStepsInRange(start, end);
     final totalCalories = await _healthService.getCaloriesInRange(start, end);
     final stepsData = await _healthService.getDailyStepsInRange(start, end);
     final caloriesData = await _healthService.getDailyCaloriesInRange(start, end);
+
+    final backendCalories = await _fetchBackendCaloriesSeries(start, end);
+
+    final dayCount = end.difference(
+        DateTime(start.year, start.month, start.day)
+    ).inDays + 1;
+
+    List<int> mergedCalories;
+    if (backendCalories.isNotEmpty && backendCalories.length == dayCount) {
+      mergedCalories = List<int>.generate(dayCount, (i) {
+        final backendVal = (i < backendCalories.length) ? backendCalories[i] : 0;
+        final healthVal  = (i < caloriesData.length) ? caloriesData[i] : 0;
+        return backendVal + healthVal;
+      });
+    } else {
+      mergedCalories = caloriesData;
+    }
+
+    final mergedTotalCalories = mergedCalories.fold<int>(0, (sum, v) => sum + v);
+    final avgSteps = stepsData.isNotEmpty ? (stepsData.reduce((a, b) => a + b) ~/ stepsData.length) : 0;
+    final avgCalories = mergedCalories.isNotEmpty ? (mergedCalories.reduce((a, b) => a + b) ~/ mergedCalories.length) : 0;
+
     setState(() {
       _totalSteps = totalSteps;
-      _totalCalories = totalCalories;
       _stepsData = stepsData;
-      _caloriesData = caloriesData;
-      _averageSteps = stepsData.isNotEmpty ? (stepsData.reduce((a, b) => a + b) ~/ stepsData.length) : 0;
-      _averageCalories = caloriesData.isNotEmpty ? (caloriesData.reduce((a, b) => a + b) ~/ caloriesData.length) : 0;
+
+      _totalCalories = mergedTotalCalories;
+      _caloriesData = mergedCalories;
+
+      _averageSteps = avgSteps;
+      _averageCalories = avgCalories;
       _isLoading = false;
     });
-
   }
+
 
   double _calculateAdaptiveMaxY(List<int> data, double defaultMax, {double step = 2000, double headroom = 1.1, double maxCap = 50000}) {
     if (data.isEmpty) return defaultMax;
@@ -61,6 +101,21 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     return roundedUp > maxCap ? maxCap : roundedUp;
   }
 
+  double _calculateCaloriesMaxY(
+      List<int> data, {
+        int baseline = 500,
+        int step = 100,
+        int maxCap = 20000,
+      }) {
+    if (data.isEmpty) return baseline.toDouble();
+    final highest = data.reduce((a, b) => a > b ? a : b);
+    if (highest <= baseline) return baseline.toDouble();
+
+    final withHeadroom = highest + step;
+    final roundedUp = ((withHeadroom / step).ceil()) * step;
+    return roundedUp > maxCap ? maxCap.toDouble() : roundedUp.toDouble();
+  }
+  
 
   Widget _buildToggleTabs(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -272,9 +327,9 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       currentValue: "$_totalCalories kcal",
                       avgValue: "$_averageCalories kcal",
                       barColor: colorScheme.secondary,
-                      maxY: _calculateAdaptiveMaxY(_caloriesData, 300, step: 100, maxCap: 2000),
+                      maxY: _calculateCaloriesMaxY(_caloriesData),
                       data: _caloriesData,
-                    ),
+                    )
                   ],
                 ),
               ),

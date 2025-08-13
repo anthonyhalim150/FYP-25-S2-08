@@ -68,7 +68,6 @@ class WorkoutSessionService {
     _loggedExercises.clear();
     _elapsedController.add(_elapsed);
 
-    // ====== NEW: also clear start context ======
     _startRouteName = null;
     _startRouteArgs = null;
   }

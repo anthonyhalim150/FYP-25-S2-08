@@ -12,7 +12,6 @@ class WorkoutService {
     return cookie;
   }
 
-  /// Fetch all workouts
   Future<List<Workout>> fetchAllWorkouts() async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts');
@@ -31,7 +30,6 @@ class WorkoutService {
     return List<Workout>.from(data.map((item) => Workout.fromJson(item)));
   }
 
-  /// Fetch workouts by category
   Future<List<Workout>> fetchWorkoutsByCategory(String categoryKey) async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts/category/$categoryKey');
@@ -50,7 +48,6 @@ class WorkoutService {
     return List<Workout>.from(data.map((item) => Workout.fromJson(item)));
   }
 
-  /// Fetch single workout by ID
   Future<Workout> fetchWorkoutById(int workoutId) async {
     final jwt = await _getJwtCookie();
     final url = Uri.parse('$baseUrl/workouts/$workoutId');
@@ -74,7 +71,7 @@ class WorkoutService {
     int? workoutId,
     DateTime? startTime,
     DateTime? endTime,
-    int? duration, // in seconds
+    int? duration,
     double? caloriesBurned,
     String? notes,
     List<Map<String, dynamic>> exercises = const [],
@@ -130,7 +127,7 @@ class WorkoutService {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': 'session=$jwt', // same auth style as your history function
+        'Cookie': 'session=$jwt',
       },
     );
 
@@ -144,5 +141,88 @@ class WorkoutService {
       'firstStartTime': data['firstStartTime'],
     };
   }
+
+
+  String _fmtDate(DateTime d) {
+    return "${d.year.toString().padLeft(4, '0')}-"
+        "${d.month.toString().padLeft(2, '0')}-"
+        "${d.day.toString().padLeft(2, '0')}";
+  }
+
+  List<DateTime> _buildInclusiveDateRange(DateTime from, DateTime to) {
+    DateTime a = DateTime(from.year, from.month, from.day);
+    DateTime b = DateTime(to.year, to.month, to.day);
+    if (a.isAfter(b)) {
+      final tmp = a;
+      a = b;
+      b = tmp;
+    }
+    final days = <DateTime>[];
+    for (var d = a; !d.isAfter(b); d = d.add(const Duration(days: 1))) {
+      days.add(d);
+    }
+    return days;
+  }
+
+// --- ADD: Core fetchers ------------------------------------------------------
+
+  Future<Map<String, int>> fetchDailyCaloriesSummaryMap({
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    final jwt = await _getJwtCookie();
+    final params = "from=${_fmtDate(from)}&to=${_fmtDate(to)}";
+    final url = Uri.parse('$baseUrl/workout-sessions/sessions/summary?$params');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ??
+          'Failed to fetch daily calories summary');
+    }
+
+    final jsonBody = jsonDecode(response.body);
+    final List days = (jsonBody['days'] ?? []) as List;
+
+    // API returns only days that have sessions; convert to map.
+    final result = <String, int>{};
+    for (final item in days) {
+      final dateStr = item['date']?.toString();
+      final total = item['totalCalories'];
+      if (dateStr == null) continue;
+      final val = (total is num) ? total.round() : int.tryParse('$total') ?? 0;
+      result[dateStr] = val;
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> fetchDailyCaloriesSeries({
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    final map = await fetchDailyCaloriesSummaryMap(from: from, to: to);
+
+    final range = _buildInclusiveDateRange(from, to);
+    final labels = <String>[];
+    final values = <int>[];
+
+    for (final d in range) {
+      final key = _fmtDate(d);
+      labels.add(key);
+      values.add(map[key] ?? 0);
+    }
+
+    return {
+      'labels': labels,
+      'values': values,
+    };
+  }
+
 
 }

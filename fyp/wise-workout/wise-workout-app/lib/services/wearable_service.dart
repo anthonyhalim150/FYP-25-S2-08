@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 class WearableService {
-  // Simulate device connection
   Future<bool> connectDevice(String deviceName) async {
     await Future.delayed(const Duration(seconds: 2)); // Simulate connection time
 
-    // Simulate successful connection for demo purposes
-    // In real app, you would have actual device connection logic here
     return true;
   }
 

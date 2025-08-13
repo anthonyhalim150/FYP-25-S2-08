@@ -135,6 +135,19 @@ class WorkoutSessionService {
       throw err;
     }
   }
+
+  static async getDailyCaloriesSummary(userId, fromDate, toDate) {
+    const rows = await WorkoutSessionModel.getDailyCaloriesByUserIdInRange(
+      userId,
+      fromDate,
+      toDate
+    );
+    // Normalize numbers
+    return rows.map(r => ({
+      date: typeof r.day === 'string' ? r.day : new Date(r.day).toISOString().slice(0, 10),
+      totalCalories: Number(r.total_calories || 0),
+    }));
+  }
 }
 
 module.exports = WorkoutSessionService;

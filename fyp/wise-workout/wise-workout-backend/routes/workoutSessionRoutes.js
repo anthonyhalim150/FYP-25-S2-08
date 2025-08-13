@@ -8,4 +8,5 @@ router.get('/sessions', workoutSessionController.getUserWorkoutSessions);
 
 router.get('/sessions/today/summary', workoutSessionController.getTodayCaloriesSummary);
 
+router.get('/sessions/summary', workoutSessionController.getDailyCaloriesSummaryRange);
 module.exports = router;

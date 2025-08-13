@@ -38,7 +38,6 @@ class WorkoutCategoryService {
     return await _storage.read(key: 'jwt_cookie');
   }
 
-  /// Fetch all workout categories from backend
   Future<List<WorkoutCategory>> fetchCategories() async {
     try {
       final jwt = await _getJwtCookie();
@@ -67,7 +66,6 @@ class WorkoutCategoryService {
   }
 
 
-  /// Fetch a single category by key
   Future<WorkoutCategory?> getCategoryByKey(String categoryKey) async {
     final jwt = await _getJwtCookie();
     final response = await http.get(

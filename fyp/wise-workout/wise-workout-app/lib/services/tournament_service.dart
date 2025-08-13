@@ -31,7 +31,6 @@ class TournamentService {
     }
   }
 
-  // Add this:
   Future<List<dynamic>> getTournamentNamesAndEndDates() async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');
     print('TournamentService: JWT = $jwt');

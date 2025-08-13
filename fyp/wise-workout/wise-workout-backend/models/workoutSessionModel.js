@@ -74,6 +74,22 @@ class WorkoutSessionModel {
     );
     return Number(rows[0]?.total_calories || 0);
   }
+
+  static async getDailyCaloriesByUserIdInRange(userId, fromDate, toDate) {
+    const [rows] = await db.execute(
+      `SELECT
+          DATE(start_time) AS day,
+          COALESCE(SUM(calories_burned), 0) AS total_calories
+       FROM workout_sessions
+       WHERE user_id = ?
+         AND start_time >= ?
+         AND start_time < DATE_ADD(?, INTERVAL 1 DAY)
+       GROUP BY DATE(start_time)
+       ORDER BY day ASC`,
+      [userId, fromDate, toDate]
+    );
+    return rows;
+  }
 }
 
 module.exports = WorkoutSessionModel;

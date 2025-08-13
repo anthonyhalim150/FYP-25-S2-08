@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:math' as math;
 
 class TimeBasedChart extends StatelessWidget {
   final IconData icon;
@@ -11,6 +12,12 @@ class TimeBasedChart extends StatelessWidget {
   final List<int> data;
   final double? maxYOverride;
 
+  final bool adaptiveCalories;
+
+  final int calorieBaseline;
+  final int calorieStep;
+  final int calorieMaxCap;
+
   const TimeBasedChart({
     super.key,
     required this.icon,
@@ -21,28 +28,60 @@ class TimeBasedChart extends StatelessWidget {
     required this.maxY,
     required this.data,
     this.maxYOverride,
+    this.adaptiveCalories = false,
+    this.calorieBaseline = 300,
+    this.calorieStep = 100,
+    this.calorieMaxCap = 10000,
   });
 
-  double _calculateAdaptiveMaxY(List<int> data, {double minY = 10000, double headroom = 1.1, double step = 2000, double maxCap = 50000}) {
+  double _calculateAdaptiveMaxY(
+      List<int> data, {
+        double minY = 10000,
+        double headroom = 1.1,
+        double step = 2000,
+        double maxCap = 50000,
+      }) {
     if (data.isEmpty) return minY;
-    final highest = data.reduce((a, b) => a > b ? a : b);
+    final highest = data.reduce(math.max).toDouble();
     if (highest < minY) return minY;
-    // Add headroom and round up to step
     final roundedUp = (((highest * headroom) / step).ceil()) * step;
     return roundedUp > maxCap ? maxCap : roundedUp;
   }
 
+  double _calculateCaloriesMaxY(
+      List<int> data, {
+        required int baseline,
+        required int step,
+        required int maxCap,
+      }) {
+    if (data.isEmpty) return baseline.toDouble();
+    final highest = data.reduce(math.max);
+    if (highest <= baseline) return baseline.toDouble();
+    final withHeadroom = highest + step;
+    final roundedUp = ((withHeadroom / step).ceil()) * step;
+    return math.min(roundedUp, maxCap).toDouble();
+  }
+
   String _formatYAxis(double value) {
-    if (value >= 10000) {
-      return '${(value ~/ 1000)}k';
-    }
+    if (value >= 1000) return '${(value ~/ 1000)}k';
     return value.toInt().toString();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final maxY = maxYOverride ?? _calculateAdaptiveMaxY(data);
+
+    final computedMaxY = maxYOverride ??
+        (maxY > 0
+            ? maxY
+            : adaptiveCalories
+            ? _calculateCaloriesMaxY(
+          data,
+          baseline: calorieBaseline,
+          step: calorieStep,
+          maxCap: calorieMaxCap,
+        )
+            : _calculateAdaptiveMaxY(data));
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -58,7 +97,10 @@ class TimeBasedChart extends StatelessWidget {
             children: [
               Icon(icon, color: barColor),
               const SizedBox(width: 6),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -85,16 +127,17 @@ class TimeBasedChart extends StatelessWidget {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceEvenly,
+                minY: 0,
+                maxY: computedMaxY,
                 titlesData: FlTitlesData(
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, _) {
-                        // Show label every 2nd bar: "0", "2", "4", ..., or adjust as needed
                         if (value.toInt() % 2 == 0) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
-                            child: Text("${value.toInt()}", style: const TextStyle(fontSize: 10)),
+                            child: Text("${value.toInt() + 1}", style: const TextStyle(fontSize: 10)),
                           );
                         }
                         return const SizedBox.shrink();
@@ -102,11 +145,11 @@ class TimeBasedChart extends StatelessWidget {
                       reservedSize: 20,
                     ),
                   ),
-                  leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   rightTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      interval: maxY / 3,
+                      interval: computedMaxY / 3,
                       getTitlesWidget: (value, _) => Padding(
                         padding: const EdgeInsets.only(left: 4),
                         child: Text(_formatYAxis(value), style: const TextStyle(fontSize: 10)),
@@ -114,10 +157,11 @@ class TimeBasedChart extends StatelessWidget {
                       reservedSize: 34,
                     ),
                   ),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
-                barGroups: List.generate(data.length, (i) {
-                  return BarChartGroupData(
+                barGroups: List.generate(
+                  data.length,
+                      (i) => BarChartGroupData(
                     x: i,
                     barRods: [
                       BarChartRodData(
@@ -127,10 +171,9 @@ class TimeBasedChart extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ],
-                  );
-                }),
-                maxY: maxY,
-                gridData: FlGridData(show: true, drawVerticalLine: false),
+                  ),
+                ),
+                gridData: const FlGridData(show: true, drawVerticalLine: false),
                 borderData: FlBorderData(show: false),
               ),
             ),

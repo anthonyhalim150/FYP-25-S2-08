@@ -65,3 +65,33 @@ exports.getTodayCaloriesSummary = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getDailyCaloriesSummaryRange = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    let { from, to } = req.query;
+    if (!from || !to) {
+      return res.status(400).json({ message: "Query params 'from' and 'to' are required (YYYY-MM-DD)" });
+    }
+
+    // Normalize to 'YYYY-MM-DD'
+    const norm = (d) => {
+      const dt = new Date(d);
+      if (isNaN(dt.getTime())) throw new Error('Invalid date: ' + d);
+      return dt.toISOString().slice(0, 10);
+    };
+    from = norm(from);
+    to = norm(to);
+
+    const days = await WorkoutSessionService.getDailyCaloriesSummary(userId, from, to);
+
+    // Note: SQL returns only days that have data.
+    // Frontend can fill missing dates with 0 to match the selected week.
+    res.json({ from, to, days });
+  } catch (err) {
+    console.error('getDailyCaloriesSummaryRange error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
