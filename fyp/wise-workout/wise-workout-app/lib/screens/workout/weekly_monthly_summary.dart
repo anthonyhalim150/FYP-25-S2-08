@@ -103,7 +103,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
 
   double _calculateCaloriesMaxY(
       List<int> data, {
-        int baseline = 500,
+        int baseline = 300,
         int step = 100,
         int maxCap = 20000,
       }) {
@@ -115,7 +115,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     final roundedUp = ((withHeadroom / step).ceil()) * step;
     return roundedUp > maxCap ? maxCap.toDouble() : roundedUp.toDouble();
   }
-  
+
 
   Widget _buildToggleTabs(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
