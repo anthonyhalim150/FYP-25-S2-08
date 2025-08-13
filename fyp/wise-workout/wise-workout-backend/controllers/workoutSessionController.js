@@ -46,3 +46,22 @@ exports.getUserWorkoutSessions = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch workout sessions' });
   }
 };
+
+exports.getTodayCaloriesSummary = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    console.log(`DEBUG: Fetch request for today calories from user ${userId}`);
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const { totalCalories, firstStartTime } =
+      await WorkoutSessionService.getTodayCaloriesSummary(userId);
+
+    return res.json({
+      totalCalories,           // number
+      firstStartTime,          // ISO string or null
+    });
+  } catch (err) {
+    console.error('getTodayCaloriesSummary error:', err);
+    return res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

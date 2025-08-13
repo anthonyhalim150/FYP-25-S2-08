@@ -5,6 +5,7 @@ import '../../services/health_service.dart';
 import '../../services/api_service.dart';
 import '../buypremium_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../services/workout_service.dart';
 
 class DailySummaryPage extends StatefulWidget {
   const DailySummaryPage({super.key});
@@ -42,25 +43,57 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
   Future<void> _initHealthData(DateTime date) async {
     setState(() => _isLoading = true);
+
+    // Get backend calories summary
+    int backendCalories = 0;
+    List<int> backendHourlyCalories = List.filled(24, 0);
+
+    try {
+      // If viewing today, fetch from backend
+      final isToday = date.year == DateTime.now().year &&
+          date.month == DateTime.now().month &&
+          date.day == DateTime.now().day;
+
+      if (isToday) {
+        final summary = await WorkoutService().fetchTodayCaloriesSummary();
+        backendCalories = summary['totalCalories'] ?? 0;
+
+        // OPTIONAL: If you later store hourly calories in backend, populate here
+        // For now we'll just put the total into the last hour for demonstration
+        backendHourlyCalories[DateTime.now().hour] = backendCalories;
+      }
+    } catch (e) {
+      print('Error fetching backend calories: $e');
+    }
+
+    // Keep existing HealthService fetch
     final connected = await _healthService.connect();
     if (!connected) {
       setState(() => _isLoading = false);
       return;
     }
+
     final steps = await _healthService.getStepsForDate(date);
     final hourlySteps = await _healthService.getHourlyStepsForDate(date);
     final hourlyCalories = await _healthService.getHourlyCaloriesForDate(date);
-    final calories = await _healthService.getCaloriesForDate(date);
+    final healthCalories = await _healthService.getCaloriesForDate(date);
+
     setState(() {
       _selectedDate = date;
       _currentSteps = steps;
       _hourlySteps = hourlySteps;
-      _hourlyCalories = hourlyCalories;
-      _caloriesBurned = calories;
+
+      // Merge: backend calories take priority if available
+      _hourlyCalories = backendHourlyCalories.any((c) => c > 0)
+          ? backendHourlyCalories
+          : hourlyCalories;
+
+      _caloriesBurned = backendCalories > 0 ? backendCalories : healthCalories;
       _xpEarned = (_currentSteps / 100).round();
       _isLoading = false;
     });
   }
+
 
   double _calculateAdaptiveMaxY(List<int> data, double minDefault) {
     final highest = data.reduce((a, b) => a > b ? a : b);

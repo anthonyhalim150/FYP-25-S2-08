@@ -115,6 +115,26 @@ class WorkoutSessionService {
       throw error;
     }
   }
+
+  static async getTodayCaloriesSummary(userId) {
+    try {
+      const summary = await WorkoutSessionModel.getTodayCaloriesSummaryByUserId(userId);
+      return {
+        totalCalories: summary.total_calories,
+        firstStartTime: summary.first_start_time, // may be null if no sessions today
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async getTodayCalories(userId) {
+    try {
+      return await WorkoutSessionModel.getTodayCaloriesByUserId(userId);
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 module.exports = WorkoutSessionService;

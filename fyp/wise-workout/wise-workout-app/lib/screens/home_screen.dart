@@ -20,7 +20,7 @@ import '../screens/challengeInvitation_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:easy_localization/easy_localization.dart';
-
+import '../services/workout_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final HealthService _healthService = HealthService();
   int _currentSteps = 0;
   final int maxSteps = 10000;
-  int caloriesBurned = 420;
+  int caloriesBurned = 0;
   int xpEarned = 150;
   String? _displayName;
   bool _isPremiumUser = false;
@@ -64,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchProfile();
     _fetchUnlockedBadges();
     _requestNotificationPermission();
+    _fetchTodayCalories();
     tournamentsFuture = TournamentService().getTournamentsWithParticipants();
     _categoryFuture = WorkoutCategoryService().fetchCategories();
   }
@@ -73,6 +74,19 @@ class _HomeScreenState extends State<HomeScreen> {
       tournamentsFuture = TournamentService().getTournamentsWithParticipants();
     });
   }
+
+  Future<void> _fetchTodayCalories() async {
+    try {
+      final summary = await WorkoutService().fetchTodayCaloriesSummary();
+      setState(() {
+        caloriesBurned = summary['totalCalories'];
+      });
+      print('DEBUG: Calories fetched: ${summary['totalCalories']}');
+    } catch (e) {
+      print('Error fetching today calories: $e');
+    }
+  }
+
 
   Future<void> _requestNotificationPermission() async {
     final plugin = FlutterLocalNotificationsPlugin();

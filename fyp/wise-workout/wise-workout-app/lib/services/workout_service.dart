@@ -121,4 +121,28 @@ class WorkoutService {
     final data = jsonDecode(response.body);
     return data;
   }
+
+  Future<Map<String, dynamic>> fetchTodayCaloriesSummary() async {
+    final jwt = await _getJwtCookie();
+    final url = Uri.parse('$baseUrl/workout-sessions/sessions/today/summary');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt', // same auth style as your history function
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to fetch today calories summary');
+    }
+
+    final data = jsonDecode(response.body);
+    return {
+      'totalCalories': data['totalCalories'] ?? 0,
+      'firstStartTime': data['firstStartTime'],
+    };
+  }
+
 }

@@ -46,6 +46,34 @@ class WorkoutSessionModel {
     );
     return rows[0].total_calories || 0;
   }
+
+  static async getTodayCaloriesSummaryByUserId(userId) {
+    const [rows] = await db.execute(
+      `SELECT
+          COALESCE(SUM(calories_burned), 0) AS total_calories,
+          MIN(start_time) AS first_start_time
+       FROM workout_sessions
+       WHERE user_id = ?
+         AND DATE(start_time) = CURDATE()`,
+      [userId]
+    );
+
+    return {
+      total_calories: Number(rows[0]?.total_calories || 0),
+      first_start_time: rows[0]?.first_start_time || null,
+    };
+  }
+
+  static async getTodayCaloriesByUserId(userId) {
+    const [rows] = await db.execute(
+      `SELECT COALESCE(SUM(calories_burned), 0) AS total_calories
+         FROM workout_sessions
+        WHERE user_id = ?
+          AND DATE(start_time) = CURDATE()`,
+      [userId]
+    );
+    return Number(rows[0]?.total_calories || 0);
+  }
 }
 
 module.exports = WorkoutSessionModel;
