@@ -12,3 +12,16 @@ export async function login({ email, password }) {
   }
   return res.json();
 }
+
+export async function checkSession() {
+  const res = await fetch("http://localhost:8080/me", {
+    method: "GET",
+    credentials: "include"
+  });
+
+  if (!res.ok) {
+    return { loggedIn: false };
+  }
+  const data = await res.json();
+  return { loggedIn: data.message === "logged in" };
+}
