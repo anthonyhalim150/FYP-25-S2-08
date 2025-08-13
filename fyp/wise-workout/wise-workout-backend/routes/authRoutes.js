@@ -5,8 +5,10 @@ const {
   loginGoogle,
   loginApple,
   loginFacebook,
-  register
+  register,
+  me
 } = require('../controllers/authController');
+const authenticateUser = require('../middlewares/authMiddleware');
 
 const {
   requestPasswordReset,
@@ -20,5 +22,6 @@ router.post('/facebook', loginFacebook);
 router.post('/register', register);
 router.post('/forgot-password', requestPasswordReset);
 router.post('/verify-password-reset', verifyPasswordReset);
+router.get('/me', authenticateUser, me);
 
 module.exports = router;

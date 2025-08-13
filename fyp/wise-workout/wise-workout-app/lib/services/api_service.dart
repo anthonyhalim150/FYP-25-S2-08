@@ -4,7 +4,22 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
   final String backendUrl = 'http://10.0.2.2:3000';
-  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+
+  Future<bool> checkAuthStatus() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) return false;
+
+    try {
+      final res = await http.get(
+        Uri.parse('$backendUrl/auth/me'),
+        headers: {'Cookie': 'session=$jwt'},
+      );
+      return res.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<Map<String, dynamic>> getCurrentProfile() async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');
@@ -16,7 +31,7 @@ class ApiService {
     if (res.statusCode == 200) {
       return jsonDecode(res.body);
     } else {
-       throw Exception('Failed to load profile');
+      throw Exception('Failed to load profile');
     }
   }
 
@@ -94,7 +109,6 @@ class ApiService {
 
   Future<Map<String, dynamic>> buyPremiumWithMoney(String plan, String paymentId) async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');
-    print('tes');
     if (jwt == null) return {'success': false, 'message': 'Not logged in'};
     final res = await http.post(
       Uri.parse('$backendUrl/user/buy-premium'),
@@ -119,6 +133,7 @@ class ApiService {
       return {'success': false, 'message': error};
     }
   }
+
   Future<int> getDailyXP(String date) async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');
     if (jwt == null) throw Exception('JWT not found in secure storage');

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'services/notification_service.dart';
+import 'services/api_service.dart';
 
 import 'themes/app_theme.dart';
 import 'themes/christmas_theme.dart';
@@ -82,11 +83,40 @@ void main() async {
   );
 }
 
-class WiseWorkoutApp extends StatelessWidget {
+class WiseWorkoutApp extends StatefulWidget {
   const WiseWorkoutApp({super.key});
 
   @override
+  State<WiseWorkoutApp> createState() => _WiseWorkoutAppState();
+}
+
+class _WiseWorkoutAppState extends State<WiseWorkoutApp> {
+  final ApiService _apiService = ApiService();
+  String? _initialRoute;
+
+  @override
+  void initState() {
+    super.initState();
+    _determineStartRoute();
+  }
+
+  void _determineStartRoute() async {
+    final isAuthenticated = await _apiService.checkAuthStatus();
+    setState(() {
+      _initialRoute = isAuthenticated ? '/home' : '/unregistered';
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_initialRoute == null) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
     ThemeData usedTheme;
@@ -107,9 +137,7 @@ class WiseWorkoutApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-
       navigatorKey: rootNavigatorKey,
-
       builder: (context, child) {
         if (child == null) return const SizedBox.shrink();
         return Overlay(
@@ -119,8 +147,7 @@ class WiseWorkoutApp extends StatelessWidget {
           ],
         );
       },
-
-      initialRoute: '/unregistered',
+      initialRoute: _initialRoute!,
       routes: {
         '/': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(userName: ''),
@@ -197,7 +224,6 @@ class WiseWorkoutApp extends StatelessWidget {
           final args = settings.arguments as Map<String, dynamic>;
           final List<String> names = (args['exerciseNames'] as List).cast<String>();
           final String dayLabel = args['dayLabel'] as String;
-
           return MaterialPageRoute(
             builder: (_) => ExerciseListFromAIPage(
               exerciseNames: names,

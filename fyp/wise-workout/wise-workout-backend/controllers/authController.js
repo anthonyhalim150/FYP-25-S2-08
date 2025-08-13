@@ -130,3 +130,13 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.me = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: 'Authenticated' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
