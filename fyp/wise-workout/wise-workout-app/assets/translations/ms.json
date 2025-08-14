@@ -212,7 +212,7 @@
   "lucky_spin_button_token": "PUTAR LAGI (50 Token)",
   "lucky_spin_error_load_prizes": "Gagal memuat hadiah. Sila cuba lagi.",
   "lucky_spin_error_status": "Gagal memuat status putaran. Sila cuba lagi.",
-  "lucky_spin_error_unknown_prize": "Hadiah \"{0}\" tidak dikenali.",
+  "lucky_spin_error_unknown_prize": "Hadiah \"{}\" tidak dikenali.",
   "common_error": "Ralat",
   "common_ok": "OK",
 
@@ -319,5 +319,22 @@
   "month_9": "September",
   "month_10": "Oktober",
   "month_11": "November",
-  "month_12": "Disember"
+  "month_12": "Disember",
+
+  "feedback_user": "Pengguna",
+  "feedback_today": "Hari ini",
+  "feedback_yesterday": "Semalam",
+  "feedback_days_ago": "{} hari yang lalu",
+  "feedback_title": "Maklum Balas",
+  "feedback_based_on": "Berdasarkan {} penilaian",
+  "feedback_pros_title": "Perkara Yang Disukai Pengguna",
+  "feedback_cons_title": "FitQuest Sedang Dibangunkan",
+  "feedback_reviews": "Ulasan ({})",
+  "feedback_give": "+ Beri Maklum Balas",
+  "feedback_none": "Tiada maklum balas.",
+  "feedback_5stars": "5 Bintang",
+  "feedback_4stars": "4 Bintang",
+  "feedback_3stars": "3 Bintang",
+  "feedback_2stars": "2 Bintang",
+  "feedback_1star": "1 Bintang"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../services/feedback_service.dart';
 import 'give_feedback.dart';
 
@@ -44,7 +45,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         return {
           'author': e['username'] != null
               ? '${e['username']}${e['firstName'] != null ? ' (${e['firstName']})' : ''}'
-              : 'User',
+              : tr('feedback_user'),
           'date': _formatDate(e['created_at']),
           'rating': ratingVal is int
               ? ratingVal
@@ -62,7 +63,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         rating = reviews.fold<double>(
               0.0,
               (sum, e) => sum + ((e['rating'] ?? 0) as int),
-            ) / reviews.length;
+            ) /
+            reviews.length;
 
         List<int> starCounts = List.generate(5, (i) => 0);
         for (final r in reviews) {
@@ -76,7 +78,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           stats = starCounts.map((e) => e / reviews.length).toList();
         }
 
-        // Calculate top 3 pros
         final prosCount = <String, int>{};
         for (var p in allPros) {
           prosCount[p] = (prosCount[p] ?? 0) + 1;
@@ -85,7 +86,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ..sort((a, b) => b.value.compareTo(a.value));
         pros = sortedPros.take(3).map((entry) => entry.key).toList();
 
-        // Calculate top 1 con
         final consCount = <String, int>{};
         for (var c in allCons) {
           consCount[c] = (consCount[c] ?? 0) + 1;
@@ -108,9 +108,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     if (d == null) return '';
     final now = DateTime.now();
     final diff = now.difference(d).inDays;
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Yesterday';
-    return '$diff days ago';
+    if (diff == 0) return tr('feedback_today');
+    if (diff == 1) return tr('feedback_yesterday');
+    return tr('feedback_days_ago', args: ['$diff']);
   }
 
   @override
@@ -140,7 +140,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     const SizedBox(height: 6),
                     Center(
                       child: Text(
-                        "Feedback",
+                        tr('feedback_title'),
                         style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -176,7 +176,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     const SizedBox(height: 3),
                     Center(
                       child: Text(
-                        "Based on $ratingCount ratings",
+                        tr('feedback_based_on', args: ['$ratingCount']),
                         style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500),
                       ),
@@ -185,7 +185,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     _buildRatingBars(context),
                     const SizedBox(height: 18),
                     Text(
-                      "What Customers Like",
+                      tr('feedback_pros_title'),
                       style: textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600, color: colorScheme.onSurface),
                     ),
@@ -205,7 +205,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      "FitQuest in Development",
+                      tr('feedback_cons_title'),
                       style: textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600, color: colorScheme.onSurface),
                     ),
@@ -228,7 +228,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Reviews ($ratingCount)",
+                          tr('feedback_reviews', args: ['$ratingCount']),
                           style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700, color: colorScheme.onSurface),
                         ),
@@ -248,7 +248,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               MaterialPageRoute(builder: (_) => const GiveFeedbackScreen()),
                             ).then((_) => loadReviews());
                           },
-                          child: Text("+ Give Feedback",
+                          child: Text(tr('feedback_give'),
                               style: textTheme.labelLarge
                                   ?.copyWith(color: colorScheme.onSecondary)),
                         ),
@@ -259,7 +259,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       child: reviews.isEmpty
                           ? Center(
                               child: Text(
-                                "No feedback yet.",
+                                tr('feedback_none'),
                                 style: textTheme.bodyMedium,
                               ),
                             )
@@ -360,15 +360,21 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               },
                             ),
                     ),
-                  ],
-                ),
+                ],
+              ),
         ),
       ),
     );
   }
 
   Widget _buildRatingBars(BuildContext context) {
-    final labels = ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star'];
+    final labels = [
+      tr('feedback_5stars'),
+      tr('feedback_4stars'),
+      tr('feedback_3stars'),
+      tr('feedback_2stars'),
+      tr('feedback_1star'),
+    ];
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 

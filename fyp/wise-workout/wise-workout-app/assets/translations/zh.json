@@ -211,7 +211,7 @@
   "lucky_spin_button_token": "再次旋转（50代币）",
   "lucky_spin_error_load_prizes": "奖品加载失败，请稍后再试。",
   "lucky_spin_error_status": "加载状态失败，请稍后再试。",
-  "lucky_spin_error_unknown_prize": "收到未知奖品“{0}”。",
+  "lucky_spin_error_unknown_prize": "收到未知奖品“{}”。",
   "common_error": "错误",
   "common_ok": "确定",
 
@@ -317,6 +317,23 @@
   "month_9": "九月",
   "month_10": "十月",
   "month_11": "十一月",
-  "month_12": "十二月"
+  "month_12": "十二月",
+
+  "feedback_user": "用户",
+  "feedback_today": "今天",
+  "feedback_yesterday": "昨天",
+  "feedback_days_ago": "{} 天前",
+  "feedback_title": "反馈",
+  "feedback_based_on": "基于 {} 条评分",
+  "feedback_pros_title": "用户喜欢的地方",
+  "feedback_cons_title": "FitQuest 开发中",
+  "feedback_reviews": "评论 ({})",
+  "feedback_give": "+ 提交反馈",
+  "feedback_none": "暂无反馈。",
+  "feedback_5stars": "5 星",
+  "feedback_4stars": "4 星",
+  "feedback_3stars": "3 星",
+  "feedback_2stars": "2 星",
+  "feedback_1star": "1 星"
 
 }

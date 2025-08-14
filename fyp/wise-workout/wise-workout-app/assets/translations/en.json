@@ -211,7 +211,7 @@
   "lucky_spin_button_token": "SPIN AGAIN (50 Tokens)",
   "lucky_spin_error_load_prizes": "Failed to load prizes. Please try again later.",
   "lucky_spin_error_status": "Failed to load spin status. Please try again later.",
-  "lucky_spin_error_unknown_prize": "Unknown prize \"{0}\" received.",
+  "lucky_spin_error_unknown_prize": "Unknown prize \"{}\" received.",
   "common_error": "Error",
   "common_ok": "OK",
 
@@ -336,6 +336,23 @@
   "month_9": "September",
   "month_10": "October",
   "month_11": "November",
-  "month_12": "December"
+  "month_12": "December",
+
+  "feedback_user": "User",
+  "feedback_today": "Today",
+  "feedback_yesterday": "Yesterday",
+  "feedback_days_ago": "{} days ago",
+  "feedback_title": "Feedback",
+  "feedback_based_on": "Based on {} ratings",
+  "feedback_pros_title": "What Customers Like",
+  "feedback_cons_title": "FitQuest in Development",
+  "feedback_reviews": "Reviews ({})",
+  "feedback_give": "+ Give Feedback",
+  "feedback_none": "No feedback yet.",
+  "feedback_5stars": "5 Stars",
+  "feedback_4stars": "4 Stars",
+  "feedback_3stars": "3 Stars",
+  "feedback_2stars": "2 Stars",
+  "feedback_1star": "1 Star"
 
 }
