@@ -290,13 +290,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: actionId == "feedback"
-          ? Text(
-        "Rate and Feedback",
+    ? Text(
+        tr('profile_feedback'),
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
         ),
       )
-          : Text(
+    : Text(
         tr('profile_$actionId'),
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
