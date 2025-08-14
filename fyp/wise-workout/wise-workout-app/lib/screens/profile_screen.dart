@@ -96,13 +96,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadLanguagePreference() async {
-    final storedCode = await _secureStorage.read(key: 'language_code');
-    if (storedCode != null && mounted) {
+    try {
+      final langCode = await apiService.getLanguage();
+      if (!mounted) return;
+      context.setLocale(Locale(langCode));
       setState(() {
-        _selectedLanguageCode = storedCode;
+        _selectedLanguageCode = langCode;
+      });
+    } catch (err) {
+      context.setLocale(const Locale('en'));
+      setState(() {
+        _selectedLanguageCode = 'en';
       });
     }
   }
+
 
   String _languageNameFromCode(String code) {
     switch (code) {
