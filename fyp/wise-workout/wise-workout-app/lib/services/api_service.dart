@@ -150,4 +150,38 @@ class ApiService {
       throw Exception('Failed to load daily XP');
     }
   }
+  Future<String> getLanguage() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) throw Exception('JWT not found in secure storage');
+
+    final res = await http.get(
+      Uri.parse('$backendUrl/user/language'),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return data['language'] ?? 'en';
+    } else {
+      throw Exception('Failed to load language');
+    }
+  }
+
+  Future<void> setLanguage(String language) async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) throw Exception('JWT not found in secure storage');
+
+    final res = await http.put(
+      Uri.parse('$backendUrl/user/language'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode({'language': language}),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('Failed to update language');
+    }
+  }
 }

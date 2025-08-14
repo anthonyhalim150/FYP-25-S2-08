@@ -60,9 +60,8 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await NotificationService.init();
 
-  final storage = FlutterSecureStorage();
-  String? langCode = await storage.read(key: 'language_code');
-  Locale initialLocale = langCode != null ? Locale(langCode) : const Locale('en');
+  // Default to English if not set
+  Locale initialLocale = const Locale('en');
 
   runApp(
     EasyLocalization(
@@ -100,8 +99,21 @@ class _WiseWorkoutAppState extends State<WiseWorkoutApp> {
     _determineStartRoute();
   }
 
-  void _determineStartRoute() async {
+  Future<void> _determineStartRoute() async {
     final isAuthenticated = await _apiService.checkAuthStatus();
+
+    // Load and apply language from backend if logged in
+    if (isAuthenticated) {
+      try {
+        final lang = await _apiService.getLanguage();
+        if (lang.isNotEmpty && mounted) {
+          context.setLocale(Locale(lang));
+        }
+      } catch (e) {
+        print('Error loading user language: $e');
+      }
+    }
+
     setState(() {
       _initialRoute = isAuthenticated ? '/home' : '/unregistered';
     });
