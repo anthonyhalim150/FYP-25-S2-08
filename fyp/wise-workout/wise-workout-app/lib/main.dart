@@ -52,6 +52,7 @@ import 'screens/workout/workout_plans_screen.dart';
 import 'screens/workout/workout_plan_exercise_list.dart';
 import 'widgets/persistent_workout_timer_overlay.dart';
 import 'screens/workout/exercise_list_from_ai_page.dart';
+import 'screens/calendar_sync_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -188,6 +189,7 @@ class _WiseWorkoutAppState extends State<WiseWorkoutApp> {
         '/weekly-monthly-summary': (context) => const WeeklyMonthlySummaryPage(),
         '/calendar': (context) => const CalendarPlanScreen(),
         '/workout-plans-screen': (context) => const WorkoutPlansScreen(),
+        '/calendar-sync': (context) => const CalendarSyncScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/workout-list-page') {

@@ -255,6 +255,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         case "password":
           handleTap = () => Navigator.pushNamed(context, '/change-password');
           break;
+        case "Calendar":
+          handleTap = () => Navigator.pushNamed(context, '/calendar-sync');
+        break;
         case "wearable":
           handleTap = () => Navigator.pushNamed(context, '/wearable-screen');
           break;
@@ -364,6 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
                   _profileItem(Icons.lock, "password"),
                   _profileItem(Icons.watch, "wearable",),
+                  _profileItem(Icons.calendar_month_rounded, "calendar"),
                   _profileItem(Icons.fitness_center, "workout_plan"),
                   _profileItem(Icons.history, "workout_history"),
                   if (!_isPremiumUser)

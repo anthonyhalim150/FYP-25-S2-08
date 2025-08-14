@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as gcal;
 import 'package:http/http.dart' as http;
@@ -18,61 +18,89 @@ class _AuthedClient extends http.BaseClient {
   }
 }
 
-/// Service responsible for pushing workout plan days to Google Calendar.
-/// Designed to be used from Controllers/Views without leaking auth/HTTP details.
 class GoogleCalendarService {
-  /// You can pass your own GoogleSignIn instance (from AuthService)
-  /// or let this service create one (it includes the Calendar scope).
   GoogleCalendarService({GoogleSignIn? googleSignIn})
       : _googleSignIn = googleSignIn ??
       GoogleSignIn(
         scopes: const [
           'email',
           'profile',
-          'https://www.googleapis.com/auth/calendar', // Calendar scope
+          'https://www.googleapis.com/auth/calendar',
         ],
       );
 
   final GoogleSignIn _googleSignIn;
 
-  /// Attempts a silent sign-in, then interactive if needed.
-  /// Ensures Calendar scope is granted.
+  static const String _fitQuestTagKey = 'fitquest';
+  static const String _fitQuestTagValue = '1';
+
   Future<Map<String, String>> _getAuthHeaders() async {
     GoogleSignInAccount? account = await _googleSignIn.signInSilently();
     account ??= await _googleSignIn.signIn();
-    if (account == null) {
-      throw Exception('Google sign-in was cancelled.');
-    }
-    // Ensure we have calendar scope (in case your app previously signed-in without it).
+    if (account == null) throw Exception('Google sign-in was cancelled.');
+
     final granted = await _googleSignIn.requestScopes(
       ['https://www.googleapis.com/auth/calendar'],
     );
-    if (granted != true) {
-      throw Exception('Calendar permission was not granted.');
-    }
-    final headers = await account.authHeaders;
-    return headers;
+    if (granted != true) throw Exception('Calendar permission was not granted.');
+    return account.authHeaders;
   }
 
-  /// Adds a single workout event.
-  ///
-  /// [summary] - event title (e.g. "Day 5: Upper Body")
-  /// [start]   - start DateTime (local)
-  /// [durationMinutes] - duration length in minutes
-  /// [timeZone] - IANA TZ (defaults to Asia/Singapore)
-  /// [description] - optional extra details (e.g. sets/reps breakdown)
+  Future<void> signOutCalendar() async {
+    await _googleSignIn.signOut();
+  }
+
+
+
+  /// Delete all events created by FitQuest (identified by extendedProperties).
+  Future<int> unsyncFitQuestEvents({
+    String calendarId = 'primary',
+    DateTime? timeMin,
+    DateTime? timeMax,
+  }) async {
+    final headers = await _getAuthHeaders();
+    final api = gcal.CalendarApi(_AuthedClient(headers));
+
+    String? pageToken;
+    int deleted = 0;
+
+    do {
+      final resp = await api.events.list(
+        calendarId,
+        privateExtendedProperty: ['$_fitQuestTagKey=$_fitQuestTagValue'], // <-- fix
+        singleEvents: true,
+        maxResults: 2500,
+        pageToken: pageToken,
+        timeMin: timeMin,
+        timeMax: timeMax,
+      );
+
+      final items = resp.items ?? const <gcal.Event>[];
+      for (final ev in items) {
+        final id = ev.id;
+        if (id != null) {
+          await api.events.delete(calendarId, id);
+          deleted++;
+        }
+      }
+      pageToken = resp.nextPageToken;
+    } while (pageToken != null && pageToken.isNotEmpty);
+
+    return deleted;
+  }
+
   Future<gcal.Event> addEvent({
     required String summary,
     required DateTime start,
     int durationMinutes = 45,
     String timeZone = 'Asia/Singapore',
     String? description,
-    List<String>? attendeesEmails, // optional
+    List<String>? attendeesEmails,
     String calendarId = 'primary',
+    Map<String, String>? extraPrivateProps, // <--- NEW (optional)
   }) async {
     final headers = await _getAuthHeaders();
     final api = gcal.CalendarApi(_AuthedClient(headers));
-
     final end = start.add(Duration(minutes: durationMinutes));
 
     final event = gcal.Event(
@@ -80,31 +108,21 @@ class GoogleCalendarService {
       description: description,
       start: gcal.EventDateTime(dateTime: start, timeZone: timeZone),
       end: gcal.EventDateTime(dateTime: end, timeZone: timeZone),
-      // Optional: add attendees if you want to invite someone
-      attendees: attendeesEmails
-          ?.map((e) => gcal.EventAttendee(email: e))
-          .toList(),
+      attendees: attendeesEmails?.map((e) => gcal.EventAttendee(email: e)).toList(),
       reminders: gcal.EventReminders(
         useDefault: false,
-        overrides: [
-          gcal.EventReminder(method: 'popup', minutes: 10),
-        ],
+        overrides: [gcal.EventReminder(method: 'popup', minutes: 10)],
       ),
+      // Tag it so we can find/delete later
+      extendedProperties: gcal.EventExtendedProperties(private: {
+        _fitQuestTagKey: _fitQuestTagValue,
+        if (extraPrivateProps != null) ...extraPrivateProps,
+      }),
     );
 
-    final inserted = await api.events.insert(event, calendarId);
-    return inserted;
+    return await api.events.insert(event, calendarId);
   }
 
-  /// Adds ALL days from a plan list to the user's calendar.
-  ///
-  /// Expects your day objects to contain:
-  /// - 'calendar_date': DateTime
-  /// - 'rest': bool
-  /// - 'exercises': List (each exercise can have 'name', 'sets', 'reps')
-  ///
-  /// [defaultStartHour]/[defaultStartMinute] set the time for each day.
-  /// Return value is a list of created Events (skips rest/null days).
   Future<List<gcal.Event>> addWholePlan({
     required List<dynamic> planDays,
     int defaultStartHour = 7,
@@ -123,15 +141,10 @@ class GoogleCalendarService {
 
       final date = day['calendar_date'];
       final isRest = (day['rest'] == true);
-      if (date == null || date is! DateTime || isRest) {
-        // Skip invalid or rest days
-        continue;
-      }
+      if (date == null || date is! DateTime || isRest) continue;
 
-      // Build title and description from exercises
       final idx = i + 1;
       final summary = _buildEventTitle(day, defaultTitle: 'Workout Day $idx');
-
       final description = _buildDescription(day);
 
       final start = DateTime(
@@ -152,10 +165,12 @@ class GoogleCalendarService {
         ),
         reminders: gcal.EventReminders(
           useDefault: false,
-          overrides: [
-            gcal.EventReminder(method: 'popup', minutes: 10),
-          ],
+          overrides: [gcal.EventReminder(method: 'popup', minutes: 10)],
         ),
+        extendedProperties: gcal.EventExtendedProperties(private: {
+          _fitQuestTagKey: _fitQuestTagValue,
+          'dayIndex': '$idx',
+        }),
       );
 
       final inserted = await api.events.insert(event, calendarId);
@@ -163,6 +178,70 @@ class GoogleCalendarService {
     }
 
     return created;
+  }
+
+  Future<void> connectCalendar() async {
+    await _getAuthHeaders(); // triggers sign-in + scope grant if needed
+  }
+
+  Future<int> disconnectCalendar({
+    bool alsoUnsync = true,
+    String calendarId = 'primary',
+    DateTime? timeMin,
+    DateTime? timeMax,
+  }) async {
+    int removed = 0;
+
+    // 1) Ensure we're signed in first (disconnect fails if not signed in)
+    GoogleSignInAccount? account;
+    try {
+      account = await _googleSignIn.signInSilently();
+      account ??= await _googleSignIn.signIn();
+    } catch (_) {
+      // ignore; we'll still try to signOut if needed
+    }
+
+    // 2) Optionally remove FitQuest-tagged events before revoking
+    if (alsoUnsync) {
+      try {
+        removed = await unsyncFitQuestEvents(
+          calendarId: calendarId,
+          timeMin: timeMin,
+          timeMax: timeMax,
+        );
+      } catch (_) {
+        // don't fail disconnect if unsync fails
+      }
+    }
+
+    // 3) Try native revoke
+    try {
+      await _googleSignIn.disconnect();
+      return removed;
+    } on PlatformException catch (_) {
+      // 4) Fallback: try HTTP revoke with the access token, then signOut.
+      try {
+        account ??= await _googleSignIn.signInSilently();
+        if (account != null) {
+          final auth = await account.authentication;
+          final token = auth.accessToken;
+          if (token != null) {
+            // Google OAuth revoke endpoint
+            final uri = Uri.parse('https://oauth2.googleapis.com/revoke?token=$token');
+            // POST with form content-type is accepted; GET also works.
+            await http.post(
+              uri,
+              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+              body: 'token=$token',
+            );
+          }
+        }
+      } catch (_) {
+        // swallow; we'll still signOut
+      }
+      await _googleSignIn.signOut(); // best-effort local cleanup
+      return removed;
+    }
   }
 
   /// Adds only the days that fall within [visibleMonth] (month/year).
@@ -181,8 +260,12 @@ class GoogleCalendarService {
 
     final subset = planDays.where((d) {
       final dt = d['calendar_date'];
-      return (dt is DateTime) && !d['rest'] == true && dt.isAfter(month.subtract(const Duration(seconds: 1))) && dt.isBefore(nextMonth);
+      return (dt is DateTime) &&
+          (d['rest'] != true) &&
+          dt.isAfter(month.subtract(const Duration(seconds: 1))) &&
+          dt.isBefore(nextMonth);
     }).toList();
+
 
     return addWholePlan(
       planDays: subset,
@@ -224,7 +307,7 @@ class GoogleCalendarService {
     }
     final notes = day['notes']?.toString();
     if (notes != null && notes.trim().isNotEmpty) {
-      if (buffer.isNotEmpty) buffer.writeln();
+      if (buffer.toString().isNotEmpty) buffer.writeln();
       buffer.writeln('Notes: $notes');
     }
     return buffer.toString().trim();
