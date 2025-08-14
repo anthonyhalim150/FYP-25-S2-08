@@ -27,6 +27,10 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
   bool _isPremiumUser = false;
 
+  double? _weightKg;
+  int? _heightCm;
+  String? _gender;
+
   @override
   void initState() {
     super.initState();
@@ -39,24 +43,47 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     if (profile != null) {
       setState(() {
         _isPremiumUser = profile['role'] == 'premium';
+        _weightKg = (profile['weight_kg'] is num) ? (profile['weight_kg'] as num).toDouble() : null;
+        _heightCm = (profile['height_cm'] is num) ? (profile['height_cm'] as num).toInt() : null;
+        _gender = (profile['gender'] as String?)?.toLowerCase();
       });
     }
   }
 
-  List<double> _preferBackendPerHour(List<double> backend, List<double> health) {
+  List<double> _preferBackendPerHourAddMovement(List<double> backend, List<double> healthActive, List<double> stepsEstimate) {
     final out = List<double>.filled(24, 0.0);
     for (int i = 0; i < 24; i++) {
       final b = (i < backend.length) ? backend[i] : 0.0;
-      final h = (i < health.length) ? health[i] : 0.0;
-      out[i] = b > 0 ? b : h;
+      final h = (i < healthActive.length) ? healthActive[i] : 0.0;
+      final s = (i < stepsEstimate.length) ? stepsEstimate[i] : 0.0;
+      final movement = h > 0 ? h : s;
+      out[i] = b + movement;
     }
     return out;
   }
 
-  double _sum(List<double> values) {
+  double _sumD(List<double> values) {
     double s = 0;
     for (final v in values) s += v;
     return s;
+  }
+
+  double _strideMeters({int? heightCm, String? gender}) {
+    final hCm = (heightCm ?? 170).toDouble();
+    final factor = 0.415; // walking step length ~41.5% of height
+    return (hCm * factor) / 100.0; // meters per step
+  }
+
+  List<double> _stepsToCaloriesHourly(List<int> hourlySteps) {
+    final weight = _weightKg ?? 70.0;
+    final strideM = _strideMeters(heightCm: _heightCm, gender: _gender);
+    const kcalPerKgKmWalking = 0.53;
+    return List<double>.generate(24, (i) {
+      final steps = (i < hourlySteps.length) ? hourlySteps[i] : 0;
+      final distanceKm = (steps * strideM) / 1000.0;
+      final kcal = distanceKm * weight * kcalPerKgKmWalking;
+      return double.parse(kcal.toStringAsFixed(2));
+    });
   }
 
   Future<void> _initHealthData(DateTime date) async {
@@ -65,17 +92,18 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     List<double> backendHourly = List.filled(24, 0.0);
     try {
       backendHourly = await WorkoutService().fetchHourlyCaloriesForDate(date);
-    } catch (e) {
-    }
+    } catch (_) {}
 
     final connected = await _healthService.connect();
     if (!connected) {
-      final merged = backendHourly;
+      final stepsOnly = List<int>.filled(24, 0);
+      final stepsKcal = _stepsToCaloriesHourly(stepsOnly);
+      final merged = _preferBackendPerHourAddMovement(backendHourly, List.filled(24, 0.0), stepsKcal);
       setState(() {
         _selectedDate = date;
         _hourlyCalories = merged;
-        _caloriesBurned = _sum(merged);
-        _hourlySteps = List<int>.filled(24, 0);
+        _caloriesBurned = _sumD(merged);
+        _hourlySteps = stepsOnly;
         _currentSteps = 0;
         _xpEarned = 0;
         _isLoading = false;
@@ -83,18 +111,22 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
       return;
     }
 
-    // 3) Health hourly + steps
     final steps = await _healthService.getStepsForDate(date);
     final hourlySteps = await _healthService.getHourlyStepsForDate(date);
-    final healthHourly = (await _healthService.getHourlyCaloriesForDate(date))
+
+    final healthHourlyActive = (await _healthService.getHourlyCaloriesForDate(date))
         .map((e) => e.toDouble())
         .toList();
 
-    // 4) Merge (per-hour)
-    final mergedHourly = _preferBackendPerHour(backendHourly, healthHourly);
+    final stepsKcalHourly = _stepsToCaloriesHourly(hourlySteps);
 
-    // 5) Recompute the “current calories” from the bars so it matches the chart
-    final totalCalories = _sum(mergedHourly);
+    final mergedHourly = _preferBackendPerHourAddMovement(
+      backendHourly,
+      healthHourlyActive,
+      stepsKcalHourly,
+    );
+
+    final totalCalories = _sumD(mergedHourly);
 
     setState(() {
       _selectedDate = date;
@@ -117,7 +149,6 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
 
   void _changeDate(int offsetDays) {
     final newDate = _selectedDate.add(Duration(days: offsetDays));
-    // allow yesterday and earlier; block future
     if (!newDate.isAfter(DateTime.now())) {
       _initHealthData(newDate);
     }
@@ -143,8 +174,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
         elevation: 0,
         leading: BackButton(color: colorScheme.onBackground),
         title: Text("daily_summary_title".tr(),
-            style:
-            textTheme.titleLarge?.copyWith(color: colorScheme.onBackground)),
+            style: textTheme.titleLarge?.copyWith(color: colorScheme.onBackground)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -181,8 +211,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
                   ),
                   Text(
                     _formattedDate(_selectedDate),
-                    style: textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   IconButton(
                     icon: Icon(
@@ -289,9 +318,7 @@ class _TimeBasedChart extends StatelessWidget {
                   currentValue,
                   style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                Text("current_label".tr(),
-                    style: textTheme.bodySmall,
-                ),
+                Text("current_label".tr(), style: textTheme.bodySmall),
               ],
             ),
           ),
@@ -306,7 +333,6 @@ class _TimeBasedChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, _) {
-                        // label every 6 hours: 0h, 6h, 12h, 18h
                         if (value.toInt() % 6 == 0) {
                           return Text("${value.toInt()}h", style: textTheme.labelSmall);
                         }

@@ -4,6 +4,7 @@ import '../../services/health_service.dart';
 import '../../widgets/time_based_chart.dart';
 import '../../widgets/week_picker_dialog.dart';
 import '../../services/workout_service.dart';
+import '../../services/api_service.dart';
 
 class WeeklyMonthlySummaryPage extends StatefulWidget {
   const WeeklyMonthlySummaryPage({super.key});
@@ -14,16 +15,22 @@ class WeeklyMonthlySummaryPage extends StatefulWidget {
 class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   final HealthService _healthService = HealthService();
   bool _isLoading = false;
+
   bool _isWeeklyView = true;
   DateTimeRange? _selectedWeek;
   int _selectedMonth = DateTime.now().month;
   int _selectedYear = DateTime.now().year;
-  List<int> _stepsData = List.filled(24, 0);
-  List<int> _caloriesData = List.filled(24, 0);
+
+  List<int> _stepsData = const [];
+  List<int> _caloriesData = const [];
   int _totalSteps = 0;
   int _totalCalories = 0;
   int _averageSteps = 0;
   int _averageCalories = 0;
+
+  double? _weightKg;
+  int? _heightCm;
+  String? _gender;
 
   @override
   void initState() {
@@ -33,7 +40,46 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
       start: DateTime.now().subtract(const Duration(days: 6)),
       end: DateTime.now(),
     );
-    _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
+    _loadProfile().then((_) {
+      _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
+    });
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final profile = await ApiService().getCurrentProfile();
+      if (profile != null) {
+        _weightKg = (profile['weight_kg'] is num) ? (profile['weight_kg'] as num).toDouble() : null;
+        _heightCm = (profile['height_cm'] is num) ? (profile['height_cm'] as num).toInt() : null;
+        _gender = (profile['gender'] as String?)?.toLowerCase();
+      }
+    } catch (_) {}
+  }
+
+  // ---- Estimation helpers (per-day) ----
+  double _strideMeters({int? heightCm, String? gender}) {
+    final h = (heightCm ?? 170).toDouble();
+    const factor = 0.415; // walking step length ≈ 41.5% of height
+    return (h * factor) / 100.0; // meters
+  }
+
+  List<int> _estimateCaloriesFromStepsDaily(List<int> dailySteps) {
+    final weight = _weightKg ?? 70.0;
+    final strideM = _strideMeters(heightCm: _heightCm, gender: _gender);
+    const kcalPerKgKmWalking = 0.53;
+
+    return List<int>.generate(dailySteps.length, (i) {
+      final steps = dailySteps[i];
+      final km = (steps * strideM) / 1000.0;
+      final kcal = km * weight * kcalPerKgKmWalking;
+      return kcal.round(); // return ints for your charts
+    });
+  }
+
+  List<int> _padOrTrim(List<int> list, int len) {
+    if (list.length == len) return list;
+    if (list.length > len) return list.sublist(0, len);
+    return List<int>.from(list)..addAll(List.filled(len - list.length, 0));
   }
 
   Future<List<int>> _fetchBackendCaloriesSeries(DateTime start, DateTime end) async {
@@ -43,9 +89,8 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
         if (e is num) return e.round();
         return int.tryParse('$e') ?? 0;
       }).toList();
-
       return List<int>.from(values);
-    } catch (e) {
+    } catch (_) {
       return [];
     }
   }
@@ -53,35 +98,53 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   Future<void> _fetchSummaryData(DateTime start, DateTime end) async {
     setState(() => _isLoading = true);
 
-    final totalSteps = await _healthService.getStepsInRange(start, end);
-    final totalCalories = await _healthService.getCaloriesInRange(start, end);
-    final stepsData = await _healthService.getDailyStepsInRange(start, end);
-    final caloriesData = await _healthService.getDailyCaloriesInRange(start, end);
+    // Normalize range to whole days
+    final startDay = DateTime(start.year, start.month, start.day);
+    final endDay = DateTime(end.year, end.month, end.day);
+    final dayCount = endDay.difference(startDay).inDays + 1;
 
-    final backendCalories = await _fetchBackendCaloriesSeries(start, end);
+    // Health data
+    final totalSteps = await _healthService.getStepsInRange(startDay, endDay);
 
-    final dayCount = end.difference(
-        DateTime(start.year, start.month, start.day)
-    ).inDays + 1;
+    // ❌ Turn off fetching total calories burned
+    // final healthTotalCalories = await _healthService.getCaloriesInRange(startDay, endDay);
 
-    List<int> mergedCalories;
-    if (backendCalories.isNotEmpty && backendCalories.length == dayCount) {
-      mergedCalories = List<int>.generate(dayCount, (i) {
-        final backendVal = (i < backendCalories.length) ? backendCalories[i] : 0;
-        final healthVal  = (i < caloriesData.length) ? caloriesData[i] : 0;
-        return backendVal + healthVal;
-      });
-    } else {
-      mergedCalories = caloriesData;
-    }
+    final stepsDaily = await _healthService.getDailyStepsInRange(startDay, endDay);
 
-    final mergedTotalCalories = mergedCalories.fold<int>(0, (sum, v) => sum + v);
-    final avgSteps = stepsData.isNotEmpty ? (stepsData.reduce((a, b) => a + b) ~/ stepsData.length) : 0;
-    final avgCalories = mergedCalories.isNotEmpty ? (mergedCalories.reduce((a, b) => a + b) ~/ mergedCalories.length) : 0;
+    // ❌ Turn off fetching daily active energy burned
+    // final healthCaloriesDaily = await _healthService.getDailyCaloriesInRange(startDay, endDay);
+
+    final stepsDailyFixed = _padOrTrim(stepsDaily, dayCount);
+
+    // Since we’re not using healthCaloriesDaily anymore, create an empty list
+    final healthCaloriesFixed = List<int>.filled(dayCount, 0);
+
+    // Steps→calories estimate per day
+    final stepsCaloriesDaily = _estimateCaloriesFromStepsDaily(stepsDailyFixed);
+
+    // Backend (workout) daily calories
+    final backendCalories = await _fetchBackendCaloriesSeries(startDay, endDay);
+    final backendFixed = _padOrTrim(backendCalories, dayCount);
+
+    // Merge: backend + (stepsEstimated only)
+    final mergedCalories = List<int>.generate(dayCount, (i) {
+      // Previously: used healthCaloriesFixed[i] if > 0
+      final movement = stepsCaloriesDaily[i];
+      return backendFixed[i] + movement;
+    });
+
+    // Totals / averages
+    final mergedTotalCalories = mergedCalories.fold<int>(0, (s, v) => s + v);
+    final avgSteps = stepsDailyFixed.isNotEmpty
+        ? (stepsDailyFixed.reduce((a, b) => a + b) ~/ stepsDailyFixed.length)
+        : 0;
+    final avgCalories = mergedCalories.isNotEmpty
+        ? (mergedCalories.reduce((a, b) => a + b) ~/ mergedCalories.length)
+        : 0;
 
     setState(() {
       _totalSteps = totalSteps;
-      _stepsData = stepsData;
+      _stepsData = stepsDailyFixed;
 
       _totalCalories = mergedTotalCalories;
       _caloriesData = mergedCalories;
@@ -93,34 +156,30 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   }
 
 
-  double _calculateAdaptiveMaxY(List<int> data, double defaultMax, {double step = 2000, double headroom = 1.1, double maxCap = 50000}) {
+  // ---- Chart scaling ----
+  double _calculateAdaptiveMaxY(List<int> data, double defaultMax,
+      {double step = 2000, double headroom = 1.1, double maxCap = 50000}) {
     if (data.isEmpty) return defaultMax;
-    final highest = data.reduce((a, b) => a > b ? a : b);
+    final highest = data.reduce((a, b) => a > b ? a : b).toDouble();
     if (highest <= defaultMax) return defaultMax;
     final roundedUp = (((highest * headroom) / step).ceil()) * step;
     return roundedUp > maxCap ? maxCap : roundedUp;
   }
 
-  double _calculateCaloriesMaxY(
-      List<int> data, {
-        int baseline = 300,
-        int step = 100,
-        int maxCap = 20000,
-      }) {
+  double _calculateCaloriesMaxY(List<int> data,
+      {int baseline = 300, int step = 100, int maxCap = 20000}) {
     if (data.isEmpty) return baseline.toDouble();
     final highest = data.reduce((a, b) => a > b ? a : b);
     if (highest <= baseline) return baseline.toDouble();
-
     final withHeadroom = highest + step;
     final roundedUp = ((withHeadroom / step).ceil()) * step;
     return roundedUp > maxCap ? maxCap.toDouble() : roundedUp.toDouble();
   }
 
-
+  // ---- UI helpers ----
   Widget _buildToggleTabs(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-
     return Container(
       height: 40,
       decoration: BoxDecoration(
