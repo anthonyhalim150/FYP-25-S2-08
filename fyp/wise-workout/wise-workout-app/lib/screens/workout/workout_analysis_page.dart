@@ -17,6 +17,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     final s = d.inSeconds.remainder(60);
     return '${m}m ${s}s';
   }
+  late final TextEditingController _notesController;
 
   DateTime _workoutStartTime = DateTime.now();
   bool _hasSaved = false;
@@ -26,12 +27,21 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
   bool _isHeartRateLoading = true;
 
   @override
+  @override
   void initState() {
     super.initState();
+    _notesController = TextEditingController(); // <-- add this
     _workoutStartTime = DateTime.now().subtract(
       Duration(seconds: WorkoutSessionService().elapsed.inSeconds),
     );
     _fetchHeartRate();
+  }
+
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,7 +107,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     return totalCalories;
   }
 
-  Future<void> _saveWorkoutSession() async {
+  Future<void> _saveWorkoutSession({String? notes}) async {
     try {
       final args = ModalRoute.of(context)!.settings.arguments as Map;
       final Map<String, dynamic> workout = args['workout'];
@@ -129,16 +139,20 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         duration: duration.inSeconds,
         caloriesBurned: calories,
         exercises: formattedExercises,
+        notes: notes, // <-- NEW field for backend
       );
 
+      if (mounted && notes != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Notes saved successfully!')),
+        );
+      }
     } catch (e) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to save workout: $e')),
-          );
-        }
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save workout: $e')),
+        );
+      }
     }
   }
 
@@ -397,14 +411,36 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  sessionNotes,
-                  style: textTheme.bodyMedium,
+
+              // NEW: Editable notes field
+              TextField(
+                controller: _notesController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Write your notes here...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surface,
                 ),
               ),
-              const SizedBox(height: 24),
+
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.save),
+                label: const Text("Save Notes"),
+                onPressed: () {
+                  final userNotes = _notesController.text.trim();
+                  if (userNotes.isNotEmpty) {
+                    _saveWorkoutSession(notes: userNotes);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please enter notes')),
+                    );
+                  }
+                },
+              ),
 
               Align(
                 alignment: Alignment.centerLeft,

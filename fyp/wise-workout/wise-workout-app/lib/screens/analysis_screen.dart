@@ -45,7 +45,7 @@ class AnalysisScreen extends StatelessWidget {
     if (notes != null && notes!.trim().isNotEmpty) {
       text += "\n📝 Notes: ${notes!}";
     }
-    text += "\n\nShared via MyWorkoutApp 💪";
+    text += "\n\nShared via FitQuest 💪";
     return text;
   }
 
