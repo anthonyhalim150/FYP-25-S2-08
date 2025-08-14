@@ -15,6 +15,8 @@ import '../widgets/profile_info_row.dart';
 import '../widgets/profile_lucky_spin_card.dart';
 import '../widgets/profile_menu_list.dart';
 import '../themes/theme_notifier.dart';
+import '../services/fitnessai_service.dart';
+import '../screens/edit_preferences_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -52,6 +54,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int _progressInLevel = 0;
   int _xpForThisLevel = 100;
   int _totalXP = 0;
+  bool _busy = false;
+  Map<String, dynamic>? _preferences;
+  List<dynamic>? _plan;
+  String? _estimationText;
+  final _aiService = AIFitnessPlanService();
 
   @override
   void initState() {
@@ -252,10 +259,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
           };
           break;
+        case "preferences":
+          handleTap = () async {
+            if (_busy) return;
+            setState(() => _busy = true);
+            try {
+              // 1) Fetch latest prefs
+              final prefs = await _aiService.fetchPreferencesOnly();
+              if (!mounted) return;
+
+              // 2) Navigate to editor with the freshest data
+              final updatedPrefs = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EditPreferencesScreen(
+                    preferences: Map<String, dynamic>.from(prefs ?? {}),
+                  ),
+                ),
+              );
+
+              // 3) Apply updates if user saved
+              if (updatedPrefs != null && mounted) {
+                setState(() {
+                  _preferences = Map<String, dynamic>.from(updatedPrefs);
+                  _plan = null;            // clear cached plan so it regenerates
+                  _estimationText = null;  // clear any derived text
+                });
+              }
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to load preferences: $e')),
+              );
+            } finally {
+              if (mounted) setState(() => _busy = false);
+            }
+          };
+          break;
         case "password":
           handleTap = () => Navigator.pushNamed(context, '/change-password');
           break;
-        case "Calendar":
+        case "calendar":
           handleTap = () => Navigator.pushNamed(context, '/calendar-sync');
         break;
         case "wearable":
@@ -365,6 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 menuItems: [
                   _profileItem(Icons.person, "avatar"),
                   _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
+                  _profileItem(Icons.edit_attributes, "preferences"),
                   _profileItem(Icons.lock, "password"),
                   _profileItem(Icons.watch, "wearable",),
                   _profileItem(Icons.calendar_month_rounded, "calendar"),
