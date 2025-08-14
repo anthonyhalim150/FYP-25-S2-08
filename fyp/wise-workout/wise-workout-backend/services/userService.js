@@ -203,6 +203,13 @@ class UserService {
   static async getDailyXP(userId, date) {
     return await UserXpDailyModel.getDailyXP(userId, date);
   }
+  static async setLanguage(userId, language) {
+    return await UserModel.updateLanguage(userId, language);
+  }
+  
+  static async getLanguage(userId) {
+    return await UserModel.getLanguage(userId);
+  }  
 
 }
 

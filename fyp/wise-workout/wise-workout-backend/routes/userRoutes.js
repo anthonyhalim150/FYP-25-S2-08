@@ -9,7 +9,9 @@ const {
   updateProfile,
   getLeaderboard,
   buyPremium,
-  getDailyXP
+  getDailyXP,
+  setLanguage,
+  getLanguage
 } = require('../controllers/userController');
 
 router.post('/set-avatar', setAvatar);
@@ -21,5 +23,7 @@ router.post('/update-profile', updateProfile);
 router.get('/leaderboard', getLeaderboard);
 router.post('/buy-premium', buyPremium);
 router.get('/daily-xp', getDailyXP);
+router.put('/language', setLanguage);
+router.get('/language', getLanguage);
 
 module.exports = router;

@@ -132,4 +132,27 @@ exports.getDailyXP = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+exports.setLanguage = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { language } = req.body;
 
+    if (!language) return res.status(400).json({ message: 'Language is required' });
+
+    await UserService.setLanguage(userId, language);
+    res.status(200).json({ message: 'Language updated successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getLanguage = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    const language = await UserService.getLanguage(userId);
+    res.status(200).json({ language });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

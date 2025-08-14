@@ -205,8 +205,21 @@ class UserModel {
       await db.execute('UPDATE users SET role = "user" WHERE id = ?', [userId]);
     }
   }
-
-
+  static async updateLanguage(userId, language) {
+    const [result] = await db.execute(
+      `UPDATE users SET language = ? WHERE id = ?`,
+      [language, userId]
+    );
+    return result;
+  }
+  
+  static async getLanguage(userId) {
+    const [rows] = await db.execute(
+      `SELECT language FROM users WHERE id = ? LIMIT 1`,
+      [userId]
+    );
+    return rows[0]?.language || 'en';
+  }
 }
 
 module.exports = UserModel;
