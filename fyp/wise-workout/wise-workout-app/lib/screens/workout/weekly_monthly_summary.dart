@@ -59,17 +59,19 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
 
   DateTimeRange _monthlyRangeSmart(int year, int month) {
     final now = DateTime.now();
+
     if (year == now.year && month == now.month) {
-      // Current month: show last 30 days (inclusive)
-      final end = DateTime(now.year, now.month, now.day);
-      final start = end.subtract(const Duration(days: 29));
-      return DateTimeRange(start: start, end: end);
-    } else {
-      // Past/future months: full calendar month
-      final start = DateTime(year, month, 1);
-      final end = DateTime(year, month + 1, 1).subtract(const Duration(days: 1));
-      return DateTimeRange(start: start, end: end);
+      return DateTimeRange(
+        start: DateTime(year, month, 1),
+        end: now, // go up to now for current month
+      );
     }
+
+    final start = DateTime(year, month, 1);
+    final nextMonth = (month == 12) ? DateTime(year + 1, 1, 1) : DateTime(year, month + 1, 1);
+    // go up to the last moment of the month
+    final end = nextMonth.subtract(const Duration(milliseconds: 1));
+    return DateTimeRange(start: start, end: end);
   }
 
 
