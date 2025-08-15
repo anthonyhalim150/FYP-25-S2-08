@@ -17,7 +17,7 @@ const authenticateUser = require('./middlewares/authMiddleware');
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: ['https://fyp-25-s2-08.vercel.app/'],
   credentials: true
 }));
 

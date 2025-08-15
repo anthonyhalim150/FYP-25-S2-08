@@ -39,9 +39,10 @@ const authLimiter = rateLimit({
 });
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://10.0.2.2:3000'],
+  origin: '*', // allow all origins (this is safe for mobile-only API)
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 

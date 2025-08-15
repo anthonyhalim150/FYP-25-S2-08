@@ -1,5 +1,5 @@
 export async function fetchDashboardStats() {
-  const res = await fetch('http://localhost:8080/admin/stats', {
+  const res = await fetch('https://fyp-25-s2-08-admin.onrender.com/admin/stats', {
     credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to fetch stats');
@@ -7,7 +7,7 @@ export async function fetchDashboardStats() {
 }
 
 export async function fetchAllUsers() {
-  const res = await fetch('http://localhost:8080/admin/users', {
+  const res = await fetch('https://fyp-25-s2-08-admin.onrender.com/admin/users', {
     credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to fetch users');
@@ -15,7 +15,7 @@ export async function fetchAllUsers() {
 }
 
 export async function suspendUser(userId) {
-  const res = await fetch(`http://localhost:8080/admin/users/${userId}/suspend`, {
+  const res = await fetch(`https://fyp-25-s2-08-admin.onrender.com/admin/users/${userId}/suspend`, {
     method: 'POST',
     credentials: 'include'
   });
@@ -23,7 +23,7 @@ export async function suspendUser(userId) {
 }
 
 export async function unsuspendUser(userId) {
-  const res = await fetch(`http://localhost:8080/admin/users/${userId}/unsuspend`, {
+  const res = await fetch(`https://fyp-25-s2-08-admin.onrender.com/admin/users/${userId}/unsuspend`, {
     method: 'POST',
     credentials: 'include'
   });

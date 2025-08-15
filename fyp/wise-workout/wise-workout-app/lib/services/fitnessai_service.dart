@@ -6,7 +6,7 @@ import '../screens/model/exercise_model.dart';
 
 class AIFitnessPlanService {
   final secureStorage = const FlutterSecureStorage();
-  final baseUrl = 'http://10.0.2.2:3000';
+  final baseUrl = 'https://fyp-25-s2-08.onrender.com';
 
   /// Calls your AI route to generate a plan (does NOT save it).
   /// Same behavior as before.

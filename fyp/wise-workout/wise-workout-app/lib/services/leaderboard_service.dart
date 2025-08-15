@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LeaderboardService {
-  final String baseUrl = 'http://10.0.2.2:3000';
+  final String baseUrl = 'https://fyp-25-s2-08.onrender.com';
   final _storage = const FlutterSecureStorage();
 
   Future<String?> _getJwtCookie() async {

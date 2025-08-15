@@ -3,7 +3,7 @@ export async function fetchAllSubscriptions(plan = 'All', search = '') {
     if (plan && plan !== 'All') query.append('plan', plan);
     if (search) query.append('search', search);
   
-    const res = await fetch(`http://localhost:8080/admin/subscriptions?${query.toString()}`, {
+    const res = await fetch(`https://fyp-25-s2-08-admin.onrender.com/admin/subscriptions?${query.toString()}`, {
       credentials: 'include'
     });
     if (!res.ok) throw new Error('Failed to fetch subscriptions');
@@ -11,7 +11,7 @@ export async function fetchAllSubscriptions(plan = 'All', search = '') {
   }
   
   export async function fetchUserSubscriptions(userId) {
-    const res = await fetch(`http://localhost:8080/admin/subscriptions/${userId}`, {
+    const res = await fetch(`https://fyp-25-s2-08-admin.onrender.com/admin/subscriptions/${userId}`, {
       credentials: 'include'
     });
     if (!res.ok) throw new Error('Failed to fetch user subscriptions');

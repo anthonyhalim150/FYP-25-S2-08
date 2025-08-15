@@ -1,5 +1,5 @@
 export async function login({ email, password }) {
-  const res = await fetch("http://localhost:8080/login", {
+  const res = await fetch("https://fyp-25-s2-08-admin.onrender.com/login", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -14,7 +14,7 @@ export async function login({ email, password }) {
 }
 
 export async function checkSession() {
-  const res = await fetch("http://localhost:8080/me", {
+  const res = await fetch("https://fyp-25-s2-08-admin.onrender.com/me", {
     method: "GET",
     credentials: "include"
   });

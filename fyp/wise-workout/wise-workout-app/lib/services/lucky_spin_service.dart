@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class LuckySpinService {
   final secureStorage = const FlutterSecureStorage();
-  final baseUrl = 'http://10.0.2.2:3000';
+  final baseUrl = 'https://fyp-25-s2-08.onrender.com';
 
   Future<List<String>> fetchPrizes() async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');

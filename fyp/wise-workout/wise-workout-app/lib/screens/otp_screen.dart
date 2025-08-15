@@ -17,7 +17,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final otpController = TextEditingController();
   final secureStorage = const FlutterSecureStorage();
-  final backendUrl = "http://10.0.2.2:3000";
+  final backendUrl = "https://fyp-25-s2-08.onrender.com";
 
   bool isSubmitting = false;
   String? error;

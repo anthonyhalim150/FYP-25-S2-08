@@ -4,7 +4,7 @@ import '../utils/sanitize.dart';
 import '../screens/otp_screen.dart';
 import 'package:flutter/material.dart';
 
-final _backendUrl = 'http://10.0.2.2:3000';
+final _backendUrl = 'https://fyp-25-s2-08.onrender.com';
 
 Future<String?> registerUser(
   BuildContext context,

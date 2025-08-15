@@ -1,5 +1,5 @@
 export async function fetchAllTournaments() {
-    const res = await fetch('http://localhost:8080/admin/tournaments', {
+    const res = await fetch('https://fyp-25-s2-08-admin.onrender.com/admin/tournaments', {
       credentials: 'include'
     });
     if (!res.ok) throw new Error('Failed to fetch tournaments');
@@ -7,7 +7,7 @@ export async function fetchAllTournaments() {
   }
   
   export async function createTournament(tournamentData) {
-    const res = await fetch('http://localhost:8080/admin/tournaments', {
+    const res = await fetch('https://fyp-25-s2-08-admin.onrender.com/admin/tournaments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -18,7 +18,7 @@ export async function fetchAllTournaments() {
   }
   
   export async function updateTournament(id, tournamentData) {
-    const res = await fetch(`http://localhost:8080/admin/tournaments/${id}`, {
+    const res = await fetch(`https://fyp-25-s2-08-admin.onrender.com/admin/tournaments/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

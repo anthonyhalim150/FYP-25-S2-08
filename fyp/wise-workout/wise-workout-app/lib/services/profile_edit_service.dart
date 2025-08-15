@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfileEditService {
   final storage = const FlutterSecureStorage();
-  final String baseUrl = 'http://10.0.2.2:3000';
+  final String baseUrl = 'https://fyp-25-s2-08.onrender.com';
   Future<bool> updateProfile({
     String? username,
     String? firstName,

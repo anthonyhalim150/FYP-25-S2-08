@@ -12,7 +12,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final emailController = TextEditingController();
-  final backendUrl = "http://10.0.2.2:3000";
+  final backendUrl = "https://fyp-25-s2-08.onrender.com";
   bool isSubmitting = false;
   String? message;
 

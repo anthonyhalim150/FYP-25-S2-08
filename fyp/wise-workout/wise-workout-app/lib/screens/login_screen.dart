@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final secureStorage = FlutterSecureStorage();
   final authService = AuthService();
   final sanitize = Sanitize();
-  final backendUrl = "http://10.0.2.2:3000";
+  final backendUrl = "https://fyp-25-s2-08.onrender.com";
   bool _obscurePassword = true;
 
   Future<void> loginWithEmail() async {

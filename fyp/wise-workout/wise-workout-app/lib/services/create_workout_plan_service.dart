@@ -125,7 +125,7 @@ class CreateWorkoutPlanService {
   final FlutterSecureStorage _storage;
 
   CreateWorkoutPlanService({
-    this.baseUrl = 'http://10.0.2.2:3000',
+    this.baseUrl = 'https://fyp-25-s2-08.onrender.com',
     FlutterSecureStorage? storage,
   }) : _storage = storage ?? const FlutterSecureStorage();
 

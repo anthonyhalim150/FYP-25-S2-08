@@ -14,7 +14,7 @@ class _VerifyResetScreenState extends State<VerifyResetScreen> {
   final otpController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final backendUrl = "http://10.0.2.2:3000";
+  final backendUrl = "https://fyp-25-s2-08.onrender.com";
   final sanitize = Sanitize();
 
   bool isSubmitting = false;
