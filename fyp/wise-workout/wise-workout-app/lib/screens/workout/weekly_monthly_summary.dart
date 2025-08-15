@@ -8,6 +8,7 @@ import '../../services/workout_service.dart';
 import '../../services/api_service.dart';
 import '../../services/estimation_service.dart';
 import 'dart:math' as math;
+import '../../widgets/calorie_forecast_card.dart';
 
 class WeeklyMonthlySummaryPage extends StatefulWidget {
   const WeeklyMonthlySummaryPage({super.key});
@@ -18,6 +19,7 @@ class WeeklyMonthlySummaryPage extends StatefulWidget {
 class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   final HealthService _healthService = HealthService();
   final EstimationService _estimationService = EstimationService(HealthService());
+  FitnessGoal _goal = FitnessGoal.trend;
 
   bool _isLoading = false;
   bool _loadingEstimate = false;
@@ -164,7 +166,11 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     setState(() => _loadingEstimate = true);
     try {
       await _healthService.connect();
-      final res = await _estimationService.buildCaloriesWeeklyEstimate();
+      final res = await _estimationService.buildCaloriesWeeklyEstimate(
+        goal: _goal,
+        weightKg: _weightKg,
+        heightCm: _heightCm,
+        gender: _gender,);
       setState(() {
         _calorieEstimate = res;
         _estimateError = null;
@@ -410,6 +416,46 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       maxY: _calculateCaloriesMaxY(_caloriesData),
                       data: _caloriesData,
                     ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: const Text('Trend'),
+                          labelStyle: Theme.of(context).textTheme.bodySmall, // smaller text
+                          visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          selected: _goal == FitnessGoal.trend,
+                          onSelected: (_) => setState(() {
+                            _goal = FitnessGoal.trend;
+                            _loadCalorieEstimation();
+                          }),
+                        ),
+                        const SizedBox(width: 6),
+                        ChoiceChip(
+                          label: const Text('Weight Loss'),
+                          labelStyle: Theme.of(context).textTheme.bodySmall,
+                          visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          selected: _goal == FitnessGoal.weightLoss,
+                          onSelected: (_) => setState(() {
+                            _goal = FitnessGoal.weightLoss;
+                            _loadCalorieEstimation();
+                          }),
+                        ),
+                        const SizedBox(width: 6),
+                        ChoiceChip(
+                          label: const Text('Muscle Gain'),
+                          labelStyle: Theme.of(context).textTheme.bodySmall,
+                          visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          selected: _goal == FitnessGoal.muscleGain,
+                          onSelected: (_) => setState(() {
+                            _goal = FitnessGoal.muscleGain;
+                            _loadCalorieEstimation();
+                          }),
+                        ),
+                      ],
+                    ),
                     if (_loadingEstimate) ...[
                       const SizedBox(height: 12),
                       Center(child: CircularProgressIndicator(color: colorScheme.primary)),
@@ -418,7 +464,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       Text(_estimateError!, style: textTheme.bodyMedium),
                     ] else if (_calorieEstimate != null) ...[
                       const SizedBox(height: 12),
-                      _CalorieForecastCard(data: _calorieEstimate!),
+                      CalorieForecastCard(data: _calorieEstimate!), // <— use the widget
                     ],
                   ],
                 ),
@@ -480,12 +526,25 @@ class _CalorieForecastCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.trending_up, size: 20, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
-              Text('Calories Forecast (7d)', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700)),
-              const Spacer(),
+              Row(
+                children: [
+                  Icon(Icons.trending_up, size: 20, color: theme.colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Calories Forecast (7d)',
+                      style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              // Chip under the title so it never overflows
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
@@ -493,7 +552,10 @@ class _CalorieForecastCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(color: chipColor.withOpacity(.35)),
                 ),
-                child: Text(chipText, style: TextStyle(color: chipColor, fontWeight: FontWeight.w700)),
+                child: Text(
+                  chipText,
+                  style: TextStyle(color: chipColor, fontWeight: FontWeight.w700),
+                ),
               ),
             ],
           ),
