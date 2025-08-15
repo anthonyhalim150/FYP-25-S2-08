@@ -19,7 +19,8 @@ class HealthService {
         try {
           final historyGranted = await _health.isHealthDataHistoryAuthorized();
           if (!historyGranted) {
-            final historyRequestResult = await _health.requestHealthDataHistoryAuthorization();
+            final historyRequestResult =
+                await _health.requestHealthDataHistoryAuthorization();
             granted = granted && historyRequestResult;
           }
         } catch (e) {
@@ -37,15 +38,27 @@ class HealthService {
     }
   }
 
+  Future<bool> disconnect() async {
+    try {
+      await _health.revokePermissions(); 
+      return true; 
+    } catch (e) {
+      print('Error revoking permissions: $e');
+      return false;
+    }
+  }
+
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
   Future<int> getStepsForDate(DateTime date) async {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final isToday = _isSameDay(date, DateTime.now());
-    final endOfDay = isToday ? DateTime.now() : startOfDay.add(const Duration(days: 1));
+    final endOfDay =
+        isToday ? DateTime.now() : startOfDay.add(const Duration(days: 1));
     try {
-      final totalSteps = await _health.getTotalStepsInInterval(startOfDay, endOfDay);
+      final totalSteps =
+          await _health.getTotalStepsInInterval(startOfDay, endOfDay);
       return totalSteps ?? 0;
     } catch (e) {
       print('Error fetching steps for $date: $e');
@@ -57,7 +70,8 @@ class HealthService {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
     try {
-      final totalSteps = await _health.getTotalStepsInInterval(startOfDay, now);
+      final totalSteps =
+          await _health.getTotalStepsInInterval(startOfDay, now);
       return totalSteps ?? 0;
     } catch (e) {
       print('Error fetching today\'s steps: $e');
@@ -65,7 +79,8 @@ class HealthService {
     }
   }
 
-  Future<List<HealthDataPoint>> getHeartRateDataInRange(DateTime start, DateTime end) async {
+  Future<List<HealthDataPoint>> getHeartRateDataInRange(
+      DateTime start, DateTime end) async {
     try {
       final data = await _health.getHealthDataFromTypes(
         types: [HealthDataType.HEART_RATE],
@@ -103,15 +118,15 @@ class HealthService {
 
     for (int hour = 0; hour <= maxHour; hour++) {
       final hourStart = DateTime(date.year, date.month, date.day, hour);
-      final hourEnd = (isToday && hour == now.hour)
-          ? now
-          : hourStart.add(const Duration(hours: 1));
+      final hourEnd =
+          (isToday && hour == now.hour) ? now : hourStart.add(const Duration(hours: 1));
       if (!hourEnd.isAfter(hourStart)) {
         hourlySteps[hour] = 0;
         continue;
       }
       try {
-        final steps = await _health.getTotalStepsInInterval(hourStart, hourEnd);
+        final steps =
+            await _health.getTotalStepsInInterval(hourStart, hourEnd);
         hourlySteps[hour] = steps ?? 0;
       } catch (e) {
         print('Error fetching hourly steps for $hour: $e');
@@ -138,7 +153,8 @@ class HealthService {
       final dayStart = DateTime(start.year, start.month, start.day + i);
       final dayEnd = dayStart.add(const Duration(days: 1));
       try {
-        final steps = await _health.getTotalStepsInInterval(dayStart, dayEnd);
+        final steps =
+            await _health.getTotalStepsInInterval(dayStart, dayEnd);
         stepsPerDay.add(steps ?? 0);
       } catch (e) {
         print('Error fetching daily steps for $dayStart: $e');
