@@ -6,12 +6,28 @@ class HealthService {
   Future<bool> connect() async {
     try {
       await _health.configure();
+
       final types = <HealthDataType>[
         HealthDataType.STEPS,
         HealthDataType.HEART_RATE,
       ];
       final permissions = types.map((e) => HealthDataAccess.READ).toList();
-      return await _health.requestAuthorization(types, permissions: permissions);
+
+      bool granted = await _health.requestAuthorization(types, permissions: permissions);
+
+      if (granted) {
+        try {
+          final historyGranted = await _health.isHealthDataHistoryAuthorized();
+          if (!historyGranted) {
+            final historyRequestResult = await _health.requestHealthDataHistoryAuthorization();
+            granted = granted && historyRequestResult;
+          }
+        } catch (e) {
+          print('Error requesting history permission: $e');
+        }
+      }
+
+      return granted;
     } on UnsupportedError {
       await _health.installHealthConnect();
       return false;
@@ -97,7 +113,8 @@ class HealthService {
       try {
         final steps = await _health.getTotalStepsInInterval(hourStart, hourEnd);
         hourlySteps[hour] = steps ?? 0;
-      } catch (_) {
+      } catch (e) {
+        print('Error fetching hourly steps for $hour: $e');
         hourlySteps[hour] = 0;
       }
     }
@@ -123,7 +140,8 @@ class HealthService {
       try {
         final steps = await _health.getTotalStepsInInterval(dayStart, dayEnd);
         stepsPerDay.add(steps ?? 0);
-      } catch (_) {
+      } catch (e) {
+        print('Error fetching daily steps for $dayStart: $e');
         stepsPerDay.add(0);
       }
     }
