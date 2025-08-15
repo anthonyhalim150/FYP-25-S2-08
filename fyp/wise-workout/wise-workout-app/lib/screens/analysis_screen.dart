@@ -201,9 +201,11 @@ class AnalysisScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _statCard(context, Icons.timer, "Duration", duration),
-                _statCard(context, Icons.local_fire_department, "Calories", "$calories kcal"),
-                _statCard(context, Icons.trending_up, "Intensity", intensity),
+                Expanded(child: _statCard(context, Icons.timer, "Duration", duration)),
+                const SizedBox(width: 8),
+                Expanded(child: _statCard(context, Icons.local_fire_department, "Calories", "$calories kcal")),
+                const SizedBox(width: 8),
+                Expanded(child: _statCard(context, Icons.trending_up, "Intensity", intensity)),
               ],
             ),
             const SizedBox(height: 28),
@@ -266,7 +268,6 @@ class AnalysisScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Container(
-      width: 95,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(11),
@@ -282,11 +283,14 @@ class AnalysisScreen extends StatelessWidget {
         children: [
           Icon(icon, color: colorScheme.onSurface, size: 28),
           const SizedBox(height: 5),
-          Text(
-            value,
-            style: textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
+          FittedBox( // Prevents wrapping and keeps it looking good
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
             ),
           ),
           const SizedBox(height: 2),

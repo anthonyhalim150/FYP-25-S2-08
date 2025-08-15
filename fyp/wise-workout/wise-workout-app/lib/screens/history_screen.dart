@@ -32,8 +32,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     try {
       final history = await workoutService.fetchUserWorkoutSessions();
+
+      final enrichedHistory = await Future.wait(history.map((entry) async {
+        try {
+          final intensity = await workoutService.fetchSessionIntensity(entry['session_id']);
+          entry['intensity'] = intensity;
+        } catch (_) {
+          entry['intensity'] = 'Unknown';
+        }
+        return entry;
+      }));
+
       setState(() {
-        workoutHistory = history;
+        workoutHistory = enrichedHistory;
         isLoading = false;
       });
     } catch (e) {
@@ -76,7 +87,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _openAnalysisScreen(Map<String, dynamic> entry) async {
     final dateString = entry['start_time']?.substring(0, 10) ?? 'Unknown Date';
     final steps = await healthService.getStepsForDate(DateTime.parse(dateString));
-    final intensity = await workoutService.fetchSessionIntensity(entry['session_id']);
+
+    final intensity = entry['intensity'] ??
+        await workoutService.fetchSessionIntensity(entry['session_id']);
 
     Navigator.push(
       context,
@@ -91,9 +104,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
           notes: entry['notes'] ?? '',
           extraStats: {
             "Steps": steps.toString(),
-            "Calories per min": (_parseCalories(entry['calories_burned']) /
-                    (int.tryParse(_formatDuration(entry['duration']).split(" ").first) ?? 1))
-                .toStringAsFixed(1)
+            "Calories per min": (() {
+              final minutes = int.tryParse(_formatDuration(entry['duration']).split(" ").first) ?? 0;
+              final cals = _parseCalories(entry['calories_burned']);
+              if (minutes <= 0 || cals <= 0) return "0.0";
+              return (cals / minutes).toStringAsFixed(1);
+            })(),
           },
         ),
       ),
@@ -239,10 +255,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                   const SizedBox(width: 15),
                                                   const Icon(Icons.trending_up, size: 16, color: Colors.deepPurple),
                                                   const SizedBox(width: 4),
-                                                  const Text('...', style: TextStyle(fontSize: 13, color: Colors.deepPurple)),
+                                                  Text(
+                                                    entry['intensity'] ?? 'Unknown',
+                                                    style: const TextStyle(fontSize: 13, color: Colors.deepPurple),
+                                                  ),
                                                 ],
                                               ),
-                                              if (entry['notes'] != null && entry['notes'].toString().isNotEmpty)
+                                              if (entry['notes'] != null &&
+                                                  entry['notes'].toString().isNotEmpty)
                                                 Padding(
                                                   padding: const EdgeInsets.only(top: 8.0),
                                                   child: Text(
