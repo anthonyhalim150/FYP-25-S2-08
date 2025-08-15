@@ -6,7 +6,6 @@ import '../widgets/bottom_navigation.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/workout_category_service.dart';
 import '../services/tournament_service.dart';
-import '../screens/workout/workout_list_page.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
   final int currentSteps = 0;
@@ -165,7 +164,7 @@ class UnregisteredUserPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
 
-              // Workout Cards (same logic as HomeScreen, but wrapped)
+              // Workout Cards
               SizedBox(
                 height: 120,
                 child: FutureBuilder<List<WorkoutCategory>>(
@@ -185,22 +184,11 @@ class UnregisteredUserPage extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       children: categories.map((cat) {
-                        return _wrapWithPrompt(
-                          context,
-                          WorkoutCardHomeScreen(
-                            imagePath: cat.imageUrl,
-                            workoutName: cat.categoryName,
-                            workoutLevel: '',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      WorkoutListPage(categoryKey: cat.categoryKey),
-                                ),
-                              );
-                            },
-                          ),
+                        return WorkoutCardHomeScreen(
+                          imagePath: cat.imageUrl,
+                          workoutName: cat.categoryName,
+                          workoutLevel: '',
+                          onTap: () => _showRegistrationPrompt(context), // only prompt
                         );
                       }).toList(),
                     );
@@ -317,7 +305,7 @@ class UnregisteredUserPage extends StatelessWidget {
       ),
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,
-        onTap: (index) {},
+        onTap: (index) => _showRegistrationPrompt(context),
         isRegistered: false,
       ),
     );
