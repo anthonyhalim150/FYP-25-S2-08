@@ -223,7 +223,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                     return WorkoutCardDashboard(
                       title: category.categoryName,
                       subtitle: category.categoryDescription,
-                      isFavorite: false,
                       onPressed: () {
                         Navigator.pushNamed(
                           context,
@@ -233,7 +232,6 @@ class _WorkoutCategoryDashboardState extends State<WorkoutCategoryDashboard> {
                           },
                         );
                       },
-                      onToggleFavorite: () {},
                     );
                   },
                 );

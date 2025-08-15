@@ -414,10 +414,10 @@ INSERT INTO levels (level, xp_required, reward_tokens, badge_id) VALUES
 
 INSERT INTO workout_categories (category_name, category_key, category_description, image_url)
 VALUES
-  ('Push', 'push', 'Workouts focusing on upper body pushing movements like chest and shoulders.', 'assets/workoutCategory/push.jpg'),
-  ('Cardio', 'cardio', 'Workouts that focus on cardiovascular fitness and fat burning.', 'assets/workoutCategory/cardio.jpg'),
-  ('Leg', 'leg', 'Workouts focusing on lower body strength, particularly legs and glutes.', 'assets/workoutCategory/leg.jpg'),
-  ('Relaxing', 'relaxing', 'Gentle workouts focusing on flexibility, relaxation, and stretching.', 'assets/workoutCategory/relaxing.jpg');
+  ('Push', 'push', 'Upper body pushing movements: chest, shoulders, triceps.', 'assets/workoutCategory/push.jpg'),
+  ('Cardio', 'cardio', 'Cardiovascular training for endurance and fat burn.', 'assets/workoutCategory/cardio.jpg'),
+  ('Leg', 'leg', 'Lower body strength: legs, glutes, hamstrings.', 'assets/workoutCategory/leg.jpg'),
+  ('Relaxing', 'relaxing', 'Flexibility, stretching, and relaxation.', 'assets/workoutCategory/relaxing.jpg');
 
 INSERT INTO workouts (workout_name, category_key, workout_level, workout_description)
 VALUES

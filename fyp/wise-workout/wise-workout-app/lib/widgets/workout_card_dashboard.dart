@@ -3,27 +3,22 @@ import 'package:flutter/material.dart';
 class WorkoutCardDashboard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final bool isFavorite;
   final VoidCallback onPressed;
-  final VoidCallback onToggleFavorite;
 
   const WorkoutCardDashboard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.onPressed,
-    required this.isFavorite,
-    required this.onToggleFavorite,
   });
-
-
 
   @override
   Widget build(BuildContext context) {
     final imageUrl = 'assets/workoutCategory/${title.toLowerCase().replaceAll(' ', '_')}.jpg';
     final bool isNetworkImage = imageUrl.startsWith('http');
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // ← added horizontal margin
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       child: InkWell(
@@ -36,17 +31,18 @@ class WorkoutCardDashboard extends StatelessWidget {
               // Load either network or local image
               isNetworkImage
                   ? Image.network(
-                imageUrl,
-                height: 160,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              )
+                      imageUrl,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
                   : Image.asset(
-                imageUrl,
-                height: 160,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+                      imageUrl,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+
               // Gradient overlay for readability
               Container(
                 height: 160,
@@ -59,10 +55,12 @@ class WorkoutCardDashboard extends StatelessWidget {
                   ),
                 ),
               ),
+
               // Title & subtitle
               Positioned(
                 bottom: 20,
                 left: 25,
+                right: 25, // ensures text doesn’t overflow outside card
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -73,6 +71,8 @@ class WorkoutCardDashboard extends StatelessWidget {
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       subtitle,
@@ -80,21 +80,10 @@ class WorkoutCardDashboard extends StatelessWidget {
                         color: Colors.white70,
                         fontSize: 18,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                ),
-              ),
-              // Favorite button (bigger heart)
-              Positioned(
-                top: 10,
-                right: 10,
-                child: IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : Colors.white,
-                    size: 40, // <- Bigger heart
-                  ),
-                  onPressed: onToggleFavorite,
                 ),
               ),
             ],
