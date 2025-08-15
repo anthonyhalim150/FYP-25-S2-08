@@ -135,48 +135,43 @@ header nav a {
     transform: translateY(-6px);
   }
 }
-
 .view-btn {
-  background-color: #ffe135;
-  border: none;
-  padding: 0.4rem 2rem;
-  font-weight: bold;
-  border-radius: 25px;
-  color: #001f5f;
-  cursor: pointer;
-  transition: 0.2s ease;
-  margin-left:1rem;
+  background-color: #ffe135 !important;
+  border: none !important;
+  padding: 0.4rem 2rem !important;
+  font-weight: bold !important;
+  border-radius: 25px !important;
+  color: #001f5f !important;
+  cursor: pointer !important;
+  transition: 0.2s ease !important;
+  margin-left: 1rem !important;
 }
-
 
 .unsuspend-btn,
 .suspend-btn,
 .cancel-btn,
 .confirm-btn,
 .create-btn {
-  /* padding: 0.4rem 3rem;    */
-  border-radius: 25px;
-  border: none;
-  /* font-weight: 600; */
-  font-size: 0.85rem;
-  padding: 0.4rem 2rem;
-  font-weight: bold;
-  text-align: center;
-  white-space: nowrap;       
-  cursor: pointer;
+  border-radius: 25px !important;
+  border: none !important;
+  font-size: 0.85rem !important;
+  padding: 0.4rem 2rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  white-space: nowrap !important;       
+  cursor: pointer !important;
 }
 
 .unsuspend-btn {
-    background-color: #000 !important;
-    color: #fff !important;
-    margin-right:1rem;
+  background-color: #000 !important;
+  color: #fff !important;
+  margin-right: 1rem !important;
 }
 
 .suspend-btn {
   background-color: #e53935 !important;
   color: #fff !important;
-  margin-right:1rem;
-  /* max-width: 4rem; */
+  margin-right: 1rem !important;
 }
 
 .cancel-btn {
@@ -1045,7 +1040,7 @@ header nav a {
 
 .preferences-block,
 .feedback-block {
-  flex: 1;
+  flex: 1 !important;
 }
 
 .preferences-block h3,

@@ -13,15 +13,21 @@ const parseToArray = (data) => {
   }
 };
 
-const ViewAUser = ({ user, onClose }) => {
+const ViewAUser = ({ user, onClose, handleSuspendToggle }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
   const [feedbackData, setFeedbackData] = useState(null);
+  const [localSuspended, setLocalSuspended] = useState(user?.isSuspended || false);
 
   const avatarPath = user?.avatar_url ? `/${user.avatar_url}` : '/assets/avatars/free/free1.png';
   const [bgPath, setBgPath] = useState(
     user?.background_url ? `/${user.background_url}` : '/assets/background/bg1.jpg'
   );
+
+  useEffect(() => {
+    setEditedUser({ ...user });
+    setLocalSuspended(user?.isSuspended || false);
+  }, [user]);
 
   useEffect(() => {
     const getFeedback = async () => {
@@ -86,6 +92,11 @@ const ViewAUser = ({ user, onClose }) => {
 
   const likedFeatures = parseToArray(feedbackData?.liked_features);
   const problems = parseToArray(feedbackData?.problems);
+
+  const onSuspendClick = async () => {
+    await handleSuspendToggle(user);
+    setLocalSuspended(prev => !prev); // Flip the local state so button label changes instantly
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -152,8 +163,8 @@ const ViewAUser = ({ user, onClose }) => {
           {isEditing ? (
             <div className="button-row">
               <button 
-              className="confirm-btn" 
-              onClick={handleSave}>Save</button>
+                className="confirm-btn" 
+                onClick={handleSave}>Save</button>
               <button
                 className="cancel-btn"
                 onClick={() => {
@@ -164,8 +175,11 @@ const ViewAUser = ({ user, onClose }) => {
           ) : (
             <div className='button-row center'>
               <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit</button>
-              <button className={user.isSuspended ? 'unsuspend-btn' : 'suspend-btn'}>
-                {user.isSuspended ? 'Unsuspend' : 'Suspend'}
+              <button
+                className={localSuspended ? 'unsuspend-btn' : 'suspend-btn'}
+                onClick={onSuspendClick}
+              >
+                {localSuspended ? 'Unsuspend' : 'Suspend'}
               </button>
             </div>
           )}
@@ -193,7 +207,7 @@ const ViewAUser = ({ user, onClose }) => {
               {likedFeatures.length > 0 ? (
                 <ul>
                   {likedFeatures.map((item, index) => (
-                    <li key={index}>{item}</li>
+                    <li key={`like-${index}`}>{item}</li>
                   ))}
                 </ul>
               ) : (
@@ -204,7 +218,7 @@ const ViewAUser = ({ user, onClose }) => {
               {problems.length > 0 ? (
                 <ul>
                   {problems.map((problem, index) => (
-                    <li key={index}>{problem}</li>
+                    <li key={`problem-${index}`}>{problem}</li>
                   ))}
                 </ul>
               ) : (
