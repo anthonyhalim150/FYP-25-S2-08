@@ -518,23 +518,18 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6, // optional limit
-                      child: FittedBox(
-                        alignment: Alignment.centerLeft,
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          _isPremiumUser ? 'Challenge/Tournament' : 'Tournament',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.normal,
-                            color: colorScheme.onBackground,
-                          ),
-                        ),
+                    Expanded(
+                      child: Text(
+                        _isPremiumUser ? 'Challenge/Tournament' : 'Tournament',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.normal,
+                              color: colorScheme.onBackground,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(
@@ -549,6 +544,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
