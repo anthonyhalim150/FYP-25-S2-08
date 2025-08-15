@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import '../../services/health_service.dart';
 import '../../widgets/time_based_chart.dart';
 import '../../widgets/week_picker_dialog.dart';
 import '../../services/workout_service.dart';
 import '../../services/api_service.dart';
+import '../../services/estimation_service.dart';
+import 'dart:math' as math;
 
 class WeeklyMonthlySummaryPage extends StatefulWidget {
   const WeeklyMonthlySummaryPage({super.key});
@@ -14,7 +17,10 @@ class WeeklyMonthlySummaryPage extends StatefulWidget {
 
 class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   final HealthService _healthService = HealthService();
+  final EstimationService _estimationService = EstimationService(HealthService());
+
   bool _isLoading = false;
+  bool _loadingEstimate = false;
 
   bool _isWeeklyView = true;
   DateTimeRange? _selectedWeek;
@@ -32,6 +38,9 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   int? _heightCm;
   String? _gender;
 
+  EstimationResult? _calorieEstimate;
+  String? _estimateError;
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +49,27 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
       start: DateTime.now().subtract(const Duration(days: 6)),
       end: DateTime.now(),
     );
-    _loadProfile().then((_) {
-      _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
+    _loadProfile().then((_) async {
+      await _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
+      await _loadCalorieEstimation();
     });
   }
+
+  DateTimeRange _monthlyRangeSmart(int year, int month) {
+    final now = DateTime.now();
+    if (year == now.year && month == now.month) {
+      // Current month: show last 30 days (inclusive)
+      final end = DateTime(now.year, now.month, now.day);
+      final start = end.subtract(const Duration(days: 29));
+      return DateTimeRange(start: start, end: end);
+    } else {
+      // Past/future months: full calendar month
+      final start = DateTime(year, month, 1);
+      final end = DateTime(year, month + 1, 1).subtract(const Duration(days: 1));
+      return DateTimeRange(start: start, end: end);
+    }
+  }
+
 
   Future<void> _loadProfile() async {
     try {
@@ -56,11 +82,10 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     } catch (_) {}
   }
 
-  // ---- Estimation helpers (per-day) ----
   double _strideMeters({int? heightCm, String? gender}) {
     final h = (heightCm ?? 170).toDouble();
-    const factor = 0.415; // walking step length ≈ 41.5% of height
-    return (h * factor) / 100.0; // meters
+    const factor = 0.415;
+    return (h * factor) / 100.0;
   }
 
   List<int> _estimateCaloriesFromStepsDaily(List<int> dailySteps) {
@@ -72,7 +97,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
       final steps = dailySteps[i];
       final km = (steps * strideM) / 1000.0;
       final kcal = km * weight * kcalPerKgKmWalking;
-      return kcal.round(); // return ints for your charts
+      return kcal.round();
     });
   }
 
@@ -98,42 +123,24 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
   Future<void> _fetchSummaryData(DateTime start, DateTime end) async {
     setState(() => _isLoading = true);
 
-    // Normalize range to whole days
     final startDay = DateTime(start.year, start.month, start.day);
     final endDay = DateTime(end.year, end.month, end.day);
     final dayCount = endDay.difference(startDay).inDays + 1;
 
-    // Health data
     final totalSteps = await _healthService.getStepsInRange(startDay, endDay);
-
-    // ❌ Turn off fetching total calories burned
-    // final healthTotalCalories = await _healthService.getCaloriesInRange(startDay, endDay);
-
     final stepsDaily = await _healthService.getDailyStepsInRange(startDay, endDay);
 
-    // ❌ Turn off fetching daily active energy burned
-    // final healthCaloriesDaily = await _healthService.getDailyCaloriesInRange(startDay, endDay);
-
     final stepsDailyFixed = _padOrTrim(stepsDaily, dayCount);
-
-    // Since we’re not using healthCaloriesDaily anymore, create an empty list
-    final healthCaloriesFixed = List<int>.filled(dayCount, 0);
-
-    // Steps→calories estimate per day
     final stepsCaloriesDaily = _estimateCaloriesFromStepsDaily(stepsDailyFixed);
 
-    // Backend (workout) daily calories
     final backendCalories = await _fetchBackendCaloriesSeries(startDay, endDay);
     final backendFixed = _padOrTrim(backendCalories, dayCount);
 
-    // Merge: backend + (stepsEstimated only)
     final mergedCalories = List<int>.generate(dayCount, (i) {
-      // Previously: used healthCaloriesFixed[i] if > 0
       final movement = stepsCaloriesDaily[i];
       return backendFixed[i] + movement;
     });
 
-    // Totals / averages
     final mergedTotalCalories = mergedCalories.fold<int>(0, (s, v) => s + v);
     final avgSteps = stepsDailyFixed.isNotEmpty
         ? (stepsDailyFixed.reduce((a, b) => a + b) ~/ stepsDailyFixed.length)
@@ -145,18 +152,33 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     setState(() {
       _totalSteps = totalSteps;
       _stepsData = stepsDailyFixed;
-
       _totalCalories = mergedTotalCalories;
       _caloriesData = mergedCalories;
-
       _averageSteps = avgSteps;
       _averageCalories = avgCalories;
       _isLoading = false;
     });
   }
 
+  Future<void> _loadCalorieEstimation() async {
+    setState(() => _loadingEstimate = true);
+    try {
+      await _healthService.connect();
+      final res = await _estimationService.buildCaloriesWeeklyEstimate();
+      setState(() {
+        _calorieEstimate = res;
+        _estimateError = null;
+        _loadingEstimate = false;
+      });
+    } catch (e) {
+      setState(() {
+        _calorieEstimate = null;
+        _estimateError = 'Failed to estimate: $e';
+        _loadingEstimate = false;
+      });
+    }
+  }
 
-  // ---- Chart scaling ----
   double _calculateAdaptiveMaxY(List<int> data, double defaultMax,
       {double step = 2000, double headroom = 1.1, double maxCap = 50000}) {
     if (data.isEmpty) return defaultMax;
@@ -166,8 +188,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     return roundedUp > maxCap ? maxCap : roundedUp;
   }
 
-  double _calculateCaloriesMaxY(List<int> data,
-      {int baseline = 300, int step = 100, int maxCap = 20000}) {
+  double _calculateCaloriesMaxY(List<int> data, {int baseline = 300, int step = 100, int maxCap = 20000}) {
     if (data.isEmpty) return baseline.toDouble();
     final highest = data.reduce((a, b) => a > b ? a : b);
     if (highest <= baseline) return baseline.toDouble();
@@ -176,7 +197,6 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     return roundedUp > maxCap ? maxCap.toDouble() : roundedUp.toDouble();
   }
 
-  // ---- UI helpers ----
   Widget _buildToggleTabs(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
@@ -201,15 +221,15 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
     final isSelected = _isWeeklyView == isWeekly;
     return Expanded(
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           setState(() => _isWeeklyView = isWeekly);
           if (isWeekly) {
-            _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
+            await _fetchSummaryData(_selectedWeek!.start, _selectedWeek!.end);
           } else {
-            final start = DateTime(_selectedYear, _selectedMonth, 1);
-            final end = DateTime(_selectedYear, _selectedMonth + 1, 1).subtract(const Duration(days: 1));
-            _fetchSummaryData(start, end);
+            final range = _monthlyRangeSmart(_selectedYear, _selectedMonth);
+            await _fetchSummaryData(range.start, range.end);
           }
+          await _loadCalorieEstimation();
         },
         child: Container(
           decoration: BoxDecoration(
@@ -254,7 +274,8 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                 );
                 if (picked != null) {
                   setState(() => _selectedWeek = picked);
-                  _fetchSummaryData(picked.start, picked.end);
+                  await _fetchSummaryData(picked.start, picked.end);
+                  await _loadCalorieEstimation();
                 }
               },
               child: Text("Select Week", style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary)),
@@ -278,7 +299,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
         children: [
           IconButton(
             icon: Icon(Icons.chevron_left, color: colorScheme.primary),
-            onPressed: () {
+            onPressed: () async {
               setState(() {
                 _selectedMonth--;
                 if (_selectedMonth < 1) {
@@ -286,9 +307,9 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                   _selectedYear--;
                 }
               });
-              final start = DateTime(_selectedYear, _selectedMonth, 1);
-              final end = DateTime(_selectedYear, _selectedMonth + 1, 1).subtract(const Duration(days: 1));
-              _fetchSummaryData(start, end);
+              final range = _monthlyRangeSmart(_selectedYear, _selectedMonth);
+              await _fetchSummaryData(range.start, range.end);
+              await _loadCalorieEstimation();
             },
           ),
           Text(
@@ -299,7 +320,7 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
             icon: Icon(Icons.chevron_right, color: isLatestMonth ? colorScheme.outline : colorScheme.primary),
             onPressed: isLatestMonth
                 ? null
-                : () {
+                : () async {
               setState(() {
                 _selectedMonth++;
                 if (_selectedMonth > 12) {
@@ -307,9 +328,9 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                   _selectedYear++;
                 }
               });
-              final start = DateTime(_selectedYear, _selectedMonth, 1);
-              final end = DateTime(_selectedYear, _selectedMonth + 1, 1).subtract(const Duration(days: 1));
-              _fetchSummaryData(start, end);
+              final range = _monthlyRangeSmart(_selectedYear, _selectedMonth);
+              await _fetchSummaryData(range.start, range.end);
+              await _loadCalorieEstimation();
             },
           ),
         ],
@@ -388,7 +409,17 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
                       barColor: colorScheme.secondary,
                       maxY: _calculateCaloriesMaxY(_caloriesData),
                       data: _caloriesData,
-                    )
+                    ),
+                    if (_loadingEstimate) ...[
+                      const SizedBox(height: 12),
+                      Center(child: CircularProgressIndicator(color: colorScheme.primary)),
+                    ] else if (_estimateError != null) ...[
+                      const SizedBox(height: 12),
+                      Text(_estimateError!, style: textTheme.bodyMedium),
+                    ] else if (_calorieEstimate != null) ...[
+                      const SizedBox(height: 12),
+                      _CalorieForecastCard(data: _calorieEstimate!),
+                    ],
                   ],
                 ),
               ),
@@ -397,4 +428,192 @@ class _WeeklyMonthlySummaryPageState extends State<WeeklyMonthlySummaryPage> {
       ),
     );
   }
+}
+
+class _CalorieForecastCard extends StatelessWidget {
+  final EstimationResult data;
+  const _CalorieForecastCard({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final allDates = [...data.datesActual, ...data.datesForecast];
+    final nActual = data.datesActual.length;
+    final totalPoints = allDates.length;
+
+    final actualSpots = <FlSpot>[
+      for (int i = 0; i < data.caloriesActual.length; i++)
+        FlSpot(i.toDouble(), data.caloriesActual[i].toDouble())
+    ];
+    final forecastSpots = <FlSpot>[
+      for (int i = 0; i < data.caloriesForecast.length; i++)
+        FlSpot(nActual.toDouble() + i, data.caloriesForecast[i].toDouble())
+    ];
+
+    final allVals = [
+      ...data.caloriesActual.map((e) => e.toDouble()),
+      ...data.caloriesForecast.map((e) => e.toDouble())
+    ];
+    final maxY = (allVals.isEmpty ? 1000.0 : allVals.reduce((a, b) => a > b ? a : b)) * 1.15;
+
+    final df = DateFormat('E');
+    String xLabel(int i) => (i >= 0 && i < allDates.length) ? df.format(allDates[i]) : '';
+
+    final pct = (data.trendPct * 100).toStringAsFixed(0);
+    final trendingUp = data.trendPct > 0.02;
+    final trendingDown = data.trendPct < -0.02;
+    final chipColor = trendingUp ? Colors.green : (trendingDown ? Colors.red : Colors.orange);
+    final chipText = trendingUp
+        ? 'Trending up +$pct%'
+        : trendingDown
+        ? 'Trending down $pct%'
+        : 'Flat ~$pct%';
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black.withOpacity(0.06), offset: const Offset(0, 6))],
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.trending_up, size: 20, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              Text('Calories Forecast (7d)', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700)),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: chipColor.withOpacity(.12),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: chipColor.withOpacity(.35)),
+                ),
+                child: Text(chipText, style: TextStyle(color: chipColor, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 220,
+            child: LineChart(
+              LineChartData(
+                minX: 0,
+                maxX: (totalPoints - 1).toDouble(),
+                minY: 0,
+                maxY: maxY,
+                borderData: FlBorderData(show: false),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (v) => FlLine(color: Colors.grey.withOpacity(.12), strokeWidth: 1),
+                ),
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 42,
+                      interval: _niceTick(maxY / 4),
+                      getTitlesWidget: (v, _) => Text(v.toInt().toString(), style: theme.textTheme.bodySmall),
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: (v, _) {
+                        final i = v.toInt();
+                        final label = xLabel(i);
+                        if (label.isEmpty) return const SizedBox.shrink();
+                        final isForecast = i >= nActual;
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text(
+                            label,
+                            style: theme.textTheme.bodySmall!.copyWith(
+                              color: isForecast ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                              fontWeight: isForecast ? FontWeight.w600 : FontWeight.w400,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                lineTouchData: LineTouchData(
+                  enabled: true,
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipItems: (spots) => spots.map((s) {
+                      final i = s.x.toInt();
+                      final isForecast = i >= nActual;
+                      final date = allDates[i];
+                      return LineTooltipItem(
+                        '${DateFormat('EEE, d MMM').format(date)}\n${isForecast ? "Forecast" : "Actual"}: ${s.y.toInt()} kcal',
+                        TextStyle(
+                          color: isForecast ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                rangeAnnotations: RangeAnnotations(
+                  verticalRangeAnnotations: [
+                    VerticalRangeAnnotation(
+                      x1: nActual - 0.5,
+                      x2: nActual - 0.5,
+                      color: theme.colorScheme.primary.withOpacity(.15),
+                    ),
+                  ],
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: actualSpots,
+                    isCurved: true,
+                    barWidth: 3,
+                    color: theme.colorScheme.onSurface,
+                    dotData: const FlDotData(show: false),
+                    belowBarData: BarAreaData(show: true, color: theme.colorScheme.primary.withOpacity(.08)),
+                  ),
+                  LineChartBarData(
+                    spots: forecastSpots,
+                    isCurved: true,
+                    barWidth: 3,
+                    color: theme.colorScheme.primary,
+                    dashArray: [8, 6],
+                    dotData: const FlDotData(show: false),
+                    belowBarData: BarAreaData(show: true, color: theme.colorScheme.primary.withOpacity(.05)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text('Last 7d: ${data.last7Total} kcal', style: theme.textTheme.bodyMedium),
+              const Spacer(),
+              Text('Next 7d (proj): ${data.next7TotalForecast} kcal',
+                  style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.primary)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _niceTick(double step) {
+    if (step <= 0) return 1;
+    final p = (math.log(step) / math.log(10)).floor();
+    final base = step / math.pow(10, p);
+    final nice = base <= 1 ? 1 : base <= 2 ? 2 : base <= 5 ? 5 : 10;
+    return nice * math.pow(10, p).toDouble();
+  }
+
 }

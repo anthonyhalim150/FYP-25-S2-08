@@ -98,7 +98,11 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     if (!connected) {
       final stepsOnly = List<int>.filled(24, 0);
       final stepsKcal = _stepsToCaloriesHourly(stepsOnly);
-      final merged = _preferBackendPerHourAddMovement(backendHourly, List.filled(24, 0.0), stepsKcal);
+      final merged = _preferBackendPerHourAddMovement(
+        backendHourly,
+        List.filled(24, 0.0), // no health active energy
+        stepsKcal,
+      );
       setState(() {
         _selectedDate = date;
         _hourlyCalories = merged;
@@ -114,15 +118,14 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
     final steps = await _healthService.getStepsForDate(date);
     final hourlySteps = await _healthService.getHourlyStepsForDate(date);
 
-    final healthHourlyActive = (await _healthService.getHourlyCaloriesForDate(date))
-        .map((e) => e.toDouble())
-        .toList();
+    // ⬇️ Stop using Health active energy entirely
+    final healthHourlyActive = List<double>.filled(24, 0.0);
 
     final stepsKcalHourly = _stepsToCaloriesHourly(hourlySteps);
 
     final mergedHourly = _preferBackendPerHourAddMovement(
       backendHourly,
-      healthHourlyActive,
+      healthHourlyActive,   // remains zeros
       stepsKcalHourly,
     );
 
@@ -138,6 +141,7 @@ class _DailySummaryPageState extends State<DailySummaryPage> {
       _isLoading = false;
     });
   }
+
 
   double _calculateAdaptiveMaxY(List<double> data, double minDefault) {
     if (data.isEmpty) return minDefault;
