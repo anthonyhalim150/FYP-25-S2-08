@@ -58,10 +58,8 @@ class TournamentService {
 
   // This method gets tournaments **with participant counts** from the backend
   Future<List<dynamic>> getTournamentsWithParticipants() async {
-    final jwt = await secureStorage.read(key: 'jwt_cookie');
     final res = await http.get(
       Uri.parse('$backendUrl/tournaments/with-participants'),
-      headers: {'Cookie': 'session=$jwt'},
     );
     if (res.statusCode == 200) {
       return jsonDecode(res.body);

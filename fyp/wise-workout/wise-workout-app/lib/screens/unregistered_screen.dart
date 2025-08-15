@@ -3,13 +3,15 @@ import '../widgets/exercise_stats_card.dart';
 import '../widgets/tournament_widget.dart';
 import '../widgets/workout_card_home_screen.dart';
 import '../widgets/bottom_navigation.dart';
-import 'workout_sample_data.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../services/workout_category_service.dart';
+import '../services/tournament_service.dart';
+import '../models/workout_category.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
   final int currentSteps = 0;
   final int maxSteps = 0;
-  final int caloriesBurned = 0;
+  final double caloriesBurned = 0.0;
   final int xpEarned = 0;
 
   const UnregisteredUserPage({super.key});
@@ -49,15 +51,12 @@ class UnregisteredUserPage extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final brightness = theme.brightness;
-
     final surfaceColor =
-    brightness == Brightness.dark ? Colors.grey[800] : colorScheme.surface;
+        brightness == Brightness.dark ? Colors.grey[800] : colorScheme.surface;
     final hintTextColor =
-    brightness == Brightness.dark ? Colors.grey[400] : theme.hintColor;
-
-    final bannerColor = brightness == Brightness.dark
-        ? const Color(0xFF1E1E2C)
-        : colorScheme.primary;
+        brightness == Brightness.dark ? Colors.grey[400] : theme.hintColor;
+    final bannerColor =
+        brightness == Brightness.dark ? const Color(0xFF1E1E2C) : colorScheme.primary;
     final bannerContrast = colorScheme.onPrimary;
     final bannerAccent = colorScheme.secondary;
 
@@ -104,6 +103,7 @@ class UnregisteredUserPage extends StatelessWidget {
                   ],
                 ),
               ),
+
               // Search Bar
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -137,14 +137,14 @@ class UnregisteredUserPage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 15),
-                          child:
-                          Icon(Icons.search, color: colorScheme.onSurface),
+                          child: Icon(Icons.search, color: colorScheme.onSurface),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
+
               // Exercise Stats
               _wrapWithPrompt(
                 context,
@@ -157,6 +157,7 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+
               // Workout Title
               Padding(
                 padding: const EdgeInsets.only(left: 20),
@@ -166,27 +167,44 @@ class UnregisteredUserPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              // Workout Cards
+
+              // Workout Cards (same as HomeScreen)
               SizedBox(
                 height: 150,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: sampleWorkouts.length,
-                  itemBuilder: (_, index) {
-                    final workout = sampleWorkouts[index];
-                    return _wrapWithPrompt(
-                      context,
-                      WorkoutCardHomeScreen(
-                        imagePath: workout.imagePath,
-                        workoutName: workout.workoutName,
-                        workoutLevel: workout.workoutLevel,
-                      ),
+                child: FutureBuilder<List<WorkoutCategory>>(
+                  future: WorkoutCategoryService().fetchCategories(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return const Center(child: Text('Failed to load categories'));
+                    }
+                    final categories = snapshot.data ?? [];
+                    if (categories.isEmpty) {
+                      return const Center(child: Text('No workout categories available'));
+                    }
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: categories.length,
+                      itemBuilder: (_, index) {
+                        final cat = categories[index];
+                        return _wrapWithPrompt(
+                          context,
+                          WorkoutCardHomeScreen(
+                            imagePath: cat.imageUrl,
+                            workoutName: cat.categoryName,
+                            workoutLevel: cat.categoryDescription,
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
               const SizedBox(height: 20),
+
               // Challenge Banner
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -241,7 +259,7 @@ class UnregisteredUserPage extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-              // Tournaments
+              // Tournaments (same as HomeScreen)
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
@@ -252,20 +270,37 @@ class UnregisteredUserPage extends StatelessWidget {
               const SizedBox(height: 10),
               SizedBox(
                 height: 230,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  children: sampleTournaments.map((tournament) {
-                    return _wrapWithPrompt(
-                      context,
-                      TournamentWidget(
-                        tournamentName: tournament.tournamentName,
-                        participants: tournament.participants,
-                        daysLeft: tournament.daysLeft,
-                        cardWidth: 280,
-                      ),
+                child: FutureBuilder<List<dynamic>>(
+                  future: TournamentService().getTournamentsWithParticipants(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return const Center(child: Text('Error loading tournaments'));
+                    }
+                    final tournaments = snapshot.data ?? [];
+                    if (tournaments.isEmpty) {
+                      return const Center(child: Text('No tournaments available'));
+                    }
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      itemCount: tournaments.length,
+                      itemBuilder: (_, index) {
+                        final t = tournaments[index];
+                        return _wrapWithPrompt(
+                          context,
+                          TournamentWidget(
+                            tournamentName: t['title'] ?? '',
+                            participants: t['participants'] ?? 0,
+                            daysLeft: t['daysLeft'] ?? 0,
+                            cardWidth: 280,
+                          ),
+                        );
+                      },
                     );
-                  }).toList(),
+                  },
                 ),
               ),
             ],
@@ -274,8 +309,7 @@ class UnregisteredUserPage extends StatelessWidget {
       ),
       bottomNavigationBar: bottomNavigationBar(
         currentIndex: 0,
-        onTap: (index) {
-        },
+        onTap: (index) {},
         isRegistered: false,
       ),
     );

@@ -40,12 +40,10 @@ class WorkoutCategoryService {
 
   Future<List<WorkoutCategory>> fetchCategories() async {
     try {
-      final jwt = await _getJwtCookie();
       final response = await http.get(
         Uri.parse('$baseUrl/workout-categories'),
         headers: {
           'Content-Type': 'application/json',
-          'Cookie': 'session=$jwt',
         },
       );
 
