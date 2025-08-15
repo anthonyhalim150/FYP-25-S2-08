@@ -300,9 +300,9 @@
 
   "wearable_screen_title": "Wearable",
   "wearable_connect_title": "Connect Your Device",
+  "wearable_connect_button": "CONNECT",
   "wearable_connect_description": "FitQuest seamlessly connects to your fitness devices for syncing workouts, steps, and health stats—all in one place.",
   "wearable_connected_message": "Connected to {}",
-  "wearable_connect_button": "CONNECT",
   "wearable_disconnect_button": "DISCONNECT",
   "wearable_connect_health_success": "Successfully connected to Health Connect",
   "wearable_connect_health_failure": "Failed to connect to Health Connect",

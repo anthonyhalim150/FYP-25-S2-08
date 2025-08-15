@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as gcal;
 import 'package:http/http.dart' as http;
 
-/// A lightweight HTTP client that injects Google auth headers into requests.
 class _AuthedClient extends http.BaseClient {
   final Map<String, String> _headers;
   final http.Client _inner = http.Client();
@@ -192,7 +191,6 @@ class GoogleCalendarService {
   }) async {
     int removed = 0;
 
-    // 1) Ensure we're signed in first (disconnect fails if not signed in)
     GoogleSignInAccount? account;
     try {
       account = await _googleSignIn.signInSilently();
@@ -201,7 +199,6 @@ class GoogleCalendarService {
       // ignore; we'll still try to signOut if needed
     }
 
-    // 2) Optionally remove FitQuest-tagged events before revoking
     if (alsoUnsync) {
       try {
         removed = await unsyncFitQuestEvents(
@@ -210,16 +207,13 @@ class GoogleCalendarService {
           timeMax: timeMax,
         );
       } catch (_) {
-        // don't fail disconnect if unsync fails
       }
     }
 
-    // 3) Try native revoke
     try {
       await _googleSignIn.disconnect();
       return removed;
     } on PlatformException catch (_) {
-      // 4) Fallback: try HTTP revoke with the access token, then signOut.
       try {
         account ??= await _googleSignIn.signInSilently();
         if (account != null) {
@@ -237,15 +231,12 @@ class GoogleCalendarService {
           }
         }
       } catch (_) {
-        // swallow; we'll still signOut
       }
-      await _googleSignIn.signOut(); // best-effort local cleanup
+      await _googleSignIn.signOut();
       return removed;
     }
   }
 
-  /// Adds only the days that fall within [visibleMonth] (month/year).
-  /// Use this if you want a button like "Sync This Month" from your Calendar page.
   Future<List<gcal.Event>> addVisibleMonth({
     required List<dynamic> planDays,
     required DateTime visibleMonth,
@@ -277,9 +268,7 @@ class GoogleCalendarService {
     );
   }
 
-  /// Helper to build a neat title from a day object.
   String _buildEventTitle(Map<String, dynamic> day, {required String defaultTitle}) {
-    // If the day has a label/notes, use it, otherwise derive from first exercise.
     final exs = (day['exercises'] as List?) ?? const [];
     if (exs.isNotEmpty) {
       final first = exs.first;
@@ -288,11 +277,9 @@ class GoogleCalendarService {
         return 'Workout: $exName';
       }
     }
-    // Fallback
     return defaultTitle;
   }
 
-  /// Helper to build a readable description from exercises/notes.
   String _buildDescription(Map<String, dynamic> day) {
     final buffer = StringBuffer();
     final exs = (day['exercises'] as List?) ?? const [];

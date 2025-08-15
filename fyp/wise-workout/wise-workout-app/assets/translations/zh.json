@@ -298,6 +298,18 @@
   "unreg_dialog_later": "稍后",
   "unreg_dialog_register": "注册",
 
+  "wearable_screen_title": "可穿戴设备",
+  "wearable_connect_title": "连接您的设备",
+  "wearable_connect_button": "连接",
+  "wearable_connect_description": "FitQuest 可无缝连接到您的健身设备，同步锻炼、步数和健康数据——一站式管理。",
+  "wearable_connected_message": "已连接到 {}",
+  "wearable_disconnect_button": "断开连接",
+  "wearable_connect_health_success": "成功连接到 Health Connect",
+  "wearable_connect_health_failure": "连接到 Health Connect 失败",
+  "wearable_connection_failed": "连接失败，请重试。",
+  "wearable_disconnect_success": "已断开与 {} 的连接",
+  "wearable_disconnect_failed": "断开连接失败",
+
   "exercise_list_no_exercises_found": "未找到任何练习。",
   "congratulations_title": "🎉 恭喜你！🎉",
   "congratulations_subtitle": "你已完成你的锻炼！",

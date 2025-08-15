@@ -298,6 +298,18 @@
   "unreg_dialog_later": "Nanti",
   "unreg_dialog_register": "Daftar",
 
+  "wearable_screen_title": "Perangkat Dapat Dipakai",
+  "wearable_connect_title": "Hubungkan Perangkat Anda",
+  "wearable_connect_button": "HUBUNGKAN",
+  "wearable_connect_description": "FitQuest terhubung dengan mulus ke perangkat kebugaran Anda untuk sinkronisasi latihan, langkah, dan statistik kesehatan—semua di satu tempat.",
+  "wearable_connected_message": "Terhubung ke {}",
+  "wearable_disconnect_button": "PUTUSKAN",
+  "wearable_connect_health_success": "Berhasil terhubung ke Health Connect",
+  "wearable_connect_health_failure": "Gagal terhubung ke Health Connect",
+  "wearable_connection_failed": "Koneksi gagal. Silakan coba lagi.",
+  "wearable_disconnect_success": "Terputus dari {}",
+  "wearable_disconnect_failed": "Gagal memutuskan koneksi",
+
   "exercise_list_no_exercises_found": "Tidak ada latihan ditemukan.",
 
   "congratulations_title": "🎉 Selamat! 🎉",
