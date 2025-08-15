@@ -6,7 +6,7 @@ import '../widgets/bottom_navigation.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/workout_category_service.dart';
 import '../services/tournament_service.dart';
-import '../models/workout_category.dart';
+import '../screens/workout/workout_list_page.dart';
 
 class UnregisteredUserPage extends StatelessWidget {
   final int currentSteps = 0;
@@ -69,7 +69,7 @@ class UnregisteredUserPage extends StatelessWidget {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
                 child: Row(
                   children: [
                     Expanded(
@@ -106,7 +106,7 @@ class UnregisteredUserPage extends StatelessWidget {
 
               // Search Bar
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _wrapWithPrompt(
                   context,
                   Container(
@@ -114,15 +114,6 @@ class UnregisteredUserPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: surfaceColor,
                       borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: brightness == Brightness.dark
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.black.withOpacity(0.05),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
                     ),
                     child: Row(
                       children: [
@@ -135,8 +126,13 @@ class UnregisteredUserPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 15),
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: surfaceColor,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                           child: Icon(Icons.search, color: colorScheme.onSurface),
                         ),
                       ],
@@ -144,6 +140,7 @@ class UnregisteredUserPage extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 15),
 
               // Exercise Stats
               _wrapWithPrompt(
@@ -160,7 +157,7 @@ class UnregisteredUserPage extends StatelessWidget {
 
               // Workout Title
               Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
                   'unreg_workout_title'.tr(),
                   style: theme.textTheme.headlineSmall,
@@ -168,9 +165,9 @@ class UnregisteredUserPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
 
-              // Workout Cards (same as HomeScreen)
+              // Workout Cards (same logic as HomeScreen, but wrapped)
               SizedBox(
-                height: 150,
+                height: 120,
                 child: FutureBuilder<List<WorkoutCategory>>(
                   future: WorkoutCategoryService().fetchCategories(),
                   builder: (context, snapshot) {
@@ -184,21 +181,28 @@ class UnregisteredUserPage extends StatelessWidget {
                     if (categories.isEmpty) {
                       return const Center(child: Text('No workout categories available'));
                     }
-                    return ListView.builder(
+                    return ListView(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: categories.length,
-                      itemBuilder: (_, index) {
-                        final cat = categories[index];
+                      children: categories.map((cat) {
                         return _wrapWithPrompt(
                           context,
                           WorkoutCardHomeScreen(
                             imagePath: cat.imageUrl,
                             workoutName: cat.categoryName,
-                            workoutLevel: cat.categoryDescription,
+                            workoutLevel: '',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      WorkoutListPage(categoryKey: cat.categoryKey),
+                                ),
+                              );
+                            },
                           ),
                         );
-                      },
+                      }).toList(),
                     );
                   },
                 ),
@@ -259,17 +263,19 @@ class UnregisteredUserPage extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-              // Tournaments (same as HomeScreen)
+              // Tournament Title
               Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Text(
                   'unreg_tournaments_title'.tr(),
                   style: theme.textTheme.headlineSmall,
                 ),
               ),
               const SizedBox(height: 10),
+
+              // Tournaments
               SizedBox(
-                height: 230,
+                height: 220,
                 child: FutureBuilder<List<dynamic>>(
                   future: TournamentService().getTournamentsWithParticipants(),
                   builder: (context, snapshot) {
@@ -283,18 +289,20 @@ class UnregisteredUserPage extends StatelessWidget {
                     if (tournaments.isEmpty) {
                       return const Center(child: Text('No tournaments available'));
                     }
-                    return ListView.builder(
+                    return ListView.separated(
                       scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       itemCount: tournaments.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
                       itemBuilder: (_, index) {
                         final t = tournaments[index];
                         return _wrapWithPrompt(
                           context,
                           TournamentWidget(
                             tournamentName: t['title'] ?? '',
-                            participants: t['participants'] ?? 0,
-                            daysLeft: t['daysLeft'] ?? 0,
+                            daysLeft: t['endDate'] ?? '',
+                            participants: t['participants']?.toString() ?? '0',
                             cardWidth: 280,
                           ),
                         );
