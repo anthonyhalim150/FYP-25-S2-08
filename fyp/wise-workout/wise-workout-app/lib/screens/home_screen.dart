@@ -284,9 +284,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     Text(
-                      'home_greeting'.tr(args: [_displayName ?? widget.userName]),
+                      'home_greeting'.tr(
+                        args: [
+                          ((_displayName ?? widget.userName).length > 9)
+                              ? '${(_displayName ?? widget.userName).substring(0, 9)}...'
+                              : (_displayName ?? widget.userName)
+                        ],
+                      ),
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onBackground,
                       ),
