@@ -125,7 +125,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 16),
           child: loading
               ? const Center(child: CircularProgressIndicator())
-              : Column(
+              : SingleChildScrollView(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -149,7 +150,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       child: Text(
                         rating.toStringAsFixed(2),
                         style: textTheme.displaySmall?.copyWith(
-                            fontWeight: FontWeight.w700, color: colorScheme.onSurface),
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onSurface,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -178,7 +181,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       child: Text(
                         tr('feedback_based_on', args: ['$ratingCount']),
                         style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500),
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 18),
@@ -187,7 +192,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     Text(
                       tr('feedback_pros_title'),
                       style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600, color: colorScheme.onSurface),
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Wrap(
@@ -195,9 +202,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       runSpacing: 6,
                       children: pros
                           .map((pro) => Chip(
-                                label: Text(pro,
-                                    style: textTheme.labelLarge
-                                        ?.copyWith(color: colorScheme.onSurface)),
+                                label: Text(
+                                  pro,
+                                  style: textTheme.labelLarge
+                                      ?.copyWith(color: colorScheme.onSurface),
+                                ),
                                 side: BorderSide(color: colorScheme.primary),
                                 backgroundColor: Colors.transparent,
                               ))
@@ -207,7 +216,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     Text(
                       tr('feedback_cons_title'),
                       style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600, color: colorScheme.onSurface),
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Wrap(
@@ -215,9 +226,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       runSpacing: 6,
                       children: cons
                           .map((con) => Chip(
-                                label: Text(con,
-                                    style: textTheme.labelLarge
-                                        ?.copyWith(color: colorScheme.onSurface)),
+                                label: Text(
+                                  con,
+                                  style: textTheme.labelLarge
+                                      ?.copyWith(color: colorScheme.onSurface),
+                                ),
                                 side: BorderSide(color: colorScheme.primary),
                                 backgroundColor: Colors.transparent,
                               ))
@@ -230,14 +243,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         Text(
                           tr('feedback_reviews', args: ['$ratingCount']),
                           style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700, color: colorScheme.onSurface),
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: colorScheme.secondary,
                             foregroundColor: colorScheme.onSecondary,
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -248,15 +262,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               MaterialPageRoute(builder: (_) => const GiveFeedbackScreen()),
                             ).then((_) => loadReviews());
                           },
-                          child: Text(tr('feedback_give'),
-                              style: textTheme.labelLarge
-                                  ?.copyWith(color: colorScheme.onSecondary)),
+                          child: Text(
+                            tr('feedback_give'),
+                            style: textTheme.labelLarge
+                                ?.copyWith(color: colorScheme.onSecondary),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Expanded(
-                      child: reviews.isEmpty
+                      reviews.isEmpty
                           ? Center(
                               child: Text(
                                 tr('feedback_none'),
@@ -264,6 +279,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               ),
                             )
                           : ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: reviews.length,
                               separatorBuilder: (_, __) => const SizedBox(height: 12),
                               itemBuilder: (context, i) {
@@ -286,15 +303,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                           Text(
                                             review["author"],
                                             style: textTheme.titleSmall?.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                                color: colorScheme.onSurface),
+                                              fontWeight: FontWeight.w700,
+                                              color: colorScheme.onSurface,
+                                            ),
                                           ),
                                           const Spacer(),
                                           Text(
                                             review["date"],
                                             style: textTheme.bodySmall?.copyWith(
-                                                color: colorScheme.onSurfaceVariant,
-                                                fontWeight: FontWeight.w400),
+                                              color: colorScheme.onSurfaceVariant,
+                                              fontWeight: FontWeight.w400,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -327,11 +346,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                                 .map<Widget>((feature) => Chip(
                                                       label: Text(
                                                         feature,
-                                                        style: textTheme.bodySmall
-                                                            ?.copyWith(color: colorScheme.onSurface),
+                                                        style: textTheme.bodySmall?.copyWith(
+                                                          color: colorScheme.onSurface,
+                                                        ),
                                                       ),
-                                                      backgroundColor:
-                                                          colorScheme.primary.withOpacity(0.09),
+                                                      backgroundColor: colorScheme.primary
+                                                          .withOpacity(0.09),
                                                     ))
                                                 .toList(),
                                           ),
@@ -345,11 +365,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                                 .map<Widget>((problem) => Chip(
                                                       label: Text(
                                                         problem,
-                                                        style: textTheme.bodySmall
-                                                            ?.copyWith(color: colorScheme.onSurface),
+                                                        style: textTheme.bodySmall?.copyWith(
+                                                          color: colorScheme.onSurface,
+                                                        ),
                                                       ),
-                                                      backgroundColor:
-                                                          colorScheme.error.withOpacity(0.09),
+                                                      backgroundColor: colorScheme.error
+                                                          .withOpacity(0.09),
                                                     ))
                                                 .toList(),
                                           ),
@@ -359,9 +380,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 );
                               },
                             ),
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+                ),
         ),
       ),
     );
