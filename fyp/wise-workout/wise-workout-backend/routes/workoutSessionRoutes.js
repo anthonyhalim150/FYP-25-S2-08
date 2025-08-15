@@ -12,4 +12,6 @@ router.get('/sessions/summary', workoutSessionController.getDailyCaloriesSummary
 
 router.get('/sessions/hourly-calories', workoutSessionController.getHourlyCaloriesForDate);
 
+router.get('/sessions/:id/intensity', workoutSessionController.getSessionIntensity);
+
 module.exports = router;

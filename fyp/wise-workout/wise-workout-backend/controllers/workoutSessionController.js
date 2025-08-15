@@ -120,3 +120,17 @@ exports.getHourlyCaloriesForDate = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+exports.getSessionIntensity = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: 'Session ID required' });
+
+    const intensity = await WorkoutSessionService.getSessionIntensity(id);
+    if (!intensity) return res.status(404).json({ message: 'Intensity not found' });
+
+    res.json({ intensity });
+  } catch (err) {
+    console.error('Error fetching intensity:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

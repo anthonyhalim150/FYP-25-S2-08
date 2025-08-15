@@ -215,6 +215,20 @@ class WorkoutService {
     }
     return days;
   }
+  Future<String> fetchSessionIntensity(int sessionId) async {
+    final jwt = await _storage.read(key: 'jwt_cookie');
+    final res = await http.get(
+      Uri.parse('$baseUrl/workout-sessions/sessions/$sessionId/intensity'),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return data['intensity'] ?? 'Unknown';
+    } else {
+      throw Exception('Failed to fetch session intensity');
+    }
+  }
+
 
 // --- ADD: Core fetchers ------------------------------------------------------
 
@@ -275,6 +289,4 @@ class WorkoutService {
       'values': values,
     };
   }
-
-
 }

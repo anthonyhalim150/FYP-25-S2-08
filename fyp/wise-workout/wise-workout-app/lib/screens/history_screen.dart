@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'analysis_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/workout_service.dart';
+import '../services/health_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -14,6 +15,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   List<dynamic> workoutHistory = [];
   bool isLoading = true;
   String errorMessage = '';
+  final healthService = HealthService();
+  final workoutService = WorkoutService();
 
   @override
   void initState() {
@@ -28,7 +31,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
 
     try {
-      final workoutService = WorkoutService();
       final history = await workoutService.fetchUserWorkoutSessions();
       setState(() {
         workoutHistory = history;
@@ -45,7 +47,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   IconData _getIconForWorkout(String? workoutName) {
     if (workoutName == null) return Icons.fitness_center;
-
     final name = workoutName.toLowerCase();
     if (name.contains('yoga') || name.contains('relax')) {
       return Icons.self_improvement;
@@ -60,7 +61,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   String _formatDuration(int? seconds) {
     if (seconds == null) return '0 min';
-
     final minutes = (seconds / 60).round();
     return '$minutes min';
   }
@@ -71,6 +71,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (rawCalories is int) return rawCalories.toDouble();
     if (rawCalories is String) return double.tryParse(rawCalories) ?? 0.0;
     return 0.0;
+  }
+
+  Future<void> _openAnalysisScreen(Map<String, dynamic> entry) async {
+    final dateString = entry['start_time']?.substring(0, 10) ?? 'Unknown Date';
+    final steps = await healthService.getStepsForDate(DateTime.parse(dateString));
+    final intensity = await workoutService.fetchSessionIntensity(entry['session_id']);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AnalysisScreen(
+          date: dateString,
+          workout: entry['workout_name'] ?? 'Workout Session',
+          icon: _getIconForWorkout(entry['workout_name']),
+          duration: _formatDuration(entry['duration']),
+          calories: _parseCalories(entry['calories_burned']),
+          intensity: intensity,
+          notes: entry['notes'] ?? '',
+          extraStats: {
+            "Steps": steps.toString(),
+            "Calories per min": (_parseCalories(entry['calories_burned']) /
+                    (int.tryParse(_formatDuration(entry['duration']).split(" ").first) ?? 1))
+                .toStringAsFixed(1)
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -105,14 +132,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 48), // spacer for symmetry
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),
             ),
           ),
-
-          // 📝 Workout List or Empty State
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -151,22 +176,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 final calories = _parseCalories(entry['calories_burned']);
 
                                 return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => AnalysisScreen(
-                                          date: entry['start_time']?.substring(0, 10) ?? 'Unknown Date',
-                                          workout: entry['workout_name'] ?? 'Workout Session',
-                                          icon: _getIconForWorkout(entry['workout_name']),
-                                          duration: _formatDuration(entry['duration']),
-                                          calories: calories,
-                                          intensity: 'Moderate', // Default value
-                                          notes: entry['notes'] ?? '',
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                  onTap: () => _openAnalysisScreen(entry),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -229,7 +239,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                   const SizedBox(width: 15),
                                                   const Icon(Icons.trending_up, size: 16, color: Colors.deepPurple),
                                                   const SizedBox(width: 4),
-                                                  const Text('Moderate', style: TextStyle(fontSize: 13, color: Colors.deepPurple)),
+                                                  const Text('...', style: TextStyle(fontSize: 13, color: Colors.deepPurple)),
                                                 ],
                                               ),
                                               if (entry['notes'] != null && entry['notes'].toString().isNotEmpty)

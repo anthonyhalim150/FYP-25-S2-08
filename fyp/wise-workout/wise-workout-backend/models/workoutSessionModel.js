@@ -105,6 +105,16 @@ class WorkoutSessionModel {
     );
     return rows;
   }
+  static async getSessionIntensity(sessionId) {
+    const [rows] = await db.execute(
+      `SELECT w.workout_level AS intensity
+       FROM workout_sessions ws
+       LEFT JOIN workouts w ON ws.workout_id = w.workout_id
+       WHERE ws.session_id = ?`,
+      [sessionId]
+    );
+    return rows[0]?.intensity || null;
+  }  
 }
 
 module.exports = WorkoutSessionModel;

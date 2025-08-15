@@ -23,12 +23,9 @@ class AnalysisScreen extends StatelessWidget {
     this.extraStats,
   }) : super(key: key);
 
-  // Build sharing message (need to implement backend)
   String buildShareContent() {
     final stats = extraStats ?? {
-      "Average Heart Rate": "123 bpm",
-      "Peak Heart Rate": "143 bpm",
-      "Steps": "1,256",
+      "Steps": "0",
       "Sets": workout == "Strength Training" ? "4" : null,
       "Reps": workout == "Strength Training" ? "12, 10, 8, 8" : null,
       "Max Weight": workout == "Strength Training" ? "30 kg" : null,
@@ -49,7 +46,6 @@ class AnalysisScreen extends StatelessWidget {
     return text;
   }
 
-  // Share dialog with editable message
   void _showShareEditDialog(BuildContext context, String initialText) {
     final controller = TextEditingController(text: initialText);
     final colorScheme = Theme.of(context).colorScheme;
@@ -138,9 +134,7 @@ class AnalysisScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final stats = extraStats ?? {
-      "Average Heart Rate": "123 bpm",
-      "Peak Heart Rate": "143 bpm",
-      "Steps": "1,256",
+      "Steps": "0",
       "Sets": workout == "Strength Training" ? "4" : null,
       "Reps": workout == "Strength Training" ? "12, 10, 8, 8" : null,
       "Max Weight": workout == "Strength Training" ? "30 kg" : null,
@@ -167,7 +161,6 @@ class AnalysisScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Section
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -205,7 +198,6 @@ class AnalysisScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 25),
-            // Top Summary Cards
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -223,24 +215,24 @@ class AnalysisScreen extends StatelessWidget {
             ...stats.entries
                 .where((e) => e.value != null && e.value.toString().isNotEmpty)
                 .map((e) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: Text(
-                        e.key,
-                        style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                      )),
-                  Text(
-                    e.value.toString(),
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: Text(
+                            e.key,
+                            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          )),
+                          Text(
+                            e.value.toString(),
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
             if (notes != null && notes!.isNotEmpty) ...[
               const SizedBox(height: 22),
               Text(

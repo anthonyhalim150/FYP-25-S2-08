@@ -160,6 +160,9 @@ class WorkoutSessionService {
     }
     return { date: ymd, hourly };
   }
+  static async getSessionIntensity(sessionId) {
+    return await WorkoutSessionModel.getSessionIntensity(sessionId);
+  }  
 }
 
 module.exports = WorkoutSessionService;
