@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               buildBlueButton(
                 context: context,
-                text: "home_reminder_cleared".tr(),
+                text: "home_reminder_button".tr(),
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
                   final lastTime = prefs.getString('reminder_time');
@@ -473,7 +473,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
 
               SizedBox(
-                height: 160,
+                height: 120,
                 child: FutureBuilder<List<WorkoutCategory>>(
                   future: _categoryFuture,
                   builder: (context, snapshot) {
@@ -514,13 +514,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      _isPremiumUser ? 'Challenge/Tournament' : 'Tournament',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: colorScheme.onBackground,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6, // optional limit
+                      child: FittedBox(
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          _isPremiumUser ? 'Challenge/Tournament' : 'Tournament',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: colorScheme.onBackground,
+                          ),
+                        ),
                       ),
                     ),
+
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(

@@ -14,32 +14,24 @@ class WorkoutCardHomeScreen extends StatelessWidget {
     this.onTap,
   });
 
-  Widget _buildImage(String imagePath) {
-    if (imagePath.startsWith('http') || imagePath.startsWith('https')) {
+  Widget _buildImage(BuildContext context) {
+    if (imagePath.startsWith('http')) {
       return Image.network(
         imagePath,
-        height: 83,
+        height: double.infinity,
         width: double.infinity,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) =>
-            Container(height: 83, color: Colors.grey[200], child: Icon(Icons.image_not_supported)),
+            Container(color: Colors.grey[300], child: const Icon(Icons.image_not_supported, size: 30)),
         loadingBuilder: (context, child, progress) {
           if (progress == null) return child;
-          return Container(
-            height: 83,
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(
-              value: progress.expectedTotalBytes != null
-                  ? progress.cumulativeBytesLoaded / (progress.expectedTotalBytes ?? 1)
-                  : null,
-            ),
-          );
+          return const Center(child: CircularProgressIndicator(strokeWidth: 1.5));
         },
       );
     } else {
       return Image.asset(
         imagePath,
-        height: 83,
+        height: double.infinity,
         width: double.infinity,
         fit: BoxFit.cover,
       );
@@ -48,58 +40,89 @@ class WorkoutCardHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final TextTheme textTheme = Theme.of(context).textTheme;
-    final Color cardColor = colorScheme.surface;
-    final Color shadowColor = Theme.of(context).shadowColor;
-    final TextStyle? nameStyle = textTheme.bodyMedium?.copyWith(
-      fontWeight: FontWeight.bold,
-      color: colorScheme.onSurface,
-    );
-    final TextStyle? levelStyle = textTheme.bodyMedium?.copyWith(
-      fontWeight: FontWeight.bold,
-      color: colorScheme.onSurfaceVariant,
-    );
+    final colorScheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 200,
-        margin: const EdgeInsets.only(right: 15),
+        width: 150, // smaller width
+        height: 100, // smaller height
+        margin: const EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: shadowColor.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: _buildImage(imagePath),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                workoutName,
-                style: nameStyle,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              _buildImage(context),
+              // gradient overlay
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.45),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-              child: Text(
-                workoutLevel,
-                style: levelStyle,
+              // bottom labels
+              Positioned(
+                bottom: 6,
+                left: 6,
+                right: 6,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        workoutName,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: Colors.black,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        workoutLevel.isNotEmpty ? workoutLevel : "Beginner",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
