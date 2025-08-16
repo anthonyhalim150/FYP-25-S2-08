@@ -265,6 +265,7 @@ CREATE TABLE exercises (
   exercise_weight DOUBLE DEFAULT NULL, -- Weight in kg (optional)
   youtube_url VARCHAR(255) DEFAULT NULL, -- Optional YouTube video link
   workout_id INT, -- Foreign Key linking to the workouts table
+  calories_burnt_per_rep DECIMAL(6,3) DEFAULT NULL, -- Energy per rep
   FOREIGN KEY (workout_id) REFERENCES workouts(workout_id)
 );
 
@@ -426,9 +427,7 @@ VALUES
   ('Upper Body Power', 'push', 'Beginner', 'A beginner-friendly push workout to build foundational strength.'),
   ('HIIT Fat Burner', 'cardio', 'Advanced', 'High-intensity intervals to torch calories and boost endurance.'),
   ('Quick Cardio Blast', 'cardio', 'Beginner', 'Short and effective cardio session to get your heart rate up.'),
-  ('Endurance Circuit', 'cardio', 'Intermediate', 'Push your limits with a 30-minute endurance-based cardio circuit.'),
   ('Leg Day Burn', 'leg', 'Advanced', 'A powerful lower-body session focused on strength and hypertrophy.'),
-  ('Beginner Leg Routine', 'leg', 'Beginner', 'Foundational leg workout for mobility, strength, and balance.'),
   ('Morning Flow Yoga', 'relaxing', 'Beginner', 'Gentle yoga sequence to energize your day and improve flexibility.'),
   ('Evening Unwind', 'relaxing', 'Intermediate', 'Wind down with stretches and breathwork to calm your body and mind.');
 
@@ -437,7 +436,6 @@ INSERT INTO exercises (
     exercise_instructions, exercise_level, exercise_equipment, exercise_duration,
     youtube_url, workout_id, calories_burnt_per_rep
 ) VALUES
-
 ('pushexercises_1', 'Push Up', 'A basic bodyweight pushing exercise.', 3, 12, 'Keep your back straight, lower until chest nearly touches the floor, then push up.', 'Beginner', 'None', NULL, 'https://www.youtube.com/watch?v=IODxDxX7oi4', 1, 0.4),
 ('pushexercises_2', 'Incline Push Up', 'Push up with hands on an elevated surface.', 3, 10, 'Place hands on bench, keep body straight, lower and push up.', 'Beginner', 'Bench', NULL, 'https://www.youtube.com/watch?v=8SbXgQqbOoU', 1, 0.35),
 ('pushexercises_3', 'Decline Push Up', 'Push up with feet elevated, targets upper chest.', 3, 8, 'Feet on bench, lower chest to ground, push up.', 'Intermediate', 'Bench', NULL, 'https://www.youtube.com/watch?v=UwRLWMcOdwI', 1, 0.5),
@@ -447,7 +445,7 @@ INSERT INTO exercises (
 ('tricepexercises_1', 'Tricep Dips', 'Bodyweight exercise focusing on the triceps.', 3, 15, 'Lower your body by bending your elbows, then push back up.', 'Intermediate', 'None', NULL, 'https://www.youtube.com/watch?v=6kALZikXxLc', 2, 0.45),
 ('tricepexercises_2', 'Overhead Tricep Extension', 'Isolates the triceps with weight.', 3, 12, 'Hold dumbbell overhead, lower behind head, extend.', 'Beginner', 'Dumbbell', NULL, 'https://www.youtube.com/watch?v=_gsUck-7M74', 2, 0.25),
 ('tricepexercises_3', 'Diamond Push Up', 'Push up with hands close together to target triceps.', 3, 10, 'Form a diamond with hands, lower chest, push up.', 'Advanced', 'None', NULL, 'https://www.youtube.com/watch?v=J0DnG1_S92I', 2, 0.6),
-('tricepexercises_4', 'Bench Dip', 'Tricep dips with hands on bench.', 3, 12, 'Hands on bench, lower body, press up.', 'Beginner', 'Bench', NULL, 'https://www.youtube.com/watch?v=6kALZikXxLc', 2, 0.35),
+('tricepexercises_4', 'Lying Triceps Stretch', 'Gentle stretch for the triceps while lying down.', 3, 12, 'Lie on a bench or mat, hold one elbow with the opposite hand, and gently pull it behind your head to stretch the triceps. Switch arms.', 'Beginner', 'Bench or Mat', NULL, 'https://www.youtube.com/watch?v=2h5l4t5A2RM', 2, 0.35),
 ('tricepexercises_5', 'Close Grip Push Up', 'Push up with hands close together, elbows tight to body.', 3, 10, 'Keep elbows close, lower chest, push up.', 'Intermediate', 'None', NULL, 'https://www.youtube.com/watch?v=7R_T1I6QHqM', 2, 0.5),
 
 ('chestshoulder_1', 'Bench Press', 'Weight-lifting exercise focusing on the chest and shoulders.', 3, 10, 'Lower the bar to your chest and push it back up.', 'Advanced', 'Barbell', NULL, 'https://www.youtube.com/watch?v=gRVjAtPip0Y', 3, 0.5),
@@ -456,7 +454,7 @@ INSERT INTO exercises (
 ('chestshoulder_4', 'Dumbbell Pullover', 'Works chest and lats with a dumbbell.', 3, 10, 'Lie on bench, hold dumbbell, lower behind head, pull over chest.', 'Intermediate', 'Dumbbell', NULL, 'https://www.youtube.com/watch?v=p0vQ6Qn1nfE', 3, 0.32),
 ('chestshoulder_5', 'Arnold Press', 'A shoulder press variation rotating dumbbells.', 3, 10, 'Rotate dumbbells during press.', 'Intermediate', 'Dumbbells', NULL, 'https://www.youtube.com/watch?v=vj2w851ZHRM', 3, 0.44),
 
-('cardioexercises_1', 'HIIT', 'High-intensity interval training for fat loss.', 1, 20, 'Perform each exercise for 20 seconds followed by 10 seconds of rest, repeat.', 'Advanced', 'None', 20, 'https://www.youtube.com/watch?v=ml6cT4AZdqI', 4, 0.8),
+('cardioexercises_1', 'Walking in Place', 'Low-impact cardio exercise for improving stamina and burning calories.', 1, 20, 'March or walk in place at a steady pace, lifting knees slightly and swinging arms.', 'Beginner', 'None', 20, 'https://www.youtube.com/watch?v=QOVaHwm-Q6U', 4, 0.8),
 ('cardioexercises_2', 'Mountain Climbers', 'Full-body exercise for cardio.', 3, 20, 'In plank, drive knees to chest quickly.', 'Beginner', 'None', 120, 'https://www.youtube.com/watch?v=nmwgirgXLYM', 4, 0.5),
 ('cardioexercises_3', 'Burpees', 'Explosive cardio and strength movement.', 3, 12, 'Drop into squat, jump feet back, do a push up, jump up.', 'Intermediate', 'None', 180, 'https://www.youtube.com/watch?v=TU8QYVW0gDU', 4, 1.0),
 ('cardioexercises_4', 'Jumping Jacks', 'Full body cardio warm up.', 3, 30, 'Jump feet out, arms overhead, return.', 'Beginner', 'None', 90, 'https://www.youtube.com/watch?v=c4DAnQ6DtF8', 4, 0.18),
@@ -468,36 +466,29 @@ INSERT INTO exercises (
 ('joggingcardio_4', 'Side Shuffles', 'Lateral movement for cardio and agility.', 3, 20, 'Shuffle sideways, keep low stance.', 'Beginner', 'None', 60, 'https://www.youtube.com/watch?v=QnL1Wmb7L44', 5, 0.16),
 ('joggingcardio_5', 'Backward Jog', 'Jogging in reverse to activate different muscles.', 3, 20, 'Jog backwards carefully for the set duration.', 'Beginner', 'None', 60, 'https://www.youtube.com/watch?v=ZZYwLzQX5ZQ', 5, 0.13),
 
-('cyclingexercises_1', 'Cycling', 'Steady-state cycling exercise for endurance.', 3, 20, 'Cycle at a consistent pace for 20 minutes.', 'Intermediate', 'Cycling Bike', 1200, 'https://www.youtube.com/watch?v=VJGGXnGlYjA', 6, 0.09),
-('cyclingexercises_2', 'Spin Intervals', 'Alternating speed and resistance for intensity.', 3, 15, 'Alternate between fast and slow pace every minute.', 'Advanced', 'Spin Bike', 900, 'https://www.youtube.com/watch?v=oq0zZJ70XyQ', 6, 0.11),
-('cyclingexercises_3', 'Hill Climbs', 'Increase resistance to simulate hills.', 3, 10, 'Increase resistance, pedal while seated and standing.', 'Advanced', 'Cycling Bike', 600, 'https://www.youtube.com/watch?v=dU1n6R1BFE8', 6, 0.13),
-('cyclingexercises_4', 'Standing Cycling Sprint', 'High intensity sprint on cycling bike.', 2, 15, 'Stand and pedal as fast as possible.', 'Advanced', 'Cycling Bike', 600, 'https://www.youtube.com/watch?v=ZxID_pYXuRU', 6, 0.18),
-('cyclingexercises_5', 'Seated Recovery Pedal', 'Low resistance, slow pedaling for recovery.', 2, 20, 'Pedal at slow pace to recover.', 'Beginner', 'Cycling Bike', 600, 'https://www.youtube.com/watch?v=GflZtK01i28', 6, 0.05),
-
 ('legexercises_1', 'Squats', 'A fundamental lower body exercise that targets quads, hamstrings, and glutes.', 3, 15, 'Keep your back straight, lower to parallel, and return to standing position.', 'Advanced', 'None', NULL, 'https://www.youtube.com/watch?v=UXJrBgI2RxA', 7, 0.4),
 ('legexercises_2', 'Lunges', 'Strengthens legs and glutes.', 3, 12, 'Step forward, lower body, push back to start.', 'Beginner', 'None', NULL, 'https://www.youtube.com/watch?v=QOVaHwm-Q6U', 7, 0.38),
 ('legexercises_3', 'Bulgarian Split Squat', 'Single leg squat variation for lower body.', 3, 10, 'Place back foot on bench, squat with front leg.', 'Intermediate', 'Bench', NULL, 'https://www.youtube.com/watch?v=2C-uNgKwPLE', 7, 0.44),
 ('legexercises_4', 'Step Ups', 'Step onto bench, strengthens legs.', 3, 12, 'Step up onto bench, alternate legs.', 'Beginner', 'Bench', NULL, 'https://www.youtube.com/watch?v=dQqApCGd5Ss', 7, 0.36),
 ('legexercises_5', 'Wall Sit', 'Isometric hold for thighs and glutes.', 2, 1, 'Sit against wall, thighs parallel to ground, hold for 45 seconds.', 'Beginner', 'None', 45, 'https://www.youtube.com/watch?v=y-wV4Venusw', 7, 3.0),
 
-('legpress_1', 'Leg Press', 'Leg exercise focusing on quads, hamstrings, and glutes.', 3, 12, 'Sit and push the weight upwards using your legs.', 'Beginner', 'Leg Press Machine', NULL, 'https://www.youtube.com/watch?v=izzzZ9q7Fms', 8, 0.36),
+('legpress_1', 'Bodyweight Squat', 'Leg exercise targeting quads, hamstrings, and glutes using bodyweight only.', 3, 12, 'Stand with feet shoulder-width apart, lower into a squat, then return to standing.', 'Beginner', 'None', NULL, 'https://www.youtube.com/watch?v=aclHkVaku9U', 8, 0.5),
 ('legpress_2', 'Calf Raises', 'Strengthens calf muscles.', 3, 20, 'Stand on edge, raise heels, pause, lower.', 'Beginner', 'None', NULL, 'https://www.youtube.com/watch?v=-M4-G8p8fmc', 8, 0.16),
-('legpress_3', 'Hamstring Curl', 'Isolation for hamstrings.', 3, 15, 'Use machine to curl legs toward buttocks.', 'Intermediate', 'Hamstring Curl Machine', NULL, 'https://www.youtube.com/watch?v=1Tq3QdYUuHs', 8, 0.28),
-('legpress_4', 'Single Leg Press', 'Leg press using one leg at a time.', 3, 10, 'Press with one leg, switch.', 'Intermediate', 'Leg Press Machine', NULL, 'https://www.youtube.com/watch?v=I55GxNHzTz0', 8, 0.42),
+('legpress_3', 'Step Up', 'Functional leg exercise focusing on hamstrings, glutes, and quads.', 3, 15, 'Step onto a chair or sturdy bench with one foot, push through your heel to stand fully on it, then step back down. Alternate legs.', 'Intermediate', 'Chair or Bench', NULL, 'https://www.youtube.com/watch?v=dQqApCGd6Ok', 8, 0.28),
+('legpress_4', 'Bulgarian Split Squat', 'Single-leg squat variation using a chair or bench.', 3, 10, 'Place one foot behind on a chair, lower your body on the front leg, then switch sides.', 'Intermediate', 'Chair or Bench', NULL, 'https://www.youtube.com/watch?v=2C-uNgKwPLE', 8, 0.42),
 ('legpress_5', 'Glute Bridge', 'Hip bridge focusing on glutes and hamstrings.', 3, 15, 'Lift hips off floor, squeeze glutes, lower down.', 'Beginner', 'None', NULL, 'https://www.youtube.com/watch?v=m2Zx-57cSok', 8, 0.29),
 
-('relaxexercises_1', 'Yoga', 'Gentle yoga focusing on flexibility and mindfulness.', 1, 1, 'Hold each pose for 60 seconds, focusing on your breath.', 'Beginner', 'Yoga Mat', 60, 'https://www.youtube.com/watch?v=v7AYKMP6rOE', 9, 2.5),
-('relaxexercises_2', 'Child\'s Pose', 'Restorative pose for relaxation.', 1, 1, 'Kneel, sit back on heels, stretch arms forward for 40 seconds.', 'Beginner', 'Yoga Mat', 40, 'https://www.youtube.com/watch?v=QvB3qTqdFUs', 9, 1.67),
-('relaxexercises_3', 'Cat-Cow Stretch', 'Dynamic stretch for spine.', 2, 8, 'Alternate between arching and rounding back on hands and knees, 5 seconds per rep.', 'Beginner', 'None', 40, 'https://www.youtube.com/watch?v=w3mKUNBrhXw', 9, 0.17),
+('relaxexercises_1', 'Downward Facing Dog', 'Full-body stretch for calves, hamstrings, shoulders; gently energizing.', 1, 1, 'From tabletop, tuck toes and lift hips up and back. Keep knees softly bent if tight; press through hands and lengthen spine. Hold for 60 seconds with steady breaths.', 'Beginner', 'Yoga Mat', 60, 'https://www.youtube.com/watch?v=ayQoxw8sRTk', 9, 2),
+('relaxexercises_2', 'Child''s Pose', 'Restorative pose for relaxation.', 1, 1, 'Kneel, sit back on heels, stretch arms forward for 40 seconds.', 'Beginner', 'Yoga Mat', 40, 'https://www.youtube.com/watch?v=QvB3qTqdFUs', 9, 1.67),
+('relaxexercises_3', 'Cat Cow Stretch', 'Dynamic stretch for spine.', 2, 8, 'Alternate between arching and rounding back on hands and knees, 5 seconds per rep.', 'Beginner', 'None', 40, 'https://www.youtube.com/watch?v=w3mKUNBrhXw', 9, 0.17),
 ('relaxexercises_4', 'Supine Twist', 'Lying spinal twist for back and hips.', 1, 1, 'Lie on back, twist knees to side, hold for 60 seconds.', 'Beginner', 'Yoga Mat', 60, 'https://www.youtube.com/watch?v=UnTEc6ZrGyo', 9, 2.5),
 ('relaxexercises_5', 'Cobra Pose', 'Gentle backbend for spine and chest.', 1, 1, 'Lie on stomach, hands under shoulders, lift chest and hold for 45 seconds.', 'Beginner', 'Yoga Mat', 45, 'https://www.youtube.com/watch?v=jdJzDZ1Gr-I', 9, 1.88),
 
-('relaxstretch_1', 'Stretching', 'Simple stretching routine to improve flexibility and release tension.', 1, 1, 'Hold each stretch for 60 seconds, focusing on deep breathing.', 'Intermediate', 'None', 60, 'https://www.youtube.com/watch?v=6Ib4Un4WnHI', 10, 2.5),
+('relaxstretch_1', 'Triceps Stretch', 'Stretches triceps and shoulders to relieve tension.', 1, 1, 'Raise right arm overhead, bend elbow, and place hand down between shoulder blades. Use left hand to gently push elbow down. Hold 60 seconds, switch sides.', 'Intermediate', 'None', 60, 'https://www.youtube.com/watch?v=5W0oM7sLXkw', 10, 2.5),
 ('relaxstretch_2', 'Neck Stretch', 'Relieves tension in the neck.', 1, 1, 'Gently tilt head side to side, hold each stretch for 30 seconds.', 'Beginner', 'None', 30, 'https://www.youtube.com/watch?v=QZKqj3d0eA8', 10, 1.25),
 ('relaxstretch_3', 'Seated Forward Bend', 'Stretches hamstrings and back.', 1, 1, 'Sit, extend legs, reach forward, hold for 45 seconds.', 'Beginner', 'None', 45, 'https://www.youtube.com/watch?v=bLd4G9yPBDo', 10, 1.88),
 ('relaxstretch_4', 'Quad Stretch', 'Standing stretch for quadriceps.', 1, 1, 'Stand, grab ankle, pull foot toward buttocks for 45 seconds.', 'Beginner', 'None', 45, 'https://www.youtube.com/watch?v=sXxqkQIkFZ4', 10, 1.88),
 ('relaxstretch_5', 'Butterfly Stretch', 'Stretch for inner thighs and hips.', 1, 1, 'Sit, press soles of feet together, hold for 60 seconds.', 'Beginner', 'None', 60, 'https://www.youtube.com/watch?v=QGzRDa5dmz4', 10, 2.5);
-
 
 INSERT INTO tournaments 
 (title, description, startDate, endDate, features, target_exercise_pattern) 
