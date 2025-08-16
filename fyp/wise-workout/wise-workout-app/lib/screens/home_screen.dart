@@ -388,20 +388,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
               ),
-              buildBlueButton(
+             buildBlueButton(
                 context: context,
                 text: "home_reminder_button".tr(),
                 onTap: () async {
+                  final reminderService = ReminderService();
+                  final existing = await reminderService.fetchReminder();
+
+                  String? initialTime;
+                  List<String>? initialDays;
+
+                  if (existing != null) {
+                    // backend returns time like "08:30:00"
+                    initialTime = existing['time'] as String;
+
+                    // backend stores days_of_week like "1,3,5"
+                    final days = (existing['days_of_week'] as String).split(',');
+                    const longNames = [
+                      "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
+                    ];
+                    initialDays = days.map((d) {
+                      final idx = int.tryParse(d.trim()) ?? 0;
+                      return idx >= 1 && idx <= 7 ? longNames[idx % 7] : null;
+                    }).whereType<String>().toList();
+                  }
+
                   final result = await ReminderWidget.show(
                     context,
-                    initialTime: null,
-                    initialDays: null,
+                    initialTime: initialTime,
+                    initialDays: initialDays,
                   );
 
                   if (result != null) {
                     if (result['clear'] == true) {
-  
-                      await ReminderService().clearReminder(); 
+                      await reminderService.clearReminder();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('home_reminder_cleared'.tr())),
                       );
@@ -434,8 +454,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     }).toList();
 
- 
-                    final reminderService = ReminderService();
                     await reminderService.setReminder(
                       title: "Time to Workout!",
                       message: "Let's hit your daily fitness goal!",

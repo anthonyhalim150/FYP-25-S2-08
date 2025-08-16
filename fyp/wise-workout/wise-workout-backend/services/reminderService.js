@@ -6,7 +6,7 @@ class ReminderService {
   }
 
   static async setReminder(userId, data) {
-    return await ReminderModel.upsert(userId, data);
+    return await ReminderModel.insert(userId, data);
   }
 
   static async clearReminder(userId) {

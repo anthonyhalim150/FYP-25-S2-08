@@ -9,15 +9,10 @@ const ReminderModel = {
     return rows[0];
   },
 
-  async upsert(userId, { title, message, time, daysOfWeek }) {
+  async insert(userId, { title, message, time, daysOfWeek }) {
     await db.execute(
-      `INSERT INTO reminders (user_id, title, message, time, days_of_week)
-       VALUES (?, ?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE 
-         title=VALUES(title),
-         message=VALUES(message),
-         time=VALUES(time),
-         days_of_week=VALUES(days_of_week)`,
+      `REPLACE INTO reminders (user_id, title, message, time, days_of_week)
+       VALUES (?, ?, ?, ?, ?)`,
       [userId, title, message, time, daysOfWeek]
     );
     return this.findByUser(userId);
