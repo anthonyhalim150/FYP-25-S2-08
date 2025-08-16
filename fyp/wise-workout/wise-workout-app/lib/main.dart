@@ -53,6 +53,7 @@ import 'screens/workout/workout_plan_exercise_list.dart';
 import 'widgets/persistent_workout_timer_overlay.dart';
 import 'screens/workout/exercise_list_from_ai_page.dart';
 import 'screens/calendar_sync_screen.dart';
+import 'services/reminder_service.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -99,19 +100,21 @@ class _WiseWorkoutAppState extends State<WiseWorkoutApp> {
     super.initState();
     _determineStartRoute();
   }
-
+ 
   Future<void> _determineStartRoute() async {
     final isAuthenticated = await _apiService.checkAuthStatus();
 
-    // Load and apply language from backend if logged in
     if (isAuthenticated) {
       try {
         final lang = await _apiService.getLanguage();
         if (lang.isNotEmpty && mounted) {
           context.setLocale(Locale(lang));
         }
+        final reminderService = ReminderService();
+        await reminderService.syncAndSchedule();
+
       } catch (e) {
-        print('Error loading user language: $e');
+        print('Error loading user preferences: $e');
       }
     }
 

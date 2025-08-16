@@ -349,6 +349,18 @@ CREATE TABLE exercise_logs (
   FOREIGN KEY (exercise_key) REFERENCES exercises(exercise_key) ON DELETE SET NULL
 );
 
+CREATE TABLE reminders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  message TEXT,
+  time TIME NOT NULL,
+  days_of_week VARCHAR(50) NOT NULL, -- e.g. "1,3,5" (Mon, Wed, Fri)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 INSERT INTO avatars (name, image_url, is_premium)
 VALUES 
   ('free1', 'assets/avatars/free/free1.png', false),

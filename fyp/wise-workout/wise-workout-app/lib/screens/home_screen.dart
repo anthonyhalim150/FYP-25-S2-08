@@ -21,6 +21,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/workout_service.dart';
+import '../services/reminder_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -391,26 +392,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 context: context,
                 text: "home_reminder_button".tr(),
                 onTap: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  final lastTime = prefs.getString('reminder_time');
-                  final lastDays = prefs.getStringList('reminder_days');
                   final result = await ReminderWidget.show(
                     context,
-                    initialTime: lastTime,
-                    initialDays: lastDays,
+                    initialTime: null,
+                    initialDays: null,
                   );
+
                   if (result != null) {
                     if (result['clear'] == true) {
-                      await prefs.remove('reminder_time');
-                      await prefs.remove('reminder_days');
-                      await NotificationService.cancelAllReminders();
+  
+                      await ReminderService().clearReminder(); 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('home_reminder_cleared'.tr())),
                       );
                       return;
                     }
+
                     final timeString = result['time'] as String;
                     final repeatDays = result['repeat'] as List<String>;
+
                     String fixedTimeString = timeString.replaceAll('.', ':');
                     final timeParts = fixedTimeString.split(RegExp(r'[: ]'));
                     int hour = int.parse(timeParts[0]);
@@ -420,6 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if ((isPM || isAM) && hour > 12) hour = hour % 12;
                     if (isPM && hour < 12) hour += 12;
                     if (isAM && hour == 12) hour = 0;
+
                     final daysOfWeek = repeatDays.map((d) {
                       switch (d) {
                         case "Monday": return 1;
@@ -432,15 +433,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         default: return 1;
                       }
                     }).toList();
-                    await prefs.setString('reminder_time', timeString);
-                    await prefs.setStringList('reminder_days', repeatDays);
-                    await NotificationService.scheduleReminder(
-                      id: 100,
+
+ 
+                    final reminderService = ReminderService();
+                    await reminderService.setReminder(
                       title: "Time to Workout!",
-                      body: "Let's hit your daily fitness goal!",
+                      message: "Let's hit your daily fitness goal!",
                       time: TimeOfDay(hour: hour, minute: minute),
                       daysOfWeek: daysOfWeek,
                     );
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Reminder set!')),
                     );

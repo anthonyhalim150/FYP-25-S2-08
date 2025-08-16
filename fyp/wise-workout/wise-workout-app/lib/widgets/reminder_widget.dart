@@ -6,10 +6,10 @@ class ReminderWidget extends StatefulWidget {
   const ReminderWidget({Key? key, this.initialTime, this.initialDays}) : super(key: key);
 
   static Future<Map<String, dynamic>?> show(
-      BuildContext context, {
-        String? initialTime,
-        List<String>? initialDays,
-      }) {
+    BuildContext context, {
+    String? initialTime,
+    List<String>? initialDays,
+  }) {
     return showDialog<Map<String, dynamic>>(
       context: context,
       barrierDismissible: true,
@@ -49,8 +49,8 @@ class _ReminderWidgetState extends State<ReminderWidget> {
   bool get isEveryday => _selected.every((v) => v);
   bool get isWeekdays =>
       _selected.sublist(1, 6).every((v) => v) &&
-          !_selected[0] &&
-          !_selected[6];
+      !_selected[0] &&
+      !_selected[6];
 
   void selectEveryday() => setState(() => _selected = List.generate(7, (_) => true));
   void selectNone() => setState(() => _selected = List.generate(7, (_) => false));
@@ -64,7 +64,6 @@ class _ReminderWidgetState extends State<ReminderWidget> {
 
     final primaryColor = cs.primary;
     final onPrimary = cs.onPrimary;
-    final surfaceColor = cs.surface;
     final inputBg = theme.inputDecorationTheme.fillColor ?? cs.surfaceVariant;
     final errorColor = theme.colorScheme.error;
     final hintColor = theme.hintColor;
@@ -88,7 +87,10 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                       alignment: Alignment.center,
                       child: Text(
                         'Set Reminder',
-                        style: theme.textTheme.titleLarge?.copyWith(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     Align(
@@ -189,9 +191,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                         },
                         child: CircleAvatar(
                           radius: 16,
-                          backgroundColor: isSelected
-                              ? primaryColor
-                              : inputBg,
+                          backgroundColor: isSelected ? primaryColor : inputBg,
                           child: Text(
                             _dayShortNames[index],
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -238,7 +238,13 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                         'repeat': selectedDays,
                       });
                     },
-                    child: Text('Save', style: theme.textTheme.labelLarge?.copyWith(fontSize: 17, color: onPrimary)),
+                    child: Text(
+                      'Save',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontSize: 17,
+                        color: onPrimary,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -256,7 +262,13 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                     onPressed: () {
                       Navigator.of(context).pop({'clear': true});
                     },
-                    child: Text('Clear All Reminders', style: theme.textTheme.labelLarge?.copyWith(fontSize: 17, color: primaryColor)),
+                    child: Text(
+                      'Clear All Reminders',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontSize: 17,
+                        color: primaryColor,
+                      ),
+                    ),
                   ),
                 ),
               ],
