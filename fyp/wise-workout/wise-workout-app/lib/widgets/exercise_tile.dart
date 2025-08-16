@@ -87,6 +87,6 @@ class ExerciseTile extends StatelessWidget {
 
   String _getExerciseImagePath(String title) {
     final formatted = title.toLowerCase().replaceAll(' ', '_');
-    return 'assets/exerciseImages/${formatted}_gif.jpg';
+    return 'assets/exerciseImages/${formatted}_gif.png';
   }
 }
