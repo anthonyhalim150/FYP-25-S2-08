@@ -173,7 +173,8 @@ CREATE TABLE challenge_progress (
   progress_value INT DEFAULT 0,
   last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (challenge_invite_id) REFERENCES challenge_invites(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  UNIQUE KEY uq_progress (challenge_invite_id, user_id)
 );
 
 
@@ -218,7 +219,8 @@ CREATE TABLE levels (
   level INT PRIMARY KEY,
   xp_required INT NOT NULL,
   reward_tokens INT DEFAULT 0,
-  badge_id INT DEFAULT NULL
+  badge_id INT DEFAULT NULL,
+  FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE SET NULL
 );
 
 CREATE TABLE workout_categories (
@@ -315,14 +317,16 @@ CREATE TABLE tournaments (
 
 
 CREATE TABLE tournament_participants (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   tournament_id INT NOT NULL,
   user_id INT NOT NULL,
   progress INT DEFAULT 0,
   joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (tournament_id) REFERENCES tournaments(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  UNIQUE KEY uq_tournament_user (tournament_id, user_id)
 );
+
 
 CREATE TABLE workout_sessions (
   session_id INT AUTO_INCREMENT PRIMARY KEY,
