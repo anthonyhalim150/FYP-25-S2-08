@@ -1,3 +1,4 @@
 *.json
 fyp/fitquest-website/package-lock.json
 fyp/fitquest-website/package-lock.json
+fyp/wise-workout-backend/.env
