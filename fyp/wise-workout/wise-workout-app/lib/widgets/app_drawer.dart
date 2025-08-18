@@ -3,16 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../screens/profile_screen.dart';
 import '../screens/workout/daily_summary_page.dart';
 import '../screens/workout/fitness_plan_calendar.dart';
-import '../screens/buypremium_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   final String userName;
-  final bool isPremiumUser;
 
   const AppDrawer({
     super.key,
     required this.userName,
-    required this.isPremiumUser,
   });
 
   Future<void> _confirmLogout(BuildContext context) async {
@@ -100,7 +97,7 @@ class AppDrawer extends StatelessWidget {
                     profileImagePath: null,
                     profileBgPath: null,
                     xp: 123,
-                    isPremiumUser: isPremiumUser,
+                    isPremiumUser: false,
                   ),
                 ),
               );
@@ -124,15 +121,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Fitness Plan Calendar'),
             onTap: () {
               Navigator.pop(context);
-
-              if (isPremiumUser) {
-                 Navigator.pushNamed(context, '/calendar');
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => BuyPremiumScreen()),
-                );
-              }
+              Navigator.pushNamed(context, '/calendar');
             },
           ),
 

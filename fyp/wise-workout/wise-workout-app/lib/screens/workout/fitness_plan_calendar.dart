@@ -5,6 +5,8 @@ import 'dart:convert';
 import '../workout/exercise_list_from_ai_page.dart';
 import '../../services/google_calendar_service.dart';
 import '../../services/user_prefs_service.dart';
+import '../../services/api_service.dart';
+import '../../screens/buypremium_screen.dart';
 
 class CalendarPlanScreen extends StatefulWidget {
   const CalendarPlanScreen({super.key});
@@ -30,12 +32,31 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
   String? _estimationText; // optional insights
   bool _insightsExpanded = false; // inline insights expand/collapse
 
+  bool _isPremiumUser = false;
+  String? _displayName;
+
   @override
   void initState() {
     super.initState();
-    _loadPreferredTime();
-    _fetchPlan();
+    _initUserFlow();
   }
+
+  Future<void> _fetchProfile() async { final profile = await ApiService().getCurrentProfile(); if (profile != null) { setState(() { _displayName = profile['username']; _isPremiumUser = profile['role'] == 'premium'; }); } }
+
+  Future<void> _initUserFlow() async {
+    await _loadPreferredTime();
+    await _fetchProfile();
+
+    if (_isPremiumUser) {
+      _fetchPlan(); // Premium → fetch workouts
+    } else {
+      setState(() {
+        _loading = false; // Free → show empty calendar
+        _days = [];
+      });
+    }
+  }
+
 
   Future<void> _loadPreferredTime() async {
     final t = await UserPrefsService.getWorkoutStartTime();
@@ -359,20 +380,18 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
         foregroundColor: Colors.black,
         centerTitle: true,
         actions: [
-          if ((_estimationText ?? '').trim().isNotEmpty)
+          if (_isPremiumUser && (_estimationText ?? '').trim().isNotEmpty)
             IconButton(
               icon: const Icon(Icons.insights),
-              tooltip: 'Show insights',
               onPressed: _showInsightsSheet,
             ),
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loading ? null : _fetchPlan),
-          IconButton(icon: const Icon(Icons.schedule), tooltip: 'Set preferred workout time', onPressed: _loadPreferredTime),
-          IconButton(
-            icon: const Icon(Icons.calendar_month_outlined),
-            tooltip: 'Sync this month to Google Calendar',
-            onPressed: _loading
-                ? null
-                : () async {
+          if (_isPremiumUser)
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _loading ? null : _fetchPlan),
+          IconButton(icon: const Icon(Icons.schedule), onPressed: _loadPreferredTime),
+          if (_isPremiumUser)
+            IconButton(
+              icon: const Icon(Icons.calendar_month_outlined),
+              onPressed: _loading ? null : () async {
               try {
                 await _calendarService.addVisibleMonth(
                   planDays: _days,
@@ -419,6 +438,50 @@ class _CalendarPlanScreenState extends State<CalendarPlanScreen> {
               ],
             ),
           ),
+          if (!_isPremiumUser)
+            Container(
+              margin: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                border: Border.all(color: Colors.orange.shade200),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    "Upgrade to Premium to unlock AI-generated workout plans!",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BuyPremiumScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Buy Premium",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           // Inline insights (shows only if _estimationText exists)
           _buildInlineInsightsCard(),

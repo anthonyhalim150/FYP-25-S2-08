@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class QuestionnaireService {
-  static final String backendUrl = 'https://fyp-25-s2-08.onrender.com';
+  static final String backendUrl = 'http://10.0.2.2:3000';
   static final FlutterSecureStorage storage = FlutterSecureStorage();
 
   static Future<bool> submitPreferences(Map<String, dynamic> responses) async {
