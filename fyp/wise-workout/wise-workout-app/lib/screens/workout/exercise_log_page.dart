@@ -18,6 +18,8 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
   final CountDownController _restTimerController = CountDownController();
   List<bool> isSetTiming = [];
 
+  int? _activeSetIndex; // <-- track which set is currently running
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +81,6 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
 
   Future<String?> _showEditDialog(String initial, String label) async {
     final controller = TextEditingController(text: initial);
-    // Select-all so user can just type without deleting
     controller.selection = TextSelection(baseOffset: 0, extentOffset: initial.length);
 
     final colorScheme = Theme.of(context).colorScheme;
@@ -90,7 +91,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
         title: Text('${'edit'.tr()} $label', style: textTheme.titleMedium),
         content: TextField(
           controller: controller,
-          autofocus: true, // <— focus immediately
+          autofocus: true,
           keyboardType: TextInputType.number,
           style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
           decoration: InputDecoration(
@@ -247,6 +248,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                                   setState(() {
                                     sets[index]['finished'] = true;
                                     isSetTiming[index] = false;
+                                    _activeSetIndex = null; // release lock
                                   });
                                 },
                               ),
@@ -263,7 +265,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                                       borderRadius: BorderRadius.circular(30)),
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                                 ),
-                                onPressed: sets[index]['finished'] == true
+                                onPressed: sets[index]['finished'] == true || _activeSetIndex != null
                                     ? null
                                     : () {
                                   setState(() {
@@ -271,6 +273,7 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                                       isSetTiming.addAll(List.filled(index + 1 - isSetTiming.length, false));
                                     }
                                     isSetTiming[index] = true;
+                                    _activeSetIndex = index; // lock to this set
                                   });
                                 },
                                 child: Text(
@@ -292,10 +295,13 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                                       : colorScheme.outline,
                                   size: 32,
                                 ),
-                                onPressed: sets[index]['finished'] == true
+                                onPressed: sets[index]['finished'] == true || _activeSetIndex != null
                                     ? null
                                     : () {
-                                  setState(() => sets[index]['finished'] = true);
+                                  setState(() {
+                                    sets[index]['finished'] = true;
+                                    _activeSetIndex = null; // instantly done
+                                  });
                                   ExerciseTimer.showRestTimer(context, _restTimerController);
                                 },
                               ),
