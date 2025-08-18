@@ -8,7 +8,5 @@ router.get('/name-enddate', authenticateUser, tournamentController.getAllTournam
 router.get('/with-participants', tournamentController.getTournamentsWithParticipantCounts);
 router.get('/:tournamentId/participants', authenticateUser, tournamentController.getTournamentParticipants);
 router.post('/:tournamentId/join', authenticateUser, tournamentController.joinTournament);
-router.get('/with-participants', tournamentController.getTournamentsWithParticipantCounts);
-
 
 module.exports = router;

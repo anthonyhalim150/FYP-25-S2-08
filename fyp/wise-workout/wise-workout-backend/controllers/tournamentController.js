@@ -34,23 +34,6 @@ async function getTournamentsWithParticipantCounts(req, res) {
   }
 }
 
-async function getJoinedTournamentsByUser(req, res) {
-  try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorised' });
-    }
-    const rows = await tournamentService.getJoinedTournamentsByUser(userId);
-    // Return a simple list of IDs for lightweight client usage
-    const ids = rows.map(r => r.tournament_id);
-    res.status(200).json(ids);
-  } catch (err) {
-    console.error('Error fetching joined tournaments:', err);
-    res.status(500).json({ message: 'Failed to fetch joined tournaments.' });
-  }
-}
-
-
 // Get all participants (with progress) for a single tournament
 async function getTournamentParticipants(req, res) {
   try {
@@ -85,5 +68,4 @@ module.exports = {
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
   joinTournament,
-  getJoinedTournamentsByUser,
 };
