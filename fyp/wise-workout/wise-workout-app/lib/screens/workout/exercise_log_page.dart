@@ -56,6 +56,12 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
   }
 
   void _addSet() {
+    if (sets.length >= 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Maximum 10 sets allowed")),
+      );
+      return;
+    }
     setState(() {
       sets.add({
         'set': sets.length + 1,
@@ -85,32 +91,70 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
 
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+
+    String? errorMessage;
+
     return showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('${'edit'.tr()} $label', style: textTheme.titleMedium),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
-          decoration: InputDecoration(
-            hintText: label,
-            hintStyle: textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withOpacity(0.6),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text('${'edit'.tr()} $label', style: textTheme.titleMedium),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
+              decoration: InputDecoration(
+                hintText: label,
+                hintStyle: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurface.withOpacity(0.6),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: colorScheme.outline)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: colorScheme.primary)),
+                errorText: errorMessage, // 👈 inline error message
+              ),
+              onSubmitted: (v) {
+                final parsed = double.tryParse(v) ?? 0.0;
+                if (label == 'exercise_weight'.tr() && parsed > 100) {
+                  setState(() => errorMessage = "Weight cannot exceed 100 kg");
+                  return;
+                }
+                if (label == 'exercise_reps'.tr() && parsed > 50) {
+                  setState(() => errorMessage = "Reps cannot exceed 50");
+                  return;
+                }
+                Navigator.pop(context, v);
+              },
             ),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: colorScheme.outline)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: colorScheme.primary)),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  final v = controller.text;
+                  final parsed = double.tryParse(v) ?? 0.0;
+
+                  if (label == 'exercise_weight'.tr() && parsed > 100) {
+                    setState(() => errorMessage = "Weight cannot exceed 100 kg");
+                    return;
+                  }
+                  if (label == 'exercise_reps'.tr() && parsed > 50) {
+                    setState(() => errorMessage = "Reps cannot exceed 50");
+                    return;
+                  }
+
+                  Navigator.pop(context, v);
+                },
+                child: Text(
+                  'save'.tr(),
+                  style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurface),
+                ),
+              ),
+            ],
           ),
-          onSubmitted: (v) => Navigator.pop(context, v),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: Text('save'.tr(), style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurface)),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -203,7 +247,10 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                             onTap: () async {
                               final result = await _showEditDialog(
                                   sets[index]['weight'].toString(), 'exercise_weight'.tr());
-                              if (result != null) _editValue(index, 'weight', double.tryParse(result) ?? 0.0);
+                              if (result != null) {
+                                final val = double.tryParse(result) ?? 0.0;
+                                if (val <= 100) _editValue(index, 'weight', val);
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -222,7 +269,10 @@ class _ExerciseLogPageState extends State<ExerciseLogPage> {
                             onTap: () async {
                               final result = await _showEditDialog(
                                   sets[index]['reps'].toString(), 'exercise_reps'.tr());
-                              if (result != null) _editValue(index, 'reps', int.tryParse(result) ?? 1);
+                              if (result != null) {
+                                final val = int.tryParse(result) ?? 1;
+                                if (val <= 50) _editValue(index, 'reps', val);
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 12.0),
