@@ -139,7 +139,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
         duration: duration.inSeconds,
         caloriesBurned: calories,
         exercises: formattedExercises,
-        notes: notes, // <-- NEW field for backend
+        notes: notes,
       );
 
       if (mounted && notes != null) {
@@ -170,8 +170,6 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     String? notes,
   }) {
     String statString = [
-      "Average Heart Rate: $avgHeartRate bpm",
-      "Peak Heart Rate: $peakHeartRate bpm",
       "Sets: $totalSets",
       "Max Weight: $maxWeight",
       "Calories per min: $caloriesPerMin",
@@ -315,34 +313,34 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
     return Scaffold(
       backgroundColor: colorScheme.background,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header row
               Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back,
-                        color: colorScheme.onBackground),
+                    icon: Icon(Icons.arrow_back, color: colorScheme.onBackground),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Workout Analysis',
-                    style: textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
 
+              // Workout info
               Row(
                 children: [
                   CircleAvatar(
                     radius: 24,
                     backgroundColor: colorScheme.primary,
-                    child:
-                    Icon(Icons.fitness_center, color: colorScheme.onPrimary),
+                    child: Icon(Icons.fitness_center, color: colorScheme.onPrimary),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -350,8 +348,7 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                     children: [
                       Text(
                         workout['workoutName'] ?? 'Workout',
-                        style: textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         DateTime.now().toIso8601String().substring(0, 10),
@@ -365,67 +362,40 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
               ),
               const SizedBox(height: 24),
 
+              // Summary cards
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _summaryCard(
-                      context, Icons.timer, '${formatDuration(duration)}', 'Duration'),
-                  _summaryCard(context, Icons.local_fire_department,
-                      '${calories.toStringAsFixed(0)} kcal', 'Calories'),
-                  _summaryCard(context, Icons.fitness_center, 'Advanced',
-                      'Intensity'),
+                  _summaryCard(context, Icons.timer, '${formatDuration(duration)}', 'Duration'),
+                  _summaryCard(context, Icons.local_fire_department, '${calories.toStringAsFixed(0)} kcal', 'Calories'),
+                  _summaryCard(context, Icons.fitness_center, 'Advanced', 'Intensity'),
                 ],
               ),
               const SizedBox(height: 24),
 
+              // Stats
               _statsSection(context, [
-                _statRow(
-                  context,
-                  'Average Heart Rate',
-                  _isHeartRateLoading
-                      ? 'Loading...'
-                      : (avgHeartRate != null ? '$avgHeartRate bpm' : 'N/A'),
-                ),
-                _statRow(
-                  context,
-                  'Peak Heart Rate',
-                  _isHeartRateLoading
-                      ? 'Loading...'
-                      : (peakHeartRate != null ? '$peakHeartRate bpm' : 'N/A'),
-                ),
                 _statRow(context, 'Sets', '$totalSets'),
                 _statRow(context, 'Total Reps', totalReps.toString()),
-                _statRow(context, 'Max Weight',
-                    '${maxWeight.toStringAsFixed(1)} kg'),
-                _statRow(context, 'Calories per min',
-                    caloriesPerMin.toStringAsFixed(2)),
+                _statRow(context, 'Max Weight', '${maxWeight.toStringAsFixed(1)} kg'),
+                _statRow(context, 'Calories per min', caloriesPerMin.toStringAsFixed(2)),
               ]),
               const SizedBox(height: 24),
 
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Session Notes',
-                  style: textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ),
+              // Notes
+              Text('Session Notes',
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-
-              // NEW: Editable notes field
               TextField(
                 controller: _notesController,
                 maxLines: 3,
                 decoration: InputDecoration(
                   hintText: 'Write your notes here...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   filled: true,
                   fillColor: colorScheme.surface,
                 ),
               ),
-
               const SizedBox(height: 12),
               ElevatedButton.icon(
                 icon: const Icon(Icons.save),
@@ -441,83 +411,71 @@ class _WorkoutAnalysisPageState extends State<WorkoutAnalysisPage> {
                   }
                 },
               ),
+              const SizedBox(height: 24),
 
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Exercises Performed',
-                  style: textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ),
+              // Exercises
+              Text('Exercises Performed',
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: exercises.length,
-                  itemBuilder: (context, i) {
-                    final e = exercises[i];
-                    final sets = (e['sets'] as List?) ?? [];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      color: colorScheme.surface,
-                      elevation: 2,
-                      child: ListTile(
-                        title: Text(
-                          e['exerciseName'] ?? e['exercise_name'] ?? 'Exercise',
-                          style: textTheme.titleSmall,
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: sets.map<Widget>((s) {
-                            final setNo = s['set'] ?? '';
-                            final reps = s['reps'] ?? 0;
-                            final weight = s['weight'] ?? 0;
-                            return Text(
-                              'Set $setNo: $reps reps @ $weight kg',
-                              style: textTheme.bodyMedium,
-                            );
-                          }).toList(),
-                        ),
+              Column(
+                children: exercises.map<Widget>((e) {
+                  final sets = (e['sets'] as List?) ?? [];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    color: colorScheme.surface,
+                    elevation: 2,
+                    child: ListTile(
+                      title: Text(
+                        e['exerciseName'] ?? e['exercise_name'] ?? 'Exercise',
+                        style: textTheme.titleSmall,
                       ),
-                    );
-                  },
-                ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: sets.map<Widget>((s) {
+                          final setNo = s['set'] ?? '';
+                          final reps = s['reps'] ?? 0;
+                          final weight = s['weight'] ?? 0;
+                          return Text(
+                            'Set $setNo: $reps reps @ $weight kg',
+                            style: textTheme.bodyMedium,
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
 
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 12),
-                  ),
-                  onPressed: () {
-                    final workoutName = workout['workoutName'] ?? 'Workout';
-                    final date =
-                    DateTime.now().toIso8601String().substring(0, 10);
-                    final initialText = buildShareContent(
-                      workoutName: workoutName,
-                      date: date,
-                      duration: formatDuration(duration),
-                      calories: '${calories.toStringAsFixed(0)} kcal',
-                      intensity: 'Advanced',
-                      avgHeartRate: avgHeartRate ?? 0,
-                      peakHeartRate: peakHeartRate ?? 0,
-                      totalSets: totalSets,
-                      maxWeight: '${maxWeight.toStringAsFixed(1)} kg',
-                      caloriesPerMin: caloriesPerMin.toStringAsFixed(1),
-                      notes: sessionNotes,
-                    );
-                    _showShareEditDialog(context, initialText);
-                  },
-                  icon: Icon(Icons.share, color: colorScheme.onPrimary),
-                  label: Text(
-                    'Share',
-                    style: textTheme.titleMedium
-                        ?.copyWith(color: colorScheme.onPrimary),
-                  ),
+              const SizedBox(height: 16),
+              // Share button
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
+                onPressed: () {
+                  final workoutName = workout['workoutName'] ?? 'Workout';
+                  final date = DateTime.now().toIso8601String().substring(0, 10);
+                  final initialText = buildShareContent(
+                    workoutName: workoutName,
+                    date: date,
+                    duration: formatDuration(duration),
+                    calories: '${calories.toStringAsFixed(0)} kcal',
+                    intensity: 'Advanced',
+                    avgHeartRate: avgHeartRate ?? 0,
+                    peakHeartRate: peakHeartRate ?? 0,
+                    totalSets: totalSets,
+                    maxWeight: '${maxWeight.toStringAsFixed(1)} kg',
+                    caloriesPerMin: caloriesPerMin.toStringAsFixed(1),
+                    notes: sessionNotes,
+                  );
+                  _showShareEditDialog(context, initialText);
+                },
+                icon: Icon(Icons.share, color: colorScheme.onPrimary),
+                label: Text(
+                  'Share',
+                  style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
                 ),
               ),
             ],
