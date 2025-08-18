@@ -4,7 +4,7 @@ const router = express.Router();
 const UserPreferencesModel = require('../models/userPreferencesModel');
 const ExerciseModel = require('../models/exerciseModel'); 
 
-const OPENROUTER_KEY = "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";
+const OPENROUTER_KEY = process.env.OPENROUTER_KEY;
 
 router.post('/ai/fitness-plan', async (req, res) => {
   const userId = req.user?.id;
