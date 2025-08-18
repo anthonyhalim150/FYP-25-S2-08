@@ -3,12 +3,16 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../screens/profile_screen.dart';
 import '../screens/workout/daily_summary_page.dart';
 import '../screens/workout/fitness_plan_calendar.dart';
+import '../screens/buypremium_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   final String userName;
+  final bool isPremiumUser;
+
   const AppDrawer({
     super.key,
     required this.userName,
+    required this.isPremiumUser,
   });
 
   Future<void> _confirmLogout(BuildContext context) async {
@@ -31,10 +35,11 @@ class AppDrawer extends StatelessWidget {
         );
       },
     );
+
     if (shouldLogout == true) {
       const secureStorage = FlutterSecureStorage();
       await secureStorage.delete(key: 'jwt_cookie');
-      // Delay to allow dialog to close before navigating
+
       Future.delayed(const Duration(milliseconds: 100), () {
         Navigator.of(context, rootNavigator: true)
             .pushNamedAndRemoveUntil('/', (route) => false);
@@ -81,6 +86,7 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
 
+          // Settings
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
@@ -94,7 +100,7 @@ class AppDrawer extends StatelessWidget {
                     profileImagePath: null,
                     profileBgPath: null,
                     xp: 123,
-                    isPremiumUser: false,
+                    isPremiumUser: isPremiumUser,
                   ),
                 ),
               );
@@ -118,10 +124,17 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Fitness Plan Calendar'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/calendar');
+
+              if (isPremiumUser) {
+                 Navigator.pushNamed(context, '/calendar');
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => BuyPremiumScreen()),
+                );
+              }
             },
           ),
-
 
           ListTile(
             leading: const Icon(Icons.fitness_center),
@@ -131,7 +144,9 @@ class AppDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/workout-history');
             },
           ),
+
           const Divider(),
+
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),

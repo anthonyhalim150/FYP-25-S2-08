@@ -273,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: AppDrawer(
         userName: _displayName ?? widget.userName,
+        isPremiumUser: _isPremiumUser,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
