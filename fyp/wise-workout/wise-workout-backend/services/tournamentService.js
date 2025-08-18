@@ -20,16 +20,10 @@ async function joinTournament(tournamentId, userId) {
   return await Tournament.joinTournament(tournamentId, userId);
 }
 
-async function getJoinedTournamentsByUser(userId) {
-  return await Tournament.getJoinedTournamentsByUser(userId);
-}
-
-
 module.exports = {
   fetchAllTournaments,
   getTournamentNamesAndEndDates,
   getTournamentsWithParticipantCounts,
   getTournamentParticipants,
   joinTournament,
-  getJoinedTournamentsByUser,
 };
