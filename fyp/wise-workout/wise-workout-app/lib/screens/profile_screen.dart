@@ -118,7 +118,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-
   String _languageNameFromCode(String code) {
     switch (code) {
       case 'en':
@@ -169,10 +168,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (_profileBgPath != null)
                     ClipOval(
                       child: _profileBgPath!.startsWith('http')
-                          ? Image.network(_profileBgPath!,
-                          width: 220, height: 220, fit: BoxFit.cover)
-                          : Image.asset(_profileBgPath!,
-                          width: 220, height: 220, fit: BoxFit.cover),
+                          ? Image.network(_profileBgPath!, width: 220, height: 220, fit: BoxFit.cover)
+                          : Image.asset(_profileBgPath!, width: 220, height: 220, fit: BoxFit.cover),
                     ),
                   if (_profileImagePath != null && _profileImagePath!.isNotEmpty)
                     CircleAvatar(
@@ -210,8 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _profileItem(IconData icon, String actionId,
-      {String? subtitle, VoidCallback? onTap}) {
+  Widget _profileItem(IconData icon, String actionId, {String? subtitle, VoidCallback? onTap}) {
     VoidCallback? handleTap = onTap;
     if (handleTap == null) {
       switch (actionId) {
@@ -264,11 +260,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (_busy) return;
             setState(() => _busy = true);
             try {
-              // 1) Fetch latest prefs
               final prefs = await _aiService.fetchPreferencesOnly();
               if (!mounted) return;
 
-              // 2) Navigate to editor with the freshest data
               final updatedPrefs = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -278,12 +272,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               );
 
-              // 3) Apply updates if user saved
               if (updatedPrefs != null && mounted) {
                 setState(() {
                   _preferences = Map<String, dynamic>.from(updatedPrefs);
-                  _plan = null;            // clear cached plan so it regenerates
-                  _estimationText = null;  // clear any derived text
+                  _plan = null;
+                  _estimationText = null;
                 });
               }
             } catch (e) {
@@ -301,7 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           break;
         case "calendar":
           handleTap = () => Navigator.pushNamed(context, '/calendar-sync');
-        break;
+          break;
         case "wearable":
           handleTap = () => Navigator.pushNamed(context, '/wearable-screen');
           break;
@@ -309,7 +302,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           handleTap = () => Navigator.pushNamed(context, '/workout-history');
           break;
         case "workout_plan":
-          handleTap = () => Navigator.pushNamed(context, '/workout-plans-screen');
+          handleTap = () {
+            if (!_isPremiumUser) {
+              Navigator.pushNamed(context, '/premium-plan');
+              return;
+            }
+            Navigator.pushNamed(context, '/workout-plans-screen');
+          };
           break;
         case "premium_plan":
           handleTap = () => Navigator.pushNamed(context, '/premium-plan');
@@ -345,25 +344,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: actionId == "feedback"
-    ? Text(
+          ? Text(
         tr('profile_feedback'),
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
         ),
       )
-    : Text(
+          : Text(
         tr('profile_$actionId'),
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
       subtitle: subtitle != null
-          ? Text(subtitle,
-          style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurfaceVariant))
+          ? Text(
+        subtitle,
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      )
           : null,
-      trailing: Icon(Icons.arrow_forward_ios,
-          size: 16, color: Theme.of(context).iconTheme.color),
+      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
       onTap: handleTap,
     );
   }
@@ -411,12 +410,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _profileItem(Icons.settings, "profile", subtitle: tr('profile_profile_subtitle')),
                   _profileItem(Icons.edit_attributes, "preferences"),
                   _profileItem(Icons.lock, "password"),
-                  _profileItem(Icons.watch, "wearable",),
+                  _profileItem(Icons.watch, "wearable"),
                   _profileItem(Icons.calendar_month_rounded, "calendar"),
-                  _profileItem(Icons.fitness_center, "workout_plan"),
+                  if (_isPremiumUser) _profileItem(Icons.fitness_center, "workout_plan"),
                   _profileItem(Icons.history, "workout_history"),
-                  if (!_isPremiumUser)
-                    _profileItem(Icons.workspace_premium, "premium_plan"),
+                  if (!_isPremiumUser) _profileItem(Icons.workspace_premium, "premium_plan"),
                   _profileItem(Icons.language, "language", subtitle: _languageNameFromCode(_selectedLanguageCode)),
                   _profileItem(Icons.privacy_tip, "privacy_policy"),
                   _profileItem(Icons.palette, "appearance", subtitle: _themeNameFromMode(currentThemeMode)),
