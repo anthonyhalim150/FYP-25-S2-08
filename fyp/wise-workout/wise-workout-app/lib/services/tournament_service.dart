@@ -86,6 +86,24 @@ class TournamentService {
     }
   }
 
+  Future<List<int>> getJoinedTournamentIds() async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) {
+      throw Exception('JWT not found in secure storage');
+    }
+    final res = await http.get(
+      Uri.parse('$backendUrl/tournaments/joined'),
+      headers: {'Cookie': 'session=$jwt'},
+    );
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+      return (decoded as List).map<int>((e) => e as int).toList();
+    } else {
+      throw Exception('Failed to load joined tournament IDs');
+    }
+  }
+
+
   Future<List<dynamic>> getLeaderboard(int tournamentId) async {
     final jwt = await secureStorage.read(key: 'jwt_cookie');
     final res = await http.get(

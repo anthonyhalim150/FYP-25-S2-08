@@ -6,6 +6,7 @@ class TournamentWidget extends StatelessWidget {
   final String participants;
   final double cardWidth;
   final VoidCallback? onJoin;
+  final bool isJoined;
 
   const TournamentWidget({
     super.key,
@@ -14,10 +15,13 @@ class TournamentWidget extends StatelessWidget {
     this.participants = '',
     this.cardWidth = 300,
     this.onJoin,
+    this.isJoined = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final disabled = isJoined;
+
     return GestureDetector(
       onTap: () {},
       child: Container(
@@ -71,23 +75,24 @@ class TournamentWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // Only participants
             _buildParticipantsRow(),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: TextButton(
                 style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: disabled
+                      ? Colors.grey
+                      : Theme.of(context).colorScheme.primary,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                onPressed: onJoin,
-                child: const Text(
-                  'Join Now',
-                  style: TextStyle(
+                onPressed: disabled ? null : onJoin,
+                child: Text(
+                  disabled ? 'Joined' : 'Join Now',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -101,12 +106,14 @@ class TournamentWidget extends StatelessWidget {
     );
   }
 
+  // Restored helper
   Widget _buildParticipantsRow() {
     return Row(
       children: [
         Icon(Icons.people, size: 18, color: Colors.blue.shade400),
         const SizedBox(width: 6),
         Stack(
+          clipBehavior: Clip.none,
           children: [
             CircleAvatar(
               radius: 11,
@@ -130,7 +137,6 @@ class TournamentWidget extends StatelessWidget {
               ),
             ),
           ],
-          clipBehavior: Clip.none,
         ),
         const SizedBox(width: 38),
         Text(

@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final BadgeService _badgeService = BadgeService();
   List<String> _unlockedBadges = [];
   late Future<List<dynamic>> tournamentsFuture;
+  Set<int> _joinedTournamentIds = {};
 
   late Future<List<WorkoutCategory>> _categoryFuture;
 
@@ -69,12 +70,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchTodayXP();
     tournamentsFuture = TournamentService().getTournamentsWithParticipants();
     _categoryFuture = WorkoutCategoryService().fetchCategories();
+    _loadJoinedTournaments();
+  }
+
+  Future<void> _loadJoinedTournaments() async {
+    try {
+      final ids = await TournamentService().getJoinedTournamentIds();
+      setState(() {
+        _joinedTournamentIds = ids.toSet();
+      });
+    } catch (e) {
+      debugPrint('Failed to load joined tournaments: $e');
+    }
   }
 
   Future<void> reloadTournaments() async {
     setState(() {
       tournamentsFuture = TournamentService().getTournamentsWithParticipants();
     });
+    await _loadJoinedTournaments(); // keep joined set in sync
   }
 
   double _toOneDecimal(dynamic v, {double fallback = 0.0}) {
@@ -596,12 +610,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       separatorBuilder: (_, __) => const SizedBox(width: 10),
                       itemBuilder: (context, index) {
                         final t = tournaments[index];
+                        final int tid = (t['id'] as num).toInt();
+                        final bool isJoined = _joinedTournamentIds.contains(tid);
+
                         return TournamentWidget(
                           tournamentName: t['title'] ?? '',
                           daysLeft: t['endDate'] ?? '',
                           participants: t['participants'].toString(),
                           cardWidth: 280,
+                          isJoined: isJoined,
                           onJoin: () async {
+                            if (isJoined) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('You have already joined this tournament!')),
+                              );
+                              return;
+                            }
+
                             final confirmed = await showDialog<bool>(
                               context: context,
                               builder: (ctx) => AlertDialog(
@@ -620,22 +645,32 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                             if (confirmed != true) return;
+
                             String status = "";
                             try {
-                              status = await TournamentService().joinTournament(t['id']);
+                              status = await TournamentService().joinTournament(tid);
                             } catch (e) {
                               status = '';
                             }
                             if (status == "joined") {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text('Joined tournament!')));
-                              reloadTournaments();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Joined tournament!')),
+                              );
+                              setState(() {
+                                _joinedTournamentIds.add(tid);
+                              });
+                              await reloadTournaments();
                             } else if (status == "already_joined") {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text('You have already joined this tournament!')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('You have already joined this tournament!')),
+                              );
+                              setState(() {
+                                _joinedTournamentIds.add(tid);
+                              });
                             } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text('Could not join tournament.')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Could not join tournament.')),
+                              );
                             }
                           },
                         );
