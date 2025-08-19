@@ -3,36 +3,31 @@ import 'analysis_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/workout_service.dart';
 import '../services/health_service.dart';
+import '../../services/workout_session_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
-
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
 }
-
 class _HistoryScreenState extends State<HistoryScreen> {
   List<dynamic> workoutHistory = [];
   bool isLoading = true;
   String errorMessage = '';
   final healthService = HealthService();
   final workoutService = WorkoutService();
-
   @override
   void initState() {
     super.initState();
     _fetchWorkoutHistory();
   }
-
   Future<void> _fetchWorkoutHistory() async {
     setState(() {
       isLoading = true;
       errorMessage = '';
     });
-
     try {
       final history = await workoutService.fetchUserWorkoutSessions();
-
       final enrichedHistory = await Future.wait(history.map((entry) async {
         try {
           final intensity = await workoutService.fetchSessionIntensity(entry['session_id']);
@@ -42,7 +37,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         }
         return entry;
       }));
-
       setState(() {
         workoutHistory = enrichedHistory;
         isLoading = false;
@@ -55,7 +49,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
       print('Error fetching workout history: $e');
     }
   }
-
   IconData _getIconForWorkout(String? workoutName) {
     if (workoutName == null) return Icons.fitness_center;
     final name = workoutName.toLowerCase();
@@ -69,13 +62,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
       return Icons.fitness_center;
     }
   }
-
   String _formatDuration(int? seconds) {
     if (seconds == null) return '0 min';
     final minutes = (seconds / 60).round();
     return '$minutes min';
   }
-
   double _parseCalories(dynamic rawCalories) {
     if (rawCalories == null) return 0.0;
     if (rawCalories is double) return rawCalories;
@@ -87,10 +78,52 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _openAnalysisScreen(Map<String, dynamic> entry) async {
     final dateString = entry['start_time']?.substring(0, 10) ?? 'Unknown Date';
     final steps = await healthService.getStepsForDate(DateTime.parse(dateString));
+    final intensity = entry['intensity'] ?? await workoutService.fetchSessionIntensity(entry['session_id']);
+    final exercises = (entry['exercises'] as List?) ?? [];
+    int totalSets = 0;
+    int totalReps = 0;
+    double maxWeight = 0.0;
 
-    final intensity = entry['intensity'] ??
-        await workoutService.fetchSessionIntensity(entry['session_id']);
+    double _asDouble(dynamic value) {
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
 
+    int _asInt(dynamic value) {
+      if (value is num) return value.toInt();
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
+    for (final exercise in exercises.cast<Map<String, dynamic>>()) {
+      final setsData = (exercise['sets_data'] as List?) ?? const [];
+      totalSets += setsData.length;
+
+      for (final set in setsData.cast<Map<String, dynamic>>()) {
+        final reps = _asInt(set['reps']);
+        final weight = _asDouble(set['weight']);
+
+        totalReps += reps;
+        if (weight > maxWeight) {
+          maxWeight = weight;
+        }
+      }
+    }
+    final extraStats = {
+      "Steps": steps.toString(),
+      "Sets": totalSets.toString(),
+      "Reps": totalReps.toString(),
+      "Max Weight": maxWeight.toStringAsFixed(1) + " kg",
+      "Calories per min": (() {
+        final minutes = int.tryParse(_formatDuration(entry['duration']).split(" ").first) ?? 0;
+        final cals = _parseCalories(entry['calories_burned']);
+        if (minutes <= 0 || cals <= 0) return "0.0";
+        return (cals / minutes).toStringAsFixed(1);
+      })(),
+    };
+
+    print("Passing to AnalysisScreen: $extraStats");
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -102,19 +135,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
           calories: _parseCalories(entry['calories_burned']),
           intensity: intensity,
           notes: entry['notes'] ?? '',
-          extraStats: {
-            "Steps": steps.toString(),
-            "Calories per min": (() {
-              final minutes = int.tryParse(_formatDuration(entry['duration']).split(" ").first) ?? 0;
-              final cals = _parseCalories(entry['calories_burned']);
-              if (minutes <= 0 || cals <= 0) return "0.0";
-              return (cals / minutes).toStringAsFixed(1);
-            })(),
-          },
+          extraStats: extraStats,
         ),
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -158,132 +184,131 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : errorMessage.isNotEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Error loading history: $errorMessage',
-                              style: const TextStyle(fontSize: 16, color: Colors.red),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchWorkoutHistory,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : workoutHistory.isEmpty
-                        ? Center(
-                            child: Text(
-                              'history_empty_message'.tr(),
-                              style: const TextStyle(fontSize: 18, color: Colors.grey),
-                            ),
-                          )
-                        : RefreshIndicator(
-                            onRefresh: _fetchWorkoutHistory,
-                            child: ListView.separated(
-                              padding: const EdgeInsets.all(20),
-                              itemCount: workoutHistory.length,
-                              separatorBuilder: (_, __) => const SizedBox(height: 12),
-                              itemBuilder: (context, i) {
-                                final entry = workoutHistory[i];
-                                final calories = _parseCalories(entry['calories_burned']);
-
-                                return GestureDetector(
-                                  onTap: () => _openAnalysisScreen(entry),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.05),
-                                          blurRadius: 6,
-                                          offset: const Offset(1, 2),
-                                        ),
-                                      ],
+                ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Error loading history: $errorMessage',
+                    style: const TextStyle(fontSize: 16, color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _fetchWorkoutHistory,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            )
+                : workoutHistory.isEmpty
+                ? Center(
+              child: Text(
+                'history_empty_message'.tr(),
+                style: const TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
+                : RefreshIndicator(
+              onRefresh: _fetchWorkoutHistory,
+              child: ListView.separated(
+                padding: const EdgeInsets.all(20),
+                itemCount: workoutHistory.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, i) {
+                  final entry = workoutHistory[i];
+                  final calories = _parseCalories(entry['calories_burned']);
+                  return GestureDetector(
+                    onTap: () => _openAnalysisScreen(entry),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(1, 2),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(18),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            _getIconForWorkout(entry['workout_name']),
+                            color: const Color(0xFF071655),
+                            size: 40,
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  entry['start_time']?.substring(0, 10) ?? 'Unknown Date',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF071655),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  entry['workout_name'] ?? 'Workout Session',
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.timer, size: 16, color: Colors.grey),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      _formatDuration(entry['duration']),
+                                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                                     ),
-                                    padding: const EdgeInsets.all(18),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          _getIconForWorkout(entry['workout_name']),
-                                          color: const Color(0xFF071655),
-                                          size: 40,
-                                        ),
-                                        const SizedBox(width: 14),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                entry['start_time']?.substring(0, 10) ?? 'Unknown Date',
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color(0xFF071655),
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                entry['workout_name'] ?? 'Workout Session',
-                                                style: const TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.timer, size: 16, color: Colors.grey),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    _formatDuration(entry['duration']),
-                                                    style: const TextStyle(color: Colors.grey, fontSize: 13),
-                                                  ),
-                                                  const SizedBox(width: 15),
-                                                  const Icon(Icons.local_fire_department, size: 16, color: Colors.amber),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    "${calories.toStringAsFixed(1)} kcal",
-                                                    style: const TextStyle(color: Colors.amber, fontSize: 13),
-                                                  ),
-                                                  const SizedBox(width: 15),
-                                                  const Icon(Icons.trending_up, size: 16, color: Colors.deepPurple),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    entry['intensity'] ?? 'Unknown',
-                                                    style: const TextStyle(fontSize: 13, color: Colors.deepPurple),
-                                                  ),
-                                                ],
-                                              ),
-                                              if (entry['notes'] != null &&
-                                                  entry['notes'].toString().isNotEmpty)
-                                                Padding(
-                                                  padding: const EdgeInsets.only(top: 8.0),
-                                                  child: Text(
-                                                    entry['notes'].toString(),
-                                                    style: const TextStyle(
-                                                      fontSize: 13,
-                                                      fontStyle: FontStyle.italic,
-                                                      color: Colors.black54,
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                                    const SizedBox(width: 15),
+                                    const Icon(Icons.local_fire_department, size: 16, color: Colors.amber),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${calories.toStringAsFixed(1)} kcal",
+                                      style: const TextStyle(color: Colors.amber, fontSize: 13),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    const Icon(Icons.trending_up, size: 16, color: Colors.deepPurple),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      entry['intensity'] ?? 'Unknown',
+                                      style: const TextStyle(fontSize: 13, color: Colors.deepPurple),
+                                    ),
+                                  ],
+                                ),
+                                if (entry['notes'] != null &&
+                                    entry['notes'].toString().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      entry['notes'].toString(),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.black54,
+                                      ),
                                     ),
                                   ),
-                                );
-                              },
+                              ],
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),

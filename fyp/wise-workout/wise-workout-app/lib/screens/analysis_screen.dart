@@ -133,13 +133,16 @@ class AnalysisScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+
+    // Log the received extraStats data
+    print("Received extraStats in AnalysisScreen: $extraStats");
+
     final stats = extraStats ?? {
       "Steps": "0",
-      "Sets": workout == "Strength Training" ? "4" : null,
-      "Reps": workout == "Strength Training" ? "12, 10, 8, 8" : null,
-      "Max Weight": workout == "Strength Training" ? "30 kg" : null,
-      "Pace": workout.contains("HIIT") ? "Very Fast" : null,
-      "Calories per min": (calories / (int.tryParse(duration.split(" ").first) ?? 1)).toStringAsFixed(1),
+      "Sets": "0",
+      "Reps": "0",
+      "Max Weight": "0 kg",
+      "Calories per min": "0.0",
     };
 
     return Scaffold(
@@ -161,6 +164,7 @@ class AnalysisScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Workout details
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -194,10 +198,12 @@ class AnalysisScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 25),
+
+            // Displaying Stats
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -214,42 +220,28 @@ class AnalysisScreen extends StatelessWidget {
               style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
+            // Displaying additional stats from extraStats
             ...stats.entries
                 .where((e) => e.value != null && e.value.toString().isNotEmpty)
                 .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: Text(
-                            e.key,
-                            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                          )),
-                          Text(
-                            e.value.toString(),
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-            if (notes != null && notes!.isNotEmpty) ...[
-              const SizedBox(height: 22),
-              Text(
-                "Session Notes",
-                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Text(
+                        e.key,
+                        style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                      )),
+                  Text(
+                    e.value.toString(),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                notes!,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  color: colorScheme.onSurface.withOpacity(0.8),
-                ),
-              ),
-            ],
+            )),
           ],
         ),
       ),
@@ -263,6 +255,8 @@ class AnalysisScreen extends StatelessWidget {
       ),
     );
   }
+
+
 
   Widget _statCard(BuildContext context, IconData icon, String label, String value) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -283,7 +277,7 @@ class AnalysisScreen extends StatelessWidget {
         children: [
           Icon(icon, color: colorScheme.onSurface, size: 28),
           const SizedBox(height: 5),
-          FittedBox( // Prevents wrapping and keeps it looking good
+          FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               value,
