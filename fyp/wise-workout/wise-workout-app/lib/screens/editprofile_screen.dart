@@ -240,7 +240,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "profile_details".tr(),
+                                    "profile_personal_details".tr(),
                                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
