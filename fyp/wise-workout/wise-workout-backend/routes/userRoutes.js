@@ -11,8 +11,10 @@ const {
   buyPremium,
   getDailyXP,
   setLanguage,
-  getLanguage
+  getLanguage,
+  changePassword
 } = require('../controllers/userController');
+
 
 router.post('/set-avatar', setAvatar);
 router.post('/set-background', setBackground);
@@ -25,5 +27,6 @@ router.post('/buy-premium', buyPremium);
 router.get('/daily-xp', getDailyXP);
 router.put('/language', setLanguage);
 router.get('/language', getLanguage);
+router.post('/change-password', changePassword);
 
 module.exports = router;

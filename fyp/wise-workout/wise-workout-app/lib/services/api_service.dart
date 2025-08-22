@@ -184,4 +184,25 @@ class ApiService {
       throw Exception('Failed to update language');
     }
   }
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    final jwt = await secureStorage.read(key: 'jwt_cookie');
+    if (jwt == null) throw Exception('JWT not found in secure storage');
+
+    final res = await http.post(
+      Uri.parse('$backendUrl/user/change-password'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'session=$jwt',
+      },
+      body: jsonEncode({
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (res.statusCode != 200) {
+      final body = jsonDecode(res.body);
+      throw Exception(body['message'] ?? 'Failed to change password');
+    }
+  }
 }

@@ -156,3 +156,24 @@ exports.getLanguage = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.changePassword = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Missing fields' });
+    }
+
+    await UserService.changePassword(userId, currentPassword, newPassword);
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    const map = {
+      USER_NOT_FOUND: 404,
+      INVALID_CURRENT_PASSWORD: 401
+    };
+    res.status(map[err.message] || 500).json({ message: err.message });
+  }
+};

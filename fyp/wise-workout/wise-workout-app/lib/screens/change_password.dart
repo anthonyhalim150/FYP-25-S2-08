@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile_screen.dart';
+import '../services/api_service.dart'; 
 import 'forgot_password_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -31,25 +32,32 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _isLoading = true;
       _error = null;
     });
-    await Future.delayed(const Duration(seconds: 1));
-    if (_currentController.text != 'old123') {
+
+    try {
+      await ApiService().changePassword(
+        _currentController.text.trim(),
+        _newController.text.trim(),
+      );
+
       setState(() {
-        _error = 'account_change_password_error_incorrect'.tr();
         _isLoading = false;
       });
-      return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('account_change_success'.tr())),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => ProfileScreen(userName: '')),
+        (route) => false,
+      );
+    } catch (e) {
+      setState(() {
+        _error = e.toString().replaceFirst('Exception: ', '');
+        _isLoading = false;
+      });
     }
-    setState(() {
-      _isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('account_change_password_success'.tr()))
-    );
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => ProfileScreen(userName: '')),
-          (route) => false,
-    );
   }
 
   @override

@@ -6,6 +6,8 @@ const BadgeService = require('./badgeService');
 const premiumCosts = require('../config/premiumCosts');
 const SubscriptionHistoryModel = require('../models/subscriptionHistoryModel');
 const UserXpDailyModel = require('../models/userXpDailyModel');
+const bcrypt = require('bcryptjs');
+const PEPPER = require('../config/auth');
 
 class UserService {
   static async setAvatar(userId, avatarId) {
@@ -209,6 +211,16 @@ class UserService {
   
   static async getLanguage(userId) {
     return await UserModel.getLanguage(userId);
+  }  
+  static async changePassword(userId, currentPassword, newPassword) {
+    const user = await UserModel.findById(userId);
+    if (!user || !user.password) throw new Error('USER_NOT_FOUND');
+  
+    const isMatch = await bcrypt.compare(PEPPER + currentPassword, user.password);
+    if (!isMatch) throw new Error('INVALID_CURRENT_PASSWORD');
+  
+    const hashed = await bcrypt.hash(PEPPER + newPassword, 12);
+    await UserModel.updatePasswordById(userId, hashed);
   }  
 
 }

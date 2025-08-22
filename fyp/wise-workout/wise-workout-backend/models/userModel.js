@@ -220,6 +220,13 @@ class UserModel {
     );
     return rows[0]?.language || 'en';
   }
+  static async updatePasswordById(userId, hashedPassword) {
+    await db.execute(
+      'UPDATE users SET password = ? WHERE id = ? AND method = "database"',
+      [hashedPassword, userId]
+    );
+  }
+  
 }
 
 module.exports = UserModel;
