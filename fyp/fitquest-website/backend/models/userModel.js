@@ -50,7 +50,9 @@ class UserModel {
   }
 
   static async getActiveUserCount() {
-    const [rows] = await db.execute('SELECT COUNT(*) AS active FROM users WHERE role != "suspended"');
+    const [rows] = await db.execute(
+      'SELECT COUNT(*) AS active FROM users WHERE isSuspended = 0'
+    );
     return rows[0]?.active || 0;
   }
 
