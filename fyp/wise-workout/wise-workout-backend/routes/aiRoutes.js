@@ -64,7 +64,7 @@ ${JSON.stringify(exercises, null, 2)}
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: "moonshotai/kimi-k2:free",
+        model: "z-ai/glm-4.5",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
